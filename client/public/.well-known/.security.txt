@@ -1,0 +1,3 @@
+Contact: mailto:security@vima-ulm.de
+Expires: 2022-12-31T22:59:00.000Z
+Preferred-Languages: de, en

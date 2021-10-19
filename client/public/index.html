@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title><%= process.env.VUE_APP_NAME %></title>
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#e1551e">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Tags -->
+    <meta name="description" content="ViMA ist eine offene, multifunktionale online-Plattform, die zum digitalen Treffpunkt Ulmer Bürger*innen werden soll." />
+    <meta name="keywords" content="vima, ileu, vives, ulm, digital, plattform, austausch, engagement, bürger, bürgeraustuasch, suche-biete, diskussion, diskussionsforen, gruppen, interessengruppen" />
+    <meta name="author" content="ILEU e.V." />
+    <meta name="copyright" content="ILEU e.V." />
+    <meta name="robots" content="index, follow" />
+  </head>
+  <body>
+    <noscript>
+      <strong>Bitte aktivieren Sie JavaScript.</strong>
+    </noscript>
+    <div id="app">
+      <div style="font-family: sans-serif; margin: 50px; max-width: 600px;" id="ie"></div>
+    </div>
+    <script>
+      if (
+        navigator.appName === 'Microsoft Internet Explorer' ||
+        !!(
+          navigator.userAgent.match(/Trident/) ||
+          navigator.userAgent.match(/rv:11/)
+        )
+      ) {
+        document.getElementById('ie').innerHTML = "<h2>Internet Explorer wird nicht unterstützt</h2><br><p>Microsoft hat 2015 die Weiterentwicklung des Internet Explorers eingestellt. Aus Sicherheitsgründen wird dieser Browser von der Anwendung daher nicht untersützt. Bitte verwende einen aktuellen Browser (Edge, Chrome, Firefox, ...)</p><br><p>Herzlichen Dank!</p>"
+      }
+    </script>
+  </body>
+</html>
