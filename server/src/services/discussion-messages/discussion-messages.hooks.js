@@ -12,7 +12,20 @@ module.exports = {
         allowAnonymous(),
         authenticate('jwt', 'anonymous'),
         (context) => {
-          context.params.query.$populate = ['author', 'latestAnswers']
+          context.params.query.$populate = [
+            'latestAnswers',
+            {
+              path: 'latestAnswers',
+              populate: {
+                path: 'author',
+                select: ['_id', 'userName', 'pic']
+              }
+            },
+            {
+              path: 'author',
+              select: ['_id', 'userName', 'pic']
+            }
+          ]
         }
       )
     ],

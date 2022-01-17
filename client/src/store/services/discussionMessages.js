@@ -12,6 +12,10 @@ class discussionMessages extends BaseModel {
       // eslint-disable-next-line new-cap
       data.author = new models.api.users(data.author)._id
     }
+    if (data.latestAnswers && data.latestAnswers.author && typeof data.latestAnswers.author === 'object') {
+      // eslint-disable-next-line new-cap
+      data.latestAnswers.author = new models.api.users(data.latestAnswers.author)._id
+    }
     return data
   }
 }
