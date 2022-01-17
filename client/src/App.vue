@@ -1066,15 +1066,6 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
-            :to="{ name: 'ViolationListAdmin' }"
-          >
-            <v-list-item-title
-              class="font-weight-bold customGrey--text"
-            >
-              {{$t('manageViolationsButton')}}
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item
             :to="{ name: 'EventListAdmin' }"
           >
             <v-list-item-title
