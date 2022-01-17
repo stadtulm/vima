@@ -462,6 +462,7 @@
   "resendVerifyBody": "Sollten Sie keine E-Mail mit Ihrem Verifizierungslink erhalten haben und sich diese auch nicht in Ihrem Spam-Ordner befinden, tragen Sie bitte hier Ihre E-Mail-Adresse ein, mit der Sie Ihr Profil erstellt haben und klicken Sie auf \"Versenden\". Wir Senden Ihnen die E-Mail dann nochmals zu.",
   "resendVerifyHint": "Bitte beachten Sie, dass immer nur die jeweils letzte Verifizierungs-E-Mail einen gültigen Link enthält. Verifizierungs-Links vorhergehender E-Mails werden mit der Generierung einer neuen Verifizierungs-E-Mail ungültig.",
   "resendVerifyThanks": "Vielen Dank! Wir haben Ihnen erneut eine Verifizierungs-E-Mail zugesendet. Sollten Sie diese abermals nicht erhalten haben, nehmen Sie bitte Kontakt mit uns auf. Die Kontaktdaten finden Sie im Fußbereich dieser Seite.",
-  "manualTitle": "Das ViMA-Handbuch als PDF",
-  "manualBody": "<a href=\"/downloads/Vima-Handbuch-User.pdf\" target=\"_blank\">Hier</a> können Sie das ViMA-Handbuch als PDF herunterladen. Darin finden Sie die wichtigsten Punkte zur Bedienung der ViMA-Plattform beschrieben."
+  "manualTitle": "Das ViMA-Handbuch als PDF und das ViMA-Einführungsvideo",
+  "manualBody": "<a href=\"/downloads/Vima-Handbuch-User.pdf\" target=\"_blank\">Hier</a> können Sie das ViMA-Handbuch als PDF herunterladen. Darin finden Sie die wichtigsten Punkte zur Bedienung der ViMA-Plattform beschrieben.<br><br>Und hier geht es zum <a href='https://youtu.be/eaCl-0GBje0' target='_blank'>ViMA-Einführungsvideo</a>.",
+  "introductionVideo": "Einführungsvideo"
 }
