@@ -87,7 +87,7 @@
               :class="computedDiscussion.author ? 'pointer': ''"
               @click="computedDiscussion.author ? $router.push({name: 'User', params: { user: computedDiscussion.author.user._id }}) : ''"
             >
-              {{computedDiscussion.author ? computedDiscussion.author.user.userName : ''}}
+              {{computedDiscussion.author ? computedDiscussion.author.user.userName : '- (' + $t('deletedAccount') + ')'}}
             </span>
           </v-card-subtitle>
           <v-card-text>
