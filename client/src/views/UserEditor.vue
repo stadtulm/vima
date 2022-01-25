@@ -590,7 +590,7 @@ export default {
         email: null,
         password: this.selectedUser._id,
         role: 'deleted',
-        userName: this.selectedUser._id + '(' + this.$t('deletedAccount') + ')',
+        userName: this.selectedUser._id + ' (' + this.$t('deletedAccount') + ')',
         firstName: null,
         lastName: null,
         description: null,
