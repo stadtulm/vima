@@ -215,6 +215,21 @@ const routes = [
       checkLoggedIn
     ])
   },
+  {
+    path: '/chats/:chat?',
+    name: 'Chat',
+    component: Chat,
+    meta: {
+      breadCrumbText: 'Chat Detail',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['ChatList']
+      ]
+    },
+    beforeEnter: Multiguard([
+      checkLoggedIn
+    ])
+  },
   //
   // Editors
   //
