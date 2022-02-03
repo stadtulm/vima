@@ -19,7 +19,7 @@
             <v-col
               class="text-h4"
             >
-              Dieser Inhalt ist geschützt.
+              {{$t('warningForbiddenContent')}}
             </v-col>
           </v-row>
           <v-row
@@ -33,7 +33,7 @@
                 class="elevation-0 custom--text"
                 :to="$route.query.redirect"
               >
-                Zurück
+                {{$t('back')}}
               </v-btn>
             </v-col>
           </v-row>

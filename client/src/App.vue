@@ -74,21 +74,21 @@
             :to="{ name: 'Vima' }"
           >
             <v-list-item-title>
-              {{$t('vima')}}
+              {{$t('aboutVima')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
             :to="{ name: 'Ileu' }"
           >
             <v-list-item-title>
-              {{$t('ileu')}}
+              {{$t('aboutIleu')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
             :to="{ name: 'Vives' }"
           >
             <v-list-item-title>
-              {{$t('vives')}}
+              {{$t('aboutVives')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item

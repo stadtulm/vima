@@ -338,7 +338,7 @@
                 <v-col
                   class="align-self-center shrink"
                 >
-                  Einladung:
+                  {{$t('invitation')}}:
                 </v-col>
                 <v-col
                   class="text-center"

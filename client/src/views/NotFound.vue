@@ -19,7 +19,7 @@
             <v-col
               class="text-h4"
             >
-              Hoppla. Diese Seite existiert leider nicht (mehr).
+              {{$t('pageNotFound')}}
             </v-col>
           </v-row>
         </v-card-text>

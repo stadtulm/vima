@@ -113,8 +113,7 @@
                         <v-alert
                           icon="fas fa-info-circle"
                         >
-                          Bilder können in <b>Newsletter</b> integriert werden, indem eine Zeile mit geschweiften Klammern und der Bildnummer eingefügt wird.<br>
-                          Um Beispielsweise das erste hochgeladene Bild einzufügen, einfach eine Zeile mit {1} im Text hinterlassen.
+                          {{$t('noteInsertImage')}}
                         </v-alert>
                       </v-col>
                       <v-col

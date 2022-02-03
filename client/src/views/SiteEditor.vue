@@ -41,10 +41,10 @@
                       { text: $t('imprint'), value: 'imprint', disabled: !computedTypes || computedTypes.includes('imprint') },
                       { text: $t('privacy'), value: 'privacy', disabled: !computedTypes || computedTypes.includes('privacy')},
                       { text: $t('contact'), value: 'contact', disabled: !computedTypes || computedTypes.includes('contact')},
-                      { text: $t('ileu'), value: 'ileu', disabled: !computedTypes || computedTypes.includes('ileu')},
-                      { text: $t('vima'), value: 'vima', disabled: !computedTypes || computedTypes.includes('vima')},
-                      { text: $t('vives'), value: 'vives', disabled: !computedTypes || computedTypes.includes('vives')},
-                      { text: $t('communicationrules'), value: 'communicationrules', disabled: !computedTypes || computedTypes.includes('communicationrules')}
+                      { text: $t('aboutIleu'), value: 'ileu', disabled: !computedTypes || computedTypes.includes('ileu')},
+                      { text: $t('aboutVima'), value: 'vima', disabled: !computedTypes || computedTypes.includes('vima')},
+                      { text: $t('aboutVives'), value: 'vives', disabled: !computedTypes || computedTypes.includes('vives')},
+                      { text: $t('communicationRules'), value: 'communicationrules', disabled: !computedTypes || computedTypes.includes('communicationrules')}
                     ]"
                   >
                   </v-select>
