@@ -479,5 +479,16 @@
   "noteRegister": "Wenn Sie selbst bei ViMA aktiv werden möchten, benötigen Sie ein Profil, das Sie hier erstellen können. Sie entscheiden selbst, wie viel andere Nutzer*innen dieser Website über Sie erfahren.",
   "notePassword": "Wenn Sie ein Profil erstellt haben, können Sie sich mit Ihrer E-Mail-Adresse und Ihrem Passwort bei ViMA einloggen. Haben Sie Ihr Passwort vergessen, können Sie hier ein neues Passwort erstellen.",
   "noteFAQ": "Hier finden Sie Informationen über ViMA und ILEU e.V., den Betreiber der Plattform. Unter \"Häufige Fragen\" finden Sie Hilfestellungen zu den Funktionen der ViMA-Plattform. Bitte beachten Sie auch unsere Kommunikationsregeln für einen freundlichen und respektvollen Umgang auf ViMA.",
-  "noteContact": "Wenn Sie Fragen haben, kontaktieren Sie uns gerne unter den angegebenen Kontakdaten. Viel Spaß auf der ViMA Plattform!"
+  "noteContact": "Wenn Sie Fragen haben, kontaktieren Sie uns gerne unter den angegebenen Kontakdaten. Viel Spaß auf der ViMA Plattform!",
+  "noteApiKey": "Der API-Schlüssel kann als Header oder Query-Parameter mit dem Namen 'x-access-token' übermittelt we,rden. Der Wert muss aus Client-Id und Client-Secret bestehen, die mit einem Komma getrennt sind.",
+  "exampleHeader": "Beispiel-Header: x-access-token:clientId,clientSecret",
+  "exampleQuery": "Beispiel-Query: [url]?x-access-token=clientId,clientSecret",
+  "warningApiKeyDeletion": "Der existierende API-Schluessel Ihrer Organisation wird bei der Generierung eines neuen Schlüssels gelöscht und kann nicht weiter verwendet werden!",
+  "noteClientSecret": "Das Client-Secret wird nur jetzt einmalig angezeigt. Bitte verwahren Sie den Schlüssel an einem sicheren Ort.",
+  "buttonShowAllEntries": "Alle Einträge anzeigen",
+  "editedOn": "bearbeitet am",
+  "start": "Beginn",
+  "end": "Ende",
+  "reset": "Zurücksetzen",
+  "save": "Speichern"
 }

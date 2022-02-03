@@ -100,7 +100,7 @@
                           >
                             {{isOwnMessage(message) ? $t('you') + ', ' : getUser(message.author).userName + ', '}}
                           </span>
-                          {{$moment(message.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.editedAt ? '(bearbeitet am ' + $moment(message.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
+                          {{$moment(message.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.editedAt ? '(' + $t('editedOn') + ' ' + $moment(message.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
                         </v-col>
                       </v-row>
                       <!-- Message -->

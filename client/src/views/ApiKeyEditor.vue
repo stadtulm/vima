@@ -25,10 +25,10 @@
                 color="customGRey"
                 icon="fas fa-info-circle"
               >
-                Der API-Schlüssel kann als Header oder Query-Parameter mit dem Namen 'x-access-token' übermittelt werden. Der Wert muss aus Client-Id und Client-Secret bestehen, die mit einem Komma getrennt sind.
+                {{$t('noteApiKey')}}
                 <br><br>
-                Beispiel-Header: x-access-token:clientId,clientSecret<br>
-                Beispiel-Query: [url]?x-access-token=clientId,clientSecret
+                {{$t('exampleHeader')}}<br>
+                {{$t('exampleQuery')}}
               </v-alert>
             </v-col>
           </v-row>
@@ -59,7 +59,7 @@
                 color="error"
                 icon="fas fa-exclamation-triangle"
               >
-                Der existierende API-Schluessel Ihrer Organisation wird bei der Generierung eines neuen Schlüssels gelöscht und kann nicht weiter verwendet werden!
+                {{$t('warningApiKeyDeletion')}}
               </v-alert>
             </v-col>
           </v-row>
@@ -72,7 +72,7 @@
                 color="warning"
                 icon="fas fa-exclamation-triangle"
               >
-                Das Client-Secret wird nur jetzt einmalig angezeigt. Bitte verwahren Sie den Schlüssel an einem sicheren Ort.
+                {{$t('noteClientSecret')}}
               </v-alert>
             </v-col>
           </v-row>

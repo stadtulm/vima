@@ -77,12 +77,12 @@
                   >
                     <template slot="default">
                       <DatetimePicker
-                        label="Beginn"
+                        :label="$t('start')"
                         v-model="durationStart"
-                        clearText="Reset"
-                        okText="Speichern"
+                        :clearText="$t('reset')"
+                        :okText="$t('save')"
                         dateFormat="dd.MM.yyyy,"
-                        timeFormat="HH:mm 'Uhr'"
+                        :timeFormat="'HH:mm ' + $t('oClock')"
                         color="error"
                         :datePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)' }"
                         :timePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)', 'format': '24hr' }"
@@ -112,12 +112,12 @@
                   >
                     <DatetimePicker
                       :error="durationEnd && durationStart && $moment(durationEnd).isBefore(durationStart) ? this.$t('endBeforeStart'): undefined"
-                      label="Ende"
+                      :label="$t('end')"
                       v-model="durationEnd"
-                      clearText="Reset"
-                      okText="Speichern"
+                      :clearText="$t('reset')"
+                        :okText="$t('save')"
                       dateFormat="dd.MM.yyyy,"
-                      timeFormat="HH:mm 'Uhr'"
+                      :timeFormat="'HH:mm ' + $t('oClock')"
                       color="error"
                       :datePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)' }"
                       :timePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)', 'format': '24hr' }"

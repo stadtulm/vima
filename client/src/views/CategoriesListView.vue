@@ -157,7 +157,7 @@
           :color="computedColor"
           :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView' }"
         >
-          Alle Einträge anzeigen
+          {{$t('buttonShowAllEntries')}}
         </v-btn>
       </v-col>
     </v-row>

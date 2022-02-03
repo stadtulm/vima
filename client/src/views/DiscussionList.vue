@@ -365,10 +365,10 @@ export default {
       this.$set(this.loaders, id + 'delete', true)
       try {
         await this.removeDiscussion(id)
-        this.setSnackbar({ text: 'Löschen erfolgreich', color: 'success' })
+        this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
         this.$set(this.loaders, id + 'delete', undefined)
       } catch (e) {
-        this.setSnackbar({ text: 'Löschen fehlgeschlagen', color: 'error' })
+        this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
         this.$set(this.loaders, id + 'delete', undefined)
       }
     },
