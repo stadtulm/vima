@@ -103,7 +103,7 @@
               fab
               small
               color="customGrey"
-              :to="{ name: 'Chat', params: { user: item._id, username: item.userName } }"
+              :to="{ name: 'UserNameChat', params: { user: item._id, username: item.userName } }"
             >
               <v-icon
                 color="white"

@@ -143,7 +143,7 @@
                 fab
                 small
                 color="customGrey"
-                :to="{ name: 'Chat', params: { chat: item._id } }"
+                :to="{ name: 'IdChat', params: { chat: item._id } }"
               >
                 <v-icon
                   size="18"

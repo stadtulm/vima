@@ -413,7 +413,7 @@
                   <v-btn
                     fab
                     v-if="item.chat"
-                    :to="{ name: 'Chat', params: { id: item.chat } }"
+                    :to="{ name: 'IdChat', params: { id: item.chat } }"
                     color="customCyan"
                     small
                   >
