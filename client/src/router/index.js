@@ -202,7 +202,7 @@ const routes = [
   },
   {
     path: '/chats/:chat?/user/:user?/username/:username?',
-    name: 'Chat',
+    name: 'UserNameChat',
     component: Chat,
     meta: {
       breadCrumbText: 'Chat Detail',
@@ -217,7 +217,7 @@ const routes = [
   },
   {
     path: '/chats/:chat?',
-    name: 'Chat',
+    name: 'IdChat',
     component: Chat,
     meta: {
       breadCrumbText: 'Chat Detail',
