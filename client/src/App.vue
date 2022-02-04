@@ -1771,10 +1771,10 @@ export default {
     showMatomoConsent: false,
     tourOptions: {
       labels: {
-        buttonSkip: this.$t('quit'),
-        buttonPrevious: this.$t('back'),
-        buttonNext: this.$t('next'),
-        buttonStop: this.$t('done')
+        buttonSkip: null,
+        buttonPrevious: null,
+        buttonNext: null,
+        buttonStop: null
       },
       highlight: true
     },
@@ -1795,6 +1795,13 @@ export default {
     isNavigationDrawer: false,
     showSnackbar: false
   }),
+
+  beforeMount () {
+    this.tourOptions.labels.buttonSkip = this.$t('quit')
+    this.tourOptions.labels.buttonSkip = this.$t('back')
+    this.tourOptions.labels.buttonSkip = this.$t('next')
+    this.tourOptions.labels.buttonSkip = this.$t('done')
+  },
 
   mounted () {
     // Set section color
