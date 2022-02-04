@@ -133,7 +133,7 @@
                             class="px-1"
                             :to="{name: 'Login'}"
                           >
-                            {{$t('loginButton')}}
+                            {{$t('login')}}
                           </v-btn>
                         </v-col>
                       </v-row>

@@ -67,7 +67,7 @@
                   color="customGrey"
                   :to="{ name: 'Login' }"
                 >
-                  {{$t('loginButton')}}
+                  {{$t('login')}}
                 </v-btn>
               </v-col>
             </v-row>

@@ -242,7 +242,7 @@
                   color="white"
                   :to="{ name: 'Login' }"
                 >
-                  {{$t('loginButton')}}
+                  {{$t('login')}}
                   <v-icon
                     class="ml-3"
                     size="18"

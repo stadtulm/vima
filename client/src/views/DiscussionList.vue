@@ -55,7 +55,7 @@
             hide-details
             :items="[
               { text: $t('allDiscussions'), value: 'all'},
-              { text: $t('manageDiscussionsButton'), value: 'discussions'},
+              { text: $t('discussionForums'), value: 'discussions'},
               { text: $t('groupDiscussions'), value: 'groups'},
             ]"
           ></v-select>

@@ -6,7 +6,7 @@
       <v-col
         class="text-h5 font-weight-bold customGrey--text text-uppercase"
       >
-        {{$t('myGroupsButton')}}
+        {{$t('myInterestGroups')}}
       </v-col>
       <v-col
         class="text-right"

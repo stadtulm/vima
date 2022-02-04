@@ -245,9 +245,9 @@
         color="customGrey"
         :to="{ name: 'Login' }"
         tour-step="6"
-        :title="$t('loginButton')"
+        :title="$t('login')"
       >
-        {{$vuetify.breakpoint.smAndUp ? $t('loginButton') : ''}}
+        {{$vuetify.breakpoint.smAndUp ? $t('login') : ''}}
         <v-icon
           :class="$vuetify.breakpoint.smAndUp ? 'ml-3' : ''"
           size="18"
@@ -547,7 +547,7 @@
           <v-list-item-title
             class="font-weight-bold customGrey--text"
           >
-            {{$t('myDiscussionsButton')}}
+            {{$t('myDiscussions')}}
           </v-list-item-title>
           <v-tooltip
             left
@@ -664,7 +664,7 @@
           <v-list-item-title
             class="font-weight-bold customGrey--text"
           >
-            {{$t('myGroupsButton')}}
+            {{$t('myInterestGroups')}}
           </v-list-item-title>
           <v-tooltip
             left
@@ -1062,7 +1062,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageNewsButton')}}
+              {{$t('news')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -1134,7 +1134,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageDiscussionsButton')}}
+              {{$t('discussionForums')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1224,7 +1224,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageCategoriesButton')}}
+              {{$t('categories')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -1326,7 +1326,7 @@
           <v-list-item-title
             class="font-weight-bold customGrey--text"
           >
-            {{$t('logoutButton')}}
+            {{$t('logout')}}
           </v-list-item-title>
         </v-list-item>
       </v-list>
@@ -2069,7 +2069,7 @@ export default {
             }
             items.push(
               {
-                text: this.$router.options.routes.find(obj => obj.name === finalCrumb).meta.breadCrumbText,
+                text: this.$t(this.$router.options.routes.find(obj => obj.name === finalCrumb).meta.breadCrumbTextKey),
                 to: finalCrumb,
                 params
               }
@@ -2081,7 +2081,7 @@ export default {
         }
         items.push(
           {
-            text: this.$route.meta.breadCrumbText,
+            text: this.$t(this.$route.meta.breadCrumbTextKey),
             to: this.$route.name
           }
         )

@@ -13,7 +13,7 @@
               <v-col
                 class="text-h5 font-weight-bold"
               >
-                {{$t('loginButton')}}
+                {{$t('login')}}
               </v-col>
             </v-row>
             <v-row
@@ -79,7 +79,7 @@
                   :loading="loading"
                   @click="onLogin()"
                 >
-                  {{$t('loginButton')}}
+                  {{$t('login')}}
                 </v-btn>
               </v-col>
             </v-row>
