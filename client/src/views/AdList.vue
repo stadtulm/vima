@@ -149,7 +149,9 @@
           <template
             v-slot:[`item.relation`]="{ item }"
           >
-            {{statusContainers.find(obj => obj.reference === item._id) ? relationItems[statusContainers.find(obj => obj.user === user._id && obj.reference === item._id).relation].text : '-'}}
+            {{statusContainers.find(obj => obj.reference === item._id)
+              ? $t(relationItems[statusContainers.find(obj => obj.user === user._id && obj.reference === item._id).relation].textKey)
+              : '-'}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"

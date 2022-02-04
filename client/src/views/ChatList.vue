@@ -97,6 +97,7 @@
               :disabled="getIsBlocked(item.isBlocked) === 'otherBlocked'"
               v-model="blocks[item._id]"
               :items="getBlockedItems(item.isBlocked)"
+              :item-text="(item) => $t(item.textKey)"
               hide-details
               flat
               dense

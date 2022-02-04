@@ -49,7 +49,8 @@
           outlined
           color="customGrey"
           item-color="customGrey"
-          :items="[{ text: 'Alle', value: false}].concat(roleItems)"
+          :items="[{ textKey: 'all', value: false}].concat(roleItems)"
+          :item-text="(item) => $t(item.textKey)"
           v-model="selectedRole"
           :label="$t('role')"
           hide-details
@@ -125,7 +126,7 @@
                 >
                 </v-avatar>
               </template>
-              <span>{{item.status ? statusItems[item.status].text : ''}}</span>
+              <span>{{item.status ? $t(statusItems[item.status].textKey) : ''}}</span>
             </v-tooltip>
           </template>
           <template
@@ -134,6 +135,7 @@
             <v-select
               v-model="roles[item._id]"
               :items="roleItems"
+              :item-text="(item) => $t(item.textKey)"
               hide-details
               flat
               dense

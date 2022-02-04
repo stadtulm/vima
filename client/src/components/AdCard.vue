@@ -35,7 +35,7 @@
                     icon
                     :disabled="user ? false : true"
                     @click="toggleAdSubscription()"
-                    :title="computedAdStatus.text"
+                    :title="$t(computedAdStatus.textKey)"
                   >
                     <v-icon
                       color="customCyan"
@@ -49,7 +49,7 @@
                     v-bind="attrs"
                     v-on="on"
                     v-else-if="computedAdStatus.value === 'owner' || computedAdStatus.value === 'applicant'"
-                    :title="computedAdStatus.text"
+                    :title="$t(computedAdStatus.textKey)"
                     class="ml-3"
                   >
                     <v-icon
@@ -60,7 +60,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  {{computedAdStatus.text}}
+                  {{$t(computedAdStatus.textKey)}}
                 </span>
               </v-tooltip>
             </v-card-title>

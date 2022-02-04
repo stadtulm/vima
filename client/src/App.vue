@@ -103,7 +103,7 @@
             :to="{ name: 'CommunicationRules' }"
           >
             <v-list-item-title>
-              {{$t('communicationrules')}}
+              {{$t('communicationRules')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -1179,7 +1179,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageGroupsButton')}}
+              {{$t('interestGroups')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1493,7 +1493,7 @@
               v-if="user"
             >
               <v-col>
-                {{userCount}} {{userCount === 1 ? $t('member') : $t('manageMembersButton')}} {{$t('online')}}
+                {{userCount}} {{userCount === 1 ? $t('member') : $t('manageMembersButton')}} {{$t('onlineLowercase')}}
               </v-col>
             </v-row>
           </v-sheet>

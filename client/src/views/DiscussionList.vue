@@ -649,7 +649,7 @@ export default {
         for (const key of Object.keys(tmpItems)) {
           items.push({
             value: key,
-            text: this.relationItems[key].text,
+            text: this.$t(this.relationItems[key].textKey),
             disabled: key === 'owner'
           })
         }

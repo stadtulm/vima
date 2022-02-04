@@ -195,6 +195,7 @@
                             :label="$t('type')"
                             outlined
                             :items="videoTypeItems"
+                            :item-text="(item) => $t(item.textKey)"
                             :rules="[rules.required]"
                             background-color="#fff"
                           >
@@ -247,6 +248,7 @@
                           :label="$t('type')"
                           outlined
                           :items="videoTypeItems"
+                          :item-text="(item) => $t(item.textKey)"
                           :rules="[rules.required]"
                           background-color="#fff"
                         >
@@ -296,6 +298,7 @@
                           :label="$t('type')"
                           outlined
                           :items="videoTypeItems"
+                          :item-text="(item) => $t(item.textKey)"
                           :rules="videoId || videoType ? [rules.required] : []"
                           background-color="#fff"
                         >

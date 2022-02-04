@@ -107,34 +107,34 @@ const state = {
   s3: process.env.VUE_APP_S3_URL,
   server: process.env.VUE_APP_SERVER_URL,
   videoTypeItems: [
-    { text: 'Youtube', value: 'youtube' },
-    { text: 'Vimeo', value: 'vimeo' }
+    { textKey: 'youtube', value: 'youtube' },
+    { textKey: 'vimeo', value: 'vimeo' }
   ],
   roleItems: [
-    { text: 'Mitglied', value: 'users' },
-    { text: 'Partner', value: 'partners' },
-    { text: 'Admin', value: 'admins' }
+    { textKey: 'member', value: 'users' },
+    { textKey: 'partner', value: 'partners' },
+    { textKey: 'admin', value: 'admins' }
   ],
   blockedItems: [
-    { type: 'notBlocked', icon: 'fas fa-check-circle', text: 'Nicht geblockt' },
-    { type: 'selfBlocked', icon: 'fas fa-check-ban', text: 'Von mir blockiert' },
-    { type: 'otherBlocked', icon: 'fas fa-check-ban', text: 'Vom anderen Mitglied blockiert' }
+    { type: 'notBlocked', icon: 'fas fa-check-circle', textKey: 'notBlocked' },
+    { type: 'selfBlocked', icon: 'fas fa-check-ban', textKey: 'blockedByMe' },
+    { type: 'otherBlocked', icon: 'fas fa-check-ban', textKey: 'blockedByOther' }
   ],
   questionTypeItems: [
-    { text: 'Bewertung', value: 'rating' },
-    { text: 'Auswahl (mehrfach)', value: 'check' },
-    { text: 'Auswahl (einfach)', value: 'radio' },
-    { text: 'Freitext', value: 'text' }
+    { textKey: 'rating', value: 'rating' },
+    { textKey: 'multipleChoice', value: 'check' },
+    { textKey: 'singleChoice', value: 'radio' },
+    { textKey: 'freeText', value: 'text' }
   ],
   relationItems: {
-    owner: { isMember: true, value: 'owner', text: 'Initiator*in', icon: 'fas fa-star-of-life' },
-    moderator: { isMember: true, value: 'moderator', text: 'Moderator*in', icon: 'fas fa-users' },
-    member: { isMember: true, value: 'member', text: 'Mitglied', icon: 'fas fa-user-check' },
-    subscriber: { value: 'subscriber', text: 'Abonnent*in', icon: 'fas fa-star' },
-    applicant: { value: 'applicant', text: 'Interessent*in', icon: 'fas fa-comment-dots' },
-    apply: { value: 'apply', text: 'Mitgliedschaft beantragen', icon: 'fas fa-user-plus' },
-    subscribe: { value: 'subscribe', text: 'Abonnieren', icon: 'far fa-star' },
-    invitation: { value: 'invitation', text: 'Eingeladen', icon: 'fas fa-door-open' }
+    owner: { isMember: true, value: 'owner', textKey: 'author', icon: 'fas fa-star-of-life' },
+    moderator: { isMember: true, value: 'moderator', textKey: 'moderator', icon: 'fas fa-users' },
+    member: { isMember: true, value: 'member', textKey: 'member', icon: 'fas fa-user-check' },
+    subscriber: { value: 'subscriber', textKey: 'subscriber', icon: 'fas fa-star' },
+    applicant: { value: 'applicant', textKey: 'applicant', icon: 'fas fa-comment-dots' },
+    apply: { value: 'apply', textKey: 'requestMembership', icon: 'fas fa-user-plus' },
+    subscribe: { value: 'subscribe', textKey: 'subscribe', icon: 'far fa-star' },
+    invitation: { value: 'invitation', textKey: 'invited', icon: 'fas fa-door-open' }
   },
   visibilityItems: {
     public: 'fas fa-lock-open',
@@ -143,15 +143,15 @@ const state = {
   },
   snackbar: false,
   statusItems: {
-    idle: { color: 'success', text: 'Aktiv' },
-    busy: { color: 'error', text: 'Im Gespräch' },
-    offline: { color: 'customGrey', text: 'Offline' },
-    away: { color: 'warning', text: 'Online' }
+    idle: { color: 'success', textKey: 'active' },
+    busy: { color: 'error', textKey: 'inConversation' },
+    offline: { color: 'customGrey', textKey: 'offline' },
+    away: { color: 'warning', textKey: 'online' }
   },
   typeItems: {
-    ads: 'Suche / Biete',
-    discussions: 'Diskussionen',
-    groups: 'Interessengruppen'
+    ads: 'classifieds',
+    discussions: 'discussions',
+    groups: 'interestGroups'
   }
 }
 

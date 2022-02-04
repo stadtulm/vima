@@ -606,7 +606,7 @@
                   {{$t('inviteGroupMembers')}}
                 </v-tab>
                 <v-tab>
-                  {{$t('invitedGroupMembers')}}
+                  {{$t('invited')}}
                 </v-tab>
                 <v-tab>
                   {{$t('openGroupApplicants')}}
@@ -660,7 +660,7 @@
                                 v-for="(relation, i) of computedMemberStatusContainers.filter(obj => obj.user === member._id && obj.relation !== 'member').map(obj => obj.relation)"
                                 :key="i"
                               >
-                                - {{relationItems[relation].text}}
+                                - {{$t(relationItems[relation].textKey)}}
                               </span>
                             </v-list-item-title>
                           </v-list-item-content>
@@ -1419,7 +1419,7 @@ export default {
         for (const key of Object.keys(tmpItems)) {
           items.push({
             value: key,
-            text: this.relationItems[key].text,
+            text: this.$t(this.relationItems[key].textKey),
             disabled: key === 'owner'
           })
         }

@@ -63,6 +63,7 @@
               item-color="custom"
               v-model="type"
               :items="questionTypeItems"
+              :item-text="(item) => $t(item.textKey)"
               label="Typ"
               :rules="[rules.required]"
             >

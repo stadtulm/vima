@@ -211,8 +211,7 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3',
-      'videoTypeItems'
+      's3'
     ]),
     ...mapGetters('sites', {
       getSite: 'get'

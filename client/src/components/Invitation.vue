@@ -68,6 +68,7 @@
                 item-color="custom"
                 :rules="[rules.required]"
                 :items="computedRoles"
+                :item-text="(item) => $t(item.textKey)"
               ></v-select>
             </v-col>
             <v-col
