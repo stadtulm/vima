@@ -13,7 +13,7 @@
                 outlined
                 @click="mode = 'form'"
               >
-                Personen hinzufügen
+                {{$t('addPersons')}}
               </v-btn>
             </v-col>
           </v-row>
@@ -34,7 +34,7 @@
                 dense
                 outlined
                 v-model="firstName"
-                label="Vorname"
+                :label="$t('firstName')"
                 color="custom"
                 :rules="[rules.required]"
               ></v-text-field>
@@ -47,7 +47,7 @@
                 dense
                 outlined
                 v-model="lastName"
-                label="Nachname"
+                :label="$t('lastName')"
                 color="custom"
                 :rules="[rules.required]"
               ></v-text-field>
@@ -63,7 +63,7 @@
                 dense
                 outlined
                 v-model="role"
-                label="Rolle"
+                :label="$t('role')"
                 color="custom"
                 item-color="custom"
                 :rules="[rules.required]"
@@ -79,7 +79,7 @@
                 outlined
                 v-model="organisation"
                 :items="computedOrganisations"
-                label="Organisation"
+                :label="$t('organisation')"
                 item-text="name"
                 item-value="_id"
                 :rules="role === 'visitors' ? [] : [rules.required]"
@@ -96,7 +96,7 @@
                 outlined
                 v-model="email"
                 :rules="[rules.required, rules.email]"
-                label="Email-Adresse"
+                :label="$t('email')"
                 color="custom"
                 :error-messages="emailError"
               ></v-text-field>
@@ -113,7 +113,7 @@
                 :disabled="!isValid"
                 :loading="isSending"
               >
-                Einladung per Email abschicken
+                {{$t('inviteByMail')}}
               </v-btn>
             </v-col>
           </v-row>
@@ -170,7 +170,7 @@ export default {
       } catch (e) {
         this.isSending = false
         if (e.errors && e.errors.email) {
-          this.emailError = ['Es existiert bereits ein Zugang für diese Email-Adresse.']
+          this.emailError = [this.$t('emailExistsError')]
         }
       }
     }
@@ -202,7 +202,7 @@ export default {
     computedOrganisations () {
       const tmpOrganisations = JSON.parse(JSON.stringify(this.organisations))
       if (this.disableOrganisation) {
-        tmpOrganisations.push({ name: 'Keine Organisation', _id: null })
+        tmpOrganisations.push({ name: this.$t('noOrganisation'), _id: null })
       }
       return tmpOrganisations
     }

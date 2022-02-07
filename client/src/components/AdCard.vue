@@ -68,7 +68,7 @@
             <v-card-subtitle
               class="pb-1"
             >
-              {{computedAd.type === 'offer' ? 'Angebot' : 'Gesuch'}} vom {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}}
+              {{computedAd.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}} vom {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}}
             </v-card-subtitle>
           </v-col>
           <v-col

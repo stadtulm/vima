@@ -249,7 +249,7 @@
                       :to="{ name: 'GroupDiscussionEditor', params: { group: computedGroup._id } }"
                       color="customPurple"
                     >
-                      Neues Diskussions-Thema
+                      {{$t('newDiscussion')}}
                       <v-icon
                         class="ml-3"
                         size="18"
