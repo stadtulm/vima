@@ -113,7 +113,10 @@
                         <v-alert
                           icon="fas fa-info-circle"
                         >
-                          {{$t('noteInsertImage')}}
+                          <span
+                            v-html="$t('noteInsertImage')"
+                          >
+                          </span>
                         </v-alert>
                       </v-col>
                       <v-col

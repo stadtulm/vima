@@ -466,7 +466,7 @@
           <v-list-item-title
             class="font-weight-bold customGrey--text"
           >
-           {{$t('myAdsButton')}}
+           {{$t('myAds')}}
           </v-list-item-title>
           <v-tooltip
             left
@@ -1089,7 +1089,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageAdsButton')}}
+              {{$t('classifieds')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1233,7 +1233,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageTagsButton')}}
+              {{$t('tags')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1279,7 +1279,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageViolationsButton')}}
+              {{$t('violations')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1439,10 +1439,10 @@
                           <div
                             class="body-1 font-weight-bold"
                           >
-                            {{helpItem.title}}
+                            {{$t(helpItem.title)}}
                           </div>
                           <div class="body-2">
-                            {{helpItem.subTitle}}
+                            {{$t(helpItem.subTitle)}}
                           </div>
                         </v-list-item-content>
                         <v-list-item-action
@@ -1798,9 +1798,9 @@ export default {
 
   beforeMount () {
     this.tourOptions.labels.buttonSkip = this.$t('quit')
-    this.tourOptions.labels.buttonSkip = this.$t('back')
-    this.tourOptions.labels.buttonSkip = this.$t('next')
-    this.tourOptions.labels.buttonSkip = this.$t('done')
+    this.tourOptions.labels.buttonPrevious = this.$t('back')
+    this.tourOptions.labels.buttonNext = this.$t('next')
+    this.tourOptions.labels.buttonStop = this.$t('done')
   },
 
   mounted () {

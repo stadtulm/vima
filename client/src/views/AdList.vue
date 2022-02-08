@@ -6,7 +6,7 @@
       <v-col
         class="text-h5 font-weight-bold customGrey--text text-uppercase"
       >
-        {{$t('myAdsButton')}}
+        {{$t('myAds')}}
       </v-col>
       <v-col
         class="shrink align-self-center"
@@ -852,7 +852,7 @@ export default {
     headers () {
       return [
         { text: this.$t('title'), value: 'title' },
-        { text: this.$t('relation'), value: 'relation' },
+        { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
         { text: this.$t('active'), value: 'isActive', align: 'center' },

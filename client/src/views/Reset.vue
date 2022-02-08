@@ -63,7 +63,7 @@
                     :disabled="!isValid"
                     @click="onReset()"
                   >
-                    {{$t('resetButton')}}
+                    {{$t('reset')}}
                   </v-btn>
                 </v-col>
               </v-row>

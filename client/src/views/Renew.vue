@@ -77,7 +77,7 @@
                   :disabled="!isValid"
                   @click="onRenew()"
                 >
-                  {{$t('resetButton')}}
+                  {{$t('reset')}}
                 </v-btn>
               </v-col>
             </v-row>

@@ -880,7 +880,7 @@
             <v-col
               class="text-h5 font-weight-bold"
             >
-              {{$t('manageGroupViolations')}}
+              {{$t('violations')}}
             </v-col>
           </v-row>
           <v-row>
@@ -1377,14 +1377,14 @@ export default {
     headers () {
       return [
         { text: this.$t('title'), value: 'title' },
-        { text: this.$t('relation'), value: 'relation' },
+        { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
         { text: this.$t('active'), value: 'isActive', align: 'center' },
         { text: this.$t('moderators'), value: 'data-table-expand', align: 'center', sortable: false },
         { text: this.$t('manageMembersButton'), value: 'members', align: 'center', sortable: false },
         { text: this.$t('groupDiscussions'), value: 'discussions', align: 'center', sortable: false },
-        { text: this.$t('manageGroupViolations'), value: 'violations', align: 'center', sortable: false },
+        { text: this.$t('violations'), value: 'violations', align: 'center', sortable: false },
         { text: this.$t('files'), value: 'files', align: 'center', sortable: false },
         { text: this.$t('editButton'), value: 'edit', align: 'center', sortable: false },
         { text: this.$t('deleteButton'), value: 'delete', align: 'center', sortable: false },

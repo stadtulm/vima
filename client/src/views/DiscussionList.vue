@@ -622,7 +622,7 @@ export default {
     headers () {
       return [
         { text: this.$t('title'), value: 'title' },
-        { text: this.$t('relation'), value: 'relation' },
+        { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('group'), value: 'group' },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
