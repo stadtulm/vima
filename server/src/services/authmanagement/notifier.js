@@ -1,3 +1,4 @@
+const locales = require('../../locales/de.json')
 const Errors = require('@feathersjs/errors')
 
 module.exports = function (app) {
@@ -31,23 +32,23 @@ module.exports = function (app) {
       let role
       let greeting = ''
       let emailResult
+      console.log('inside notifier')
       const roles = [
-        { text: 'Mitglied', value: 'users' },
-        { text: 'Partner', value: 'partners' },
-        { text: 'Admin', value: 'admins' }
+        { text: locales.member, value: 'users' },
+        { text: locales.partner, value: 'partners' },
+        { text: locales.admin, value: 'admins' }
       ]
+      console.log(roles)
       switch (type) {
         case 'verifySubscriberSignup':
           tokenLink = getLink('bestaetigen', user._id + '/' + user.verifyToken)
           email = {
             from: process.env.FROM_EMAIL,
             to: user.email,
-            subject: 'ViMA-Newsletter abonnieren',
-            html: 'Hallo!<br><br>' +
-            'Wir freuen uns dass Sie den ViMA-Newsletter erhalten möchten!<br>' +
-            'Hierfür klicken Sie bitte nur noch auf den nachfolgenden Bestätigungs-Link:<br><br>' +
+            subject: locales.subscribeToVimaNewsletter,
+            html: locales.confirmSubscription +
             '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-            'Viele Grüße von Ihrem ViMA-Team!'
+            locales.bestRegards
           }
           emailResult = await sendEmail(email)
           return emailResult
@@ -57,12 +58,11 @@ module.exports = function (app) {
           email = {
             from: process.env.FROM_EMAIL,
             to: user.email,
-            subject: 'ViMA-Profil beantragt',
-            html: 'Hallo ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
-            'Sie möchten an ViMA teilhaben - wie schön!<br>' +
-            'Um Ihre Registrierung abzuschließen, klicken Sie bitte auf den nachfolgenden Bestätigungs-Link. Danach können Sie sich mit Ihren Zugangsdaten anmelden<br><br>' +
+            subject: locales.vimaProfileRequested,
+            html: locales.hello + ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
+            locales.confirmRegistration +
             '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-            'Viele Grüße von Ihrem ViMA-Team!'
+            locales.bestRegards
           }
           emailResult = await sendEmail(email)
           return emailResult
@@ -84,14 +84,13 @@ module.exports = function (app) {
           email = {
             from: process.env.FROM_EMAIL,
             to: user.email,
-            subject: 'Zugang für ViMA erhalten',
-            html: 'Hallo' + greeting + '!<br><br>' +
-            'Sie wurden eingeladen als ' + role + ' an ViMA teilzuhaben.<br>' +
-            'Bitte klicken Sie auf nachfolgenden Bestätigungslink um Ihre E-Mail-Adresse zu verifizieren und Ihr Profil zu aktivieren:' + '<br>' +
+            subject: locales.getAccessToVima,
+            html: locales.hello + greeting + '!<br><br>' +
+            locales.confirmInvitation1 + role + locales.confirmInvitation2 +
             '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-            'Mit der Anmeldung akzeptieren Sie automatisch unsere <a href="' + process.env.CLIENT_URL + '/datenschutz">Datenschutzerklärung</a>. ' +
-            'Bei Fragen dazu können Sie sich gerne jederzeit an uns wenden.<br><br>' +
-            'Viele Grüße von Ihrem ViMA-Team!'
+            locales.privacyAcceptanceNote + '<a href="' + process.env.CLIENT_URL + '/datenschutz">' + locales.privacy + '</a>. ' +
+            locales.contactForQuestion +
+            locales.bestRegards
           }
           emailResult = await sendEmail(email)
           return emailResult
@@ -101,10 +100,10 @@ module.exports = function (app) {
             email = {
               from: process.env.FROM_EMAIL,
               to: user.email,
-              subject: 'Ihr ViMA-Profil ist nun bereit',
-              html: 'Hallo ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
-            'Vielen Dank für die Bestätigung Ihrer E-Mail-Adresse. Sie können sich nun mit Ihren Zugangsdaten anmelden.<br><br>' +
-            'Viele Grüße von Ihrem ViMA-Team!'
+              subject: locales.vimaProfileIsReady,
+              html: locales.hello + ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
+              locales.readyToLogin +
+              locales.bestRegards
             }
             emailResult = await sendEmail(email)
             return emailResult
@@ -121,12 +120,11 @@ module.exports = function (app) {
             email = {
               from: process.env.FROM_EMAIL,
               to: user.email,
-              subject: 'ViMA-Passwort vergessen',
-              html: 'Hallo ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
-            'Sie haben Ihr Passwort vergessen?<br>' +
-            'Das macht nichts - klicken Sie einfach auf nachfolgenden Link um dort ein neues Passwort zu vergeben:<br><br>' +
-            '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-            'Viele Grüße von Ihrem ViMA-Team!'
+              subject: locales.forgotVimaPassword,
+              html: locales.hello + ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
+              locales.youForgotVimaPassword +
+              '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
+              locales.bestRegards
             }
             emailResult = await sendEmail(email)
             return emailResult
@@ -139,10 +137,10 @@ module.exports = function (app) {
             email = {
               from: process.env.FROM_EMAIL,
               to: user.email,
-              subject: 'ViMA-Passwort zurückgesetzt',
-              html: 'Hallo ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
-            'Sie haben Ihr Passwort erfolgreich zurückgesetzt und können sich nun damit einloggen.<br><br>' +
-            'Viele Grüße von Ihrem ViMA-Team!'
+              subject: locales.vimaPasswordReset,
+              html: locales.hello + ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
+              locales.passwordSuccessfullyReset +
+              locales.bestRegards
             }
             emailResult = await sendEmail(email)
             return emailResult

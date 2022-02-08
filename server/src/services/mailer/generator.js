@@ -1,3 +1,5 @@
+const locales = require('../../locales/de.json')
+
 module.exports = {
   async notifyUsers (app, type, action, item, users) {
     const tmpUsers = await app.service('users').find(
@@ -65,7 +67,7 @@ module.exports = {
     for (const user of tmpUsers) {
       let tmpBody = JSON.parse(JSON.stringify(mailBodies[tmpMailBodyType][action]))
       tmpBody.html = tmpBody.html + '<br><br>' +
-        '<p style="text-align: center; color: #666">Sie können in <a href="' + process.env.CLIENT_URL + 'mitglieder/einstellungen/editor/' + user._id + '">Ihren persönlichen Einstellungen</a> jederzeit festlegen welche E-Mail-Benachrichtigungen Sie erhalten möchten.</p>'
+        locales.notificationSettingsNote1 + '<a href="' + process.env.CLIENT_URL + 'mitglieder/einstellungen/editor/' + user._id + '">' + locales.notificationSettingsNote2
       tmpBody = JSON.stringify(tmpBody)
       if (!shouldSend(user, type)) {
         continue
@@ -117,7 +119,7 @@ module.exports = {
       }
       let tmpBody = JSON.parse(JSON.stringify(mailBodies[type][action]))
       tmpBody.html = tmpBody.html + '<br><br>' +
-        '<p style="text-align: center; color: #666">Sie können in <a href="' + process.env.CLIENT_URL + 'mitglieder/einstellungen/editor/' + statusContainer.user._id + '">Ihren persönlichen Einstellungen</a> jederzeit festlegen welche E-Mail-Benachrichtigungen Sie erhalten möchten.</p>'
+        locales.notificationSettingsNote1 + '<a href="' + process.env.CLIENT_URL + 'mitglieder/einstellungen/editor/' + statusContainer.user._id + '">' + locales.notificationSettingsNote2
       tmpBody = JSON.stringify(tmpBody)
 
       tmpBody = tmpBody
@@ -155,153 +157,142 @@ const mailBodies = {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ein neues Inserat wartet auf Freigabe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Ein neues Inserat mit dem Titel "{{adTitle}}" wurde eingestellt.<br>' +
-        'Um dieses zu sichten und anschließend evtl. freizugeben, rufen Sie bitte den <a href="' + process.env.CLIENT_URL + 'admin/suchebiete/uebersicht">Suche-Biete-Bereich in Ihren Admin-Funktionen</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newAdForApproval,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkNewAdForApproval1 + '<a href="' + process.env.CLIENT_URL + 'admin/suchebiete/uebersicht">' + locales.checkNewAdForApproval2 +
+        locales.bestRegards
     },
     patch: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ein bearbeitetes Inserat wartet auf Freigabe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Das Inserat mit dem Titel "{{adTitle}}" wurde bearbeitet.<br>' +
-        'Um dieses zu sichten und anschließend evtl. erneut freizugeben, rufen Sie bitte den <a href="' + process.env.CLIENT_URL + 'admin/suchebiete/uebersicht">Suche-Biete-Bereich in Ihren Admin-Funktionen</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.updatedAdForApproval,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkUpdatedAdForApproval1 + '<a href="' + process.env.CLIENT_URL + 'admin/suchebiete/uebersicht">' + locales.checkUpdatedAdForApproval2 +
+        locales.bestRegards
     }
   },
   newAcceptedAds: {
     accepted: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ihr Inserat wurde freigegeben',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Ihr Inserat mit dem Titel "<a href="' + process.env.CLIENT_URL + 'suchebiete/{{adId}}">{{adTitle}}</a>" wurde freigegeben.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.adApproved,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkApprovedAd1 + '<a href="' + process.env.CLIENT_URL + 'suchebiete/{{adId}}">{{adTitle}}</a>' + locales.checkApprovedAd2 +
+        locales.bestRegards
     }
   },
   newGroupsToAccept: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Eine neue Interessengruppe wartet auf Freigabe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Eine neue Interessengruppe mit dem Titel "{{groupTitle}}" wurde eingestellt.<br>' +
-        'Um diese zu sichten und anschließend evtl. freizugeben, rufen Sie bitte den <a href="' + process.env.CLIENT_URL + 'admin/interessengruppen/uebersicht">Interessengruppen-Bereich in Ihren Admin-Funktionen</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newInterestGroupForApproval,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkNewInterestGroupForApproval1 + '<a href="' + process.env.CLIENT_URL + 'admin/interessengruppen/uebersicht">' + locales.checkNewInterestGroupForApproval2 +
+        locales.bestRegards
     },
     patch: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Eine bearbeitete Interessengruppe wartet auf Freigabe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Die Interessengruppe mit dem Titel "{{groupTitle}}" wurde bearbeitet.<br>' +
-        'Um diese zu sichten und anschließend evtl. erneut freizugeben, rufen Sie bitte den <a href="' + process.env.CLIENT_URL + 'admin/interessengruppen/uebersicht">Interessengruppen-Bereich in Ihren Admin-Funktionen</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.updatedInterestGroupForApproval,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkupdatedInterestGroupForApproval1 + '<a href="' + process.env.CLIENT_URL + 'admin/interessengruppen/uebersicht">' + locales.checkupdatedInterestGroupForApproval2 +
+        locales.bestRegards
     }
   },
   newAcceptedGroups: {
     accepted: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ihre Interessengruppe wurde freigegeben',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Ihre Interessengruppe mit dem Titel "<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">{{groupTitle}}</a>" wurde freigegeben.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.interestGroupApproved,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkApprovedinterestGroup1 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">{{groupTitle}}</a>' + locales.checkApprovedinterestGroup2 +
+        locales.bestRegards
     }
   },
   newDiscussionsToAccept: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ein neues Diskussionsforum wartet auf Freigabe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Ein neues Diskussionsforum mit dem Titel "{{discussionTitle}}" wurde eingestellt.<br>' +
-        'Um dieses zu sichten und anschließend evtl. freizugeben, rufen Sie bitte den <a href="' + process.env.CLIENT_URL + 'admin/diskussionsthemen/uebersicht">Diskussionsthemen-Bereich in Ihren Admin-Funktionen</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newDiscussionForApproval,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkNewDiscussionForApproval1 + '<a href="' + process.env.CLIENT_URL + 'admin/diskussionsthemen/uebersicht">' + locales.checkNewDiscussionForApproval2 +
+        locales.bestRegards
     },
     patch: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ein bearbeitetes Diskussionsforum wartet auf Freigabe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Das Diskussionsforum mit dem Titel "{{discussionTitle}}" wurde bearbeitet.<br>' +
-        'Um dieses zu sichten und anschließend evtl. erneut freizugeben, rufen Sie bitte den <a href="' + process.env.CLIENT_URL + 'admin/diskussionsthemen/uebersicht">Diskussionsthemen-Bereich in Ihren Admin-Funktionen</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.updatedDiscussionForApproval,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkupdatedDiscussionForApproval1 + '<a href="' + process.env.CLIENT_URL + 'admin/diskussionsthemen/uebersicht">' + locales.checkupdatedDiscussionForApproval2 +
+        locales.bestRegards
     }
   },
   newAcceptedDiscussions: {
     accepted: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ihr Diskussionsforum wurde freigegeben',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Ihr Diskussionsforum mit dem Titel "<a href="' + process.env.CLIENT_URL + 'diskussionsforen/{{discussionId}}">{{discussionTitle}}</a>" wurde freigegeben.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.discussionApproved,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkApprovedDiscussion1 + '<a href="' + process.env.CLIENT_URL + 'diskussionsforen/{{discussionId}}">{{discussionTitle}}</a>' + locales.checkApprovedDiscussion2 +
+        locales.bestRegards
     }
   },
   newGroupDiscussionsToAccept: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Eine neue Gruppendiskussion wartet auf Freigabe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-      'In der Gruppe "{{groupTitle}}" wurde eine neue Gruppendiskussion mit dem Titel "{{discussionTitle}}" eingestellt.<br>' +
-      'Um diese zu sichten und anschließend evtl. freizugeben, rufen Sie bitte die <a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">Gruppendiskussionen in Ihrem Interessengruppen-Bereich</a> auf.<br><br>' +
-      'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newGroupDiscussionForApproval,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+      locales.checkNewGroupDiscussionForApproval1 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' + locales.checkNewGroupDiscussionForApproval2 +
+      locales.bestRegards
     },
     patch: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Eine bearbeitete Gruppendiskussion wartet auf Freigabe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-      'Die Gruppendiskussion mit dem Titel "{{discussionTitle}}" in der Interessengruppe "{{groupTitle}}" wurde bearbeitet.<br>' +
-      'Um diese zu sichten und anschließend evtl. erneut freizugeben, rufen Sie bitte die <a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">Gruppendiskussionen in Ihrem Interessengruppen-Bereich</a> auf.<br><br>' +
-      'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.updatedGroupDiscussionForApproval,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+      locales.checkupdatedGroupDiscussionForApproval1 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' + locales.checkupdatedGroupDiscussionForApproval2 +
+      locales.bestRegards
     }
   },
   newAcceptedGroupDiscussions: {
     accepted: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ihre Gruppendiskussion wurde freigegeben',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-      'Ihre Gruppendiskussion mit dem Titel "<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">{{discussionTitle}}</a>" in der Gruppe "{{groupTitle}}" wurde freigegeben.<br><br>' +
-      'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.groupDiscussionApproved,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+      locales.checkApprovedGroupDiscussion1 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">{{discussionTitle}}</a>' + locales.checkApprovedGroupDiscussion2 +
+      locales.bestRegards
     }
   },
   newTagsToAccept: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Eine neues Schlagwort wartet auf Freigabe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Ein Vorschlag für ein neues Schlagwort ("{{tagName}}") wurde eingereicht.<br>' +
-        'Um dieses zu sichten und anschließend evtl. freizugeben, rufen Sie bitte den <a href="' + process.env.CLIENT_URL + 'admin/schlagwoerter/uebersicht">Schlagwörter-Bereich in Ihren Admin-Funktionen</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newTagForApproval,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkNewTagForApproval1 + '<a href="' + process.env.CLIENT_URL + 'admin/schlagwoerter/uebersicht">' + locales.checkNewTagForApproval2 +
+        locales.bestRegards
     }
   },
   newChats: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ein neuer Chat',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Eine Person hat auf ViMA einen neuen Chat mit Ihnen begonnen.<br>' +
-        'Um diesen anzusehen, rufen Sie bitte Ihren <a href="' + process.env.CLIENT_URL + 'chats">Chat-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newChat,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkChat1 + '<a href="' + process.env.CLIENT_URL + 'chats">' + locales.checkChat2 +
+        locales.bestRegards
     }
   },
   chatMessages: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Eine neue Chatnachricht',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Sie haben eine neue Chatnachricht erhalten.<br>' +
-        'Um diese anzusehen, rufen Sie bitte den <a href="' + process.env.CLIENT_URL + 'chats/{{chatId}}">Chat</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newChatMessage,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkChatMessage1 + '<a href="' + process.env.CLIENT_URL + 'chats/{{chatId}}">' + locales.checkChatMessage2 +
+        locales.bestRegards
     }
   },
   discussionMessages: {
@@ -309,107 +300,97 @@ const mailBodies = {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
       subject: 'Eine neuer Diskussionsforums-Beitrag',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Es wurde ein neuer Beitrag zu einem Ihrer abonnierten Diskusionsthemen eingestellt.<br>' +
-        'Um dieses anzusehen, rufen Sie bitte die <a href="' + process.env.CLIENT_URL + 'diskussionsforen/{{discussionId}}">Diskussion</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkDiscussionPost1 + '<a href="' + process.env.CLIENT_URL + 'diskussionsforen/{{discussionId}}">' + locales.checkDiscussionPost2 +
+        locales.bestRegards
     }
   },
   newAcceptedGroupMemberships: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Neue Gruppenmitgliedschaft',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Sie wurden zur Gruppe "{{groupTitle}}" hinzugefügt.<br>' +
-        'Um diese anzusehen, rufen Sie bitte die <a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">Gruppe</a> oder Ihren <a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">Interessengruppen-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newGroupMembership,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkGroupMembership1 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">' + locales.checkGroupMembership2 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' + locales.checkGroupMembership3 +
+        locales.bestRegards
     },
     patch: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Gruppenmitgliedschaft angenommen',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Ihrer Mitgliedschaftsanfrage für die Gruppe "{{groupTitle}}" wurde statt gegeben.<br>' +
-        'Um diese anzusehen, rufen Sie bitte die <a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">Gruppe</a> oder Ihren <a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">Interessengruppen-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.groupMembershipAccepted,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkAcceptedGroupMembership1 + ' <a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">' + locales.checkAcceptedGroupMembership2 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' + locales.checkAcceptedGroupMembership3 +
+        locales.bestRegards
     }
   },
   newAcceptedGroupInvitations: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Neue Gruppeneinladung',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Sie wurden zur Gruppe "{{groupTitle}}" eingeladen.<br>' +
-        'Um die Einladung anzunehmen oder abzulehnen, rufen Sie bitte Ihren <a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">Interessengruppen-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newGroupInvitation,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkGroupInvitation1 + ' <a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' + locales.checkGroupInvitation2 +
+        locales.bestRegards
     }
   },
   newGroupApplicants: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Neue Gruppenmitgliedschaft beantragt',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Es wurde eine neue Mitgliedschaft für die Gruppe "{{groupTitle}}" beantragt.<br>' +
-        'Um die Anfrage anzusehen, und evtl. zu bestätigen rufen Sie bitte Ihren <a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">Interessengruppen-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newGroupMembershipApplication,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkGroupMembershipApplication1 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' + locales.checkGroupMembershipApplication2 +
+        locales.bestRegards
     }
   },
   newAcceptedGroupModeratorRoles: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Neue Moderatorenrolle',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Sie wurden für die Gruppe "{{groupTitle}}" zum Moderator ernannt.<br>' +
-        'Um die Gruppe anzusehen, rufen Sie bitte die <a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">Gruppe</a> oder Ihren <a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">Interessengruppen-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newModeratorRole,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkModeratorRole1 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">' + locales.checkModeratorRole2 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' + locales.checkModeratorRole3 +
+        locales.bestRegards
     }
   },
   newAdApplicants: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Eine neue Nachricht zu Ihrem Inserat',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Es gibt eine neue Nachricht zu Ihrem Inserat "{{adTitle}}"<br>' +
-        'Um die Nachricht anzusehen, rufen Sie bitte Ihren <a href="' + process.env.CLIENT_URL + 'suchebiete/uebersicht">Suche-Biete-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newAdMessage,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkAdMessage1 + '<a href="' + process.env.CLIENT_URL + 'suchebiete/uebersicht">' + locales.checkAdMessage2 +
+        locales.bestRegards
     }
   },
   newViolationsToProve: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ein neu gemelderter Verstoß',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Es gibt einen neuen Verstoß.<br>' +
-        'Um die diese anzusehen, rufen Sie bitte die <a href="' + process.env.CLIENT_URL + 'admin/verstoesse/uebersicht">Verstöße in Ihrem Admin-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newViolation,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkNewViolation + '<a href="' + process.env.CLIENT_URL + 'admin/verstoesse/uebersicht">' + locales.checkNewViolationAdmin +
+        locales.bestRegards
     }
   },
   newDiscussionViolationsToProve: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Ein neue gemeldeter Verstoß',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Es gibt einen neuen Verstoß in der Diskussion "{{discussionTitle}}".<br>' +
-        'Um die diese anzusehen, rufen Sie bitte die <a href="' + process.env.CLIENT_URL + 'admin/verstoesse/uebersicht">Verstöße in Ihrem Admin-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newViolation,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkNewDiscussionViolation + '<a href="' + process.env.CLIENT_URL + 'admin/verstoesse/uebersicht">' + locales.checkNewViolationAdmin +
+        locales.bestRegards
     }
   },
   newGroupViolationsToProve: {
     create: {
       from: process.env.FROM_EMAIL,
       to: '{{recipient}}',
-      subject: 'Eine neue Meldung in Ihrer Gruppe',
-      html: 'Hallo {{firstName}} {{lastName}}!<br><br>' +
-        'Es gibt eine neue Meldung in der Gruppendiskussion "{{discussionTitle}}" Ihrer Gruppe "{{groupTitle}}".<br>' +
-        'Um diese anzusehen, rufen Sie bitte die Ihren <a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">Interessengruppen-Bereich</a> auf.<br><br>' +
-        'Viele Grüße von Ihrem ViMA-Team!'
+      subject: locales.newGroupNotification,
+      html: locales.hello + ' {{firstName}} {{lastName}}!<br><br>' +
+        locales.checkGroupNotification1 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' + locales.checkGroupNotification2 +
+        locales.bestRegards
     }
   }
 }

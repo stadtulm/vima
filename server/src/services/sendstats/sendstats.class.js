@@ -1,3 +1,4 @@
+const locales = require('../../locales/de.json')
 const { Service } = require('feathers-mongoose')
 
 exports.Sendstats = class Sendstats extends Service {
@@ -73,7 +74,7 @@ exports.sendNewsletter = async function sendNewsletter (app, allRecipients, refe
             '<h1>' + newsToSend.title + '</h1>' +
             (newsToSend.subTitle ? '<h2>' + newsToSend.subTitle + '</h2>' : '') +
             '<div>' + newsText + '</div>' +
-            '<p style="text-align: center; color: #666">Um keine Newsletter mehr zu erhalten, klicken Sie bitte <a href="' + process.env.CLIENT_URL + 'austragen/' + recipient.id + '">hier</a>.</p>'
+            locales.unsubscribeNewsletterNote1 + '<a href="' + process.env.CLIENT_URL + 'austragen/' + recipient.id + '">' + locales.unsubscribeNewsletterNote2
         }
       )
       sent.push(

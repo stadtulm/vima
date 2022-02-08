@@ -1,3 +1,4 @@
+const locales = require('../../locales/de.json')
 const commonHooks = require('feathers-hooks-common')
 const Errors = require('@feathersjs/errors')
 const { authenticate } = require('@feathersjs/authentication').hooks
@@ -244,7 +245,7 @@ module.exports = {
               {
                 chat: chatId,
                 text:
-                  '<blockquote class="blockquote"><p>Betreff: Inserat "' + ad.title + '"</blockquote>' +
+                  '<blockquote class="blockquote"><p>' + locales.subject + ': ' + locales.ad + ' "' + ad.title + '"</blockquote>' +
                   '<p>' + context.params.tmpApplicantAdMessage.text + '</p>',
                 author: context.params.tmpApplicantAdMessage.author,
                 replies: [] // Has to be pushed later
