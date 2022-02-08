@@ -58,7 +58,6 @@ export default {
 
   asyncComputed: {
     async computedSite () {
-      console.log(this.$route.name.toLowerCase())
       let selectedSite = this.findSites(
         {
           query: {
@@ -66,7 +65,6 @@ export default {
           }
         }
       )
-      console.log(selectedSite)
       if (!selectedSite) {
         selectedSite = await this.fetchSites(
           {
@@ -75,9 +73,6 @@ export default {
             }
           }
         )
-        console.log(selectedSite)
-        console.log(selectedSite.data)
-        console.log(selectedSite.data[0])
         if (!selectedSite.data || !selectedSite.data[0]) {
           this.$router.push({ name: 'NotFound' })
           return

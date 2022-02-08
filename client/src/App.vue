@@ -1089,7 +1089,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('classifieds')}}
+              {{$t('ads')}}
             </v-list-item-title>
             <v-tooltip
               left

@@ -780,7 +780,7 @@ const routes = [
     component: AdsListView,
     meta: {
       step: 'ads',
-      breadCrumbTextKey: 'classifieds',
+      breadCrumbTextKey: 'ads',
       breadCrumbPredecessors: [
         ['Participate'],
         ['CategoryList']

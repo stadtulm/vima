@@ -149,7 +149,7 @@ const state = {
     away: { color: 'warning', textKey: 'online' }
   },
   typeItems: {
-    ads: 'classifieds',
+    ads: 'ads',
     discussions: 'discussions',
     groups: 'interestGroups'
   }
