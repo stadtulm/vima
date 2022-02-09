@@ -1,3 +1,4 @@
+const locales = require('../../locales/de.json')
 const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
@@ -68,7 +69,7 @@ module.exports = {
               )
             }
             // Throw error indicating that the user exists
-            throw new Errors.Conflict('Es existiert bereits ein Profil mit dieser E-Mail-Adresse. Wir haben nun Ihre Newsletter-Einstellung aktualisiert, so dass Sie den Newsletter erhalten.')
+            throw new Errors.Conflict(locales.profileAlreadyExistedSettingsAdjusted)
           }
         }
       )
@@ -100,29 +101,29 @@ module.exports = {
             const ObjectId = require('mongoose').Types.ObjectId
             // Throw if subscriber id is invalid
             if (!ObjectId.isValid(context.arguments[0])) {
-              throw new Errors.NotFound('Diese Bestätigungsid ist leider ungültig.')
+              throw new Errors.NotFound(locales.confirmationIdInvalid)
             }
             // Throw subscriber id is not existing
             let subscriber
             try {
               subscriber = await context.app.service('subscribers').get(context.arguments[0])
             } catch (e) {
-              throw new Errors.NotFound('Diese Bestätigungsid ist leider nicht bekannt.')
+              throw new Errors.NotFound(locales.confirmationIdUnknown)
             }
             if (subscriber.isVerified) {
               // Throw error if subscriber already is verified
-              throw new Errors.NotFound('Diese E-Mail-Adresse wurde bereits bestätigt.')
+              throw new Errors.NotFound(locales.emailAlreadyConfirmed)
             } else if (subscriber && subscriber.verifyToken && subscriber.verifyToken === context.data.tmpValue) {
               // Verify
               context.data.isVerified = true
               context.data.verifyToken = null
             } else {
               // Throw id verify token is invalid
-              throw new Errors.NotFound('Dieser Bestätigungscode ist leider ungültig.')
+              throw new Errors.NotFound(locales.confirmationCodeInvalid)
             }
           } else {
             // Throw if request is invalid
-            throw new Errors.NotFound('Dieser Bestätigungslink ist leider ungültig.')
+            throw new Errors.NotFound(locales.confirmationLinkInvalid)
           }
         }
       )
