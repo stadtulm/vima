@@ -260,6 +260,21 @@
                                     fas fa-exclamation-triangle
                                   </v-icon>
                                 </v-btn>
+                                <v-btn
+                                  block
+                                  outlined
+                                  small
+                                  color="customGrey"
+                                  @click="translateText(message.text)"
+                                >
+                                  Übersetzen
+                                  <v-icon
+                                    size="14"
+                                    class="ml-2"
+                                  >
+                                    fas fa-exclamation-triangle
+                                  </v-icon>
+                                </v-btn>
                               </v-card-text>
                             </v-card>
                           </v-menu>
@@ -663,6 +678,9 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    ...mapActions('translations', {
+      createTranslation: 'create'
+    }),
     ...mapActions('discussion-messages', {
       createMessage: 'create',
       patchMessage: 'patch',
@@ -672,6 +690,14 @@ export default {
     ...mapActions('status-container-helper', {
       patchDiscussionMessageNotifications: 'patch'
     }),
+    async translateText (text) {
+      const result = await this.createTranslation([
+        {
+          text
+        }
+      ])
+      console.log(result)
+    },
     openReportDialog (message) {
       this.itemToReport = message
     },
