@@ -97,11 +97,18 @@
     "checkNewViolation": "Es gibt einen neuen Verstoß.<br>Um die diese anzusehen, rufen Sie bitte die ",
     "checkNewDiscussionViolation": "Es gibt einen neuen Verstoß in der Diskussion \"{{discussionTitle}}\".<br>Um die diese anzusehen, rufen Sie bitte die ",
     "checkNewViolationAdmin": "Verstöße in Ihrem Admin-Bereich</a> auf.<br><br>",
-
     "newGroupNotification": "Eine neue Meldung in Ihrer Gruppe",
     "checkGroupNotification1": "Es gibt eine neue Meldung in der Gruppendiskussion \"{{discussionTitle}}\" Ihrer Gruppe \"{{groupTitle}}\".<br>Um diese anzusehen, rufen Sie bitte die Ihren ",
     "checkGroupNotification2": "Interessengruppen-Bereich</a> auf.<br><br>",
-
     "unsubscribeNewsletterNote1": "<p style=\"text-align: center; color: #666\">Um keine Newsletter mehr zu erhalten, klicken Sie bitte ",
-    "unsubscribeNewsletterNote2": "hier</a>.</p>"
+    "unsubscribeNewsletterNote2": "hier</a>.</p>",
+    "accessNotYetVerifiedByLink": "Dieser Zugang wurde noch nicht durch den Bestätigungslink verifiziert.",
+    "accessArchived": "Dieser Zugang wurde archiviert und kann nicht mehr genutzt werden.",
+    "profileAlreadyExistedSettingsAdjusted": "Es existiert bereits ein Profil mit dieser E-Mail-Adresse. Wir haben nun Ihre Newsletter-Einstellung aktualisiert, so dass Sie den Newsletter erhalten.",
+    "confirmationIdInvalid": "Diese Bestätigungsid ist leider ungültig.",
+    "confirmationIdUnknown": "Diese Bestätigungsid ist leider nicht bekannt.",
+    "emailAlreadyConfirmed": "Diese E-Mail-Adresse wurde bereits bestätigt.",
+    "confirmationCodeInvalid": "Dieser Bestätigungscode ist leider ungültig.",
+    "confirmationLinkInvalid": "Dieser Bestätigungslink ist leider ungültig.",
+    "noEntryFound": "Kein Eintrag gefunden."
 }
