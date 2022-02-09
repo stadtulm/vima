@@ -69,7 +69,7 @@
                     v-model="type"
                     :label="$t('type')"
                     :rules="[rules.required]"
-                    :items="[{ text: $t('typeRequest'), value: 'request' }, { text: $t('typeOffer'), value: 'offer'}]"
+                    :items="[{ text: $t('wanted'), value: 'request' }, { text: $t('offer'), value: 'offer'}]"
                   >
                   </v-select>
                 </v-col>

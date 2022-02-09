@@ -6,7 +6,7 @@
       <v-col
         class="text-h5 font-weight-bold customGrey--text text-uppercase"
       >
-        {{$t('adminView')}} {{$t('manageGroupsButton')}}
+        {{$t('adminView')}} {{$t('interestGroups')}}
       </v-col>
     </v-row>
     <v-row>

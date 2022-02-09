@@ -53,7 +53,7 @@
                   <v-col
                     class="body-1"
                   >
-                    Webseite: <a :href="computedOrganisation.website">{{computedOrganisation.website}}</a>
+                    {{$t('website')}}: <a :href="computedOrganisation.website">{{computedOrganisation.website}}</a>
                   </v-col>
                 </v-row>
               </v-card-text>

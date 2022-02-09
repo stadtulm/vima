@@ -28,7 +28,7 @@
         class="text-h4 font-weight-bold pointer align-self-center pt-3"
         @click="$router.push({ name: 'Home' })"
       >
-        Virtuell.Mitmachen.Aktiv
+        {{$t('slogan')}}
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -74,21 +74,21 @@
             :to="{ name: 'Vima' }"
           >
             <v-list-item-title>
-              {{$t('vima')}}
+              {{$t('aboutVima')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
             :to="{ name: 'Ileu' }"
           >
             <v-list-item-title>
-              {{$t('ileu')}}
+              {{$t('aboutIleu')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
             :to="{ name: 'Vives' }"
           >
             <v-list-item-title>
-              {{$t('vives')}}
+              {{$t('aboutVives')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -103,7 +103,7 @@
             :to="{ name: 'CommunicationRules' }"
           >
             <v-list-item-title>
-              {{$t('communicationrules')}}
+              {{$t('communicationRules')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -245,9 +245,9 @@
         color="customGrey"
         :to="{ name: 'Login' }"
         tour-step="6"
-        :title="$t('loginButton')"
+        :title="$t('login')"
       >
-        {{$vuetify.breakpoint.smAndUp ? $t('loginButton') : ''}}
+        {{$vuetify.breakpoint.smAndUp ? $t('login') : ''}}
         <v-icon
           :class="$vuetify.breakpoint.smAndUp ? 'ml-3' : ''"
           size="18"
@@ -466,7 +466,7 @@
           <v-list-item-title
             class="font-weight-bold customGrey--text"
           >
-           {{$t('myAdsButton')}}
+           {{$t('myAds')}}
           </v-list-item-title>
           <v-tooltip
             left
@@ -547,7 +547,7 @@
           <v-list-item-title
             class="font-weight-bold customGrey--text"
           >
-            {{$t('myDiscussionsButton')}}
+            {{$t('myDiscussions')}}
           </v-list-item-title>
           <v-tooltip
             left
@@ -664,7 +664,7 @@
           <v-list-item-title
             class="font-weight-bold customGrey--text"
           >
-            {{$t('myGroupsButton')}}
+            {{$t('myInterestGroups')}}
           </v-list-item-title>
           <v-tooltip
             left
@@ -1062,7 +1062,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageNewsButton')}}
+              {{$t('news')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -1089,7 +1089,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageAdsButton')}}
+              {{$t('ads')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1134,7 +1134,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageDiscussionsButton')}}
+              {{$t('discussionForums')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1179,7 +1179,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageGroupsButton')}}
+              {{$t('interestGroups')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1224,7 +1224,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageCategoriesButton')}}
+              {{$t('categories')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -1233,7 +1233,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageTagsButton')}}
+              {{$t('tags')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1279,7 +1279,7 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-              {{$t('manageViolationsButton')}}
+              {{$t('violations')}}
             </v-list-item-title>
             <v-tooltip
               left
@@ -1326,7 +1326,7 @@
           <v-list-item-title
             class="font-weight-bold customGrey--text"
           >
-            {{$t('logoutButton')}}
+            {{$t('logout')}}
           </v-list-item-title>
         </v-list-item>
       </v-list>
@@ -1439,10 +1439,10 @@
                           <div
                             class="body-1 font-weight-bold"
                           >
-                            {{helpItem.title}}
+                            {{$t(helpItem.title)}}
                           </div>
                           <div class="body-2">
-                            {{helpItem.subTitle}}
+                            {{$t(helpItem.subTitle)}}
                           </div>
                         </v-list-item-content>
                         <v-list-item-action
@@ -1493,7 +1493,7 @@
               v-if="user"
             >
               <v-col>
-                {{userCount}} {{userCount === 1 ? $t('member') : $t('manageMembersButton')}} {{$t('online')}}
+                {{userCount}} {{userCount === 1 ? $t('member') : $t('manageMembersButton')}} {{$t('onlineLowercase')}}
               </v-col>
             </v-row>
           </v-sheet>
@@ -1729,7 +1729,7 @@
             <v-col
               class="body-1 white--text font-weight-bold"
             >
-              Unsere Tour zeigt Ihnen die verschiedenen Bereiche dieser Seite. Sie können diese auf dieser Übersichts-Seite auch unter "Info & Hilfe" starten.
+              {{$t('tourDescription')}}
             </v-col>
           </v-row>
         </v-card-text>
@@ -1771,10 +1771,10 @@ export default {
     showMatomoConsent: false,
     tourOptions: {
       labels: {
-        buttonSkip: 'Beenden',
-        buttonPrevious: 'Zurück',
-        buttonNext: 'Weiter',
-        buttonStop: 'Fertig'
+        buttonSkip: null,
+        buttonPrevious: null,
+        buttonNext: null,
+        buttonStop: null
       },
       highlight: true
     },
@@ -1795,6 +1795,13 @@ export default {
     isNavigationDrawer: false,
     showSnackbar: false
   }),
+
+  beforeMount () {
+    this.tourOptions.labels.buttonSkip = this.$t('quit')
+    this.tourOptions.labels.buttonPrevious = this.$t('back')
+    this.tourOptions.labels.buttonNext = this.$t('next')
+    this.tourOptions.labels.buttonStop = this.$t('done')
+  },
 
   mounted () {
     // Set section color
@@ -1923,7 +1930,7 @@ export default {
       const steps = [
         {
           target: '[tour-step="1"]',
-          content: '<p>Schön, dass Sie zu uns gefunden haben! Sie befinden sich auf der Seite Mitmachen/ Überblick mit allen sechs ViMA Bereichen.</p><p>Wir bemühen uns um geschlechtergerechte Schreibweise. Wo sie nicht explizit genutzt wird, sind immer alle Geschlechter gemeint.</p>',
+          content: this.$t('noteLanguage'),
           params: {
             enableScrolling: false,
             placement: 'bottom'
@@ -1934,7 +1941,7 @@ export default {
         },
         {
           target: '[tour-step="2"]',
-          content: 'Dieses Navigationsmenü zeigt an, wo Sie sich jeweils befinden. Sie können es nutzen, um zur vorherigen Ebene zurückzukommen.',
+          content: this.$t('noteNavigation'),
           params: {
             enableScrolling: false,
             placement: 'bottom'
@@ -1945,7 +1952,7 @@ export default {
         },
         {
           target: '[tour-step="3"]',
-          content: 'Über Klicken auf Ansehen gelangen Sie zum jeweiligen Bereich, und können als Besucher*in Inhalte lesen. Um selbst Inserate zu posten, auf Inserate zu antworten, an einer Diskussion teilzunehmen oder einer Interessengruppe beizutreten oder zu initiieren, benötigen Sie ein Profil.',
+          content: this.$t('noteAdPosts'),
           params: {
             enableScrolling: false,
             placement: 'bottom'
@@ -1956,7 +1963,7 @@ export default {
         },
         {
           target: '[tour-step="4"]',
-          content: 'In der Fußzeile  jeder Seite finden Sie unser Impressum und die Datenschutzerklärung. Hier können Sie auch unseren  ViMA-Newsletter abonnieren – hierfür brauchen Sie kein Profil.',
+          content: this.$t('noteFooter'),
           params: {
             enableScrolling: false,
             placement: 'top'
@@ -1970,7 +1977,7 @@ export default {
         steps.push(
           {
             target: '[tour-step="5"]',
-            content: 'Wenn Sie eingeloggt sind, sehen Sie hier Ihre Profil-Daten und Ihre Aktivitäten in den verschiedenen Bereichen. Hier können Sie außerdem unter Mitglieder finden anhand deren Nutzernamen suchen und unter Meine Einstellungen entscheiden, wann und wie Sie Benachrichtigungen über Neuigkeiten in Ihrem Profil erhalten wollen, sowie den ViMA-Newsletter abonnieren.',
+            content: this.$t('noteLoginOverview'),
             params: {
               placement: 'bottom'
             }
@@ -1980,7 +1987,7 @@ export default {
         steps.push(
           {
             target: '[tour-step="5"]',
-            content: 'Wenn Sie selbst bei ViMA aktiv werden möchten, benötigen Sie ein Profil, das Sie hier erstellen können. Sie entscheiden selbst, wie viel andere Nutzer*innen dieser Website  über Sie erfahren.',
+            content: this.$t('noteRegister'),
             params: {
               placement: 'bottom'
             }
@@ -1989,7 +1996,7 @@ export default {
         steps.push(
           {
             target: '[tour-step="6"]',
-            content: 'Wenn Sie ein Profil erstellt haben, können Sie sich mit Ihrer E-Mail-Adresse und Ihrem Passwort bei ViMA einloggen. Haben Sie Ihr Passwort vergessen, können Sie hier ein neues Passwort erstellen.',
+            content: this.$t('notePassword'),
             params: {
               placement: 'bottom'
             }
@@ -1999,7 +2006,7 @@ export default {
       steps.push(
         {
           target: '[tour-step="7"]',
-          content: 'Hier finden Sie Informationen über ViMA und ILEU e.V., den Betreiber der Plattform. Unter Häufige Fragen finden Sie Hilfestellungen zu den Funktionen der ViMA-Plattform. Bitte beachten Sie auch unsere Kommunikationsregeln für einen freundlichen und respektvollen Umgang auf ViMA.',
+          content: this.$t('noteFAQ'),
           params: {
             placement: 'bottom'
           }
@@ -2008,7 +2015,7 @@ export default {
       steps.push(
         {
           target: '[tour-step="8"]',
-          content: 'Wenn Sie Fragen haben, kontaktieren Sie uns gerne unter den angegebenen Kontakdaten. Viel Spaß auf der ViMA Plattform!',
+          content: this.$t('noteContact'),
           params: {
             placement: 'top'
           }
@@ -2062,7 +2069,7 @@ export default {
             }
             items.push(
               {
-                text: this.$router.options.routes.find(obj => obj.name === finalCrumb).meta.breadCrumbText,
+                text: this.$t(this.$router.options.routes.find(obj => obj.name === finalCrumb).meta.breadCrumbTextKey),
                 to: finalCrumb,
                 params
               }
@@ -2074,7 +2081,7 @@ export default {
         }
         items.push(
           {
-            text: this.$route.meta.breadCrumbText,
+            text: this.$t(this.$route.meta.breadCrumbTextKey),
             to: this.$route.name
           }
         )

@@ -64,7 +64,7 @@
                           cols="12"
                           class="title customGrey--text font-weight-bold"
                         >
-                          Virtuell.Mitmachen.Aktiv! in Ulm
+                          {{$t('sloganUlm')}}
                         </v-col>
                       </v-row>
                     </v-col>
@@ -78,13 +78,13 @@
                           class="subtitle-1 customGrey--text"
                         >
                           <p>
-                            <span class="pointer font-weight-bold" @click="$router.push({ name: 'Vima' })">ViMA</span> ist eine offene, multifunktionale online-Plattform, die zum digitalen Treffpunkt Ulmer Bürger*innen werden soll.
+                            <span class="pointer font-weight-bold" @click="$router.push({ name: 'Vima' })">{{$t('vima')}}</span>{{$t('homeWelcome1')}}
                           </p>
                           <p>
-                            ViMA ist ein gemeinsames Projekt von  <span class="pointer font-weight-bold" @click="$router.push({ name: 'Ileu' })">ILEU e.V.</span> und der Geschäftsstelle Digitale Agenda der Stadt Ulm mit Unterstützung von  <span class="pointer font-weight-bold" @click="$router.push({ name: 'Vives' })">VIVES@BW</span>.
+                            {{$t('homeWelcome2')}}<span class="pointer font-weight-bold" @click="$router.push({ name: 'Ileu' })">{{$t('ileu')}}</span>{{$t('homeWelcome3')}}<span class="pointer font-weight-bold" @click="$router.push({ name: 'Vives' })">{{$t('vives')}}</span>.
                           </p>
                           <p>
-                            ViMA befindet sich in der Aufbauphase. Wir laden Sie ein, bei ViMA mitzumachen und uns Rückmeldung zu geben, wenn etwas noch nicht klappen sollte.
+                            {{$t('homeWelcome4')}}
                           </p>
                         </v-col>
                       </v-row>
@@ -133,7 +133,7 @@
                             class="px-1"
                             :to="{name: 'Login'}"
                           >
-                            {{$t('loginButton')}}
+                            {{$t('login')}}
                           </v-btn>
                         </v-col>
                       </v-row>

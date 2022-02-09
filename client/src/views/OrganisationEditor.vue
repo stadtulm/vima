@@ -326,7 +326,7 @@ export default {
         for (const file of this.$refs.vueDropzone.getAcceptedFiles()) {
           const newPic = this.pics
           if (!newPic) {
-            file.previewElement.querySelector('.dz-error-message > span').innerHTML = 'Upload fehlgeschlagen'
+            file.previewElement.querySelector('.dz-error-message > span').innerHTML = this.$t('uploadFailed')
             hasErrors = true
             if (this.isLoading) {
               this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })

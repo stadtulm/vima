@@ -6,7 +6,7 @@
       <v-col
         class="text-h5 font-weight-bold customGrey--text text-uppercase"
       >
-        {{$t('adminView')}} {{$t('manageNewsButton')}}
+        {{$t('adminView')}} {{$t('news')}}
       </v-col>
       <v-col
         class="shrink align-self-center"

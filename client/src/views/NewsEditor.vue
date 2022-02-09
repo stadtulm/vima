@@ -113,8 +113,10 @@
                         <v-alert
                           icon="fas fa-info-circle"
                         >
-                          Bilder können in <b>Newsletter</b> integriert werden, indem eine Zeile mit geschweiften Klammern und der Bildnummer eingefügt wird.<br>
-                          Um Beispielsweise das erste hochgeladene Bild einzufügen, einfach eine Zeile mit {1} im Text hinterlassen.
+                          <span
+                            v-html="$t('noteInsertImage')"
+                          >
+                          </span>
                         </v-alert>
                       </v-col>
                       <v-col
@@ -196,6 +198,7 @@
                             :label="$t('type')"
                             outlined
                             :items="videoTypeItems"
+                            :item-text="(item) => $t(item.textKey)"
                             :rules="[rules.required]"
                             background-color="#fff"
                           >
@@ -248,6 +251,7 @@
                           :label="$t('type')"
                           outlined
                           :items="videoTypeItems"
+                          :item-text="(item) => $t(item.textKey)"
                           :rules="[rules.required]"
                           background-color="#fff"
                         >
@@ -297,6 +301,7 @@
                           :label="$t('type')"
                           outlined
                           :items="videoTypeItems"
+                          :item-text="(item) => $t(item.textKey)"
                           :rules="videoId || videoType ? [rules.required] : []"
                           background-color="#fff"
                         >

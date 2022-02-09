@@ -17,7 +17,7 @@
           :to="{ name: 'DiscussionEditor' }"
           :color="computedColor"
         >
-          {{$t('newDiscussionButton')}}
+          {{$t('newDiscussion')}}
           <v-icon
             class="ml-3"
             size="18"
@@ -55,7 +55,7 @@
             hide-details
             :items="[
               { text: $t('allDiscussions'), value: 'all'},
-              { text: $t('manageDiscussionsButton'), value: 'discussions'},
+              { text: $t('discussionForums'), value: 'discussions'},
               { text: $t('groupDiscussions'), value: 'groups'},
             ]"
           ></v-select>
@@ -365,10 +365,10 @@ export default {
       this.$set(this.loaders, id + 'delete', true)
       try {
         await this.removeDiscussion(id)
-        this.setSnackbar({ text: 'Löschen erfolgreich', color: 'success' })
+        this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
         this.$set(this.loaders, id + 'delete', undefined)
       } catch (e) {
-        this.setSnackbar({ text: 'Löschen fehlgeschlagen', color: 'error' })
+        this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
         this.$set(this.loaders, id + 'delete', undefined)
       }
     },
@@ -622,7 +622,7 @@ export default {
     headers () {
       return [
         { text: this.$t('title'), value: 'title' },
-        { text: this.$t('relation'), value: 'relation' },
+        { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('group'), value: 'group' },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
@@ -649,7 +649,7 @@ export default {
         for (const key of Object.keys(tmpItems)) {
           items.push({
             value: key,
-            text: this.relationItems[key].text,
+            text: this.$t(this.relationItems[key].textKey),
             disabled: key === 'owner'
           })
         }

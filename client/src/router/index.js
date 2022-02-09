@@ -71,7 +71,7 @@ const routes = [
     name: 'Home',
     component: Home,
     meta: {
-      breadCrumbText: 'Willkommensseite',
+      breadCrumbTextKey: 'welcomePage',
       breadCrumbPredecessors: []
     },
     beforeEnter: Multiguard([
@@ -96,7 +96,7 @@ const routes = [
         helpItems.forgotPassword,
         helpItems.noAccount
       ],
-      breadCrumbText: 'Einloggen',
+      breadCrumbTextKey: 'login',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -111,7 +111,7 @@ const routes = [
         helpItems.resendVerify,
         helpItems.hasAccount
       ],
-      breadCrumbText: 'Konto erstellen',
+      breadCrumbTextKey: 'createAccount',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -122,7 +122,7 @@ const routes = [
     name: 'Verify',
     component: Verify,
     meta: {
-      breadCrumbText: 'E-Mail-Adresse bestätigen',
+      breadCrumbTextKey: 'confirmEmailAddress',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -133,7 +133,7 @@ const routes = [
     name: 'ResendVerify',
     component: ResendVerify,
     meta: {
-      breadCrumbText: 'Verifizierungs-Email',
+      breadCrumbTextKey: 'verificationMail',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -144,7 +144,7 @@ const routes = [
     name: 'Confirm',
     component: Confirm,
     meta: {
-      breadCrumbText: 'E-Mail-Adresse bestätigen',
+      breadCrumbTextKey: 'confirmEmailAddress',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -155,7 +155,7 @@ const routes = [
     name: 'Unsubscribe',
     component: Unsubscribe,
     meta: {
-      breadCrumbText: 'Abmelden',
+      breadCrumbTextKey: 'unsubscription',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -166,7 +166,7 @@ const routes = [
     name: 'Reset',
     component: Reset,
     meta: {
-      breadCrumbText: 'Passwort zurücksetzen',
+      breadCrumbTextKey: 'resetPassword',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -177,7 +177,7 @@ const routes = [
     name: 'Renew',
     component: Renew,
     meta: {
-      breadCrumbText: 'Neues Passwort vergeben',
+      breadCrumbTextKey: 'setNewPassword',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -191,7 +191,7 @@ const routes = [
     name: 'ChatList',
     component: ChatList,
     meta: {
-      breadCrumbText: 'Chats',
+      breadCrumbTextKey: 'chats',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -205,7 +205,7 @@ const routes = [
     name: 'UserNameChat',
     component: Chat,
     meta: {
-      breadCrumbText: 'Chat Detail',
+      breadCrumbTextKey: 'chatDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['ChatList']
@@ -220,7 +220,7 @@ const routes = [
     name: 'IdChat',
     component: Chat,
     meta: {
-      breadCrumbText: 'Chat Detail',
+      breadCrumbTextKey: 'chatDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['ChatList']
@@ -238,7 +238,7 @@ const routes = [
     name: 'UserAdminEditor',
     component: UserEditor,
     meta: {
-      breadCrumbText: 'Profil bearbeiten',
+      breadCrumbTextKey: 'editProfile',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -253,7 +253,7 @@ const routes = [
     name: 'UserEditor',
     component: UserEditor,
     meta: {
-      breadCrumbText: 'Profil bearbeiten',
+      breadCrumbTextKey: 'editProfile',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -268,7 +268,7 @@ const routes = [
     name: 'PreferencesEditor',
     component: PreferencesEditor,
     meta: {
-      breadCrumbText: 'Einstellungen editieren',
+      breadCrumbTextKey: 'editSettings',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -283,7 +283,7 @@ const routes = [
     name: 'ApiKeyEditor',
     component: ApiKeyEditor,
     meta: {
-      breadCrumbText: 'API-Schluessel editieren',
+      breadCrumbTextKey: 'editApiKey',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -299,7 +299,7 @@ const routes = [
     name: 'NewsEditor',
     component: NewsEditor,
     meta: {
-      breadCrumbText: 'Neuigkeit editieren',
+      breadCrumbTextKey: 'editNews',
       breadCrumbPredecessors: [
         ['Participate'],
         ['NewsListAdmin']
@@ -315,7 +315,7 @@ const routes = [
     name: 'OrganisationAdminEditor',
     component: OrganisationEditor,
     meta: {
-      breadCrumbText: 'Organisation editieren',
+      breadCrumbTextKey: 'editOrganisation',
       breadCrumbPredecessors: [
         ['Participate'],
         ['OrganisationListAdmin']
@@ -331,7 +331,7 @@ const routes = [
     name: 'OrganisationEditor',
     component: OrganisationEditor,
     meta: {
-      breadCrumbText: 'Organisation editieren',
+      breadCrumbTextKey: 'editOrganisation',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -347,7 +347,7 @@ const routes = [
     name: 'SiteEditor',
     component: SiteEditor,
     meta: {
-      breadCrumbText: 'Inhaltsseite editieren',
+      breadCrumbTextKey: 'editSite',
       breadCrumbPredecessors: [
         ['Participate'],
         ['SiteListAdmin']
@@ -363,7 +363,7 @@ const routes = [
     name: 'CategoryEditor',
     component: CategoryEditor,
     meta: {
-      breadCrumbText: 'Kategorie editieren',
+      breadCrumbTextKey: 'editCategory',
       breadCrumbPredecessors: [
         ['Participate'],
         ['CategoryListAdmin']
@@ -379,7 +379,7 @@ const routes = [
     name: 'TagEditor',
     component: TagEditor,
     meta: {
-      breadCrumbText: 'Schlagwort editieren',
+      breadCrumbTextKey: 'editTag',
       breadCrumbPredecessors: [
         ['Participate'],
         ['TagListAdmin']
@@ -395,7 +395,7 @@ const routes = [
     name: 'EventEditor',
     component: EventEditor,
     meta: {
-      breadCrumbText: 'Veranstaltung editieren',
+      breadCrumbTextKey: 'editEvent',
       breadCrumbPredecessors: [
         ['Participate'],
         ['EventList', 'EventListAdmin']
@@ -413,7 +413,7 @@ const routes = [
     component: AdEditor,
     meta: {
       step: 'ads',
-      breadCrumbText: 'Inserat editieren',
+      breadCrumbTextKey: 'editAd',
       breadCrumbPredecessors: [
         ['Participate'],
         ['AdList', 'AdsListView']
@@ -430,7 +430,7 @@ const routes = [
     component: DiscussionEditor,
     meta: {
       step: 'groups',
-      breadCrumbText: 'Gruppendiskussion editieren',
+      breadCrumbTextKey: 'editGroupDiscussion',
       breadCrumbPredecessors: [
         ['Participate'],
         ['Groups', 'DiscussionList']
@@ -447,7 +447,7 @@ const routes = [
     component: DiscussionEditor,
     meta: {
       step: 'discussions',
-      breadCrumbText: 'Diskussionsforum editieren',
+      breadCrumbTextKey: 'editForumDiscussion',
       breadCrumbPredecessors: [
         ['Participate'],
         ['Discussions', 'DiscussionList']
@@ -464,7 +464,7 @@ const routes = [
     component: GroupEditor,
     meta: {
       step: 'groups',
-      breadCrumbText: 'Interessengruppe editieren',
+      breadCrumbTextKey: 'editInterestGroup',
       breadCrumbPredecessors: [
         ['Participate'],
         ['Groups', 'GroupList']
@@ -481,7 +481,7 @@ const routes = [
     name: 'UserList',
     component: UserList,
     meta: {
-      breadCrumbText: 'Mitglieder Überblick',
+      breadCrumbTextKey: 'memberOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -496,7 +496,7 @@ const routes = [
     component: AdList,
     meta: {
       step: 'ads',
-      breadCrumbText: 'Mein Suche / Biete',
+      breadCrumbTextKey: 'myAds',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -510,7 +510,7 @@ const routes = [
     name: 'EventListAdmin',
     component: EventListAdmin,
     meta: {
-      breadCrumbText: 'Veranstaltungen Überblick',
+      breadCrumbTextKey: 'eventsOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -525,7 +525,7 @@ const routes = [
     name: 'EventList',
     component: EventList,
     meta: {
-      breadCrumbText: 'Veranstaltungen Überblick',
+      breadCrumbTextKey: 'eventsOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -541,7 +541,7 @@ const routes = [
     name: 'DiscussionList',
     component: DiscussionList,
     meta: {
-      breadCrumbText: 'Meine Diskussionsthemen',
+      breadCrumbTextKey: 'myDiscussions',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -556,7 +556,7 @@ const routes = [
     component: GroupList,
     meta: {
       step: 'groups',
-      breadCrumbText: 'Meine Interessengruppen',
+      breadCrumbTextKey: 'myInterestGroups',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -572,7 +572,7 @@ const routes = [
     component: AdListAdmin,
     meta: {
       step: 'ads',
-      breadCrumbText: 'Suche / Biete Admin Überblick',
+      breadCrumbTextKey: 'adsAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -588,7 +588,7 @@ const routes = [
     component: DiscussionListAdmin,
     meta: {
       step: 'discussions',
-      breadCrumbText: 'Diskussionsforen Admin Überblick',
+      breadCrumbTextKey: 'forumDiscussionsAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -604,7 +604,7 @@ const routes = [
     component: GroupListAdmin,
     meta: {
       step: 'groups',
-      breadCrumbText: 'Interessengruppen Admin Überblick',
+      breadCrumbTextKey: 'interestGroupsAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -619,7 +619,7 @@ const routes = [
     name: 'UserListAdmin',
     component: UserListAdmin,
     meta: {
-      breadCrumbText: 'Mitglieder Admin Überblick',
+      breadCrumbTextKey: 'membersAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -634,7 +634,7 @@ const routes = [
     name: 'NewsListAdmin',
     component: NewsListAdmin,
     meta: {
-      breadCrumbText: 'Neuigkeiten Admin Überblick',
+      breadCrumbTextKey: 'newsAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -649,7 +649,7 @@ const routes = [
     name: 'ViolationListAdmin',
     component: ViolationListAdmin,
     meta: {
-      breadCrumbText: 'Verstöße Admin Überblick',
+      breadCrumbTextKey: 'violationsAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -664,7 +664,7 @@ const routes = [
     name: 'OrganisationListAdmin',
     component: OrganisationListAdmin,
     meta: {
-      breadCrumbText: 'Organisationen Admin Überblick',
+      breadCrumbTextKey: 'organisationsAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -679,7 +679,7 @@ const routes = [
     name: 'SiteListAdmin',
     component: SiteListAdmin,
     meta: {
-      breadCrumbText: 'Inhaltsseiten Admin Überblick',
+      breadCrumbTextKey: 'sitesAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -694,7 +694,7 @@ const routes = [
     name: 'CategoryListAdmin',
     component: CategoryListAdmin,
     meta: {
-      breadCrumbText: 'Kategorien Admin Überblick',
+      breadCrumbTextKey: 'categoriesAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -709,7 +709,7 @@ const routes = [
     name: 'TagListAdmin',
     component: TagListAdmin,
     meta: {
-      breadCrumbText: 'Schlagwörter Admin Überblick',
+      breadCrumbTextKey: 'tagsAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -725,7 +725,7 @@ const routes = [
     name: 'CategoryList',
     component: CategoriesListView,
     meta: {
-      breadCrumbText: 'Kategorien',
+      breadCrumbTextKey: 'categories',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -747,7 +747,7 @@ const routes = [
     name: 'Participate',
     component: Participate,
     meta: {
-      breadCrumbText: 'Überblick',
+      breadCrumbTextKey: 'overview',
       breadCrumbPredecessors: [
       ]
     }
@@ -757,7 +757,7 @@ const routes = [
     name: 'Organisations',
     component: Organisations,
     meta: {
-      breadCrumbText: 'Kooperationspartner Überblick',
+      breadCrumbTextKey: 'organisationsOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -768,7 +768,7 @@ const routes = [
     name: 'Events',
     component: Events,
     meta: {
-      breadCrumbText: 'Veranstaltungen Überblick',
+      breadCrumbTextKey: 'eventsOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -780,7 +780,7 @@ const routes = [
     component: AdsListView,
     meta: {
       step: 'ads',
-      breadCrumbText: 'Suche / Biete',
+      breadCrumbTextKey: 'ads',
       breadCrumbPredecessors: [
         ['Participate'],
         ['CategoryList']
@@ -793,7 +793,7 @@ const routes = [
     component: Discussions,
     meta: {
       step: 'discussions',
-      breadCrumbText: 'Diskussionsforen',
+      breadCrumbTextKey: 'discussionForums',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -805,7 +805,7 @@ const routes = [
     component: Groups,
     meta: {
       step: 'groups',
-      breadCrumbText: 'Interessengruppen',
+      breadCrumbTextKey: 'interestGroups',
       breadCrumbPredecessors: [
         ['Participate'],
         ['CategoryList']
@@ -817,7 +817,7 @@ const routes = [
     name: 'News',
     component: News,
     meta: {
-      breadCrumbText: 'Neuigkeiten',
+      breadCrumbTextKey: 'news',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -833,7 +833,7 @@ const routes = [
         helpItems.answerAd,
         helpItems.answerOwnAd
       ],
-      breadCrumbText: 'Suche / Biete Detail',
+      breadCrumbTextKey: 'adDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['AdsListView', 'AdList', 'AdListAdmin']
@@ -846,7 +846,7 @@ const routes = [
     name: 'Discussion',
     component: Discussion,
     meta: {
-      breadCrumbText: 'Diskussionsforum Detail',
+      breadCrumbTextKey: 'discussionForumDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['$Discussions', '$DiscussionList', '$DiscussionListAdmin']
@@ -859,7 +859,7 @@ const routes = [
     name: 'Group',
     component: Group,
     meta: {
-      breadCrumbText: 'Interessengruppe Detail',
+      breadCrumbTextKey: 'interestGroupDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['Groups', 'GroupList', 'GroupListAdmin']
@@ -872,7 +872,7 @@ const routes = [
     name: 'Organisation',
     component: Organisation,
     meta: {
-      breadCrumbText: 'Kooperationspartner Detail',
+      breadCrumbTextKey: 'organisationDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['Organisations']
@@ -884,7 +884,7 @@ const routes = [
     name: 'Event',
     component: Event,
     meta: {
-      breadCrumbText: 'Veranstaltung Detail',
+      breadCrumbTextKey: 'eventDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['Events']
@@ -896,7 +896,7 @@ const routes = [
     name: 'GroupDiscussion',
     component: Discussion,
     meta: {
-      breadCrumbText: 'Gruppenforum Detail',
+      breadCrumbTextKey: 'interestGroupForumDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['Groups', '$DiscussionList', '$DiscussionListAdmin'],
@@ -910,7 +910,7 @@ const routes = [
     name: 'NewsEntry',
     component: NewsEntry,
     meta: {
-      breadCrumbText: 'Neuigkeiten Detail',
+      breadCrumbTextKey: 'newsDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['News']
@@ -922,7 +922,7 @@ const routes = [
     name: 'User',
     component: User,
     meta: {
-      breadCrumbText: 'Mitglied Detail',
+      breadCrumbTextKey: 'memberDetail',
       breadCrumbPredecessors: [
         ['Participate'],
         ['UserList', 'UserListAdmin', 'ChatList', 'Chat', 'Discussion', 'AdList']
@@ -937,7 +937,7 @@ const routes = [
     name: 'Imprint',
     component: Site,
     meta: {
-      breadCrumbText: 'Impressum',
+      breadCrumbTextKey: 'imprint',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -948,7 +948,7 @@ const routes = [
     name: 'Vima',
     component: Site,
     meta: {
-      breadCrumbText: 'Über Vima',
+      breadCrumbTextKey: 'aboutVima',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -959,7 +959,7 @@ const routes = [
     name: 'Ileu',
     component: Site,
     meta: {
-      breadCrumbText: 'Über Ileu',
+      breadCrumbTextKey: 'aboutIleu',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -970,7 +970,7 @@ const routes = [
     name: 'Vives',
     component: Site,
     meta: {
-      breadCrumbText: 'Über VIVES@BW',
+      breadCrumbTextKey: 'aboutVives',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -981,7 +981,7 @@ const routes = [
     name: 'CommunicationRules',
     component: Site,
     meta: {
-      breadCrumbText: 'Kommunikationsregeln',
+      breadCrumbTextKey: 'communicationRules',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -992,7 +992,7 @@ const routes = [
     name: 'Privacy',
     component: Site,
     meta: {
-      breadCrumbText: 'Datenschutz',
+      breadCrumbTextKey: 'privacy',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -1003,7 +1003,7 @@ const routes = [
     name: 'Contact',
     component: Site,
     meta: {
-      breadCrumbText: 'Kontakt',
+      breadCrumbTextKey: 'contact',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -1014,7 +1014,7 @@ const routes = [
     name: 'Faq',
     component: Faq,
     meta: {
-      breadCrumbText: 'Häufige Fragen',
+      breadCrumbTextKey: 'faq',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -1026,7 +1026,7 @@ const routes = [
     name: 'Forbidden',
     component: Forbidden,
     meta: {
-      breadCrumbText: '403',
+      breadCrumbTextKey: '403',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -1037,7 +1037,7 @@ const routes = [
     name: 'NotFound',
     component: NotFound,
     meta: {
-      breadCrumbText: '404',
+      breadCrumbTextKey: '404',
       breadCrumbPredecessors: [
         ['Participate']
       ]

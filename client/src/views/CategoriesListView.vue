@@ -8,7 +8,7 @@
           <v-col
             class="text-h5 font-weight-bold customGrey--text text-uppercase"
           >
-            {{$t('categories')}} {{ $route.params.type ? $t('for') + ' ' + typeItems[$route.params.type] : '' }}
+            {{$t('categories')}} {{ $route.params.type ? $t('for') + ' ' + $t(typeItems[$route.params.type]) : '' }}
           </v-col>
         </v-row>
       </v-col>
@@ -157,7 +157,7 @@
           :color="computedColor"
           :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView' }"
         >
-          Alle Einträge anzeigen
+          {{$t('buttonShowAllEntries')}}
         </v-btn>
       </v-col>
     </v-row>

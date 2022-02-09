@@ -38,7 +38,7 @@
                   icon
                   v-bind="attrs"
                   v-on="on"
-                  :title="relationItems.owner.text"
+                  :title="$t(relationItems.owner.textKey)"
                   class="ml-3"
                   v-if="computedStatusContainers.map(obj => obj.relation).includes('owner')"
                 >
@@ -50,7 +50,7 @@
                 </v-btn>
               </template>
               <span>
-                {{relationItems.owner.text}}
+                {{$t(relationItems.owner.textKey)}}
               </span>
             </v-tooltip>
             <!-- Subscription buttons -->

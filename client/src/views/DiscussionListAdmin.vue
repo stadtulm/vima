@@ -6,7 +6,7 @@
       <v-col
         class="text-h5 font-weight-bold customGrey--text text-uppercase"
       >
-        {{$t('adminView')}} {{$t('manageDiscussionsButton')}}
+        {{$t('adminView')}} {{$t('discussionForums')}}
       </v-col>
     </v-row>
     <v-row>

@@ -130,6 +130,7 @@
                     color="customGrey"
                     item-color="customGrey"
                     :items="computedRoles"
+                    :item-text="(item) => $t(item.textKey)"
                     v-model="role"
                     :label="$t('role')"
                     :rules="[rules.required]"

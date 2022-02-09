@@ -47,7 +47,7 @@
                     </v-icon>
                   </template>
                   <span>
-                    {{computedGroupStatus.text}}
+                    {{$t(computedGroupStatus.textKey)}}
                   </span>
                 </v-tooltip>
               </v-card-title>
@@ -102,7 +102,7 @@
                       :loading="isLoading"
                       @click="showApplyDialog = true"
                     >
-                      {{$t('applyGroupMembership')}}
+                      {{$t('requestMembership')}}
                       <v-icon
                         size="18"
                         class="ml-3"
@@ -249,7 +249,7 @@
                       :to="{ name: 'GroupDiscussionEditor', params: { group: computedGroup._id } }"
                       color="customPurple"
                     >
-                      Neues Diskussions-Thema
+                      {{$t('newDiscussion')}}
                       <v-icon
                         class="ml-3"
                         size="18"

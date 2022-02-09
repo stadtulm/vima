@@ -35,7 +35,7 @@
                     icon
                     :disabled="user ? false : true"
                     @click="toggleAdSubscription()"
-                    :title="computedAdStatus.text"
+                    :title="$t(computedAdStatus.textKey)"
                   >
                     <v-icon
                       color="customCyan"
@@ -49,7 +49,7 @@
                     v-bind="attrs"
                     v-on="on"
                     v-else-if="computedAdStatus.value === 'owner' || computedAdStatus.value === 'applicant'"
-                    :title="computedAdStatus.text"
+                    :title="$t(computedAdStatus.textKey)"
                     class="ml-3"
                   >
                     <v-icon
@@ -60,7 +60,7 @@
                   </v-btn>
                 </template>
                 <span>
-                  {{computedAdStatus.text}}
+                  {{$t(computedAdStatus.textKey)}}
                 </span>
               </v-tooltip>
             </v-card-title>
@@ -68,7 +68,7 @@
             <v-card-subtitle
               class="pb-1"
             >
-              {{computedAd.type === 'offer' ? 'Angebot' : 'Gesuch'}} vom {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}}
+              {{computedAd.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}} vom {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}}
             </v-card-subtitle>
           </v-col>
           <v-col
@@ -242,7 +242,7 @@
                   color="white"
                   :to="{ name: 'Login' }"
                 >
-                  {{$t('loginButton')}}
+                  {{$t('login')}}
                   <v-icon
                     class="ml-3"
                     size="18"

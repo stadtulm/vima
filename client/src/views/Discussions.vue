@@ -54,7 +54,7 @@
               :to="{ name: 'DiscussionEditor' }"
               color="customTeal"
             >
-              {{$t('newDiscussionButton')}}
+              {{$t('newDiscussion')}}
               <v-icon
                 class="ml-3"
                 size="18"

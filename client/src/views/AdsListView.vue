@@ -100,9 +100,9 @@
             dense
             hide-details
             :items="[
-              { text: $t('typeAll'), value: 'all'},
-              { text: $t('typeOffer'), value: 'offer'},
-              { text: $t('typeRequest'), value: 'request' },
+              { text: $t('all'), value: 'all'},
+              { text: $t('offer'), value: 'offer'},
+              { text: $t('wanted'), value: 'request' },
             ]"
           ></v-select>
         </v-col>

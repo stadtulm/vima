@@ -49,7 +49,7 @@
               dense
               color="custom"
               v-model="description"
-              label="Beschreibung"
+              :label="$t('description')"
             >
             </v-textarea>
           </v-col>
@@ -63,7 +63,8 @@
               item-color="custom"
               v-model="type"
               :items="questionTypeItems"
-              label="Typ"
+              :item-text="(item) => $t(item.textKey)"
+              :label="$t('type')"
               :rules="[rules.required]"
             >
             </v-select>
@@ -79,7 +80,7 @@
                 dense
                 color="custom"
                 item-color="custom"
-                label="Maximale Wertung"
+                :label="$t('maximumRating')"
                 v-model="maxValue"
                 :items="[2, 3, 4, 5, 6, 7, 8, 9, 10]"
                 :rules="[rules.required]"
@@ -97,7 +98,7 @@
                 item-color="custom"
                 dense
                 multiple
-                label="Auswahlmöglichkeiten"
+                :label="$t('selectionOptions')"
                 v-model="items"
                 :rules="[rules.required]"
                 :items="items"
@@ -107,7 +108,7 @@
                   <v-list-item>
                     <v-list-item-content>
                       <v-list-item-title>
-                        Tippe und drücke dann Enter um die Auswahlmöglichkeit hinzuzufügen
+                        {{$t('pressEnterToAddSelectionOption')}}
                       </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
@@ -126,7 +127,7 @@
                 item-color="custom"
                 dense
                 multiple
-                label="Auswahlmöglichkeiten"
+                :label="$t('selectionOptions')"
                 v-model="items"
                 :rules="[rules.required]"
                 :items="items"
@@ -136,7 +137,7 @@
                   <v-list-item>
                     <v-list-item-content>
                       <v-list-item-title>
-                        Tippe und drücke dann Enter um die Auswahlmöglichkeit hinzuzufügen
+                        {{$t('pressEnterToAddSelectionOption')}}
                       </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
@@ -156,7 +157,7 @@
           block
           :disabled="!isValid || !isDirty"
         >
-          Frage {{ editorType === 'add' ? 'hinzufügen' : 'aktualisieren' }}
+          {{ editorType === 'add' ? $t('addQuestion') : $t('updateQuestion') }}
         </v-btn>
       </v-card-actions>
     </v-card-text>

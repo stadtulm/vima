@@ -139,9 +139,9 @@ export default {
         this.showThanks = true
       } catch (e) {
         if (e.errors.$className === 'badParams') {
-          this.emailError = ['Ungültige Email-Adresse']
+          this.emailError = [this.$t('errorInvalidEmail')]
         } else if (e.errors.$className === 'isNotVerified') {
-          this.emailError = ['Email-Adresse bereits verifiziert']
+          this.emailError = [this.$t('errorAlreadyVerified')]
         }
         this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
         this.isSending = false

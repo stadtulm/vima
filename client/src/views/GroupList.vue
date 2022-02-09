@@ -6,7 +6,7 @@
       <v-col
         class="text-h5 font-weight-bold customGrey--text text-uppercase"
       >
-        {{$t('myGroupsButton')}}
+        {{$t('myInterestGroups')}}
       </v-col>
       <v-col
         class="text-right"
@@ -338,7 +338,7 @@
                 <v-col
                   class="align-self-center shrink"
                 >
-                  Einladung:
+                  {{$t('invitation')}}:
                 </v-col>
                 <v-col
                   class="text-center"
@@ -606,7 +606,7 @@
                   {{$t('inviteGroupMembers')}}
                 </v-tab>
                 <v-tab>
-                  {{$t('invitedGroupMembers')}}
+                  {{$t('invited')}}
                 </v-tab>
                 <v-tab>
                   {{$t('openGroupApplicants')}}
@@ -660,7 +660,7 @@
                                 v-for="(relation, i) of computedMemberStatusContainers.filter(obj => obj.user === member._id && obj.relation !== 'member').map(obj => obj.relation)"
                                 :key="i"
                               >
-                                - {{relationItems[relation].text}}
+                                - {{$t(relationItems[relation].textKey)}}
                               </span>
                             </v-list-item-title>
                           </v-list-item-content>
@@ -880,7 +880,7 @@
             <v-col
               class="text-h5 font-weight-bold"
             >
-              {{$t('manageGroupViolations')}}
+              {{$t('violations')}}
             </v-col>
           </v-row>
           <v-row>
@@ -1377,14 +1377,14 @@ export default {
     headers () {
       return [
         { text: this.$t('title'), value: 'title' },
-        { text: this.$t('relation'), value: 'relation' },
+        { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
         { text: this.$t('active'), value: 'isActive', align: 'center' },
         { text: this.$t('moderators'), value: 'data-table-expand', align: 'center', sortable: false },
         { text: this.$t('manageMembersButton'), value: 'members', align: 'center', sortable: false },
         { text: this.$t('groupDiscussions'), value: 'discussions', align: 'center', sortable: false },
-        { text: this.$t('manageGroupViolations'), value: 'violations', align: 'center', sortable: false },
+        { text: this.$t('violations'), value: 'violations', align: 'center', sortable: false },
         { text: this.$t('files'), value: 'files', align: 'center', sortable: false },
         { text: this.$t('editButton'), value: 'edit', align: 'center', sortable: false },
         { text: this.$t('deleteButton'), value: 'delete', align: 'center', sortable: false },
@@ -1419,7 +1419,7 @@ export default {
         for (const key of Object.keys(tmpItems)) {
           items.push({
             value: key,
-            text: this.relationItems[key].text,
+            text: this.$t(this.relationItems[key].textKey),
             disabled: key === 'owner'
           })
         }

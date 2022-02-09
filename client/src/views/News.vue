@@ -11,7 +11,7 @@
           class="pointer"
           @click="$router.push({ name: 'News' })"
         >
-          {{$t('manageNewsButton')}}
+          {{$t('news')}}
         </span>
         <v-btn
           icon
@@ -36,7 +36,7 @@
           <v-col
             class="text-h5 font-weight-bold customGrey--text text-uppercase"
           >
-            {{$t('manageNewsButton')}}
+            {{$t('news')}}
           </v-col>
           <v-col
             class="shrink align-self-center"
