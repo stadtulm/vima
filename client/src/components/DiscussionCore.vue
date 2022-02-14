@@ -325,7 +325,7 @@
                                       color="customGrey"
                                       @click="translateText(computedDiscussionMessages.filter(m => !isOwnMessage(m)).map(m => m._id))"
                                     >
-                                      Alle Beiträge auf der Seite übersetzen
+                                      Alle angezeigten Beiträge übersetzen
                                       <v-icon
                                         size="20"
                                         class="ml-2"

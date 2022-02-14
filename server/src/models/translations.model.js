@@ -4,7 +4,7 @@ const { Schema } = mongoose
 module.exports = new Schema({
   lang: {
     type: String,
-    enum: ['de', 'en', 'ru']
+    enum: ['de', 'en', 'ru', null]
   },
   type: {
     type: String,
