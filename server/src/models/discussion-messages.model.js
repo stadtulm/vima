@@ -1,3 +1,4 @@
+const Translation = require('./translations.model')
 // discussion-messages-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -16,10 +17,11 @@ module.exports = function (app) {
       type: ObjectId,
       ref: 'users'
     },
-    text: {
-      type: String,
-      required: true
-    },
+    text: [
+      {
+        type: Translation
+      }
+    ],
     repliesTo: {
       type: ObjectId,
       ref: 'discussionMessages'

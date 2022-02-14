@@ -113,6 +113,22 @@ setTimeout(async () => {
   )
 }, 10000)
 
+/*
+
+app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
+  for (const discussionMessage of discussionMessages) {
+    discussionMessage.text = [{
+      type: 'default',
+      value: 'Mein Name ist Falko.'
+    }]
+    app.service('discussion-messages').update(discussionMessage._id, discussionMessage).then(res => {
+      console.log(res)
+    })
+  }
+})
+
+*/
+
 app.logger = logger
 
 module.exports = app

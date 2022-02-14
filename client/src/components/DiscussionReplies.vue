@@ -163,7 +163,7 @@
                                     cols="12"
                                   >
                                     <v-sheet
-                                      v-html="$sanitize(newTab(message.text.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                      v-html="$sanitize(newTab(message.text.find(t => t.language === 'original').value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
                                       color="transparent"
                                       class="pa-1"
                                     >
@@ -523,7 +523,7 @@ export default {
     },
     async editMessage (message) {
       this.isEditMessage = message._id
-      this.message = message.text
+      this.message = message.text.find(t => t.language === 'original').value
       document.querySelector('#replyInput' + this.mainMessage._id).scrollIntoView()
     },
     async sendMessage () {
@@ -535,7 +535,13 @@ export default {
               {
                 discussion: this.discussion._id,
                 author: this.user._id,
-                text: this.message,
+                text: [
+                  {
+                    language: 'original',
+                    translation: 'original',
+                    value: this.message
+                  }
+                ],
                 repliesTo: this.mainMessage._id
               }
             ]
@@ -557,7 +563,13 @@ export default {
             [
               this.isEditMessage,
               {
-                text: this.message,
+                text: [
+                  {
+                    value: this.message,
+                    language: 'original',
+                    translation: 'original'
+                  }
+                ],
                 editedAt: new Date()
               }
             ]
