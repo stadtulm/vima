@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Store from '@/store'
+import i18n from '@/i18n'
 import Multiguard from 'vue-router-multiguard'
 
 import Home from '@/views/Home.vue'
@@ -1083,7 +1084,6 @@ router.beforeEach(async (to, from, next) => {
 })
 
 async function init (to, from, next) {
-  // Load active fair
   if (Store.getters.firstLoad) {
     // Not logged in - log in
     if (!Store.getters['auth/user']) {
@@ -1119,6 +1119,12 @@ async function init (to, from, next) {
         }, 100)
         localStorage.removeItem('feathers-jwt')
       }
+    }
+    // Set language
+    if (Store.getters['auth/user'] && Store.getters['auth/user'].language) {
+      i18n.locale = Store.getters['auth/user'].language
+    } else if (localStorage.getItem('language')) {
+      i18n.locale = localStorage.getItem('language')
     }
     // Load stuff
     await Store.dispatch('categories/find', { query: {}, $paginate: false })

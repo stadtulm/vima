@@ -39,8 +39,82 @@
       >
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            class="ml-3 customGrey--text"
+            class="customGrey--text"
+            :class="!$vuetify.breakpoint.smAndUp ? 'ml-4': 'ml-3'"
             :large="$vuetify.breakpoint.mdAndUp"
+            :small="!$vuetify.breakpoint.smAndUp"
+            :icon="!$vuetify.breakpoint.smAndUp"
+            v-bind="attrs"
+            v-on="on"
+            :title="$t('languageButton')"
+            tour-step="7"
+          >
+            <v-icon
+              color="customGrey"
+              class="mr-1"
+              :size="$vuetify.breakpoint.smAndUp ? 18: 24"
+            >
+              fas fa-language
+            </v-icon>
+            <template
+              v-if="$vuetify.breakpoint.mdAndUp"
+            >
+              {{$t('languageButton')}}
+            </template>
+            <v-icon
+              v-if="$vuetify.breakpoint.smAndUp"
+              color="customGrey"
+              class="ml-1"
+              size="18"
+            >
+              fa fa-chevron-down
+            </v-icon>
+          </v-btn>
+        </template>
+
+        <v-list>
+          <v-list-item
+            @click="setLanguage('en')"
+          >
+            <v-list-item-avatar>
+              <country-flag
+                class="my-0"
+                country='gb'
+              >
+              </country-flag>
+            </v-list-item-avatar>
+            <v-list-item-title>
+              {{$t('english')}}
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item
+            @click="setLanguage('de')"
+          >
+            <v-list-item-avatar>
+              <country-flag
+                class="my-0"
+                country='de'
+              >
+              </country-flag>
+            </v-list-item-avatar>
+            <v-list-item-title>
+              {{$t('german')}}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-menu
+        open-on-hover
+        offset-y
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            class="customGrey--text"
+            :class="!$vuetify.breakpoint.smAndUp ? 'ml-4': 'ml-3'"
+            :large="$vuetify.breakpoint.mdAndUp"
+            :small="!$vuetify.breakpoint.smAndUp"
+            :icon="!$vuetify.breakpoint.smAndUp"
             v-bind="attrs"
             v-on="on"
             :title="$t('infoButton')"
@@ -49,7 +123,7 @@
             <v-icon
               color="customGrey"
               class="mr-1"
-              size="18"
+              :size="$vuetify.breakpoint.smAndUp ? 18: 24"
             >
               fa fa-question-circle
             </v-icon>
@@ -122,8 +196,11 @@
       >
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            class="ml-3 customGrey--text"
+            class="customGrey--text"
+            :class="!$vuetify.breakpoint.smAndUp ? 'ml-4': 'ml-3'"
             :large="$vuetify.breakpoint.mdAndUp"
+            :small="!$vuetify.breakpoint.smAndUp"
+            :icon="!$vuetify.breakpoint.smAndUp"
             v-bind="attrs"
             v-on="on"
             :title="$t('participate')"
@@ -131,7 +208,7 @@
             <v-icon
               color="customGrey"
               class="mr-1"
-              size="18"
+              :size="$vuetify.breakpoint.smAndUp ? 18: 24"
             >
               fa fa-list
             </v-icon>
@@ -273,7 +350,7 @@
           class="ml-3 elevation-1"
           color="customGrey"
           text
-          large
+          :large="$vuetify.breakpoint.mdAndUp"
           tour-step="5"
           @click=" isNavigationDrawer = !isNavigationDrawer"
           :title="isNavigationDrawer ? $t('myVimaToggleClose') : $t('myVimaToggleOpen')"
@@ -1832,9 +1909,25 @@ export default {
     ...mapActions('auth', [
       'logout'
     ]),
+    ...mapActions('users', {
+      patchUser: 'patch'
+    }),
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    async setLanguage (languageCode) {
+      this.$i18n.locale = languageCode
+      localStorage.setItem('language', languageCode)
+      if (this.user && this.user._id) {
+        // Update user language
+        await this.patchUser([
+          this.user._id,
+          {
+            language: languageCode
+          }
+        ])
+      }
+    },
     closeTour () {
       this.setShowTour(false)
     },

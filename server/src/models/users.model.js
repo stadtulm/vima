@@ -55,6 +55,9 @@ module.exports = function (app) {
     residence: {
       type: String
     },
+    language: {
+      type: String
+    },
     isActive: {
       type: Boolean,
       default: true
