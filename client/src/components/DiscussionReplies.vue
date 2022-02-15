@@ -169,12 +169,39 @@
                                       "
                                     >
                                       <v-sheet
-                                        v-html="$sanitize(newTab(message.text.find(t => t.lang === 'en').value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
-                                        class="pa-1"
+                                        v-html="$sanitize(newTab(getTranslation(message._id + '_en').value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                        color=""
+                                        class="pa-2 mb-4"
                                       >
                                       </v-sheet>
-                                      <v-row>
-                                        <v-col class="my-3 caption text-center">
+                                      <v-row
+                                        dense
+                                      >
+                                        <v-col
+                                          cols="12"
+                                          class="caption text-center"
+                                          v-if="message.translationSum !== getTranslation(message._id + '_en').translationSum"
+                                        >
+                                          <v-icon
+                                            small
+                                            color="error"
+                                            class="mb-1 mr-1"
+                                          >
+                                            fas fa-sync
+                                          </v-icon>
+                                          Der ursprüngliche Beitrag wurde editiert
+                                          <v-btn
+                                            text
+                                            x-small
+                                            @click="$emit('translateText', { texts: [{ id: message._id, translationSum: message.translationSum}], force: true })"
+                                          >
+                                            Übersetzung aktualisieren
+                                          </v-btn>
+                                        </v-col>
+                                        <v-col
+                                          cols="12"
+                                          class="caption text-center"
+                                        >
                                           <v-icon
                                             small
                                             class="mb-1 mr-1"
@@ -193,7 +220,12 @@
                                       </v-row>
                                     </template>
                                     <v-sheet
-                                      v-else
+                                      v-show="
+                                        !(
+                                          getTranslation(message._id + '_en') &&
+                                          getTranslation(message._id + '_en').show
+                                        )
+                                      "
                                       v-html="$sanitize(newTab(message.text.find(t => t.type === 'default').value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
                                       color="transparent"
                                       class="pa-1"
@@ -297,26 +329,11 @@
                                                 outlined
                                                 small
                                                 color="customGrey"
-                                                @click="$emit('report', message)"
-                                              >
-                                                {{$t('reportButton')}}
-                                                <v-icon
-                                                  size="14"
-                                                  class="ml-2"
-                                                >
-                                                  fas fa-exclamation-triangle
-                                                </v-icon>
-                                              </v-btn>
-                                            </v-col>
-                                          </v-row>
-                                          <v-row dense>
-                                            <v-col>
-                                              <v-btn
-                                                block
-                                                outlined
-                                                small
-                                                color="customGrey"
-                                                @click="translateText([message._id])"
+                                                @click="$emit('translateText', { texts: [{ id: message._id, translationSum: message.translationSum }]})"
+                                                :disabled="
+                                                  getTranslation(message._id + '_en') &&
+                                                  getTranslation(message._id + '_en').show
+                                                "
                                               >
                                                 Übersetzen
                                                 <v-icon
@@ -335,7 +352,13 @@
                                                 outlined
                                                 small
                                                 color="customGrey"
-                                                @click="translateText(computedMessages.filter(m => !isOwnMessage(m)).map(m => m._id))"
+                                                @click="'translateText', {
+                                                  texts: computedMessages
+                                                    .filter(m => !isOwnMessage(m))
+                                                    .map(m => {
+                                                      return { id: m._id, translationSum: m.translationSum }
+                                                    })
+                                                  }"
                                               >
                                                 Alle angezeigten Antworten übersetzen
                                                 <v-icon
@@ -343,6 +366,25 @@
                                                   class="ml-2"
                                                 >
                                                   fas fa-language
+                                                </v-icon>
+                                              </v-btn>
+                                            </v-col>
+                                          </v-row>
+                                          <v-row dense>
+                                            <v-col>
+                                              <v-btn
+                                                block
+                                                outlined
+                                                small
+                                                color="customGrey"
+                                                @click="$emit('report', message)"
+                                              >
+                                                {{$t('reportButton')}}
+                                                <v-icon
+                                                  size="14"
+                                                  class="ml-2"
+                                                >
+                                                  fas fa-exclamation-triangle
                                                 </v-icon>
                                               </v-btn>
                                             </v-col>
@@ -581,22 +623,6 @@ export default {
       patchMessage: 'patch',
       removeMessage: 'remove'
     }),
-    async translateText (ids) {
-      const idsToTranslate = ids.filter(id => !this.getTranslation(id + '_en'))
-      const idsToShow = ids.filter(id => this.getTranslation(id + '_en'))
-      if (idsToTranslate.length > 0) {
-        await this.createTranslation([
-          {
-            type: 'discussion-messages',
-            ids: idsToTranslate,
-            target: 'en'
-          }
-        ])
-      }
-      for (const id of idsToShow) {
-        this.updateTranslationItem({ _id: id + '_en', show: true })
-      }
-    },
     loadMoreReplies () {
       this.manualLoad = true
       this.page++

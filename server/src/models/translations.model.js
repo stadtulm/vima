@@ -3,8 +3,7 @@ const { Schema } = mongoose
 
 module.exports = new Schema({
   lang: {
-    type: String,
-    enum: ['de', 'en', 'ru', null]
+    type: String
   },
   type: {
     type: String,

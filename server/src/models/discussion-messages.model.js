@@ -32,6 +32,9 @@ module.exports = function (app) {
         ref: 'discussionMessages'
       }
     ],
+    translationSum: {
+      type: String
+    },
     editedAt: { type: Date }
   }, {
     timestamps: true

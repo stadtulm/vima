@@ -1,4 +1,6 @@
+const Errors = require('@feathersjs/errors')
 const translate = require('deepl')
+const JSum = require('jsum')
 
 /* eslint-disable no-unused-vars */
 exports.Translations = class Translations {
@@ -21,19 +23,27 @@ exports.Translations = class Translations {
     const messages = await this.app.service(data.type).find({
       query: {
         _id: {
-          $in: data.ids
+          $in: data.texts.map(t => t.id)
         }
       },
       paginate: false
     })
-    // Existing translations
+    // Compare messages and sent checksums
+    for (const message of messages) {
+      if (message.translationSum !== data.texts.find(t => t.id.toString() === message._id.toString()).translationSum) {
+        throw new Errors.Forbidden('Requested unknown translation')
+      }
+    }
     const result = await Promise.all(messages.map(async m => {
+      // Existing translations
       if (m.text.find(t => t.lang === data.target)) {
         return {
           _id: m._id + '_' + data.target,
           show: true,
+          translationSum: JSum.digest(m.text.find(t => t.type === 'default').value, 'SHA256', 'hex'),
           ...m.text.find(t => t.lang === data.target)
         }
+      // Get translations
       } else {
         const translation = await translate({
           free_api: true,
@@ -67,6 +77,7 @@ exports.Translations = class Translations {
         return {
           _id: m._id + '_' + data.target,
           show: true,
+          translationSum: JSum.digest(m.text.find(t => t.type === 'default').value, 'SHA256', 'hex'),
           ...targetText
         }
       }

@@ -3,6 +3,7 @@ const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
 const Errors = require('@feathersjs/errors')
+const JSum = require('jsum')
 
 module.exports = {
   before: {
@@ -137,7 +138,10 @@ module.exports = {
             }
           }
         }
-      )
+      ),
+      (context) => {
+        context.data.translationSum = JSum.digest(context.data.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
+      }
     ],
     update: [
       commonHooks.iff(
@@ -155,6 +159,12 @@ module.exports = {
           if (context.params.user._id.toString() !== discussionMessage.author.toString()) {
             throw new Errors.Forbidden('Only author can patch discussion messages')
           }
+        }
+      ),
+      commonHooks.iff(
+        (context) => context.data?.text?.find(t => t.type === 'default'),
+        (context) => {
+          context.data.translationSum = JSum.digest(context.data.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
         }
       )
     ],

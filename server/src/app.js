@@ -113,8 +113,14 @@ setTimeout(async () => {
   )
 }, 10000)
 
-/*
+app.logger = logger
 
+module.exports = app
+
+// Migration
+
+/*
+// New text format
 app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
   for (const discussionMessage of discussionMessages) {
     discussionMessage.text = [{
@@ -129,6 +135,15 @@ app.service('discussion-messages').find({ paginate: false }).then(discussionMess
 
 */
 
-app.logger = logger
-
-module.exports = app
+/*
+// Checksum
+app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
+  const JSum = require('jsum')
+  for (const discussionMessage of discussionMessages) {
+    discussionMessage.translationSum = JSum.digest(discussionMessage.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
+    app.service('discussion-messages').update(discussionMessage._id, discussionMessage).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
