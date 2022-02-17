@@ -50,9 +50,16 @@ app.use('/', express.static(app.get('public')))
 
 // Set up Plugins and providers
 app.configure(express.rest())
-app.configure(socketio({
-  transports: ['websocket']
-}))
+
+app.configure(
+  socketio(io => {
+    io.set('transports', ['websocket'])
+    io.use((socket, next) => {
+      socket.feathers.clientId = socket.client.id
+      next()
+    })
+  })
+)
 
 app.configure(mongoose)
 
@@ -120,12 +127,18 @@ module.exports = app
 // Migration
 
 /*
+
+// Add language attribute to each user
+
+*/
+
+/*
 // New text format
 app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
   for (const discussionMessage of discussionMessages) {
     discussionMessage.text = [{
       type: 'default',
-      value: 'Mein Name ist Falko.'
+      value: discussionMessage.text
     }]
     app.service('discussion-messages').update(discussionMessage._id, discussionMessage).then(res => {
       console.log(res)
@@ -133,6 +146,27 @@ app.service('discussion-messages').find({ paginate: false }).then(discussionMess
   }
 })
 
+*/
+
+/*
+// New text format
+app.service('categories').find({ paginate: false }).then(els => {
+  for (const el of els) {
+    el.text = [{
+      type: 'default',
+      lang: 'de',
+      value: el.name
+    }]
+    el.description = [{
+      type: 'default',
+      lang: 'de',
+      value: el.description
+    }]
+    app.service('categories').update(el._id, el).then(res => {
+      console.log(res)
+    })
+  }
+})
 */
 
 /*

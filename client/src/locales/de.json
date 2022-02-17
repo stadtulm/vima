@@ -584,6 +584,8 @@
   "replayToMyAd": "Was passiert, wenn jemand auf ein Inserat von mir antwortet?",
   "chatAfterReplyToMyAd": "Die Antworten auf ein Inserat können Sie unter \"Mein ViMA\" -> \"Suche-Biete\" -> \"Interessent*innen\" ansehen. Sobald Sie dort auf eine Anfrage antworten, wird die interessierte Person benachrichtigt und Sie können die Konversation in Ihrem privaten Chat fortführen.",
   "languageButton": "Sprache",
-  "english": "Englisch",
-  "german": "Deutsch"
+  "en": "Englisch",
+  "de": "Deutsch",
+  "defaultLanguage": "Pflichtsprache",
+  "defaultLanguageRequired": "Die Pflichtsprache muss gesetzt sein"
 }

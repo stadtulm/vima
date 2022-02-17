@@ -221,7 +221,15 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.alterItems(rec => {
+          rec.text = rec.text.filter(t => t.type === 'default')
+          return rec
+        })
+      )
+    ],
     find: [],
     get: [],
     create: [

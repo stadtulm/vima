@@ -84,7 +84,7 @@
               </country-flag>
             </v-list-item-avatar>
             <v-list-item-title>
-              {{$t('english')}}
+              {{$t('en')}}
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -98,7 +98,7 @@
               </country-flag>
             </v-list-item-avatar>
             <v-list-item-title>
-              {{$t('german')}}
+              {{$t('de')}}
             </v-list-item-title>
           </v-list-item>
         </v-list>
@@ -1901,6 +1901,9 @@ export default {
 
   methods: {
     ...mapMutations({
+      setSnackbar: 'SET_SNACKBAR'
+    }),
+    ...mapMutations({
       setShowTour: 'SET_SHOW_TOUR'
     }),
     ...mapActions('logging', {
@@ -1912,14 +1915,14 @@ export default {
     ...mapActions('users', {
       patchUser: 'patch'
     }),
-    ...mapMutations({
-      setSnackbar: 'SET_SNACKBAR'
+    ...mapActions('language', {
+      switchLanguage: 'create'
     }),
     async setLanguage (languageCode) {
-      this.$i18n.locale = languageCode
-      localStorage.setItem('language', languageCode)
+      // Update cookie
+      document.cookie = 'clientLanguage=' + languageCode + '; path=/; SameSite=Lax; expires=31 Dec 2100 23:59:59 UTC'
+      // Update user language
       if (this.user && this.user._id) {
-        // Update user language
         await this.patchUser([
           this.user._id,
           {
@@ -1927,6 +1930,8 @@ export default {
           }
         ])
       }
+      // Refresh page
+      document.location.reload(true)
     },
     closeTour () {
       this.setShowTour(false)

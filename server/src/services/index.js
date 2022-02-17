@@ -56,5 +56,5 @@ module.exports = function (app) {
   app.configure(newsletter)
   app.configure(adMessages)
   app.configure(statusContainerHelper)
-  app.configure(translations);
+  app.configure(translations)
 }

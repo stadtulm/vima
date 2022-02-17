@@ -48,6 +48,7 @@
     "@feathersjs/transport-commons": "^4.5.11",
     "aws-sdk": "^2.903.0",
     "compression": "^1.7.4",
+    "cookie": "^0.4.2",
     "cors": "^2.8.5",
     "dauria": "^2.0.0",
     "deepl": "^1.0.13",

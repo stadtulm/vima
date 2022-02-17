@@ -6,6 +6,12 @@ import { iff, discard, traverse } from 'feathers-hooks-common'
 import feathersVuex from 'feathers-vuex'
 import Store from '@/store'
 import { decode } from 'he'
+import Cookie from 'cookie'
+import i18n from '@/i18n'
+
+if (!Cookie.parse(document.cookie).clientLanguage) {
+  document.cookie = 'clientLanguage=' + i18n.locale + '; path=/; SameSite=Lax; expires=31 Dec 2100 23:59:59 UTC'
+}
 
 const socket = io(process.env.VUE_APP_SERVER_URL, {
   transports: ['websocket'],

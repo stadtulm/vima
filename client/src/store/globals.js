@@ -75,6 +75,33 @@ const state = {
       return text
     }
   },
+  reduceTranslations: function (data, language, properties) {
+    for (const property of properties) {
+      if (data[property] && Array.isArray(data[property])) {
+        const dataProperty = data[property].find(translation => translation && translation.lang === language)
+        if (dataProperty) {
+          data[property] = dataProperty
+        } else {
+          data[property] = data[property].find(translation => translation && translation.type === 'default')
+        }
+      }
+    }
+    return data
+  },
+  hydrateLanguages: function (data) {
+    // TODO: Replace with real languages list and maybe change default language value
+    const tmpLanguages = JSON.parse(JSON.stringify(data || []))
+    for (const language of ['de', 'en']) {
+      if (!tmpLanguages.find(obj => obj.lang === language)) {
+        tmpLanguages.push({
+          type: i18n.fallbackLocale === language ? 'default' : 'author',
+          lang: language,
+          value: ''
+        })
+      }
+    }
+    return tmpLanguages
+  },
   rules: {
     required: value => !!value || i18n.t('rulesRequired'),
     tiptapRequired: value => (value && value.replaceAll('<p>', '').replaceAll('</p>', '') !== '') || i18n.t('rulesRequired'),
@@ -164,6 +191,12 @@ const getters = {
   },
   newTab: state => {
     return state.newTab
+  },
+  reduceTranslations: state => {
+    return state.reduceTranslations
+  },
+  hydrateLanguages: state => {
+    return state.hydrateLanguages
   },
   deepSort: state => {
     return state.deepSort

@@ -6,6 +6,10 @@ module.exports = {
     'feathers-vuex'
   ],
 
+  configureWebpack: {
+    devtool: 'source-map'
+  },
+
   devServer: {
     disableHostCheck: true,
     port: 8081

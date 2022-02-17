@@ -1,3 +1,52 @@
+const Cookie = require('cookie')
+
+function createLanguageChannels (app, data, connections, properties) {
+  // TODO: Replace with real languages list
+  const languages = ['de', 'en']
+  const isArray = Array.isArray(data)
+  if (!isArray) {
+    data = [data]
+  }
+  const filteredChannels = []
+  const filteredData = {}
+  const sortedConnections = {}
+  // Split filtered data
+  for (const language of languages) {
+    sortedConnections[language] = []
+    filteredData[language] = data.map(obj => {
+      const clone = JSON.parse(JSON.stringify(obj))
+      for (const property of properties) {
+        // Check if language exists and use default if not
+        const languageProperty = obj[property].find(t => t.lang === language)
+        if (languageProperty) {
+          clone[property] = [obj[property].find(t => t.lang === language)]
+        } else {
+          clone[property] = [obj[property].find(t => t.type === 'default')]
+        }
+      }
+      return clone
+    })
+    if (!isArray) {
+      filteredData[language] = filteredData[language][0]
+    }
+  }
+  // Sort connections by language
+  for (const connection of connections.connections) {
+    let id
+    if (connection.user) {
+      id = connection.user._id.toString()
+    } else {
+      id = connection.clientId
+    }
+    sortedConnections[connection.language] = id
+  }
+  // Create channels
+  for (const language of languages) {
+    filteredChannels.push(app.channel(sortedConnections[language]).send(filteredData[language]))
+  }
+  return filteredChannels
+}
+
 module.exports = function (app) {
   if (typeof app.channel !== 'function') {
     // If no real-time functionality has been configured just return
@@ -8,9 +57,12 @@ module.exports = function (app) {
   * Connection stuff
   */
 
-  app.on('connection', connection => {
+  app.on('connection', async connection => {
     // Join anonymous as default channel
     app.channel('anonymous').join(connection)
+    app.channel(connection.clientId).join(connection)
+    // Expose user language
+    app.io.sockets.connected[connection.clientId].feathers.language = Cookie.parse(connection.headers.cookie).clientLanguage
   })
 
   app.on('disconnect', async (connection) => {
@@ -32,6 +84,7 @@ module.exports = function (app) {
         // Join anonymous channel
       }, 1000)
       // Join anonymous
+      app.channel(connection.clientId).join(connection)
       app.channel('anonymous').join(connection)
     }
     // Update users count
@@ -41,6 +94,7 @@ module.exports = function (app) {
   app.on('login', async (authResult, { connection }) => {
     // Leave common channels
     app.channel('anonymous').leave(connection)
+    app.channel(connection.clientId).leave(connection)
     if (connection && connection.user) {
       // Join common channels
       app.channel('authenticated').join(connection)
@@ -104,7 +158,7 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('categories').publish((data, hook) => {
-    return app.channel('anonymous', 'authenticated')
+    return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['text', 'description'])
   })
 
   /*
@@ -343,6 +397,7 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('violations').publish((data, hook) => {
+    // TODO: What about group moderators / owners
     return app.channel('admins')
   })
 }

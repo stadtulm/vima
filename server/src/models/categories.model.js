@@ -1,3 +1,4 @@
+const Translation = require('./translations.model')
 // categories-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -7,12 +8,15 @@ module.exports = function (app) {
   const mongooseClient = app.get('mongooseClient')
   const { Schema } = mongooseClient
   const schema = new Schema({
-    name: { type: String, required: true },
+    text: [{
+      type: Translation,
+      required: true
+    }],
     pic: {
       url: { type: String },
       credit: { type: String }
     },
-    description: { type: String }
+    description: [{ type: Translation }]
   }, {
     timestamps: true
   })

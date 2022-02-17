@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Store from '@/store'
 import i18n from '@/i18n'
 import Multiguard from 'vue-router-multiguard'
+import Cookie from 'cookie'
 
 import Home from '@/views/Home.vue'
 import Site from '@/views/Site.vue'
@@ -1104,6 +1105,7 @@ async function init (to, from, next) {
           ++i
         }, 100)
       } catch (e) {
+        console.log(e)
         let i = 0
         const matomoInterval = setInterval(() => {
           if (Vue.prototype.$matomo) {
@@ -1121,11 +1123,13 @@ async function init (to, from, next) {
       }
     }
     // Set language
+    const cookies = Cookie.parse(document.cookie)
     if (Store.getters['auth/user'] && Store.getters['auth/user'].language) {
       i18n.locale = Store.getters['auth/user'].language
-    } else if (localStorage.getItem('language')) {
-      i18n.locale = localStorage.getItem('language')
+    } else if (cookies.clientLanguage) {
+      i18n.locale = cookies.clientLanguage
     }
+    document.cookie = 'clientLanguage=' + i18n.locale + '; path=/; SameSite=Lax; expires=31 Dec 2100 23:59:59 UTC'
     // Load stuff
     await Store.dispatch('categories/find', { query: {}, $paginate: false })
     const query = {}

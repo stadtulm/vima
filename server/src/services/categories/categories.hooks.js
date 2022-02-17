@@ -61,7 +61,17 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.$keepTranslations,
+          commonHooks.alterItems((rec, context) => {
+            return reduceTranslations(rec, context.params.connection.language, ['text', 'description'])
+          })
+        )
+      )
+    ],
     find: [],
     get: [],
     create: [],
@@ -93,4 +103,18 @@ module.exports = {
     patch: [],
     remove: []
   }
+}
+
+function reduceTranslations (data, language, properties) {
+  for (const property of properties) {
+    if (data[property] && Array.isArray(data[property])) {
+      const dataProperty = data[property].find(translation => translation.lang === language)
+      if (dataProperty) {
+        data[property] = [dataProperty]
+      } else {
+        data[property] = [data[property].find(translation => translation.type === 'default')]
+      }
+    }
+  }
+  return data
 }

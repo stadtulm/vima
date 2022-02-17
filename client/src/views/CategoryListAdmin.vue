@@ -43,7 +43,7 @@
         <v-data-table
           class="customGreyBg elevation-3"
           :headers="headers"
-          :items="computedCategories.sort((a, b) => a.name.localeCompare(b.name))"
+          :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -65,7 +65,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.name`]="{ item }"
+            v-slot:[`item.text`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -74,12 +74,12 @@
                 <v-list-item-title
                   class="font-weight-bold"
                 >
-                  {{item.name}}
+                  {{item.text.value}}
                 </v-list-item-title>
                 <div
-                  v-if="item.description && item.description !== ''"
+                  v-if="item.description && item.description && item.description.value !== ''"
                 >
-                  {{truncatedDescription(newTab(item.description))}}
+                  {{truncatedDescription(newTab(item.description.value))}}
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -306,7 +306,8 @@ export default {
   computed: {
     ...mapGetters([
       's3',
-      'newTab'
+      'newTab',
+      'reduceTranslations'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -316,7 +317,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('name'), value: 'name' },
+        { text: this.$t('name'), value: 'text' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('updatedAt'), value: 'updatedAt' },
         { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
@@ -324,10 +325,12 @@ export default {
       ]
     },
     computedCategories () {
+      const filteredCategories = this.categories.map(category => this.reduceTranslations(category, this.user.language, ['text', 'description']))
       if (this.search && this.search.trim() !== '') {
-        return this.categories.filter(obj => obj.name.toLowerCase().includes(this.search.toLowerCase()))
+        return filteredCategories
+          .filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
       } else {
-        return this.categories
+        return filteredCategories
       }
     }
   }

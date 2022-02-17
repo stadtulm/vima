@@ -15,7 +15,14 @@ const sanitizer = function (node) {
 
 module.exports = {
   before: {
-    all: [],
+    all: [
+      (context) => {
+        if (context.params?.query?.$keepTranslations) {
+          context.params.$keepTranslations = true
+          delete context.params.query.$keepTranslations
+        }
+      }
+    ],
     find: [],
     get: [],
     create: [

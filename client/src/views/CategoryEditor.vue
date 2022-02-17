@@ -35,9 +35,16 @@
                   color="customGrey"
                   :label="$t('name')"
                   background-color="#fff"
-                  v-model="name"
-                  :rules="[rules.required]"
+                  v-model="text.find(obj => obj.lang === currentLanguage).value"
+                  :rules="[v => text.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
                 >
+                  <template v-slot:prepend>
+                    <LanguageSelect
+                      :currentLanguage="currentLanguage"
+                      :languageObjects="text"
+                      @setLanguage="(l) => { currentLanguage = l }"
+                    ></LanguageSelect>
+                  </template>
                 </v-text-field>
               </v-col>
             </v-row>
@@ -51,11 +58,18 @@
                   dense
                   outlined
                   color="customGrey"
-                  v-model="description"
+                  v-model="description.find(obj => obj.lang === currentLanguage).value"
                   background-color="#fff"
                   :label="$t('description') + ' ' + $t('optionalLabelExtension')"
                   :rules="[rules.shortText]"
                 >
+                  <template v-slot:prepend>
+                    <LanguageSelect
+                      :currentLanguage="currentLanguage"
+                      :languageObjects="description"
+                      @setLanguage="(l) => { currentLanguage = l }"
+                    ></LanguageSelect>
+                  </template>
                 </v-textarea>
               </v-col>
             </v-row>
@@ -189,6 +203,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import LanguageSelect from '@/components/LanguageSelect.vue'
 
 const server = process.env.VUE_APP_SERVER_URL
 
@@ -196,7 +211,8 @@ export default {
   name: 'CategoryEditor',
 
   components: {
-    vueDropzone: vue2Dropzone
+    vueDropzone: vue2Dropzone,
+    LanguageSelect
   },
 
   data: () => ({
@@ -204,9 +220,10 @@ export default {
     selectedCategory: undefined,
     isLoading: false,
     isValid: false,
-    name: undefined,
+    text: undefined,
     description: undefined,
-    pic: undefined
+    pic: undefined,
+    currentLanguage: 'de'
   }),
 
   async mounted () {
@@ -251,16 +268,12 @@ export default {
     },
     async adapt () {
       if (this.$route.params.id) {
-        let selectedCategory = this.getCategory(this.$route.params.id)
-        if (!selectedCategory) {
-          selectedCategory = await this.requestCategory([this.$route.params.id])
-        }
-        this.selectedCategory = selectedCategory
+        this.selectedCategory = await this.requestCategory([this.$route.params.id, { query: { $keepTranslations: true } }])
       }
       if (this.selectedCategory) {
         this.pic = this.selectedCategory.pic
-        this.name = this.selectedCategory.name
-        this.description = this.selectedCategory.description
+        this.text = this.hydrateLanguages(this.selectedCategory.text)
+        this.description = this.hydrateLanguages(this.selectedCategory.description)
       }
     },
     async uploadSuccess (file, response) {
@@ -321,8 +334,8 @@ export default {
         await this.$refs.vueDropzone.processQueue()
       } else {
         const map = {
-          name: this.name,
-          description: this.description
+          text: this.text.filter(language => language.value && language.value !== ''),
+          description: this.description.filter(language => language.value && language.value !== '')
         }
         if (this.pic && this.pic.url && this.pic.credit) {
           map.pic = this.pic
@@ -347,14 +360,12 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'hydrateLanguages'
     ]),
     ...mapGetters('auth', [
       'user'
     ]),
-    ...mapGetters('categories', {
-      getCategory: 'get'
-    }),
     dropzoneOptions () {
       return {
         url: server + 'uploads',
