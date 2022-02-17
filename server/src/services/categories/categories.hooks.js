@@ -12,8 +12,28 @@ module.exports = {
         authenticate('jwt', 'anonymous')
       )
     ],
-    find: [],
-    get: [],
+    find: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.$keepTranslations,
+          async (context) => {
+            await generateAggegationStages(context, ['text', 'description'])
+          }
+        )
+      )
+    ],
+    get: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.$keepTranslations,
+          async (context) => {
+            await generateAggegationStages(context, ['text', 'description'])
+          }
+        )
+      )
+    ],
     create: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
@@ -117,4 +137,47 @@ function reduceTranslations (data, language, properties) {
     }
   }
   return data
+}
+
+async function generateAggegationStages (context, properties) {
+  const stages = []
+  const populates = context.params.query.$populate
+  delete context.params.query.$populate
+  stages.push({
+    $match: {
+      ...context.params.query
+    }
+  })
+  for (const property of properties) {
+    const stage = {
+      $addFields: {}
+    }
+    stage.$addFields[properties] = {
+      $filter: {
+        input: '$' + property + '',
+        as: property,
+        cond: {
+          $or: [
+            {
+              $eq: [
+                '$$' + property + '.type',
+                'default'
+              ]
+            },
+            {
+              $eq: [
+                '$$' + property + '.lang',
+                context.params.connection.language
+              ]
+            }
+          ]
+        }
+      }
+    }
+    stages.push(stage)
+  }
+  context.result = await context.service.Model.aggregate(stages)
+  if (populates) {
+    context.result = await context.service.Model.populate(context.result, { path: populates.join(' ') })
+  }
 }
