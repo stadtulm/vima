@@ -2,6 +2,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
 const commonHooks = require('feathers-hooks-common')
 const Errors = require('@feathersjs/errors')
+const util = require('../util')
 
 module.exports = {
   before: {
@@ -18,7 +19,7 @@ module.exports = {
         commonHooks.iff(
           (context) => !context.params.$keepTranslations,
           async (context) => {
-            await generateAggegationStages(context, ['text', 'description'])
+            await util.generateAggegationStages(context, ['text', 'description'])
           }
         )
       )
@@ -29,7 +30,7 @@ module.exports = {
         commonHooks.iff(
           (context) => !context.params.$keepTranslations,
           async (context) => {
-            await generateAggegationStages(context, ['text', 'description'])
+            await util.generateAggegationStages(context, ['text', 'description'])
           }
         )
       )
@@ -87,7 +88,7 @@ module.exports = {
         commonHooks.iff(
           (context) => !context.params.$keepTranslations,
           commonHooks.alterItems((rec, context) => {
-            return reduceTranslations(rec, context.params.connection.language, ['text', 'description'])
+            return util.reduceTranslations(rec, context.params.connection.language, ['text', 'description'])
           })
         )
       )
@@ -122,62 +123,5 @@ module.exports = {
     update: [],
     patch: [],
     remove: []
-  }
-}
-
-function reduceTranslations (data, language, properties) {
-  for (const property of properties) {
-    if (data[property] && Array.isArray(data[property])) {
-      const dataProperty = data[property].find(translation => translation.lang === language)
-      if (dataProperty) {
-        data[property] = [dataProperty]
-      } else {
-        data[property] = [data[property].find(translation => translation.type === 'default')]
-      }
-    }
-  }
-  return data
-}
-
-async function generateAggegationStages (context, properties) {
-  const stages = []
-  const populates = context.params.query.$populate
-  delete context.params.query.$populate
-  stages.push({
-    $match: {
-      ...context.params.query
-    }
-  })
-  for (const property of properties) {
-    const stage = {
-      $addFields: {}
-    }
-    stage.$addFields[properties] = {
-      $filter: {
-        input: '$' + property + '',
-        as: property,
-        cond: {
-          $or: [
-            {
-              $eq: [
-                '$$' + property + '.type',
-                'default'
-              ]
-            },
-            {
-              $eq: [
-                '$$' + property + '.lang',
-                context.params.connection.language
-              ]
-            }
-          ]
-        }
-      }
-    }
-    stages.push(stage)
-  }
-  context.result = await context.service.Model.aggregate(stages)
-  if (populates) {
-    context.result = await context.service.Model.populate(context.result, { path: populates.join(' ') })
   }
 }

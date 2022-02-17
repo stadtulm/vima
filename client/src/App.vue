@@ -33,76 +33,17 @@
 
       <v-spacer></v-spacer>
 
-      <v-menu
-        open-on-hover
-        offset-y
+      <v-sheet
+        class="pt-1"
+        :class="$vuetify.breakpoint.smAndUp ? 'pr-2' : ''"
+        color="transparent"
       >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            class="customGrey--text"
-            :class="!$vuetify.breakpoint.smAndUp ? 'ml-4': 'ml-3'"
-            :large="$vuetify.breakpoint.mdAndUp"
-            :small="!$vuetify.breakpoint.smAndUp"
-            :icon="!$vuetify.breakpoint.smAndUp"
-            v-bind="attrs"
-            v-on="on"
-            :title="$t('languageButton')"
-            tour-step="7"
-          >
-            <v-icon
-              color="customGrey"
-              class="mr-1"
-              :size="$vuetify.breakpoint.smAndUp ? 18: 24"
-            >
-              fas fa-language
-            </v-icon>
-            <template
-              v-if="$vuetify.breakpoint.mdAndUp"
-            >
-              {{$t('languageButton')}}
-            </template>
-            <v-icon
-              v-if="$vuetify.breakpoint.smAndUp"
-              color="customGrey"
-              class="ml-1"
-              size="18"
-            >
-              fa fa-chevron-down
-            </v-icon>
-          </v-btn>
-        </template>
 
-        <v-list>
-          <v-list-item
-            @click="setLanguage('en')"
-          >
-            <v-list-item-avatar>
-              <country-flag
-                class="my-0"
-                country='gb'
-              >
-              </country-flag>
-            </v-list-item-avatar>
-            <v-list-item-title>
-              {{$t('en')}}
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item
-            @click="setLanguage('de')"
-          >
-            <v-list-item-avatar>
-              <country-flag
-                class="my-0"
-                country='de'
-              >
-              </country-flag>
-            </v-list-item-avatar>
-            <v-list-item-title>
-              {{$t('de')}}
-            </v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+        <LanguageSelect
+          :currentLanguage="$i18n.locale"
+          @setLanguage="setLanguage"
+        ></LanguageSelect>
+      </v-sheet>
 
       <v-menu
         open-on-hover
@@ -1836,12 +1777,14 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { Tween } from '@createjs/tweenjs'
 import NewsletterDialog from '@/components/NewsletterDialog.vue'
+import LanguageSelect from '@/components/LanguageSelect.vue'
 
 export default {
   name: 'App',
 
   components: {
-    NewsletterDialog
+    NewsletterDialog,
+    LanguageSelect
   },
 
   data: () => ({

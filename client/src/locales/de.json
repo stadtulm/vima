@@ -587,5 +587,6 @@
   "en": "Englisch",
   "de": "Deutsch",
   "defaultLanguage": "Pflichtsprache",
-  "defaultLanguageRequired": "Die Pflichtsprache muss gesetzt sein"
+  "defaultLanguageRequired": "Die Pflichtsprache muss gesetzt sein",
+  "noDefaultValue": "Pflichtsprache fehlt"
 }

@@ -38,8 +38,18 @@
                   :label="$t('name')"
                   background-color="#fff"
                   v-model="tagProposal"
-                  :rules="[rules.required, rules.tagText, rules.noBlanks, v => !!v && !tags.map(obj => obj.name.toLowerCase()).includes(v.toLowerCase()) || $t('tagExistsError')]"
+                  :rules="[
+                    rules.required,
+                    rules.tagText,
+                    rules.noBlanks,
+                  ]"
                 >
+                  <template v-slot:prepend>
+                    <LanguageSelect
+                      :currentLanguage="currentLanguage"
+                      @setLanguage="(l) => { currentLanguage = l }"
+                    ></LanguageSelect>
+                  </template>
                 </v-text-field>
               </v-col>
             </v-row>
@@ -68,11 +78,13 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import LanguageSelect from '@/components/LanguageSelect.vue'
 
 export default {
   name: 'TagProposalDialog',
 
   components: {
+    LanguageSelect
   },
 
   props: [
@@ -82,7 +94,8 @@ export default {
   data: () => ({
     isTagLoading: false,
     tagProposal: undefined,
-    isValidTagProposal: false
+    isValidTagProposal: false,
+    currentLanguage: 'de'
   }),
 
   async mounted () {
@@ -98,7 +111,17 @@ export default {
     async saveTag () {
       this.isTagLoading = true
       try {
-        await this.createTag([{ name: this.tagProposal }])
+        await this.createTag([
+          {
+            text: [
+              {
+                value: this.tagProposal,
+                type: this.currentLanguage === 'de' ? 'default' : 'author',
+                lang: this.currentLanguage
+              }
+            ]
+          }
+        ])
         this.isTagLoading = false
         this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
         this.tagProposal = ''

@@ -372,9 +372,9 @@ module.exports = function (app) {
       !data.isActive ||
       !data.isAccepted
     ) {
-      return app.channel('admins')
+      return createLanguageChannels(app, data, app.channel('admins'), ['text', 'description'])
     } else {
-      return app.channel('anonymous', 'authenticated')
+      return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['text', 'description'])
     }
   })
 

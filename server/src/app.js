@@ -170,6 +170,22 @@ app.service('categories').find({ paginate: false }).then(els => {
 */
 
 /*
+// New text format
+app.service('tags').find({ paginate: false }).then(els => {
+  for (const el of els) {
+    el.text = [{
+      type: 'default',
+      lang: 'de',
+      value: el.name
+    }]
+    app.service('tags').update(el._id, el).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
+/*
 // Checksum
 app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
   const JSum = require('jsum')

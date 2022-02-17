@@ -3,6 +3,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
 const { notifyUsers } = require('../mailer/generator')
 const Errors = require('@feathersjs/errors')
+const util = require('../util')
 
 module.exports = {
   before: {
@@ -13,8 +14,28 @@ module.exports = {
         authenticate('jwt', 'anonymous')
       )
     ],
-    find: [],
-    get: [],
+    find: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.$keepTranslations,
+          async (context) => {
+            await util.generateAggegationStages(context, ['text'])
+          }
+        )
+      )
+    ],
+    get: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.$keepTranslations,
+          async (context) => {
+            await util.generateAggegationStages(context, ['text'])
+          }
+        )
+      )
+    ],
     create: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
@@ -29,7 +50,10 @@ module.exports = {
         },
         // Accept immediately if author is admin
         (context) => {
-          if (context.params.user.role === 'admins') {
+          if (
+            context.params.user.role === 'admins' &&
+            context.data.text.find(language => language.type === 'default')
+          ) {
             context.data.isAccepted = true
           } else {
             context.data.isAccepted = false
@@ -70,7 +94,17 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.$keepTranslations,
+          commonHooks.alterItems((rec, context) => {
+            return util.reduceTranslations(rec, context.params.connection.language, ['text'])
+          })
+        )
+      )
+    ],
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),

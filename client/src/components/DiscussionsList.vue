@@ -33,8 +33,8 @@
             auto-select-first
             dense
             hide-details
-            :items="categories.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -54,8 +54,8 @@
             deletable-chips
             dense
             hide-details
-            :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -134,7 +134,7 @@
                 class="mr-1"
                 @click="selectCategory(category._id)"
               >
-              {{category.name}}
+              {{category.text.value}}
               </v-chip>
             </template>
             <template
@@ -146,7 +146,7 @@
                 class="mr-1"
                 @click="selectTag(tag._id)"
               >
-              {{tag.name}}
+              {{tag.text.value}}
               </v-chip>
             </template>
             <template
@@ -487,7 +487,8 @@ export default {
     ...mapGetters([
       'deepSort',
       'getTags',
-      'getCategories'
+      'getCategories',
+      'reduceTranslations'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -516,7 +517,13 @@ export default {
       }
     },
     computedTags () {
-      return this.tags.filter(obj => obj.isActive && obj.isAccepted)
+      return this.tags
+        .map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text']))
+        .filter(obj => obj.isActive && obj.isAccepted)
+    },
+    computedCategories () {
+      return this.categories
+        .map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text', 'description']))
     },
     headers () {
       if (this.isAcceptList) {

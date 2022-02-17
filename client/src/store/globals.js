@@ -45,8 +45,9 @@ const state = {
             Store.dispatch('logging/create', { type: 'error', route: window.location.pathname, user: (Store.getters['auth/user'] ? Store.getters['auth/user']._id : '-'), method: 'getTags', message: 'Not existant tag: ' + obj })
           }
         })
+        .map(obj => this.reduceTranslations(obj, i18n.locale, ['text']))
         .filter(obj => !!obj)
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => a.text.value.localeCompare(b.text.value))
     } else {
       return []
     }
@@ -63,7 +64,8 @@ const state = {
           }
         })
         .filter(obj => !!obj)
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(obj => this.reduceTranslations(obj, i18n.locale, ['text']))
+        .sort((a, b) => a.text.value.localeCompare(b.text.value))
     } else {
       return []
     }
@@ -81,8 +83,14 @@ const state = {
         const dataProperty = data[property].find(translation => translation && translation.lang === language)
         if (dataProperty) {
           data[property] = dataProperty
-        } else {
+        } else if (data[property].find(translation => translation && translation.type === 'default')) {
           data[property] = data[property].find(translation => translation && translation.type === 'default')
+        } else {
+          data[property] = {
+            value: i18n.t('noDefaultValue'),
+            type: 'error',
+            lang: 'de'
+          }
         }
       }
     }

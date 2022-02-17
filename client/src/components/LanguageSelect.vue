@@ -49,7 +49,9 @@
           {{$t(language)}}
           {{ language === computedDefaultLanguage ? '(' + $t('defaultLanguage') + ')' : ''}}
         </v-list-item-title>
-        <v-list-item-action>
+        <v-list-item-action
+          v-if="computedExistingLanguages"
+        >
           <v-icon
             class="ml-1"
             size="18"
@@ -87,17 +89,25 @@ export default {
 
   computed: {
     computedExistingLanguages () {
-      return this.languageObjects
-        .filter(language => language && language.value && language.value !== '')
-        .map(language => language.lang)
+      if (this.languageObjects) {
+        return this.languageObjects
+          .filter(language => language && language.value && language.value !== '')
+          .map(language => language.lang)
+      } else {
+        return undefined
+      }
     },
     computedDefaultLanguage () {
-      const defaultObject = this.languageObjects
-        .find(language => language.type === 'default')
-      if (defaultObject) {
-        return defaultObject.lang
+      if (this.languageObjects) {
+        const defaultObject = this.languageObjects
+          .find(language => language.type === 'default')
+        if (defaultObject) {
+          return defaultObject.lang
+        } else {
+          return ''
+        }
       } else {
-        return ''
+        return undefined
       }
     }
   },

@@ -370,7 +370,8 @@ export default {
     },
     computedCategories () {
       if (this.computedCategoriesWithCount) {
-        const filteredCategories = this.categories.map(category => this.reduceTranslations(category, this.user.language, ['text', 'description']))
+        const filteredCategories = this.categories
+          .map(category => this.reduceTranslations(category, this.$i18n.locale, ['text', 'description']))
         if (this.search && this.search.trim() !== '') {
           return filteredCategories.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
         } else {

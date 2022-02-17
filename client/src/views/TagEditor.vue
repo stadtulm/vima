@@ -34,9 +34,20 @@
                   color="customGrey"
                   :label="$t('name')"
                   background-color="#fff"
-                  v-model="name"
-                  :rules="[rules.required, rules.tagText, rules.noBlanks, v => !!v && !tags.map(obj => obj.name.toLowerCase()).includes(v.toLowerCase()) || $t('tagExistsError')]"
+                  v-model="text.find(obj => obj.lang === currentLanguage).value"
+                  :rules="[
+                    v => text.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired'),
+                    rules.tagText,
+                    rules.noBlanks
+                  ]"
                 >
+                  <template v-slot:prepend>
+                    <LanguageSelect
+                      :currentLanguage="currentLanguage"
+                      :languageObjects="text"
+                      @setLanguage="(l) => { currentLanguage = l }"
+                    ></LanguageSelect>
+                  </template>
                 </v-text-field>
               </v-col>
             </v-row>
@@ -77,16 +88,22 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import LanguageSelect from '@/components/LanguageSelect.vue'
 
 export default {
   name: 'TagEditor',
+
+  components: {
+    LanguageSelect
+  },
 
   data: () => ({
     selectedTag: undefined,
     isLoading: false,
     isValid: false,
-    name: undefined,
-    isActive: true
+    text: undefined,
+    isActive: true,
+    currentLanguage: 'de'
   }),
 
   async mounted () {
@@ -107,21 +124,17 @@ export default {
     }),
     async adapt () {
       if (this.$route.params.id) {
-        let selectedTag = this.getTag(this.$route.params.id)
-        if (!selectedTag) {
-          selectedTag = await this.requestTag([this.$route.params.id])
-        }
-        this.selectedTag = selectedTag
+        this.selectedTag = await this.requestTag([this.$route.params.id, { query: { $keepTranslations: true } }])
       }
       if (this.selectedTag) {
-        this.name = this.selectedTag.name
+        this.text = this.hydrateLanguages(this.selectedTag.text)
         this.isActive = this.selectedTag.isActive
       }
     },
     async saveTag () {
       this.isLoading = true
       const map = {
-        name: this.name,
+        text: this.text.filter(language => language.value && language.value !== ''),
         isActive: this.isActive
       }
       try {
@@ -143,14 +156,13 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      'hydrateLanguages'
     ]),
     ...mapGetters('auth', [
       'user'
     ]),
     ...mapGetters('tags', {
-      tags: 'list',
-      getTag: 'get'
+      tags: 'list'
     })
   }
 }

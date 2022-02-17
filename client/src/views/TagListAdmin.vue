@@ -46,7 +46,7 @@
           :item-class="itemRowBackground"
           class="customGreyBg elevation-3"
           :headers="headers"
-          :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
+          :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -68,7 +68,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.name`]="{ item }"
+            v-slot:[`item.text`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -76,8 +76,9 @@
               <v-list-item-content>
                 <v-list-item-title
                   class="font-weight-bold"
+                  :class="item.text.type === 'error' ? 'error--text' : ''"
                 >
-                  {{item.name}}
+                  {{item.text.value}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -98,7 +99,7 @@
             <v-btn
               icon
               color="customGrey"
-              :disabled="user.role !== 'admins'"
+              :disabled="user.role !== 'admins' || item.text.type === 'error'"
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeTagProperty(
                 item,
@@ -407,7 +408,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'reduceTranslations'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -420,7 +422,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('name'), value: 'name' },
+        { text: this.$t('name'), value: 'text' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('updatedAt'), value: 'updatedAt' },
         { text: this.$t('accepted'), value: 'isAccepted', align: 'center' },
@@ -433,10 +435,11 @@ export default {
       return this.statusContainers.find(obj => obj.user === this.user._id && obj.type === 'tags' && obj.relation === 'admin')
     },
     computedTags () {
+      const filteredTags = this.tags.map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text']))
       if (this.search && this.search.trim() !== '') {
-        return this.tags.filter(obj => obj.name.toLowerCase().includes(this.search.toLowerCase()))
+        return filteredTags.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
       } else {
-        return this.tags
+        return filteredTags
       }
     }
   },
