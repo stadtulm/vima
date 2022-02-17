@@ -90,7 +90,10 @@ const state = {
   },
   hydrateLanguages: function (data) {
     // TODO: Replace with real languages list and maybe change default language value
-    const tmpLanguages = JSON.parse(JSON.stringify(data || []))
+    let tmpLanguages = JSON.parse(JSON.stringify(data || []))
+    if (!Array.isArray(tmpLanguages)) {
+      tmpLanguages = [tmpLanguages]
+    }
     for (const language of ['de', 'en']) {
       if (!tmpLanguages.find(obj => obj.lang === language)) {
         tmpLanguages.push({

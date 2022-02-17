@@ -1131,7 +1131,7 @@ async function init (to, from, next) {
     }
     document.cookie = 'clientLanguage=' + i18n.locale + '; path=/; SameSite=Lax; expires=31 Dec 2100 23:59:59 UTC'
     // Load stuff
-    await Store.dispatch('categories/find', { query: {}, $paginate: false })
+    await Store.dispatch('categories/find', { $paginate: false })
     const query = {}
     if (!Store.getters['auth/user'] || (Store.getters['auth/user'] && Store.getters['auth/user'].role !== 'admins')) {
       query.isActive = true

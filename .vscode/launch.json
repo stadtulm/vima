@@ -11,6 +11,10 @@
             "program": "${workspaceFolder}\\server\\src",
             "cwd": "${workspaceFolder}\\server",
             "console": "integratedTerminal",
+            "outFiles": [
+              "${workspaceFolder}/**/*.js",
+              "!**/node_modules/**"
+            ]
         },
         {
             "type": "chrome",

@@ -88,7 +88,7 @@
           item-class="pointer"
           class="customGreyBg elevation-3"
           :headers="headers"
-          :items="computedCategories.sort((a, b) => a.name.localeCompare(b.name))"
+          :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -115,13 +115,13 @@
             </v-img>
           </template>
           <template
-            v-slot:[`item.name`]="{ item }"
+            v-slot:[`item.text`]="{ item }"
           >
             <div
               class="pointer font-weight-bold"
               @click="$router.push({ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id }})"
             >
-              {{item.name}}
+              {{item.text.value}}
             </div>
           </template>
           <template
@@ -145,6 +145,11 @@
             >
               {{tag.name}}
             </v-chip>
+          </template>
+          <template
+            v-slot:[`item.description`]="{ item }"
+          >
+              {{item.description.value}}
           </template>
         </v-data-table>
       </v-col>
@@ -330,9 +335,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
-    ]),
-    ...mapGetters([
+      's3',
+      'reduceTranslations',
       'typeItems'
     ]),
     ...mapGetters('tags', {
@@ -347,7 +351,7 @@ export default {
     headers () {
       return [
         { text: '', value: 'pic' },
-        { text: this.$t('name'), value: 'name', width: '30%' },
+        { text: this.$t('name'), value: 'text', width: '30%' },
         { text: this.$t('tags'), value: 'tags', sortable: false },
         { text: this.$t('description'), value: 'description', width: '50%' },
         { text: this.$t('entries'), value: 'entries', align: 'center' }
@@ -366,10 +370,11 @@ export default {
     },
     computedCategories () {
       if (this.computedCategoriesWithCount) {
+        const filteredCategories = this.categories.map(category => this.reduceTranslations(category, this.user.language, ['text', 'description']))
         if (this.search && this.search.trim() !== '') {
-          return this.categories.filter(obj => obj.name.toLowerCase().includes(this.search.toLowerCase()))
+          return filteredCategories.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
         } else {
-          return this.categories
+          return filteredCategories
         }
       } else {
         return []
