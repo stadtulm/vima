@@ -18,7 +18,7 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         commonHooks.iff(
-          (context) => !context.params.$keepTranslations,
+          (context) => !context.params.keepTranslations,
           async (context) => {
             await util.generateAggegationStages(context, ['text'])
           }
@@ -29,7 +29,7 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         commonHooks.iff(
-          (context) => !context.params.$keepTranslations,
+          (context) => !context.params.keepTranslations,
           async (context) => {
             await util.generateAggegationStages(context, ['text'])
           }
@@ -98,7 +98,7 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         commonHooks.iff(
-          (context) => !context.params.$keepTranslations,
+          (context) => !context.params.keepTranslations,
           commonHooks.alterItems((rec, context) => {
             return util.reduceTranslations(rec, context.params.connection.language, ['text'])
           })

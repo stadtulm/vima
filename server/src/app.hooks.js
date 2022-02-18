@@ -1,5 +1,5 @@
 // Application hooks that run for every service
-const { traverse } = require('feathers-hooks-common')
+const { traverse, paramsFromClient } = require('feathers-hooks-common')
 const sanitizeHtml = require('sanitize-html')
 const sanitizeOptions = {
   allowedTags: ['p', 'strong', 'em', 'u', 's', 'blockquote', 'ul', 'li', 'ol', 'a', 'br', 'div', 'h1', 'h2', 'h3', 'h4', 'h5'],
@@ -16,12 +16,7 @@ const sanitizer = function (node) {
 module.exports = {
   before: {
     all: [
-      (context) => {
-        if (context.params?.query?.$keepTranslations) {
-          context.params.$keepTranslations = true
-          delete context.params.query.$keepTranslations
-        }
-      }
+      paramsFromClient('keepTranslations')
     ],
     find: [],
     get: [],

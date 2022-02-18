@@ -124,7 +124,7 @@ export default {
     }),
     async adapt () {
       if (this.$route.params.id) {
-        this.selectedTag = await this.requestTag([this.$route.params.id, { query: { $keepTranslations: true } }])
+        this.selectedTag = await this.requestTag([this.$route.params.id, { keepTranslations: true }])
       }
       if (this.selectedTag) {
         this.text = this.hydrateLanguages(this.selectedTag.text)

@@ -26,7 +26,7 @@ module.exports = {
       const stage = {
         $addFields: {}
       }
-      stage.$addFields[properties] = {
+      stage.$addFields[property] = {
         $filter: {
           input: '$' + property + '',
           as: property,
@@ -52,7 +52,7 @@ module.exports = {
     }
     context.result = await context.service.Model.aggregate(stages)
     if (populates) {
-      context.result = await context.service.Model.populate(context.result, { path: populates.join(' ') })
+      // context.result = await context.service.Model.populate(context.result, { path: populates.join(' ') })
     }
   }
 }

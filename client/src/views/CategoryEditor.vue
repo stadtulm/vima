@@ -268,7 +268,7 @@ export default {
     },
     async adapt () {
       if (this.$route.params.id) {
-        this.selectedCategory = await this.requestCategory([this.$route.params.id, { query: { $keepTranslations: true } }])
+        this.selectedCategory = await this.requestCategory([this.$route.params.id, { keepTranslations: true }])
       }
       if (this.selectedCategory) {
         this.pic = this.selectedCategory.pic
