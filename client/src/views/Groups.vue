@@ -124,8 +124,8 @@
             auto-select-first
             dense
             hide-details
-            :items="categories.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -146,8 +146,8 @@
             deletable-chips
             dense
             hide-details
-            :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -309,6 +309,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters([
+      'reduceTranslations'
+    ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -335,8 +338,14 @@ export default {
         return false
       }
     },
+    computedCategories () {
+      return this.categories
+        .map(category => this.reduceTranslations(category, this.$i18n.locale, ['text', 'description']))
+    },
     computedTags () {
-      return this.tags.filter(obj => obj.isActive && obj.isAccepted)
+      return this.tags
+        .filter(obj => obj.isActive && obj.isAccepted)
+        .map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text']))
     },
     computedGroups () {
       if (this.computedGroupsData && this.computedGroupsData.data) {

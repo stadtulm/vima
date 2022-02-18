@@ -483,7 +483,7 @@ const routes = [
     name: 'UserList',
     component: UserList,
     meta: {
-      breadCrumbTextKey: 'memberOverview',
+      breadCrumbTextKey: 'membersOverview',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -809,8 +809,7 @@ const routes = [
       step: 'groups',
       breadCrumbTextKey: 'interestGroups',
       breadCrumbPredecessors: [
-        ['Participate'],
-        ['CategoryList']
+        ['Participate']
       ]
     }
   },

@@ -272,8 +272,8 @@ export default {
       }
       if (this.selectedCategory) {
         this.pic = this.selectedCategory.pic
-        this.text = this.hydrateLanguages(this.selectedCategory.text)
-        this.description = this.hydrateLanguages(this.selectedCategory.description)
+        this.text = this.hydrateTranslations(this.selectedCategory.text)
+        this.description = this.hydrateTranslations(this.selectedCategory.description)
       }
     },
     async uploadSuccess (file, response) {
@@ -361,7 +361,7 @@ export default {
     ...mapGetters([
       'rules',
       's3',
-      'hydrateLanguages'
+      'hydrateTranslations'
     ]),
     ...mapGetters('auth', [
       'user'

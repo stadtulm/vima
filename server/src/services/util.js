@@ -52,7 +52,7 @@ module.exports = {
     }
     context.result = await context.service.Model.aggregate(stages)
     if (populates) {
-      // context.result = await context.service.Model.populate(context.result, { path: populates.join(' ') })
+      context.result = await context.service.Model.populate(context.result, { path: populates.join(' ') })
     }
   }
 }

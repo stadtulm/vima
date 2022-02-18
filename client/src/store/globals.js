@@ -45,7 +45,7 @@ const state = {
             Store.dispatch('logging/create', { type: 'error', route: window.location.pathname, user: (Store.getters['auth/user'] ? Store.getters['auth/user']._id : '-'), method: 'getTags', message: 'Not existant tag: ' + obj })
           }
         })
-        .map(obj => this.reduceTranslations(obj, i18n.locale, ['text']))
+        .map(obj => Store.getters.reduceTranslations(obj, i18n.locale, ['text']))
         .filter(obj => !!obj)
         .sort((a, b) => a.text.value.localeCompare(b.text.value))
     } else {
@@ -64,7 +64,7 @@ const state = {
           }
         })
         .filter(obj => !!obj)
-        .map(obj => this.reduceTranslations(obj, i18n.locale, ['text']))
+        .map(obj => Store.getters.reduceTranslations(obj, i18n.locale, ['text']))
         .sort((a, b) => a.text.value.localeCompare(b.text.value))
     } else {
       return []
@@ -96,7 +96,7 @@ const state = {
     }
     return data
   },
-  hydrateLanguages: function (data) {
+  hydrateTranslations: function (data) {
     // TODO: Replace with real languages list and maybe change default language value
     let tmpLanguages = JSON.parse(JSON.stringify(data || []))
     if (!Array.isArray(tmpLanguages)) {
@@ -206,8 +206,8 @@ const getters = {
   reduceTranslations: state => {
     return state.reduceTranslations
   },
-  hydrateLanguages: state => {
-    return state.hydrateLanguages
+  hydrateTranslations: state => {
+    return state.hydrateTranslations
   },
   deepSort: state => {
     return state.deepSort

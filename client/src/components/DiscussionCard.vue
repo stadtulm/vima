@@ -101,9 +101,10 @@
                   v-for="category in getCategories(computedDiscussion.categories)"
                   :key="category._id"
                   class="mr-1"
-                  @click="$emit('selectCategory', category._id)"
+                  :disabled="!discussionProp"
+                  @click.prevent="$emit('selectCategory', category._id)"
                 >
-                {{category.name}}
+                {{category.text.value}}
                 </v-chip>
               </v-col>
             </v-row>
@@ -116,9 +117,10 @@
                   v-for="tag in getTags(computedDiscussion.tags)"
                   :key="tag._id"
                   class="mr-1"
-                  @click="$emit('selectTag', tag._id)"
+                  :disabled="!discussionProp"
+                  @click.prevent="$emit('selectTag', tag._id)"
                 >
-                {{tag.name}}
+                {{tag.text.value}}
                 </v-chip>
               </v-col>
             </v-row>

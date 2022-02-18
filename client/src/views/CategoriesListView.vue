@@ -143,7 +143,7 @@
               class="ma-1"
               :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id, t: tag._id }}"
             >
-              {{tag.name}}
+              {{tag.text.value}}
             </v-chip>
           </template>
           <template
@@ -315,15 +315,15 @@ export default {
             )
           ]
             .map(obj => {
-              const category = this.getTag(obj)
-              if (category) {
-                return category
+              const tag = this.getTag(obj)
+              if (tag) {
+                return this.reduceTranslations(tag, this.$i18n.locale, ['text'])
               } else {
                 this.createLog({ type: 'error', route: window.location.pathname, user: (this.user ? this.user._id : '-'), method: 'getTags (CategoriesListView)', message: 'Not existant category: ' + obj })
               }
             })
             .filter(obj => !!obj)
-            .sort((a, b) => '' + a.name.localeCompare(b.name))
+            .sort((a, b) => '' + a.text.value.localeCompare(b.text.value))
         } else {
           return []
         }

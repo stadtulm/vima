@@ -82,7 +82,7 @@
                         :clearText="$t('reset')"
                         :okText="$t('save')"
                         dateFormat="dd.MM.yyyy,"
-                        :timeFormat="'HH:mm ' + $t('oClock')"
+                        :timeFormat="'HH:mm \'' + $t('oClock') + '\''"
                         color="error"
                         :datePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)' }"
                         :timePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)', 'format': '24hr' }"
@@ -117,7 +117,7 @@
                       :clearText="$t('reset')"
                         :okText="$t('save')"
                       dateFormat="dd.MM.yyyy,"
-                      :timeFormat="'HH:mm ' + $t('oClock')"
+                      :timeFormat="'HH:mm \'' + $t('oClock') + '\''"
                       color="error"
                       :datePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)' }"
                       :timePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)', 'format': '24hr' }"
@@ -148,10 +148,10 @@
                     background-color="#fff"
                     outlined
                     v-model="selectedCategories"
-                    item-text="name"
+                    item-text="text.value"
                     item-value="_id"
                     :label="$t('categories')"
-                    :items="categories.sort((a, b) => a.name.localeCompare(b.name))"
+                    :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
                     :rules="[rules.minOneCategory, rules.maxThreeCategories]"
                   >
                   </v-select>
@@ -175,10 +175,10 @@
                     background-color="#fff"
                     outlined
                     v-model="selectedTags"
-                    item-text="name"
+                    item-text="text.value"
                     item-value="_id"
                     :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
-                    :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
+                    :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
                   >
                   </v-autocomplete>
                 </v-col>
@@ -668,7 +668,8 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'reduceTranslations'
     ]),
     ...mapGetters('events', {
       getEvent: 'get'
@@ -696,8 +697,14 @@ export default {
         return []
       }
     },
+    computedCategories () {
+      return this.categories
+        .map(category => this.reduceTranslations(category, this.$i18n.locale, ['text', 'description']))
+    },
     computedTags () {
-      return this.tags.filter(obj => obj.isActive && obj.isAccepted)
+      return this.tags
+        .filter(obj => obj.isActive && obj.isAccepted)
+        .map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text']))
     },
     dropzoneOptionsPics () {
       return {

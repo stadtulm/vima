@@ -86,10 +86,10 @@
                     background-color="#fff"
                     outlined
                     v-model="selectedCategories"
-                    item-text="name"
+                    item-text="text.value"
                     item-value="_id"
                     :label="$t('categories')"
-                    :items="categories.sort((a, b) => a.name.localeCompare(b.name))"
+                    :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
                     :rules="[rules.minOneCategory, rules.maxThreeCategories]"
                   >
                   </v-select>
@@ -113,10 +113,10 @@
                     background-color="#fff"
                     outlined
                     v-model="selectedTags"
-                    item-text="name"
+                    item-text="text.value"
                     item-value="_id"
                     :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
-                    :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
+                    :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
                   >
                   </v-autocomplete>
                 </v-col>
@@ -582,7 +582,8 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'reduceTranslations'
     ]),
     ...mapGetters('ads', {
       getAd: 'get'
@@ -596,8 +597,14 @@ export default {
     ...mapGetters('tags', {
       tags: 'list'
     }),
+    computedCategories () {
+      return this.categories
+        .map(category => this.reduceTranslations(category, this.$i18n.locale, ['text', 'description']))
+    },
     computedTags () {
-      return this.tags.filter(obj => obj.isActive && obj.isAccepted)
+      return this.tags
+        .filter(obj => obj.isActive && obj.isAccepted)
+        .map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text']))
     },
     dropzoneOptionsPics () {
       return {

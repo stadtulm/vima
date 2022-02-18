@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{categories}}
     <v-row
       class="mb-4"
     >
@@ -86,8 +87,9 @@
               v-for="category in getCategories(item.categories)"
               :key="category._id"
               class="mr-1"
+              disabled
             >
-            {{category.name}}
+            {{category.text.value}}
             </v-chip>
           </template>
           <template
@@ -97,8 +99,9 @@
               v-for="tag in getTags(item.tags)"
               :key="tag._id"
               class="mr-1"
+              disabled
             >
-            {{tag.name}}
+            {{tag.text.value}}
             </v-chip>
           </template>
           <template

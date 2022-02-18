@@ -127,7 +127,7 @@ export default {
         this.selectedTag = await this.requestTag([this.$route.params.id, { keepTranslations: true }])
       }
       if (this.selectedTag) {
-        this.text = this.hydrateLanguages(this.selectedTag.text)
+        this.text = this.hydrateTranslations(this.selectedTag.text)
         this.isActive = this.selectedTag.isActive
       }
     },
@@ -156,7 +156,7 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      'hydrateLanguages'
+      'hydrateTranslations'
     ]),
     ...mapGetters('auth', [
       'user'

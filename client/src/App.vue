@@ -1939,7 +1939,7 @@ export default {
         await this.logout()
       } catch (e) {}
       await this.$router.push({ name: 'Participate' })
-      location.reload()
+      document.location.reload(true)
     },
     onStorageUpdate (event) {
       if (event.key === 'feathers-jwt' && event.newValue === null) {
@@ -2420,6 +2420,10 @@ export default {
 </script>
 
 <style>
+
+  .v-chip--disabled {
+    opacity: 0.8 !important;
+  }
 
   .tiptap-vuetify-editor {
     width: 100%

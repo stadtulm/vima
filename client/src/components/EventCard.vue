@@ -69,9 +69,9 @@
               v-for="category in getCategories(computedEvent.categories)"
               :key="category._id"
               class="mr-1"
-              @click="$emit('selectCategory', category._id)"
+              disabled
             >
-            {{category.name}}
+            {{category.text.value}}
             </v-chip>
           </v-col>
         </v-row>
@@ -85,9 +85,9 @@
               v-for="tag in getTags(computedEvent.tags)"
               :key="tag._id"
               class="mr-1"
-              @click="$emit('selectTag', tag._id)"
+              disabled
             >
-            {{tag.name}}
+            {{tag.text.value}}
             </v-chip>
           </v-col>
         </v-row>
