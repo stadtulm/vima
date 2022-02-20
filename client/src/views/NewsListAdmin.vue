@@ -43,8 +43,8 @@
         <v-data-table
           class="customGreyBg elevation-3"
           :headers="headers"
-          :items="news"
-          :loading="loading"
+          :items="computedNews"
+          :loading="isFindNewsPending"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -67,7 +67,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.0.value`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -76,12 +76,12 @@
                 <v-list-item-title
                   class="font-weight-bold"
                 >
-                  {{item.title}}
+                  {{item.title.value}}
                 </v-list-item-title>
                 <v-list-item-subtitle
                   v-if="item.subTitle && item.subTitle !== ''"
                 >
-                  {{item.subTitle}}
+                  {{item.subTitle.value}}
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -380,18 +380,16 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'NewsListAdmin',
 
-  mixins: [makeFindMixin({ service: 'news', watch: true })],
-
   components: {
   },
 
   data: () => ({
+    isFindNewsPending: false,
     searchRecipients: undefined,
     newsletterTypes: {
       users: 'Mitglied',
@@ -405,7 +403,6 @@ export default {
     loaders: {},
     search: '',
     page: 1,
-    loading: true,
     total: 0,
     itemsPerPage: 5,
     sortBy: ['updatedAt'],
@@ -423,7 +420,8 @@ export default {
       setSnackbar: 'SET_SNACKBAR'
     }),
     ...mapActions('news', {
-      removeNews: 'remove'
+      removeNews: 'remove',
+      findNews: 'find'
     }),
     ...mapActions('sendstats', {
       findSendstats: 'find',
@@ -592,14 +590,15 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'reduceTranslations'
     ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.0.value' },
         { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
         { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
         { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
@@ -607,18 +606,6 @@ export default {
         { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
         { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
       ]
-    },
-    newsParams () {
-      return {
-        query: {
-          title: { $regex: this.search, $options: 'i' },
-          $limit: this.computedLimit,
-          $skip: (this.page - 1) * this.computedSkip,
-          $sort: { [this.sortBy]: this.computedSortDesc }
-        },
-        debounce: 1000,
-        qid: 'admin'
-      }
     },
     computedRecievers () {
       if (this.recipients) {
@@ -651,10 +638,32 @@ export default {
       } else {
         return -1
       }
+    },
+    computedNews () {
+      if (this.computedNewsData && this.computedNewsData.data) {
+        return this.computedNewsData.data
+          .map(news => this.reduceTranslations(news, this.$i18n.locale, ['text', 'title', 'subTitle']))
+      } else {
+        return []
+      }
     }
   },
 
   asyncComputed: {
+    async computedNewsData () {
+      this.isFindNewsPending = true
+      const tmpNews = await this.findNews(
+        {
+          query: {
+            'title.value': { $regex: this.search, $options: 'i' },
+            $limit: this.computedLimit,
+            $skip: (this.page - 1) * this.computedSkip,
+            $sort: { [this.sortBy]: this.computedSortDesc }
+          }
+        }
+      )
+      return tmpNews
+    },
     async sendStats () {
       if (this.newsletterDialogItem && this.triggerStats) {
         const tmpSendStats = await this.findSendstats(
@@ -677,13 +686,15 @@ export default {
   },
 
   watch: {
-    isFindNewsPending () {
-      if (!this.isFindNewsPending) {
-        this.loading = false
-        this.total = this.newsPaginationData.admin.mostRecent.total
-      } else {
-        this.loading = true
+    computedNews (newValue, oldValue) {
+      //
+      this.total = this.computedNewsData.total
+      //
+      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
+        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
       }
+      //
+      this.isFindNewsPending = false
     },
     newsletterDialogItem () {
       if (this.newsletterDialogItem) {

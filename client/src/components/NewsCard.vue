@@ -64,16 +64,16 @@
     <v-card-title
       class="word-wrap"
     >
-      {{computedNewsEntry.title}}
+      {{computedNewsEntry.title.value}}
     </v-card-title>
     <v-card-subtitle>
-      {{computedNewsEntry.subTitle}}
+      {{computedNewsEntry.subTitle.value}}
     </v-card-subtitle>
       <v-card-text>
       <v-row>
         <v-col
           class="body-1"
-          v-html="newsProp ? truncatedDescription(newTab(computedNewsEntry.text.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedNewsEntry.text.replace(/\{(.+?)\}/g, '')))"
+          v-html="newsProp ? truncatedDescription(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, '')))"
         ></v-col>
       </v-row>
       <v-row
@@ -236,7 +236,8 @@ export default {
   computed: {
     ...mapGetters([
       's3',
-      'newTab'
+      'newTab',
+      'reduceTranslations'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -256,7 +257,7 @@ export default {
           if (!selectedNewsEntry) {
             selectedNewsEntry = await this.requestNews([this.$route.params.id])
           }
-          return selectedNewsEntry
+          return this.reduceTranslations(selectedNewsEntry, this.$i18n.locale, ['text', 'title', 'subTitle'])
         }
       }
     }

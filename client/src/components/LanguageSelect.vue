@@ -91,7 +91,7 @@ export default {
     computedExistingLanguages () {
       if (this.languageObjects) {
         return this.languageObjects
-          .filter(language => language && language.value && language.value !== '')
+          .filter(language => language && language.value && language.value !== '' && language.value !== '<p></p>')
           .map(language => language.lang)
       } else {
         return undefined

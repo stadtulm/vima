@@ -133,6 +133,61 @@ module.exports = app
 */
 
 /*
+  .aggregate(
+    {
+      $filter: {
+        input: '$' + property + '',
+        as: property,
+        cond: {
+          $or: [
+            {
+              $eq: [
+                '$$' + property + '.type',
+                'default'
+              ]
+            },
+            {
+              $eq: [
+                '$$' + property + '.lang',
+                'de'
+              ]
+            }
+          ]
+        }
+      }
+    }
+  )
+  /*
+  /*
+  .exec(res => {
+    console.log(res)
+  })
+  */
+
+// New text format
+/*
+app.service('news').find({ paginate: false }).then(news => {
+  for (const newsEntry of news) {
+    newsEntry.text = [{
+      type: 'default',
+      value: newsEntry.text
+    }]
+    newsEntry.title = [{
+      type: 'default',
+      value: newsEntry.title
+    }]
+    newsEntry.subTitle = [{
+      type: 'default',
+      value: newsEntry.subTitle
+    }]
+    app.service('news').update(newsEntry._id, newsEntry).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
+/*
 // New text format
 app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
   for (const discussionMessage of discussionMessages) {

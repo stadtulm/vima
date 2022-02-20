@@ -2,6 +2,7 @@ const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const Errors = require('@feathersjs/errors')
 const allowAnonymous = require('../authmanagement/anonymous')
+const util = require('../util')
 
 module.exports = {
   before: {
@@ -12,7 +13,17 @@ module.exports = {
         authenticate('jwt', 'anonymous')
       )
     ],
-    find: [],
+    find: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.keepTranslations,
+          async (context) => {
+            await util.generateAggegationStages(context, ['text', 'title', 'subTitle'])
+          }
+        )
+      )
+    ],
     get: [],
     create: [
       commonHooks.iff(
@@ -58,7 +69,17 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.keepTranslations,
+          commonHooks.alterItems((rec, context) => {
+            return util.reduceTranslations(rec, context.params.connection.language, ['text', 'title', 'subTitle'])
+          })
+        )
+      )
+    ],
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
@@ -106,7 +127,7 @@ module.exports = {
               throw new Errors.Forbidden('Only logged in users can request internal news')
             }
           },
-          // Check for inactiev news
+          // Check for inactive news
           (context) => {
             if (!context.result.isActive) {
               throw new Errors.Forbidden('Only logged in users can request inactive news')

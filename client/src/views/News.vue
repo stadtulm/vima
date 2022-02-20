@@ -53,7 +53,7 @@
               >
                 {{showFilters ? 'fas fa-chevron-up': 'fas fa-chevron-down'}}
               </v-icon>
-            </v-btn>
+            </v-btn>ews
           </v-col>
         </v-row>
       </v-col>
@@ -229,6 +229,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters([
+      'reduceTranslations'
+    ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -237,7 +240,9 @@ export default {
     }),
     computedNews () {
       if (this.computedNewsData && this.computedNewsData.data) {
-        return this.computedNewsData.data
+        const tmp = JSON.parse(JSON.stringify(this.computedNewsData))
+        return tmp.data
+          .map(newsEntry => this.reduceTranslations(newsEntry, this.$i18n.locale, ['text', 'title', 'subTitle']))
       } else {
         return []
       }
@@ -258,7 +263,7 @@ export default {
         query.isInternal = false
       }
       if (this.search && this.search !== '') {
-        query.title = { $regex: this.search, $options: 'i' }
+        query.title.value = { $regex: this.search, $options: 'i' }
       }
       return await this.findNews(
         {

@@ -1,3 +1,4 @@
+const Translation = require('./translations.model')
 // news-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -9,9 +10,9 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const ObjectId = Schema.ObjectId
   const schema = new Schema({
-    title: { type: String, required: true },
-    subTitle: { type: String },
-    text: { type: String, required: true },
+    title: [{ type: Translation, required: true }],
+    subTitle: [{ type: Translation }],
+    text: [{ type: Translation, required: true }],
     pics: [
       {
         url: { type: String },

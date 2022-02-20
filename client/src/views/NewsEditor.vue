@@ -37,9 +37,16 @@
                     :label="$t('headline')"
                     color="customGrey"
                     background-color="#fff"
-                    v-model="title"
-                    :rules="[rules.required]"
+                    v-model="title.find(obj => obj.lang === currentLanguage).value"
+                    :rules="[v => title.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
                   >
+                    <template v-slot:prepend>
+                      <LanguageSelect
+                        :currentLanguage="currentLanguage"
+                        :languageObjects="title"
+                        @setLanguage="(l) => { currentLanguage = l }"
+                      ></LanguageSelect>
+                    </template>
                   </v-text-field>
                 </v-col>
               </v-row>
@@ -55,8 +62,15 @@
                     color="customGrey"
                     background-color="#fff"
                     :label="$t('subHeadline') + ' ' + $t('optionalLabelExtension')"
-                    v-model="subTitle"
+                    v-model="subTitle.find(obj => obj.lang === currentLanguage).value"
                   >
+                    <template v-slot:prepend>
+                      <LanguageSelect
+                        :currentLanguage="currentLanguage"
+                        :languageObjects="subTitle"
+                        @setLanguage="(l) => { currentLanguage = l }"
+                      ></LanguageSelect>
+                    </template>
                   </v-text-field>
                 </v-col>
               </v-row>
@@ -123,10 +137,17 @@
                         cols="12"
                       >
                         <v-input
-                          :rules="[rules.tiptapRequired]"
-                          v-model="text"
+                          :rules="[v => (text.find(obj => obj.type === 'default').value !== '' && text.find(obj => obj.type === 'default').value !== '<p></p>') || $t('defaultLanguageRequired')]"
+                          v-model="text.find(obj => obj.lang === currentLanguage).value"
                           width="100%"
                         >
+                          <template v-slot:prepend>
+                            <LanguageSelect
+                              :currentLanguage="currentLanguage"
+                              :languageObjects="text"
+                              @setLanguage="(l) => { currentLanguage = l }"
+                            ></LanguageSelect>
+                          </template>
                           <template slot="default">
                             <tiptap-vuetify
                               :editor-properties="{
@@ -134,7 +155,7 @@
                                 disablePasteRules: true
                               }"
                               color="customGreyBg"
-                              v-model="text"
+                              v-model="text.find(obj => obj.lang === currentLanguage).value"
                               :card-props="{ tile: true, flat: true }"
                               style="border: 1px solid #aaa;"
                               :extensions="extensions"
@@ -460,6 +481,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link, Heading } from 'tiptap-vuetify'
+import LanguageSelect from '@/components/LanguageSelect.vue'
 
 const server = process.env.VUE_APP_SERVER_URL
 
@@ -468,7 +490,8 @@ export default {
 
   components: {
     vueDropzone: vue2Dropzone,
-    TiptapVuetify
+    TiptapVuetify,
+    LanguageSelect
   },
 
   data: () => ({
@@ -491,6 +514,7 @@ export default {
       size: '',
       type: ''
     },
+    currentLanguage: 'de',
     extensions: [
       Bold,
       Italic,
@@ -525,7 +549,7 @@ export default {
     ...mapActions('news', {
       patchNews: 'patch',
       createNews: 'create',
-      requestNews: 'get'
+      getNews: 'get'
     }),
     ...mapActions('uploads', {
       removeUpload: 'remove'
@@ -559,19 +583,15 @@ export default {
     },
     async adapt () {
       if (this.$route.params.id) {
-        let selectedNews = this.getNews(this.$route.params.id)
-        if (!selectedNews) {
-          selectedNews = await this.requestNews([this.$route.params.id])
-        }
-        this.selectedNews = selectedNews
+        this.selectedNews = await this.getNews([this.$route.params.id, { keepTranslations: true }])
       }
       this.tmpVideos = []
       if (this.selectedNews) {
-        this.title = this.selectedNews.title
-        this.subTitle = this.selectedNews.subTitle
+        this.title = this.hydrateTranslations(this.selectedNews.title)
+        this.subTitle = this.hydrateTranslations(this.selectedNews.subTitle)
+        this.text = this.hydrateTranslations(this.selectedNews.text)
         this.isInternal = this.selectedNews.isInternal
         this.isActive = this.selectedNews.isActive
-        this.text = this.selectedNews.text
         if (this.selectedNews.pics) {
           this.pics = this.selectedNews.pics
         }
@@ -652,11 +672,11 @@ export default {
           this.addTmpVideo()
         }
         const map = {
-          title: this.title,
-          subTitle: this.subTitle,
+          title: this.title.filter(language => language.value && language.value !== ''),
+          subTitle: this.subTitle.filter(language => language.value && language.value !== ''),
           isInternal: this.isInternal,
           isActive: this.isActive,
-          text: this.text,
+          text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>'),
           videos: this.videos.concat(this.tmpVideos),
           author: this.user._id
         }
@@ -689,11 +709,9 @@ export default {
     ...mapGetters([
       'rules',
       's3',
-      'videoTypeItems'
+      'videoTypeItems',
+      'hydrateTranslations'
     ]),
-    ...mapGetters('news', {
-      getNews: 'get'
-    }),
     ...mapGetters('auth', [
       'user'
     ]),
@@ -719,6 +737,14 @@ export default {
         resizeMethod: 'contain',
         resizeQuality: 0.5
       }
+    },
+    sanitizedText () {
+      return this.text.map(language => {
+        return {
+          ...language,
+          value: this.$sanitize(language.value)
+        }
+      })
     }
   },
 
@@ -738,11 +764,6 @@ export default {
     tmpVideos () {
       if (this.$refs.newsEditorForm) {
         this.$refs.newsEditorForm.validate()
-      }
-    },
-    text () {
-      if (this.text) {
-        this.text = this.$sanitize(this.text)
       }
     }
   }
