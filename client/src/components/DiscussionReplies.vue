@@ -615,9 +615,6 @@ export default {
     ...mapMutations('translations', {
       updateTranslationItem: 'updateItem'
     }),
-    ...mapActions('translations', {
-      createTranslation: 'create'
-    }),
     ...mapActions('discussion-messages', {
       createMessage: 'create',
       patchMessage: 'patch',

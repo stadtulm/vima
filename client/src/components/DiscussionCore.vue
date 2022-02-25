@@ -125,15 +125,14 @@
                         <v-col
                           cols="12"
                         >
-                          <!-- TODO: Replace _en with user language -->
                           <template
                             v-if="
-                              getTranslation(message._id + '_en') &&
-                              getTranslation(message._id + '_en').show
+                              getTranslation(message._id + '_' + $i18n.locale) &&
+                              getTranslation(message._id + '_' + $i18n.locale).show
                             "
                           >
                             <v-sheet
-                              v-html="$sanitize(newTab(getTranslation(message._id + '_en').value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                              v-html="$sanitize(newTab(getTranslation(message._id + '_' + $i18n.locale).value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
                               color=""
                               class="pa-2 mb-4"
                             >
@@ -144,7 +143,7 @@
                               <v-col
                                 cols="12"
                                 class="caption text-center"
-                                v-if="message.translationSum !== getTranslation(message._id + '_en').translationSum"
+                                v-if="message.translationSum !== getTranslation(message._id + '_' + $i18n.locale).translationSum"
                               >
                                 <v-icon
                                   small
@@ -176,7 +175,7 @@
                                 <v-btn
                                   text
                                   x-small
-                                  @click="updateTranslationItem({ _id: message._id + '_en', show: false })"
+                                  @click="updateTranslationItem({ _id: message._id + '_' + $i18n.locale, show: false })"
                                 >
                                   Original anzeigen
                                 </v-btn>
@@ -186,8 +185,8 @@
                           <v-sheet
                             v-show="
                               !(
-                                getTranslation(message._id + '_en') &&
-                                getTranslation(message._id + '_en').show
+                                getTranslation(message._id + '_' + $i18n.locale) &&
+                                getTranslation(message._id + '_' + $i18n.locale).show
                               )
                             "
                             v-html="$sanitize(newTab(message.text.find(t => t.type === 'default').value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
@@ -318,8 +317,8 @@
                                       color="customGrey"
                                       @click="translateText({ texts: [{ id: message._id, translationSum: message.translationSum }]})"
                                       :disabled="
-                                        getTranslation(message._id + '_en') &&
-                                        getTranslation(message._id + '_en').show
+                                        getTranslation(message._id + '_' + $i18n.locale) &&
+                                        getTranslation(message._id + '_' + $i18n.locale).show
                                       "
                                     >
                                       Übersetzen
@@ -802,20 +801,20 @@ export default {
         textsToTranslate = texts
         textsToShow = []
       } else {
-        textsToTranslate = texts.filter(text => !this.getTranslation(text.id + '_en'))
-        textsToShow = texts.filter(text => this.getTranslation(text.id + '_en'))
+        textsToTranslate = texts.filter(text => !this.getTranslation(text.id + '_' + this.$i18n.locale))
+        textsToShow = texts.filter(text => this.getTranslation(text.id + '_' + this.$i18n.locale))
       }
       if (textsToTranslate.length > 0) {
-        await this.createTranslation([
+        console.log(await this.createTranslation([
           {
             type: 'discussion-messages',
             texts: textsToTranslate,
-            target: 'en'
+            target: this.$i18n.locale
           }
-        ])
+        ]))
       }
       for (const text of textsToShow) {
-        this.updateTranslationItem({ _id: text.id + '_en', show: true })
+        this.updateTranslationItem({ _id: text.id + '_' + this.$i18n.locale, show: true })
       }
     },
     openReportDialog (message) {
