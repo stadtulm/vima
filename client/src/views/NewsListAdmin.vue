@@ -652,14 +652,29 @@ export default {
   asyncComputed: {
     async computedNewsData () {
       this.isFindNewsPending = true
+      const query = {
+        $limit: this.computedLimit,
+        $skip: (this.page - 1) * this.computedSkip,
+        $sort: { [this.sortBy]: this.computedSortDesc }
+      }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              {
+                $or: [
+                  { lang: 'de' },
+                  { type: 'default' }
+                ]
+              }
+            ]
+          }
+        }
+      }
       const tmpNews = await this.findNews(
         {
-          query: {
-            'title.value': { $regex: this.search, $options: 'i' },
-            $limit: this.computedLimit,
-            $skip: (this.page - 1) * this.computedSkip,
-            $sort: { [this.sortBy]: this.computedSortDesc }
-          }
+          query
         }
       )
       return tmpNews

@@ -15,6 +15,7 @@ module.exports = {
 
   generateAggegationStages: async function (context, properties) {
     const stages = []
+    // Extract query properties
     const populates = context.params.query.$populate
     delete context.params.query.$populate
     const limit = context.params.query.$limit
@@ -23,45 +24,24 @@ module.exports = {
     delete context.params.query.$skip
     const sort = context.params.query.$sort
     delete context.params.query.$sort
+    // Match stage
     stages.push({
       $match: {
         ...context.params.query
       }
     })
-    for (const property of properties) {
-      const stage = {
-        $addFields: {}
-      }
-      stage.$addFields[property] = {
-        $filter: {
-          input: '$' + property + '',
-          as: property,
-          cond: {
-            $or: [
-              {
-                $eq: [
-                  '$$' + property + '.type',
-                  'default'
-                ]
-              },
-              {
-                $eq: [
-                  '$$' + property + '.lang',
-                  context.params.connection.language
-                ]
-              }
-            ]
-          }
-        }
-      }
-      stages.push(stage)
+    // Sort stage
+    if (sort) {
+      stages.push({
+        $sort: sort
+      })
     }
     if (limit) {
+      // Facet stage
       stages.push(
         {
           $facet: {
             data: [
-              { $sort: sort },
               { $skip: skip },
               { $limit: limit }
             ],
@@ -71,6 +51,59 @@ module.exports = {
           }
         }
       )
+      // Unwind
+      stages.push({
+        $unwind: {
+          path: '$data',
+          includeArrayIndex: 'string'
+        }
+      })
+      // Filter translations
+      for (const property of properties) {
+        const stage = {
+          $addFields: {}
+        }
+        stage.$addFields['data.' + property] = {
+          $filter: {
+            input: '$data.' + property,
+            as: 'translation',
+            cond: {
+              $or: [
+                { $eq: ['$$translation.type', 'default'] },
+                { $eq: ['$$translation.lang', context.params.connection.language] }
+              ]
+            }
+          }
+        }
+        stages.push(stage)
+      }
+      // Group
+      stages.push({
+        $group: {
+          _id: null,
+          total: { $first: { $first: '$total.count' } },
+          data: { $push: '$data' }
+        }
+      })
+    } else {
+      for (const property of properties) {
+        const stage = {
+          $addFields: {}
+        }
+        stage.$addFields[property] = {
+          $filter: {
+            input: '$' + property + '',
+            as: 'translation',
+            cond: {
+              $or: [
+                { $eq: ['$$translation.type', 'default'] },
+                { $eq: ['$$translation.lang', context.params.connection.language] }
+              ]
+            }
+          }
+        }
+        stages.push(stage)
+      }
     }
 
     context.result = await context.service.Model.aggregate(stages)
@@ -80,8 +113,8 @@ module.exports = {
 
     if (limit) {
       context.result = {
-        data: context.result[0].data,
-        total: context.result[0].total[0].count,
+        data: context.result[0] ? context.result[0].data : [],
+        total: context.result[0] && context.result[0].total ? context.result[0].total : 0,
         limit,
         skip
       }

@@ -53,7 +53,7 @@
               >
                 {{showFilters ? 'fas fa-chevron-up': 'fas fa-chevron-down'}}
               </v-icon>
-            </v-btn>ews
+            </v-btn>
           </v-col>
         </v-row>
       </v-col>
@@ -91,8 +91,8 @@
           :items="[
             { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
             { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
-            { text: $t('sortTitleAsc'), value: [['title'], 1] },
-            { text: $t('sortTitleDesc'), value: [['title'], -1] }
+            { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
+            { text: $t('sortTitleDesc'), value: [['title.value'], -1] }
           ]"
         ></v-select>
       </v-col>
@@ -219,9 +219,6 @@ export default {
       if (this.$route.query.s) {
         this.sortBy = this.$route.query.s.split(',')
       }
-      if (this.$route.query.d || this.$route.query.s) {
-        this.combinedSort = [this.sortBy, this.sortDesc]
-      }
       if (this.$route.query.d) {
         this.sortDesc = parseInt(this.$route.query.d)
       }
@@ -263,7 +260,19 @@ export default {
         query.isInternal = false
       }
       if (this.search && this.search !== '') {
-        query.title.value = { $regex: this.search, $options: 'i' }
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              {
+                $or: [
+                  { lang: 'de' },
+                  { type: 'default' }
+                ]
+              }
+            ]
+          }
+        }
       }
       return await this.findNews(
         {
@@ -353,7 +362,11 @@ export default {
     allNews: {
       deep: true,
       handler (newValue, oldValue) {
-        if (!this.init && !this.manualLoad) {
+        if (
+          !this.init &&
+          !this.manualLoad &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
           this.triggerReload = Date.now()
           this.manualLoad = true
         }
