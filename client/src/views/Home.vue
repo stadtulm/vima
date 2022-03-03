@@ -115,6 +115,27 @@
                         </v-col>
                       </v-row>
                       <v-row>
+                        <v-col
+                          cols="12"
+                        >
+                          <v-sheet
+                            color="yellow"
+                            class="pa-5"
+                          >
+                            <v-btn
+                              color="blue"
+                              dark
+                              x-large
+                              block
+                              class="mr-3"
+                              :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
+                            >
+                              Hilfe für Ukraine
+                            </v-btn>
+                          </v-sheet>
+                        </v-col>
+                      </v-row>
+                      <v-row>
                         <v-col>
                           <v-btn
                             color="customGrey"
