@@ -33,7 +33,8 @@ module.exports = function (app) {
     newViolationsToProve: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] },
     newGroupViolationsToProve: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

@@ -11,7 +11,8 @@ module.exports = function (app) {
     isVerified: { type: Boolean },
     verifyToken: { type: String }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

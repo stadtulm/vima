@@ -47,7 +47,8 @@ module.exports = function (app) {
       default: false
     }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

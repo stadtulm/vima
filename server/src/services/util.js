@@ -30,8 +30,50 @@ module.exports = {
         ...context.params.query
       }
     })
+    // Title filter stage
     // Sort stage
     if (sort) {
+      for (const prop of Object.keys(sort)) {
+        if (prop.endsWith('.value')) {
+          const sortPropertyBaseName = prop.split('.')[0]
+          stages.push({
+            $addFields: {
+              [sortPropertyBaseName]: {
+                $first: {
+                  $cond: {
+                    if: {
+                      $in: [context.params.connection.language, '$' + sortPropertyBaseName + '.lang']
+                    },
+                    then: {
+                      $filter: {
+                        input: '$' + sortPropertyBaseName,
+                        as: 'item',
+                        cond: {
+                          $eq: [
+                            '$$item.lang', context.params.connection.language
+                          ]
+                        }
+                      }
+                    },
+                    else: {
+                      $filter: {
+                        input: '$' + sortPropertyBaseName,
+                        as: 'item',
+                        cond: {
+                          $eq: [
+                            '$$item.type', 'default'
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          })
+          properties = properties.filter(e => e !== sortPropertyBaseName)
+        }
+      }
       stages.push({
         $sort: sort
       })
@@ -54,8 +96,7 @@ module.exports = {
       // Unwind
       stages.push({
         $unwind: {
-          path: '$data',
-          includeArrayIndex: 'string'
+          path: '$data'
         }
       })
       // Filter translations

@@ -13,4 +13,8 @@ module.exports = new Schema({
     type: String
   },
   _id: false
-})
+},
+{
+  collation: { locale: 'en', strength: 1 }
+}
+)

@@ -79,7 +79,8 @@ module.exports = function (app) {
     resetToken: { type: String },
     resetExpires: { type: Date }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   schema.virtual('preferences', {

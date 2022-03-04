@@ -164,23 +164,48 @@ module.exports = app
   })
   */
 
-// New text format
+// New text format news
 /*
 app.service('news').find({ paginate: false }).then(news => {
   for (const newsEntry of news) {
     newsEntry.text = [{
       type: 'default',
-      value: newsEntry.text
+      value: newsEntry.text,
+      lang: 'de
     }]
     newsEntry.title = [{
       type: 'default',
-      value: newsEntry.title
+      value: newsEntry.title,
+      lang: 'de'
     }]
     newsEntry.subTitle = [{
       type: 'default',
-      value: newsEntry.subTitle
+      value: newsEntry.subTitle,
+      lang: 'de'
     }]
     app.service('news').update(newsEntry._id, newsEntry).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
+// New text format events
+
+/*
+app.service('events').find({ paginate: false }).then(events => {
+  for (const event of events) {
+    event.text = [{
+      type: 'default',
+      value: event.text,
+      lang: 'de'
+    }]
+    event.title = [{
+      type: 'default',
+      value: event.title,
+      lang: 'de'
+    }]
+    app.service('events').update(event._id, event).then(res => {
       console.log(res)
     })
   }

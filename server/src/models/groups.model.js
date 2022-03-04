@@ -51,7 +51,8 @@ module.exports = function (app) {
       default: true
     }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   schema.virtual('owner', {

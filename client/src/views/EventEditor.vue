@@ -37,9 +37,16 @@
                     :label="$t('title')"
                     color="customGrey"
                     background-color="#fff"
-                    v-model="title"
-                    :rules="[rules.required]"
+                    v-model="title.find(obj => obj.lang === currentLanguage).value"
+                    :rules="[v => title.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
                   >
+                    <template v-slot:prepend>
+                      <LanguageSelect
+                        :currentLanguage="currentLanguage"
+                        :languageObjects="title"
+                        @setLanguage="(l) => { currentLanguage = l }"
+                      ></LanguageSelect>
+                    </template>
                   </v-text-field>
                 </v-col>
               </v-row>
@@ -227,10 +234,17 @@
                         cols="12"
                       >
                         <v-input
-                          :rules="[rules.tiptapRequired]"
-                          v-model="text"
+                          :rules="[v => (text.find(obj => obj.type === 'default').value !== '' && text.find(obj => obj.type === 'default').value !== '<p></p>') || $t('defaultLanguageRequired')]"
+                          v-model="text.find(obj => obj.lang === currentLanguage).value"
                           width="100%"
                         >
+                          <template v-slot:prepend>
+                            <LanguageSelect
+                              :currentLanguage="currentLanguage"
+                              :languageObjects="text"
+                              @setLanguage="(l) => { currentLanguage = l }"
+                            ></LanguageSelect>
+                          </template>
                           <template slot="default">
                             <tiptap-vuetify
                               :editor-properties="{
@@ -238,11 +252,11 @@
                                 disablePasteRules: true
                               }"
                               color="customGreyBg"
-                              v-model="text"
+                              v-model="text.find(obj => obj.lang === currentLanguage).value"
                               :card-props="{ tile: true, flat: true }"
+                              style="border: 1px solid #aaa"
                               :extensions="extensions"
                               :placeholder="$t('enterText')"
-                              style="border: 1px solid #aaa"
                             >
                             </tiptap-vuetify>
                           </template>
@@ -445,7 +459,9 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TagProposalDialog from '@/components/TagProposalDialog.vue'
-import DatetimePicker from '../components/DatetimePicker.vue'
+import DatetimePicker from '@/components/DatetimePicker.vue'
+import LanguageSelect from '@/components/LanguageSelect.vue'
+
 const server = process.env.VUE_APP_SERVER_URL
 
 export default {
@@ -455,7 +471,8 @@ export default {
     vueDropzone: vue2Dropzone,
     TiptapVuetify,
     TagProposalDialog,
-    DatetimePicker
+    DatetimePicker,
+    LanguageSelect
   },
 
   data: () => ({
@@ -479,6 +496,7 @@ export default {
       size: '',
       type: ''
     },
+    currentLanguage: 'de',
     extensions: [
       Bold,
       Italic,
@@ -503,7 +521,7 @@ export default {
     ...mapActions('events', {
       patchEvent: 'patch',
       createEvent: 'create',
-      requestEvent: 'get'
+      getEvent: 'get'
     }),
     ...mapActions('status-containers', {
       findStatusContainers: 'find'
@@ -544,15 +562,11 @@ export default {
     },
     async adapt () {
       if (this.$route.params.event) {
-        let selectedEvent = this.getEvent(this.$route.params.event)
-        if (!selectedEvent) {
-          selectedEvent = await this.requestEvent([this.$route.params.event])
-        }
-        this.selectedEvent = selectedEvent
+        this.selectedEvent = await this.getEvent([this.$route.params.event, { keepTranslations: true }])
       }
       if (this.selectedEvent) {
-        this.title = this.selectedEvent.title
-        this.text = this.selectedEvent.text
+        this.title = this.hydrateTranslations(this.selectedEvent.title)
+        this.text = this.hydrateTranslations(this.selectedEvent.text)
         this.isActive = this.selectedEvent.isActive
         this.selectedCategories = this.selectedEvent.categories
         this.selectedTags = this.selectedEvent.tags
@@ -633,8 +647,8 @@ export default {
         await this.$refs.vueDropzonePics.processQueue()
       } else {
         const map = {
-          title: this.title,
-          text: this.text,
+          title: this.title.filter(language => language.value && language.value !== ''),
+          text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>'),
           isActive: this.isActive,
           organisation: this.organisation,
           categories: this.selectedCategories,
@@ -669,11 +683,9 @@ export default {
     ...mapGetters([
       'rules',
       's3',
-      'reduceTranslations'
+      'reduceTranslations',
+      'hydrateTranslations'
     ]),
-    ...mapGetters('events', {
-      getEvent: 'get'
-    }),
     ...mapGetters('auth', [
       'user'
     ]),
@@ -690,6 +702,14 @@ export default {
       organisations: 'list',
       getOrganisation: 'get'
     }),
+    sanitizedText () {
+      return this.text.map(language => {
+        return {
+          ...language,
+          value: this.$sanitize(language.value)
+        }
+      })
+    },
     computedUserOrganisationItems () {
       if (this.computedUserOrganisations) {
         return this.computedUserOrganisations
@@ -772,11 +792,6 @@ export default {
         this.$nextTick(() => {
           this.$refs.eventEditorForm.validate()
         })
-      }
-    },
-    text () {
-      if (this.text) {
-        this.text = this.$sanitize(this.text)
       }
     }
   }

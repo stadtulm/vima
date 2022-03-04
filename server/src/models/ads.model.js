@@ -45,7 +45,8 @@ module.exports = function (app) {
       }
     }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   schema.virtual('author', {

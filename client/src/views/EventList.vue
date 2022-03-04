@@ -67,7 +67,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.0.value`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -76,7 +76,7 @@
                 <v-list-item-title
                   class="font-weight-bold"
                 >
-                  {{item.title}}
+                  {{item.title.value}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -316,7 +316,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'reduceTranslations'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -329,7 +330,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.0.value' },
         { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
         { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
         { text: this.$t('eventStart'), value: 'duration.start', width: 170 },
@@ -338,15 +339,6 @@ export default {
         { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
         { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
       ]
-    },
-    eventsParams () {
-      return {
-        organisation: this.computedUserOrganisationId,
-        title: { $regex: this.search, $options: 'i' },
-        $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc }
-      }
     },
     computedUserOrganisationId () {
       const organisationStatusContainer = this.statusContainers.find(
@@ -363,6 +355,7 @@ export default {
     computedEvents () {
       if (this.eventsResponse) {
         return this.eventsResponse.data
+          .map(event => this.reduceTranslations(event, this.$i18n.locale, ['text', 'title']))
       } else {
         return []
       }
@@ -401,9 +394,30 @@ export default {
     async eventsResponse () {
       if (this.triggerReload) {
         this.loading = true
+        const query = {
+          organisation: this.computedUserOrganisationId,
+          $limit: this.computedLimit,
+          $skip: (this.page - 1) * this.computedSkip,
+          $sort: { [this.sortBy]: this.computedSortDesc }
+        }
+        if (this.search && this.search !== '') {
+          query.title = {
+            $elemMatch: {
+              $and: [
+                { value: { $regex: this.search, $options: 'i' } },
+                {
+                  $or: [
+                    { lang: 'de' },
+                    { type: 'default' }
+                  ]
+                }
+              ]
+            }
+          }
+        }
         const events = await this.findEvents(
           {
-            query: this.eventsParams
+            query
           }
         )
         this.loading = false

@@ -16,7 +16,8 @@ module.exports = function (app) {
     website: { type: String },
     isActive: { type: Boolean }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

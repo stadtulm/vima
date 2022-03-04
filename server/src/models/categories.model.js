@@ -18,7 +18,8 @@ module.exports = function (app) {
     },
     description: [{ type: Translation }]
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   schema.virtual('adsTags', {

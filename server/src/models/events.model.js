@@ -1,3 +1,4 @@
+const Translation = require('./translations.model')
 // events-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -8,13 +9,8 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const ObjectId = Schema.ObjectId
   const schema = new Schema({
-    title: {
-      type: String,
-      required: true
-    },
-    text: {
-      type: String
-    },
+    title: [{ type: Translation, required: true }],
+    text: [{ type: Translation, required: true }],
     categories: [
       {
         type: ObjectId,
@@ -49,7 +45,8 @@ module.exports = function (app) {
       type: Boolean
     }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

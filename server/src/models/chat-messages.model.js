@@ -33,7 +33,8 @@ module.exports = function (app) {
     ],
     editedAt: { type: Date }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

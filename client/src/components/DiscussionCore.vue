@@ -805,13 +805,13 @@ export default {
         textsToShow = texts.filter(text => this.getTranslation(text.id + '_' + this.$i18n.locale))
       }
       if (textsToTranslate.length > 0) {
-        console.log(await this.createTranslation([
+        await this.createTranslation([
           {
             type: 'discussion-messages',
             texts: textsToTranslate,
             target: this.$i18n.locale
           }
-        ]))
+        ])
       }
       for (const text of textsToShow) {
         this.updateTranslationItem({ _id: text.id + '_' + this.$i18n.locale, show: true })

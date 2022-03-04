@@ -37,7 +37,8 @@ module.exports = function (app) {
     },
     editedAt: { type: Date }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   schema.virtual('latestAnswers', {

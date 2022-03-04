@@ -26,12 +26,7 @@ module.exports = {
             throw new Errors.Forbidden('Only registered user can find users')
           }
         )
-      ),
-      context => {
-        if (context.params.query) {
-          context.params.collation = { locale: 'en', strength: 2 }
-        }
-      }
+      )
     ],
     get: [
       commonHooks.iff(
