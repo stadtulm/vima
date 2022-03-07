@@ -589,10 +589,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      's3',
-      'reduceTranslations'
-    ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -642,7 +638,6 @@ export default {
     computedNews () {
       if (this.computedNewsData && this.computedNewsData.data) {
         return this.computedNewsData.data
-          .map(news => this.reduceTranslations(news, this.$i18n.locale, ['text', 'title', 'subTitle']))
       } else {
         return []
       }

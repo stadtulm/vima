@@ -67,7 +67,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title.0.value`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -316,8 +316,7 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3',
-      'reduceTranslations'
+      's3'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -330,7 +329,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title.0.value' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
         { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
         { text: this.$t('eventStart'), value: 'duration.start', width: 170 },
@@ -355,7 +354,6 @@ export default {
     computedEvents () {
       if (this.eventsResponse) {
         return this.eventsResponse.data
-          .map(event => this.reduceTranslations(event, this.$i18n.locale, ['text', 'title']))
       } else {
         return []
       }

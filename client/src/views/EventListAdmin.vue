@@ -300,8 +300,7 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3',
-      'reduceTranslations'
+      's3'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -342,7 +341,6 @@ export default {
     computedEvents () {
       if (this.computedEventsData && this.computedEventsData.data) {
         return this.computedEventsData.data
-          .map(events => this.reduceTranslations(events, this.$i18n.locale, ['text', 'title']))
       } else {
         return []
       }

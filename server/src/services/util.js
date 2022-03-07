@@ -1,3 +1,5 @@
+const mongoose = require('mongoose')
+
 module.exports = {
   reduceTranslations: function (data, language, properties) {
     for (const property of properties) {
@@ -11,6 +13,20 @@ module.exports = {
       }
     }
     return data
+  },
+
+  convert: function (json, idKeys) {
+    const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/
+    return JSON.parse(JSON.stringify(json), (key, value) => {
+      if (typeof value === 'string') {
+        if (dateFormat.test(value)) {
+          return new Date(value)
+        } else if (mongoose.isValidObjectId(value) && idKeys.includes(key)) {
+          return mongoose.Types.ObjectId(value)
+        }
+      }
+      return value
+    })
   },
 
   generateAggegationStages: async function (context, properties) {
@@ -101,22 +117,41 @@ module.exports = {
       })
       // Filter translations
       for (const property of properties) {
-        const stage = {
-          $addFields: {}
-        }
-        stage.$addFields['data.' + property] = {
-          $filter: {
-            input: '$data.' + property,
-            as: 'translation',
-            cond: {
-              $or: [
-                { $eq: ['$$translation.type', 'default'] },
-                { $eq: ['$$translation.lang', context.params.connection.language] }
-              ]
+        stages.push({
+          $addFields: {
+            ['data.' + property]: {
+              $first: {
+                $cond: {
+                  if: {
+                    $in: [context.params.connection.language, '$data.' + property + '.lang']
+                  },
+                  then: {
+                    $filter: {
+                      input: '$data.' + property,
+                      as: 'item',
+                      cond: {
+                        $eq: [
+                          '$$item.lang', context.params.connection.language
+                        ]
+                      }
+                    }
+                  },
+                  else: {
+                    $filter: {
+                      input: '$data.' + property,
+                      as: 'item',
+                      cond: {
+                        $eq: [
+                          '$$item.type', 'default'
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
-        }
-        stages.push(stage)
+        })
       }
       // Group
       stages.push({
@@ -149,7 +184,13 @@ module.exports = {
 
     context.result = await context.service.Model.aggregate(stages)
     if (populates) {
-      context.result = await context.service.Model.populate(context.result, { path: populates.join(' ') })
+      if (limit) {
+        if (context.result && context.result.length > 0) {
+          context.result[0].data = await context.service.Model.populate(context.result[0].data, { path: populates.join(' ') })
+        }
+      } else {
+        context.result = await context.service.Model.populate(context.result, { path: populates.join(' ') })
+      }
     }
 
     if (limit) {

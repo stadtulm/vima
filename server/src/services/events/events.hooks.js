@@ -4,7 +4,6 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const Errors = require('@feathersjs/errors')
 const allowAnonymous = require('../authmanagement/anonymous')
 const util = require('../util')
-const mongoose = require('mongoose')
 
 module.exports = {
   before: {
@@ -23,11 +22,8 @@ module.exports = {
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
-        // Create object Id
         (context) => {
-          if (context.params.query?.organisation) {
-            context.params.query.organisation = mongoose.Types.ObjectId(context.params.query.organisation)
-          }
+          context.params.query = util.convert(context.params.query, ['organisation'])
         },
         commonHooks.iff(
           (context) => !context.params.keepTranslations,
@@ -130,17 +126,7 @@ module.exports = {
   },
 
   after: {
-    all: [
-      commonHooks.iff(
-        commonHooks.isProvider('external'),
-        commonHooks.iff(
-          (context) => !context.params.keepTranslations,
-          commonHooks.alterItems((rec, context) => {
-            return util.reduceTranslations(rec, context.params.connection.language, ['text', 'title'])
-          })
-        )
-      )
-    ],
+    all: [],
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),

@@ -84,8 +84,8 @@
 
               { text: $t('sortEventDateDesc'), value: [['duration.start'], 1]},
               { text: $t('sortEventDateAsc'), value: [['duration.start'], -1]},
-              { text: $t('sortTitleAsc'), value: [['title'], 1] },
-              { text: $t('sortTitleDesc'), value: [['title'], -1] },
+              { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
+              { text: $t('sortTitleDesc'), value: [['title.value'], -1] },
               { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
               { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
             ]"
@@ -272,7 +272,19 @@ export default {
         $sort: { [this.sortBy]: this.sortDesc }
       }
       if (this.search && this.search !== '') {
-        query.title = { $regex: this.search, $options: 'i' }
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              {
+                $or: [
+                  { lang: 'de' },
+                  { type: 'default' }
+                ]
+              }
+            ]
+          }
+        }
       }
       return await this.findEvents(
         {

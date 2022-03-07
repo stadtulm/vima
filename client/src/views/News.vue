@@ -226,9 +226,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      'reduceTranslations'
-    ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -239,7 +236,6 @@ export default {
       if (this.computedNewsData && this.computedNewsData.data) {
         const tmp = JSON.parse(JSON.stringify(this.computedNewsData))
         return tmp.data
-          .map(newsEntry => this.reduceTranslations(newsEntry, this.$i18n.locale, ['text', 'title', 'subTitle']))
       } else {
         return []
       }

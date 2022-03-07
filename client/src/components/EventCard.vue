@@ -18,7 +18,7 @@
             <v-card-title
               class="word-wrap"
             >
-              {{computedEvent.title}}
+              {{computedEvent.title.value}}
             </v-card-title>
             <!--
             <v-card-subtitle
@@ -95,7 +95,7 @@
         <v-row>
           <v-col
             class="body-1 mx-4"
-            v-html="eventProp ? truncatedDescription(newTab(computedEvent.text)) : $sanitize(newTab(computedEvent.text))"
+            v-html="eventProp ? truncatedDescription(newTab(computedEvent.text.value)) : $sanitize(newTab(computedEvent.text.value))"
           ></v-col>
         </v-row>
       </v-col>
