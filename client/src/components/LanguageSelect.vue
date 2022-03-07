@@ -76,7 +76,7 @@ export default {
   ],
 
   data: () => ({
-    languages: ['de', 'en'],
+    languages: ['de', 'en', 'ro'],
     selectedLanguage: ''
   }),
 
