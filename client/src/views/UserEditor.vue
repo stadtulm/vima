@@ -249,7 +249,6 @@
                   </v-text-field>
                 </v-col>
               </v-row>
-            </v-form>
             <v-divider
               class="mb-9 mt-3"
             ></v-divider>
@@ -366,31 +365,32 @@
                   </v-alert>
                 </v-col>
               </v-row>
-            <v-card-actions
-              class="px-0"
-            >
-              <v-btn
-                v-if="selectedUser"
-                large
-                :dark="isValid"
-                color="error"
-                :loading="isLoading"
-                @click="showDeleteDialog = true"
+              <v-card-actions
+                class="px-0"
               >
-                {{$t('deleteAccountButton')}}
-              </v-btn>
-              <v-spacer></v-spacer>
-              <v-btn
-                large
-                :dark="isValid"
-                color="customGrey"
-                :loading="isLoading"
-                :disabled="!isValid"
-                @click="checkPassword()"
-              >
-                {{$t('saveDataButton')}}
-              </v-btn>
-            </v-card-actions>
+                <v-btn
+                  v-if="selectedUser"
+                  large
+                  :dark="isValid"
+                  color="error"
+                  :loading="isLoading"
+                  @click="showDeleteDialog = true"
+                >
+                  {{$t('deleteAccountButton')}}
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                  large
+                  :dark="isValid"
+                  color="customGrey"
+                  :loading="isLoading"
+                  :disabled="!isValid"
+                  @click="checkPassword()"
+                >
+                  {{$t('saveDataButton')}}
+                </v-btn>
+              </v-card-actions>
+            </v-form>
           </v-card-text>
         </v-card>
       </v-col>
