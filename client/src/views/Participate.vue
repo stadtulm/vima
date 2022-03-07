@@ -7,51 +7,6 @@
         <span
           class="text-uppercase"
           :class="isPreview ? 'pointer' : ''"
-        >
-          Hilfe für Ukraine
-        </span>
-        <v-btn
-          v-if="isPreview"
-          icon
-          color="customGrey"
-          class="mb-1 ml-1"
-        >
-          <v-icon>
-            fas fa-arrow-right
-          </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row
-      class="mb-5"
-    >
-      <v-col
-        cols="12"
-      >
-        <v-sheet
-          class="pa-5"
-          color="yellow"
-        >
-          <v-btn
-            color="blue"
-            dark
-            large
-            block
-            class="mr-3"
-            :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
-          >
-            Hilfe für Ukraine
-          </v-btn>
-        </v-sheet>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col
-        class="text-h5 font-weight-bold customGrey--text"
-      >
-        <span
-          class="text-uppercase"
-          :class="isPreview ? 'pointer' : ''"
           @click="$router.push({ name: 'Participate' })"
           tour-step="1"
         >
