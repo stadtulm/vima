@@ -235,6 +235,9 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    ...mapMutations('categories', {
+      updateCategoryItem: 'updateItem'
+    }),
     ...mapActions('categories', {
       patchCategory: 'patch',
       createCategory: 'create',
@@ -341,11 +344,13 @@ export default {
           map.pic = this.pic
         }
         try {
+          let result
           if (this.selectedCategory) {
-            await this.patchCategory([this.selectedCategory._id, map, {}])
+            result = await this.patchCategory([this.selectedCategory._id, map, {}])
           } else {
-            await this.createCategory([map, {}])
+            result = await this.createCategory([map, {}])
           }
+          this.updateCategoryItem(this.reduceTranslations(result, this.$i18n.locale, ['text', 'description']))
           this.isLoading = false
           this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
           this.$router.go(-1)
@@ -361,6 +366,7 @@ export default {
     ...mapGetters([
       'rules',
       's3',
+      'reduceTranslations',
       'hydrateTranslations'
     ]),
     ...mapGetters('auth', [

@@ -75,6 +75,25 @@ const state = {
       return text
     }
   },
+  reduceTranslations: function (data, language, properties) {
+    for (const property of properties) {
+      if (data[property] && Array.isArray(data[property])) {
+        const dataProperty = data[property].find(translation => translation && translation.lang === language)
+        if (dataProperty) {
+          data[property] = dataProperty
+        } else if (data[property].find(translation => translation && translation.type === 'default')) {
+          data[property] = data[property].find(translation => translation && translation.type === 'default')
+        } else {
+          data[property] = {
+            value: i18n.t('noDefaultValue'),
+            type: 'error',
+            lang: 'de'
+          }
+        }
+      }
+    }
+    return data
+  },
   hydrateTranslations: function (data) {
     // TODO: Replace with real languages list and maybe change default language value
     let tmpLanguages = JSON.parse(JSON.stringify(data || []))
@@ -181,6 +200,9 @@ const getters = {
   },
   newTab: state => {
     return state.newTab
+  },
+  reduceTranslations: state => {
+    return state.reduceTranslations
   },
   hydrateTranslations: state => {
     return state.hydrateTranslations

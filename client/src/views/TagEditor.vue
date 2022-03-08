@@ -114,6 +114,9 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    ...mapMutations('tags', {
+      updateTagItem: 'updateItem'
+    }),
     ...mapActions('tags', {
       patchTag: 'patch',
       createTag: 'create',
@@ -138,11 +141,13 @@ export default {
         isActive: this.isActive
       }
       try {
+        let result
         if (this.selectedTag) {
-          await this.patchTag([this.selectedTag._id, map, {}])
+          result = await this.patchTag([this.selectedTag._id, map, {}])
         } else {
-          await this.createTag([map, {}])
+          result = await this.createTag([map, {}])
         }
+        this.updateTagItem(this.reduceTranslations(result, this.$i18n.locale, ['text']))
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         this.$router.go(-1)
@@ -156,6 +161,7 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
+      'reduceTranslations',
       'hydrateTranslations'
     ]),
     ...mapGetters('auth', [

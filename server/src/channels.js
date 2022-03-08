@@ -373,14 +373,22 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('tags').publish((data, hook) => {
-    if (
-      Array.isArray(data) ||
-      !data.isActive ||
-      !data.isAccepted
-    ) {
-      return createLanguageChannels(app, data, app.channel('admins'), ['text', 'description'])
+    let isPublic = true
+    if (Array.isArray(data)) {
+      if (data.map(tag => !tag.isActive || !tag.isAccepted)) {
+        isPublic = false
+      }
     } else {
-      return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['text', 'description'])
+      if (!data.isActive || !data.isAccepted) {
+        isPublic = false
+      }
+    }
+    if (
+      isPublic
+    ) {
+      return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['text'])
+    } else {
+      return createLanguageChannels(app, data, app.channel('admins'), ['text'])
     }
   })
 
