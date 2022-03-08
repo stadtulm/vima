@@ -45,7 +45,6 @@ const state = {
             Store.dispatch('logging/create', { type: 'error', route: window.location.pathname, user: (Store.getters['auth/user'] ? Store.getters['auth/user']._id : '-'), method: 'getTags', message: 'Not existant tag: ' + obj })
           }
         })
-        .map(obj => Store.getters.reduceTranslations(obj, i18n.locale, ['text']))
         .filter(obj => !!obj)
         .sort((a, b) => a.text.value.localeCompare(b.text.value))
     } else {
@@ -64,7 +63,6 @@ const state = {
           }
         })
         .filter(obj => !!obj)
-        .map(obj => Store.getters.reduceTranslations(obj, i18n.locale, ['text']))
         .sort((a, b) => a.text.value.localeCompare(b.text.value))
     } else {
       return []
@@ -76,25 +74,6 @@ const state = {
     } else {
       return text
     }
-  },
-  reduceTranslations: function (data, language, properties) {
-    for (const property of properties) {
-      if (data[property] && Array.isArray(data[property])) {
-        const dataProperty = data[property].find(translation => translation && translation.lang === language)
-        if (dataProperty) {
-          data[property] = dataProperty
-        } else if (data[property].find(translation => translation && translation.type === 'default')) {
-          data[property] = data[property].find(translation => translation && translation.type === 'default')
-        } else {
-          data[property] = {
-            value: i18n.t('noDefaultValue'),
-            type: 'error',
-            lang: 'de'
-          }
-        }
-      }
-    }
-    return data
   },
   hydrateTranslations: function (data) {
     // TODO: Replace with real languages list and maybe change default language value
@@ -202,9 +181,6 @@ const getters = {
   },
   newTab: state => {
     return state.newTab
-  },
-  reduceTranslations: state => {
-    return state.reduceTranslations
   },
   hydrateTranslations: state => {
     return state.hydrateTranslations

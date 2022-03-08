@@ -19,9 +19,9 @@ function createLanguageChannels (app, data, connections, properties) {
         // Check if language exists and use default if not
         const languageProperty = obj[property].find(t => t.lang === language)
         if (languageProperty) {
-          clone[property] = [obj[property].find(t => t.lang === language)]
+          clone[property] = obj[property].find(t => t.lang === language)
         } else {
-          clone[property] = [obj[property].find(t => t.type === 'default')]
+          clone[property] = obj[property].find(t => t.type === 'default')
         }
       }
       return clone
@@ -168,6 +168,9 @@ module.exports = function (app) {
   app.service('chat-messages').publish((data, hook) => {
     const tmpUsers = data.tmpUsers
     delete data.tmpUsers
+    if (Array.isArray(data.text)) {
+      data.text = data.text.find(obj => obj.type === 'default')[0]
+    }
     return tmpUsers.map(obj => app.channel(obj))
   })
 
@@ -186,6 +189,9 @@ module.exports = function (app) {
   */
 
   app.service('discussion-messages').publish(async (data, hook) => {
+    if (Array.isArray(data.text)) {
+      data.text = data.text.find(obj => obj.type === 'default')[0]
+    }
     // Get discussion (and group) of message
     const discussion = await app.service('discussions').get(
       data.discussion,

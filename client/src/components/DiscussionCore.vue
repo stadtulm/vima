@@ -152,13 +152,13 @@
                                 >
                                   fas fa-sync
                                 </v-icon>
-                                Der ursprüngliche Beitrag wurde editiert
+                                {{$t('defaultLanguageEdited')}}
                                 <v-btn
                                   text
                                   x-small
                                   @click="translateText({ texts: [{ id: message._id, translationSum: message.translationSum }], force: true })"
                                 >
-                                  Übersetzung aktualisieren
+                                  {{$t('updateTranslation')}}
                                 </v-btn>
                               </v-col>
                               <v-col
@@ -171,13 +171,13 @@
                                 >
                                   fas fa-info-circle
                                 </v-icon>
-                                Dieser Text wurde maschinell übersetzt
+                                {{$t('machineTranslationHint')}}
                                 <v-btn
                                   text
                                   x-small
                                   @click="updateTranslationItem({ _id: message._id + '_' + $i18n.locale, show: false })"
                                 >
-                                  Original anzeigen
+                                  {{$t('showOriginal')}}
                                 </v-btn>
                               </v-col>
                             </v-row>
@@ -189,7 +189,7 @@
                                 getTranslation(message._id + '_' + $i18n.locale).show
                               )
                             "
-                            v-html="$sanitize(newTab(message.text.find(t => t.type === 'default').value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                            v-html="$sanitize(newTab(message.text.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
                             color="transparent"
                             class="pa-1"
                           >
@@ -321,7 +321,7 @@
                                         getTranslation(message._id + '_' + $i18n.locale).show
                                       "
                                     >
-                                      Übersetzen
+                                      {{$t('translateTo')}} {{$t($i18n.locale)}}
                                       <v-icon
                                         size="20"
                                         class="ml-2"
@@ -346,7 +346,7 @@
                                         }
                                       )"
                                     >
-                                      Alle angezeigten Beiträge übersetzen
+                                      {{$t('translateAllTo')}} {{$t($i18n.locale)}}
                                       <v-icon
                                         size="20"
                                         class="ml-2"
@@ -496,7 +496,7 @@
                               </v-list-item-content>
                             </v-list-item>
                             <v-alert
-                              v-html="$sanitize(newTab(message.latestAnswers.text.find(t => t.type === 'default').value))"
+                              v-html="$sanitize(newTab(message.latestAnswers.text.value))"
                             >
                             </v-alert>
                           </v-alert>
@@ -872,7 +872,7 @@ export default {
     },
     async editMessage (message) {
       this.isEditMessage = message._id
-      this.message = message.text.find(t => t.type === 'default').value
+      this.message = message.text.value
       document.querySelector('#messageInput').scrollIntoView({ block: 'start', behavior: 'smooth' })
     },
     async sendMessage () {
@@ -1079,7 +1079,7 @@ export default {
             discussion: this.discussion._id,
             repliesTo: { $exists: false },
             $limit: this.itemsPerPage,
-            $skip: (this.page - 1) * this.itemsPerPage,
+            $skip: (this.page - 1) * this.itemsPerPage < 0 ? 0 : (this.page - 1) * this.itemsPerPage,
             $sort: { createdAt: this.sortDesc }
           }
         }

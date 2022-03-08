@@ -19,7 +19,8 @@ module.exports = function (app) {
     },
     text: [
       {
-        type: Translation
+        type: Translation,
+        required: true
       }
     ],
     repliesTo: {

@@ -1,3 +1,5 @@
+const Translation = require('./translations.model')
+
 // chat-messages-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -17,10 +19,12 @@ module.exports = function (app) {
       type: ObjectId,
       ref: 'users'
     },
-    text: {
-      type: String,
-      required: true
-    },
+    text: [
+      {
+        type: Translation,
+        rewuired: true
+      }
+    ],
     repliesTo: {
       type: ObjectId,
       ref: 'chatMessages'
@@ -31,7 +35,10 @@ module.exports = function (app) {
         ref: 'chatMessages'
       }
     ],
-    editedAt: { type: Date }
+    editedAt: { type: Date },
+    translationSum: {
+      type: String
+    }
   }, {
     timestamps: true,
     collation: { locale: 'en', strength: 1 }

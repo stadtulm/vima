@@ -589,5 +589,11 @@
   "ro": "Rumänisch",
   "defaultLanguage": "Pflichtsprache",
   "defaultLanguageRequired": "Die Pflichtsprache muss gesetzt sein",
-  "noDefaultValue": "Pflichtsprache fehlt"
+  "noDefaultValue": "Pflichtsprache fehlt",
+  "defaultLanguageEdited": "Der ursprüngliche Beitrag wurde editiert",
+  "updateTranslation": "Übersetzung aktualisieren",
+  "machineTranslationHint": "Dieser Text wurde maschinell übersetzt",
+  "showOriginal": "Original anzeigen",
+  "translateTo": "Übersetzen auf",
+  "translateAllTo": "Alle übersetzen auf"
 }

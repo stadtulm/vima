@@ -225,7 +225,10 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         commonHooks.alterItems(rec => {
-          rec.text = rec.text.filter(t => t.type === 'default')
+          if (rec.latestAnswers?.text) {
+            rec.latestAnswers.text = rec.latestAnswers.text.filter(t => t.type === 'default')[0]
+          }
+          rec.text = rec.text.filter(t => t.type === 'default')[0]
           return rec
         })
       )

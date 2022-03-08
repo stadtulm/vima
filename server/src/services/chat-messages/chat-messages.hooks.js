@@ -2,6 +2,7 @@ const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const Errors = require('@feathersjs/errors')
 const { notifyNewMessages } = require('../mailer/generator')
+const JSum = require('jsum')
 
 module.exports = {
   before: {
@@ -70,7 +71,10 @@ module.exports = {
             throw new Errors.Forbidden('Not allowed to create messages of a chat if user is not owner')
           }
         }
-      )
+      ),
+      (context) => {
+        context.data.translationSum = JSum.digest(context.data.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
+      }
     ],
     update: [
       commonHooks.iff(
@@ -90,6 +94,12 @@ module.exports = {
           if (context.params.user._id.toString() !== chatMessage.author.toString()) {
             throw new Errors.Forbidden('Only author can patch chat messages')
           }
+        }
+      ),
+      commonHooks.iff(
+        (context) => context.data?.text?.find(t => t.type === 'default'),
+        (context) => {
+          context.data.translationSum = JSum.digest(context.data.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
         }
       )
     ],
@@ -113,6 +123,16 @@ module.exports = {
 
   after: {
     all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.alterItems(rec => {
+          if (rec.latestAnswers?.text) {
+            rec.latestAnswers.text = rec.latestAnswers.text.filter(t => t.type === 'default')[0]
+          }
+          rec.text = rec.text.filter(t => t.type === 'default')[0]
+          return rec
+        })
+      ),
       // Prepare user ids for sending results to the correct channels
       async (context) => {
         const tmpUsers = await context.app.service('status-containers').find(

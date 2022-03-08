@@ -214,6 +214,21 @@ app.service('events').find({ paginate: false }).then(events => {
 
 /*
 // New text format
+app.service('chat-messages').find({ paginate: false }).then(chatMessages => {
+  for (const chatMessage of chatMessages) {
+    chatMessage.text = [{
+      type: 'default',
+      value: chatMessage.text
+    }]
+    app.service('chat-messages').update(chatMessage._id, chatMessage).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
+/*
+// New text format
 app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
   for (const discussionMessage of discussionMessages) {
     discussionMessage.text = [{
@@ -272,6 +287,19 @@ app.service('discussion-messages').find({ paginate: false }).then(discussionMess
   for (const discussionMessage of discussionMessages) {
     discussionMessage.translationSum = JSum.digest(discussionMessage.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
     app.service('discussion-messages').update(discussionMessage._id, discussionMessage).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
+/*
+// Checksum
+app.service('chat-messages').find({ paginate: false }).then(chatMessages => {
+  const JSum = require('jsum')
+  for (const chatMessage of chatMessages) {
+    chatMessage.translationSum = JSum.digest(chatMessage.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
+    app.service('chat-messages').update(chatMessage._id, chatMessage).then(res => {
       console.log(res)
     })
   }
