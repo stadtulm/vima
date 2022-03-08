@@ -24,17 +24,7 @@ module.exports = {
         )
       )
     ],
-    get: [
-      commonHooks.iff(
-        commonHooks.isProvider('external'),
-        commonHooks.iff(
-          (context) => !context.params.keepTranslations,
-          async (context) => {
-            await util.generateAggegationStages(context, ['text', 'description'])
-          }
-        )
-      )
-    ],
+    get: [],
     create: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
@@ -82,17 +72,7 @@ module.exports = {
   },
 
   after: {
-    all: [
-      commonHooks.iff(
-        commonHooks.isProvider('external'),
-        commonHooks.iff(
-          (context) => !context.params.keepTranslations,
-          commonHooks.alterItems((rec, context) => {
-            return util.reduceTranslations(rec, context.params.connection.language, ['text', 'description'])
-          })
-        )
-      )
-    ],
+    all: [],
     find: [],
     get: [],
     create: [],

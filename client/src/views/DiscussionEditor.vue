@@ -94,7 +94,7 @@
                     item-text="text.value"
                     item-value="_id"
                     :label="$t('categories')"
-                    :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+                    :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
                     :rules="[rules.minOneCategory, rules.maxThreeCategories]"
                   >
                   </v-select>
@@ -654,8 +654,7 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3',
-      'reduceTranslations'
+      's3'
     ]),
     ...mapGetters('discussions', {
       getDiscussion: 'get'
@@ -674,11 +673,7 @@ export default {
     }),
     computedTags () {
       return this.tags
-        .map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text']))
         .filter(obj => obj.isActive && obj.isAccepted)
-    },
-    computedCategories () {
-      return this.categories.map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text', 'description']))
     },
     dropzoneOptionsPics () {
       return {

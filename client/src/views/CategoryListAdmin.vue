@@ -43,7 +43,7 @@
         <v-data-table
           class="customGreyBg elevation-3"
           :headers="headers"
-          :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+          :items="computedCategories"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -65,7 +65,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.text`]="{ item }"
+            v-slot:[`item.text.value`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -305,9 +305,7 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3',
-      'newTab',
-      'reduceTranslations'
+      'newTab'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -317,7 +315,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('name'), value: 'text' },
+        { text: this.$t('name'), value: 'text.value' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('updatedAt'), value: 'updatedAt' },
         { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
@@ -326,7 +324,6 @@ export default {
     },
     computedCategories () {
       const filteredCategories = this.categories
-        .map(category => this.reduceTranslations(category, this.$i18n.locale, ['text', 'description']))
       if (this.search && this.search.trim() !== '') {
         return filteredCategories
           .filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))

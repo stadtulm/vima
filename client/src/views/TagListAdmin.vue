@@ -46,7 +46,7 @@
           :item-class="itemRowBackground"
           class="customGreyBg elevation-3"
           :headers="headers"
-          :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+          :items="computedTags"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -68,7 +68,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.text`]="{ item }"
+            v-slot:[`item.text.value`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -407,10 +407,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      's3',
-      'reduceTranslations'
-    ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -422,7 +418,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('name'), value: 'text' },
+        { text: this.$t('name'), value: 'text.value' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('updatedAt'), value: 'updatedAt' },
         { text: this.$t('accepted'), value: 'isAccepted', align: 'center' },
@@ -435,7 +431,7 @@ export default {
       return this.statusContainers.find(obj => obj.user === this.user._id && obj.type === 'tags' && obj.relation === 'admin')
     },
     computedTags () {
-      const filteredTags = this.tags.map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text']))
+      const filteredTags = this.tags.map(tag => tag.text && (tag.text.lang === this.$i18n.locale || tag.text.type === 'default') ? tag : { ...tag, text: { value: this.$t('noDefaultValue'), type: 'error' } })
       if (this.search && this.search.trim() !== '') {
         return filteredTags.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
       } else {

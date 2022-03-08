@@ -317,7 +317,7 @@ export default {
             .map(obj => {
               const tag = this.getTag(obj)
               if (tag) {
-                return this.reduceTranslations(tag, this.$i18n.locale, ['text'])
+                return tag
               } else {
                 this.createLog({ type: 'error', route: window.location.pathname, user: (this.user ? this.user._id : '-'), method: 'getTags (CategoriesListView)', message: 'Not existant category: ' + obj })
               }
@@ -336,7 +336,6 @@ export default {
   computed: {
     ...mapGetters([
       's3',
-      'reduceTranslations',
       'typeItems'
     ]),
     ...mapGetters('tags', {
@@ -370,12 +369,10 @@ export default {
     },
     computedCategories () {
       if (this.computedCategoriesWithCount) {
-        const filteredCategories = this.categories
-          .map(category => this.reduceTranslations(category, this.$i18n.locale, ['text', 'description']))
         if (this.search && this.search.trim() !== '') {
-          return filteredCategories.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
+          return this.categories.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
         } else {
-          return filteredCategories
+          return this.categories
         }
       } else {
         return []

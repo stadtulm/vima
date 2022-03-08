@@ -163,22 +163,41 @@ module.exports = {
       })
     } else {
       for (const property of properties) {
-        const stage = {
-          $addFields: {}
-        }
-        stage.$addFields[property] = {
-          $filter: {
-            input: '$' + property + '',
-            as: 'translation',
-            cond: {
-              $or: [
-                { $eq: ['$$translation.type', 'default'] },
-                { $eq: ['$$translation.lang', context.params.connection.language] }
-              ]
+        stages.push({
+          $addFields: {
+            [property]: {
+              $first: {
+                $cond: {
+                  if: {
+                    $in: [context.params.connection.language, '$' + property + '.lang']
+                  },
+                  then: {
+                    $filter: {
+                      input: '$' + property,
+                      as: 'item',
+                      cond: {
+                        $eq: [
+                          '$$item.lang', context.params.connection.language
+                        ]
+                      }
+                    }
+                  },
+                  else: {
+                    $filter: {
+                      input: '$' + property,
+                      as: 'item',
+                      cond: {
+                        $eq: [
+                          '$$item.type', 'default'
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
-        }
-        stages.push(stage)
+        })
       }
     }
 

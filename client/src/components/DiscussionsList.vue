@@ -33,7 +33,7 @@
             auto-select-first
             dense
             hide-details
-            :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
             item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
@@ -487,8 +487,7 @@ export default {
     ...mapGetters([
       'deepSort',
       'getTags',
-      'getCategories',
-      'reduceTranslations'
+      'getCategories'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -518,12 +517,7 @@ export default {
     },
     computedTags () {
       return this.tags
-        .map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text']))
         .filter(obj => obj.isActive && obj.isAccepted)
-    },
-    computedCategories () {
-      return this.categories
-        .map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text', 'description']))
     },
     headers () {
       if (this.isAcceptList) {

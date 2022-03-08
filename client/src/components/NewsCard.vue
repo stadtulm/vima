@@ -236,8 +236,7 @@ export default {
   computed: {
     ...mapGetters([
       's3',
-      'newTab',
-      'reduceTranslations'
+      'newTab'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -257,7 +256,7 @@ export default {
           if (!selectedNewsEntry) {
             selectedNewsEntry = await this.requestNews([this.$route.params.id])
           }
-          return this.reduceTranslations(selectedNewsEntry, this.$i18n.locale, ['text', 'title', 'subTitle'])
+          return selectedNewsEntry
         }
       }
     }

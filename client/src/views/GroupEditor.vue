@@ -89,7 +89,7 @@
                     item-text="text.value"
                     item-value="_id"
                     :label="$t('categories')"
-                    :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+                    :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
                     :rules="[rules.minOneCategory, rules.maxThreeCategories]"
                   >
                   </v-select>
@@ -582,8 +582,7 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3',
-      'reduceTranslations'
+      's3'
     ]),
     ...mapGetters('groups', {
       getGroup: 'get'
@@ -607,14 +606,9 @@ export default {
       }
       return tmpItems
     },
-    computedCategories () {
-      return this.categories
-        .map(category => this.reduceTranslations(category, this.$i18n.locale, ['text', 'description']))
-    },
     computedTags () {
       return this.tags
         .filter(obj => obj.isActive && obj.isAccepted)
-        .map(tag => this.reduceTranslations(tag, this.$i18n.locale, ['text']))
     },
     dropzoneOptionsPics () {
       return {
