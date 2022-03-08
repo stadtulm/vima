@@ -189,8 +189,23 @@ module.exports = function (app) {
   */
 
   app.service('discussion-messages').publish(async (data, hook) => {
-    if (Array.isArray(data.text)) {
-      data.text = data.text.find(obj => obj.type === 'default')[0]
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.text)) {
+          message.text = message.text.find(obj => obj.type === 'default')[0]
+        }
+        if (Array.isArray(data.latestAnswers?.text)) {
+          message.latestAnswers.text = message.latestAnswers.text.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.text)) {
+        data.text = data.text.find(obj => obj.type === 'default')[0]
+      }
+      if (Array.isArray(data.latestAnswers?.text)) {
+        data.latestAnswers.text = data.latestAnswers.text.find(obj => obj.type === 'default')
+      }
     }
     // Get discussion (and group) of message
     const discussion = await app.service('discussions').get(

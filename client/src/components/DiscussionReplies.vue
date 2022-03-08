@@ -352,13 +352,13 @@
                                                 outlined
                                                 small
                                                 color="customGrey"
-                                                @click="'translateText', {
+                                                @click="$emit('translateText', {
                                                   texts: computedMessages
                                                     .filter(m => !isOwnMessage(m))
                                                     .map(m => {
                                                       return { id: m._id, translationSum: m.translationSum }
                                                     })
-                                                  }"
+                                                  })"
                                               >
                                                 {{$t('translateAllTo')}} {{$t($i18n.locale)}}
                                                 <v-icon

@@ -499,6 +499,7 @@
                               v-html="$sanitize(newTab(message.latestAnswers.text.value))"
                             >
                             </v-alert>
+                            {{message.latestAnswers}}
                           </v-alert>
                         </v-col>
                       </v-row>
