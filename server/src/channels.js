@@ -240,15 +240,26 @@ module.exports = function (app) {
   * Events
   */
 
+  // TODO: Add members to a channel and post updates of inactive events to that channel
+
   // eslint-disable-next-line no-unused-vars
   app.service('events').publish((data, hook) => {
-    if (
-      Array.isArray(data) ||
-      !data.isActive
-    ) {
-      return app.channel('admins')
+    let isPublic = true
+
+    if (Array.isArray(data)) {
+      if (data.find(event => !event.isActive)) {
+        isPublic = false
+      }
     } else {
-      return app.channel('anonymous', 'authenticated')
+      if (!data.isActive) {
+        isPublic = false
+      }
+    }
+
+    if (isPublic) {
+      return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['text', 'title'])
+    } else {
+      return createLanguageChannels(app, data, app.channel('admins'), ['text', 'title'])
     }
   })
 
@@ -276,17 +287,32 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('news').publish((data, hook) => {
-    if (
-      Array.isArray(data) ||
-      !data.isActive
-    ) {
-      return app.channel('admins')
-    } else {
-      if (data.isInternal) {
-        return app.channel('authenticated')
-      } else {
-        return app.channel('anonymous', 'authenticated')
+    let isPublic = true
+    let isInternal = false
+    if (Array.isArray(data)) {
+      if (data.find(newsEntry => !newsEntry.isActive)) {
+        isPublic = false
       }
+      if (data.find(newsEntry => !newsEntry.isInternal)) {
+        isInternal = true
+      }
+    } else {
+      if (!data.isActive) {
+        isPublic = false
+      }
+      if (data.isInternal) {
+        isInternal = true
+      }
+    }
+
+    if (isPublic) {
+      if (isInternal) {
+        return createLanguageChannels(app, data, app.channel('authenticated'), ['title', 'subTitle', 'text'])
+      } else {
+        return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['title', 'subTitle', 'text'])
+      }
+    } else {
+      return createLanguageChannels(app, data, app.channel('admins'), ['title', 'subTitle', 'text'])
     }
   })
 
@@ -375,7 +401,7 @@ module.exports = function (app) {
   app.service('tags').publish((data, hook) => {
     let isPublic = true
     if (Array.isArray(data)) {
-      if (data.map(tag => !tag.isActive || !tag.isAccepted)) {
+      if (data.find(tag => !tag.isActive || !tag.isAccepted)) {
         isPublic = false
       }
     } else {
