@@ -164,6 +164,26 @@ module.exports = app
   })
   */
 
+/*
+app.service('ads').find({ paginate: false }).then(ads => {
+  for (const ad of ads) {
+    ad.text = [{
+      type: 'default',
+      value: ad.text,
+      lang: 'de'
+    }]
+    ad.title = [{
+      type: 'default',
+      value: ad.title,
+      lang: 'de'
+    }]
+    app.service('ads').update(ad._id, ad).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
 // New text format news
 /*
 app.service('news').find({ paginate: false }).then(news => {
@@ -221,6 +241,21 @@ app.service('chat-messages').find({ paginate: false }).then(chatMessages => {
       value: chatMessage.text
     }]
     app.service('chat-messages').update(chatMessage._id, chatMessage).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
+/*
+// New text format
+app.service('ad-messages').find({ paginate: false }).then(adMessages => {
+  for (const adMessage of adMessages) {
+    adMessage.text = [{
+      type: 'default',
+      value: adMessage.text
+    }]
+    app.service('ad-messages').update(adMessage._id, adMessage).then(res => {
       console.log(res)
     })
   }

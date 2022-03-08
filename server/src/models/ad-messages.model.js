@@ -1,3 +1,5 @@
+const Translation = require('./translations.model')
+
 // ad-messages-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -18,10 +20,10 @@ module.exports = function (app) {
       type: ObjectId,
       ref: 'users'
     },
-    text: {
-      type: String,
+    text: [{
+      type: Translation,
       required: true
-    },
+    }],
     repliesTo: {
       type: ObjectId,
       ref: 'chatMessages'

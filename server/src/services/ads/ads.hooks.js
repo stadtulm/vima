@@ -3,6 +3,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
 const Errors = require('@feathersjs/errors')
 const { notifyUsers } = require('../mailer/generator')
+const util = require('../util')
 
 module.exports = {
   before: {
@@ -12,23 +13,30 @@ module.exports = {
         allowAnonymous(),
         authenticate('jwt', 'anonymous'),
         commonHooks.iffElse(
-          (context) => context.params.user?.role === 'admins',
-          (context) => {
-            context.params.query.$populate = {
-              path: 'author',
-              select: {
-                userName: 1,
-                pic: 1
-              }
-            }
-          },
+          (context) => context.params.user?.role === 'anonymous',
           (context) => {
             delete context.params.query.$populate
+          },
+          (context) => {
+            context.params.query.$populate = ['author']
           }
         )
       )
     ],
-    find: [],
+    find: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        (context) => {
+          context.params.query = util.convert(context.params.query, [])
+        },
+        commonHooks.iff(
+          (context) => !context.params.keepTranslations,
+          async (context) => {
+            await util.generateDefaultAggegationStages(context, ['text', 'title'])
+          }
+        )
+      )
+    ],
     get: [],
     create: [
       commonHooks.iff(
@@ -147,7 +155,20 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.alterItems(rec => {
+          if (Array.isArray(rec.title)) {
+            rec.title = rec.title.filter(t => t.type === 'default')[0]
+          }
+          if (Array.isArray(rec.text)) {
+            rec.text = rec.text.filter(t => t.type === 'default')[0]
+          }
+          return rec
+        })
+      )
+    ],
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),

@@ -473,10 +473,9 @@ export default {
         this.selectedAd = selectedAd
       }
       if (this.selectedAd) {
-        this.title = this.selectedAd.title
-        this.subTitle = this.selectedAd.subTitle
+        this.title = this.selectedAd.title.value
+        this.text = this.selectedAd.text.value
         this.type = this.selectedAd.type
-        this.text = this.selectedAd.text
         this.selectedCategories = this.selectedAd.categories
         this.selectedTags = this.selectedAd.tags
         if (this.selectedAd.pics) {
@@ -551,10 +550,19 @@ export default {
         await this.$refs.vueDropzonePics.processQueue()
       } else {
         const map = {
-          title: this.title,
-          subTitle: this.subTitle,
+          title: [
+            {
+              value: this.title,
+              type: 'default'
+            }
+          ],
+          text: [
+            {
+              value: this.text,
+              type: 'default'
+            }
+          ],
           type: this.type,
-          text: this.text,
           categories: this.selectedCategories,
           tags: this.selectedTags
         }

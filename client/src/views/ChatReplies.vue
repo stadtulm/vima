@@ -263,7 +263,7 @@
                                           getTranslation(message._id + '_' + $i18n.locale).show
                                         )
                                       "
-                                      v-html="$sanitize(newTab(message.text.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                      v-html="message.text ? $sanitize(newTab(message.text.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) : ''"
                                       :color="isOwnMessage(message) ? '#fff' : 'customGreyLight'"
                                       :class="{'rounded-l-xl rounded-tr-xl': isOwnMessage(message), 'rounded-r-xl rounded-tl-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
                                       class="px-4 py-1 elevation-4"

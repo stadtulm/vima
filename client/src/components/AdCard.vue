@@ -18,7 +18,7 @@
             <v-card-title
               class="word-wrap"
             >
-              {{computedAd.title}}
+              {{computedAd.title.value}}
               <v-tooltip
                 right
                 color="customGrey"
@@ -64,11 +64,11 @@
                 </span>
               </v-tooltip>
             </v-card-title>
-            <!-- Subtitle -->
+            <!-- Info -->
             <v-card-subtitle
               class="pb-1"
             >
-              {{computedAd.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}} vom {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}}
+              {{computedAd.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}} {{$t('from')}} {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}} {{ user ? $t('by') + ' ' + computedAd.author.user.userName : ''}}
             </v-card-subtitle>
           </v-col>
           <v-col
@@ -82,7 +82,7 @@
             <v-btn
               class="customCyan--text"
               :class="$vuetify.breakpoint.mdAndUp ? '' : 'mx-4 mb-4'"
-              :to="{ name: 'Ad', params: { id: computedAd._id }}"
+              :to="{ name: 'Ad', params: { id: computedAd._id } }"
             >
               {{$t('viewButton')}}
               <v-icon
@@ -138,7 +138,7 @@
         <v-row>
           <v-col
             class="body-1 mx-4"
-            v-html="adProp ? truncatedDescription(newTab(computedAd.text)) : $sanitize(newTab(computedAd.text))"
+            v-html="adProp ? truncatedDescription(newTab(computedAd.text.value)) : $sanitize(newTab(computedAd.text.value))"
           ></v-col>
         </v-row>
       </v-col>
@@ -438,7 +438,10 @@ export default {
           {
             ad: this.computedAd._id,
             author: this.user._id,
-            text: this.message
+            text: [{
+              value: this.message,
+              type: 'default'
+            }]
           }
         )
         this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })

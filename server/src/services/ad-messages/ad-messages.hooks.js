@@ -64,7 +64,17 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.alterItems(rec => {
+          if (Array.isArray(rec.text)) {
+            rec.text = rec.text.filter(t => t.type === 'default')[0]
+          }
+          return rec
+        })
+      )
+    ],
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
@@ -244,9 +254,11 @@ module.exports = {
             const applicantChatMessage = await context.app.service('chat-messages').create(
               {
                 chat: chatId,
-                text:
-                  '<blockquote class="blockquote"><p>' + locales.subject + ': ' + locales.ad + ' "' + ad.title + '"</blockquote>' +
-                  '<p>' + context.params.tmpApplicantAdMessage.text + '</p>',
+                text: [{
+                  value: '<blockquote class="blockquote"><p>' + locales.subject + ': ' + locales.ad + ' "' + ad.title.find(obj => obj.type === 'default').value + '"</blockquote>' +
+                  '<p>' + context.params.tmpApplicantAdMessage.text.find(obj => obj.type === 'default').value + '</p>',
+                  type: 'default'
+                }],
                 author: context.params.tmpApplicantAdMessage.author,
                 replies: [] // Has to be pushed later
               }
@@ -255,7 +267,10 @@ module.exports = {
             const ownerChatMessage = await context.app.service('chat-messages').create(
               {
                 chat: chatId,
-                text: context.data.text,
+                text: [{
+                  value: context.data.text.find(obj => obj.type === 'default').value,
+                  type: 'default'
+                }],
                 author: context.params.user._id,
                 repliesTo: applicantChatMessage._id
               }

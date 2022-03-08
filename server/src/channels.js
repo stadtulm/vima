@@ -380,23 +380,34 @@ module.exports = function (app) {
   * Status containers
   */
 
-  app.service('status-containers').publish((data, hook) => {
-    let tmpData = data
-    if (!Array.isArray(data)) {
-      tmpData = [data]
+  app.service('status-containers').publish(async (data, hook) => {
+    if (!Array.isArray(data) && data.type === 'chats') {
+      const chatStatusContainers = await app.service('status-containers').find({
+        query: {
+          reference: data.reference,
+          type: 'chats',
+          relation: 'owner'
+        }
+      })
+      return chatStatusContainers.map(obj => app.channel(obj.user))
+    } else {
+      let tmpData = data
+      if (!Array.isArray(data)) {
+        tmpData = [data]
+      }
+      // Concat array of users and array of status container ids
+      // to notify all users directly linked in the status container
+      // and all users who are owners of the status container reference
+      return [
+        ...new Set(
+          tmpData.map(obj => obj.user.toString())
+        )
+      ]
+        .concat(
+          tmpData.map(obj => obj._id.toString())
+        )
+        .map(obj => app.channel(obj))
     }
-    // Concat array of users and array of status container ids
-    // to notify all users directly linked in the status container
-    // and all users who are owners of the status container reference
-    return [
-      ...new Set(
-        tmpData.map(obj => obj.user.toString())
-      )
-    ]
-      .concat(
-        tmpData.map(obj => obj._id.toString())
-      )
-      .map(obj => app.channel(obj))
   })
 
   /*

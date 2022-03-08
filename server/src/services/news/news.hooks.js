@@ -19,7 +19,7 @@ module.exports = {
         commonHooks.iff(
           (context) => !context.params.keepTranslations,
           async (context) => {
-            await util.generateAggegationStages(context, ['text', 'title', 'subTitle'])
+            await util.generateLanguageAggegationStages(context, ['text', 'title', 'subTitle'])
           }
         )
       )

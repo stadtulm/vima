@@ -29,7 +29,7 @@
     <v-row>
       <v-col>
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -103,12 +103,12 @@
             </v-badge>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <span
               class="font-weight-bold"
             >
-              {{item.title}}
+              {{item.title.value}}
               <v-tooltip
                 right
                 color="customGrey"
@@ -130,7 +130,7 @@
                   dark
                 >
                   <v-card-title>
-                    {{item.title}}
+                    {{item.title.value}}
                   </v-card-title>
                   <v-card-text
                     class="white--text"
@@ -138,7 +138,7 @@
                     <v-row>
                       <v-col
                         cols="12"
-                        v-html="item.text"
+                        v-html="item.text.value"
                       ></v-col>
                     </v-row>
                   </v-card-text>
@@ -311,7 +311,7 @@
             <v-col
               class="text-h5 font-weight-bold"
             >
-              {{$t('applicants')}} {{$t('for')}} "{{applicantsDialogItem.title}}"
+              {{$t('applicants')}} {{$t('for')}} "{{applicantsDialogItem.title.value}}"
             </v-col>
           </v-row>
           <v-row
@@ -384,7 +384,7 @@
                   v-slot:[`item.message`]="{ item }"
                 >
                   <span
-                    v-html="$sanitize(newTab(item.text).replace(/<blockquote(.+?)blockquote>/g, ''))"
+                    v-html="$sanitize(newTab(item.text.value).replace(/<blockquote(.+?)blockquote>/g, ''))"
                   >
                   </span>
                 </template>
@@ -404,7 +404,7 @@
                     >
                       <span
                         v-if="getAdMessage(item.replies[0])"
-                        v-html="$sanitize(newTab(getAdMessage(item.replies[0]).text))"
+                        v-html="$sanitize(newTab(getAdMessage(item.replies[0]).text.value))"
                       >
                       </span>
                     </template>
@@ -415,7 +415,7 @@
                   <v-btn
                     fab
                     v-if="item.chat"
-                    :to="{ name: 'IdChat', params: { id: item.chat } }"
+                    :to="{ name: 'IdChat', params: { chat: item.chat } }"
                     color="customCyan"
                     small
                   >
@@ -566,7 +566,7 @@ export default {
     message: undefined,
     isSending: false,
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
     total: 0,
@@ -709,7 +709,10 @@ export default {
           {
             ad: adMessage.ad,
             author: this.user._id,
-            text: this.message,
+            text: [{
+              value: this.message,
+              type: 'default'
+            }],
             repliesTo: adMessage._id
           }
         )
@@ -851,7 +854,7 @@ export default {
     },
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
@@ -875,8 +878,15 @@ export default {
         $skip: (this.page - 1) * this.computedSkip,
         $sort: { [this.sortBy]: this.computedSortDesc }
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       return {
         query,

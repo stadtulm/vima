@@ -595,5 +595,6 @@
   "machineTranslationHint": "Dieser Text wurde maschinell übersetzt",
   "showOriginal": "Original anzeigen",
   "translateTo": "Übersetzen auf",
-  "translateAllTo": "Alle übersetzen auf"
+  "translateAllTo": "Alle übersetzen auf",
+  "from": "vom"
 }

@@ -7,7 +7,7 @@ module.exports = function (app) {
   const options = {
     Model: createModel(app),
     paginate: app.get('paginate'),
-    whitelist: ['$regex', '$options', '$populate'],
+    whitelist: ['$regex', '$options', '$populate', '$elemMatch'],
     lean: { virtuals: true },
     multi: true
   }
