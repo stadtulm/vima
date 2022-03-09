@@ -1352,16 +1352,65 @@
                 class="pa-5"
                 color="yellow"
               >
-                <v-btn
-                  color="blue"
-                  dark
-                  large
-                  block
-                  class="mr-3"
-                  :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
-                >
-                  Hilfe für Ukraine
-                </v-btn>
+                <v-row>
+                  <v-col
+                     class="text-h5 font-weight-bold blue--text text-center"
+                  >
+                    HILFE FÜR UKRAINE
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    md="4"
+                    class="text-center"
+                  >
+                    <v-btn
+                      color="blue"
+                      dark
+                      large
+                      block
+                      class="py-6"
+                      :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
+                    >
+                      - ViMA -<br>Interessengruppe
+                    </v-btn>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="4"
+                    class="text-center"
+                  >
+                    <v-btn
+                      color="blue"
+                      dark
+                      large
+                      block
+                      class="py-6"
+                      target="_blank"
+                      href="https://www.engagiert-in-ulm.de"
+                    >
+                      - Engagiert in Ulm e.V. -<br>Helfer werden
+                    </v-btn>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="4"
+                    class="text-center"
+                  >
+                    <v-btn
+                      color="blue"
+                      dark
+                      large
+                      block
+                      class="py-6"
+                      target="_blank"
+                      href="https://www.ulm.de/leben-in-ulm/ukraine"
+                    >
+                      - Stadt Ulm -<br>Offizielle Stellen für Flüchtlinge
+                    </v-btn>
+                  </v-col>
+                </v-row>
               </v-sheet>
             </v-col>
           </v-row>
