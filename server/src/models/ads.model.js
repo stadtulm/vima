@@ -51,6 +51,9 @@ module.exports = function (app) {
         type: ObjectId,
         ref: 'users'
       }
+    },
+    translationSum: {
+      type: String
     }
   }, {
     timestamps: true,

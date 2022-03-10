@@ -183,6 +183,12 @@
         >
           <AdCard
             :adProp="ad"
+            :allAdIds="computedAds.map(
+                obj => ({
+                  id: obj._id,
+                  translationSum: obj.translationSum
+                })
+              )"
             @selectCategory="selectCategory"
             @selectTag="selectTag"
           ></AdCard>

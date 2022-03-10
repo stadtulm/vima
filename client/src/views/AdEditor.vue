@@ -425,6 +425,9 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    ...mapMutations('ads', {
+      updateAdItem: 'updateItem'
+    }),
     ...mapActions('ads', {
       patchAd: 'patch',
       createAd: 'create',
@@ -570,11 +573,13 @@ export default {
           map.pics = this.pics
         }
         try {
+          let result
           if (this.$route.params.id) {
-            await this.patchAd([this.$route.params.id, map, {}])
+            result = await this.patchAd([this.$route.params.id, map, {}])
           } else {
-            await this.createAd([map, {}])
+            result = await this.createAd([map, {}])
           }
+          this.updateAdItem(this.reduceTranslations(result, this.$i18n.locale, ['text', 'title']))
           this.isLoading = false
           this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
           this.$router.go(-1)
@@ -590,7 +595,8 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'reduceTranslations'
     ]),
     ...mapGetters('ads', {
       getAd: 'get'

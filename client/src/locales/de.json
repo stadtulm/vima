@@ -594,7 +594,8 @@
   "updateTranslation": "Übersetzung aktualisieren",
   "machineTranslationHint": "Dieser Text wurde maschinell übersetzt",
   "showOriginal": "Original anzeigen",
-  "translateTo": "Übersetzen auf",
-  "translateAllTo": "Alle übersetzen auf",
+  "translateText": "Diesen Text übersetzen",
+  "translateObject": "Ganzen Beitrag übersetzen",
+  "translateAll": "Alle angezeigten Beiträge übersetzen",
   "from": "vom"
 }

@@ -16,9 +16,16 @@
           <v-col>
             <!-- Title -->
             <v-card-title
-              class="word-wrap"
+              class="word-wrap mb-3"
             >
-              {{computedAd.title.value}}
+              <TranslatableText
+                ownField="title"
+                :allFields="['title', 'text']"
+                type="ads"
+                :allIds="allAdIds"
+                :textParent="computedAd"
+              >
+              </TranslatableText>
               <v-tooltip
                 right
                 color="customGrey"
@@ -101,7 +108,7 @@
           v-if="computedAd.categories && computedAd.categories.length > 0"
         >
           <v-col
-            class="mx-4"
+            class="mx-4 mt-2"
           >
             <v-chip
               outlined
@@ -136,10 +143,53 @@
         </v-row>
         <!-- Description -->
         <v-row>
-          <v-col
-            class="body-1 mx-4"
-            v-html="adProp ? truncatedDescription(newTab(computedAd.text.value)) : $sanitize(newTab(computedAd.text.value))"
-          ></v-col>
+          <TranslatableText
+            ownField="text"
+            :allFields="['title', 'text']"
+            type="ads"
+            :allIds="allAdIds"
+            :textParent="computedAd"
+            :ref="computedAd._id + '_text'"
+          >
+            <template
+              v-slot:defaultLang="{ computedText, translateText }"
+            >
+              <v-col
+                class="body-1 mx-4"
+              >
+                <span
+                  v-html="adProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
+                ></span>
+                <TranslatableTextInfo
+                  :canTranslate="true"
+                  :canShowOriginal="false"
+                  @translateText="(data) => { translateText(data) }"
+                ></TranslatableTextInfo>
+              </v-col>
+            </template>
+            <template
+              v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+            >
+              <v-col
+                class="pb-0"
+              >
+                <v-sheet
+                  class="ma-4 pa-1 px-3"
+                >
+                  <TranslatableTextInfo
+                    :canTranslate="false"
+                    :canShowOriginal="true"
+                    :needsUpdate="computedAd.translationSum !== computedText.translationSum"
+                    @showOriginal="(data) => { showOriginal(data) }"
+                    @translateText="(data) => { translateText(data) }"
+                  ></TranslatableTextInfo>
+                  <span
+                    v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                  ></span>
+                </v-sheet>
+              </v-col>
+            </template>
+          </TranslatableText>
         </v-row>
       </v-col>
       <v-col
@@ -353,15 +403,20 @@
 <script>
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
+import TranslatableText from '@/components/TranslatableText.vue'
+import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 
 export default {
   name: 'AdCard',
 
   components: {
+    TranslatableText,
+    TranslatableTextInfo
   },
 
   props: [
-    'adProp'
+    'adProp',
+    'allAdIds'
   ],
 
   data: () => ({
@@ -469,9 +524,6 @@ export default {
     }),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
-    }),
-    ...mapGetters('chat-messages', {
-      getChatMessage: 'get'
     }),
     ...mapGetters('categories', {
       categories: 'list',

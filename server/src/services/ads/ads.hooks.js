@@ -4,6 +4,7 @@ const allowAnonymous = require('../authmanagement/anonymous')
 const Errors = require('@feathersjs/errors')
 const { notifyUsers } = require('../mailer/generator')
 const util = require('../util')
+const JSum = require('jsum')
 
 module.exports = {
   before: {
@@ -66,7 +67,17 @@ module.exports = {
             }
           }
         }
-      )
+      ),
+      (context) => {
+        context.data.translationSum = JSum.digest(
+          [
+            context.data.title.find(t => t.type === 'default').value,
+            context.data.text.find(t => t.type === 'default').value
+          ],
+          'SHA256',
+          'hex'
+        )
+      }
     ],
     update: [
       commonHooks.iff(
@@ -123,6 +134,19 @@ module.exports = {
             }
           }
         )
+      ),
+      commonHooks.iff(
+        (context) => context.data?.title?.find(t => t.type === 'default') || context.data?.text?.find(t => t.type === 'default'),
+        (context) => {
+          context.data.translationSum = JSum.digest(
+            [
+              context.data.title.find(t => t.type === 'default').value,
+              context.data.text.find(t => t.type === 'default').value
+            ],
+            'SHA256',
+            'hex'
+          )
+        }
       )
     ],
     remove: [
