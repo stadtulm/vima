@@ -34,55 +34,62 @@ exports.Translations = class Translations {
         throw new Errors.Forbidden('Requested unknown translation')
       }
     }
-    const result = await Promise.all(messages.map(async m => {
+    let collectedResult = []
+
+    // TODO: Compare translated version and original version and only set language if its the same
+
+    for (const key of ['text', 'title']) {
+      const result = await Promise.all(messages.map(async m => {
       // Existing translations
-      if (m.text.find(t => t.lang === data.target)) {
-        return {
-          _id: m._id + '_' + data.target,
-          show: true,
-          translationSum: JSum.digest(m.text.find(t => t.type === 'default').value, 'SHA256', 'hex'),
-          ...m.text.find(t => t.lang === data.target)
-        }
-      // Get translations
-      } else {
-        const translation = await translate({
-          free_api: true,
-          text: m.text.find(t => t.type === 'default').value,
-          target_lang: data.target,
-          auth_key: process.env.DEEPL_AUTH_KEY
-        })
-        const targetText = {
-          lang: data.target,
-          type: 'deepl',
-          value: translation.data.translations[0].text
-        }
-        // Push translation object
-        await this.app.service(data.type).patch(m._id, {
-          $push: {
-            text: targetText
+        if (m[key].find(t => t.lang === data.target)) {
+          return {
+            _id: m._id + '_' + key + '_' + data.target,
+            show: true,
+            translationSum: JSum.digest(m[key].find(t => t.type === 'default').value, 'SHA256', 'hex'),
+            ...m[key].find(t => t.lang === data.target)
           }
-        })
-        // Update default language
-        await this.app.service(data.type).patch(
-          m._id,
-          {
-            'text.$.lang': translation.data.translations[0].detected_source_language.toLocaleLowerCase()
-          },
-          {
-            query: {
-              'text.type': 'default'
+          // Get translations
+        } else {
+          const translation = await translate({
+            free_api: true,
+            text: m[key].find(t => t.type === 'default').value,
+            target_lang: data.target,
+            auth_key: process.env.DEEPL_AUTH_KEY
+          })
+          const targetText = {
+            lang: data.target,
+            type: 'deepl',
+            value: translation.data.translations[0].text
+          }
+          // Push translation object
+          await this.app.service(data.type).patch(m._id, {
+            $push: {
+              [key]: targetText
             }
+          })
+          // Update default language
+          await this.app.service(data.type).patch(
+            m._id,
+            {
+              [key + '.$.lang']: translation.data.translations[0].detected_source_language.toLocaleLowerCase()
+            },
+            {
+              query: {
+                [key + '.type']: 'default'
+              }
+            }
+          )
+          return {
+            _id: m._id + '_' + key + '_' + data.target,
+            show: true,
+            translationSum: JSum.digest(m.text.find(t => t.type === 'default').value, 'SHA256', 'hex'),
+            ...targetText
           }
-        )
-        return {
-          _id: m._id + '_' + data.target,
-          show: true,
-          translationSum: JSum.digest(m.text.find(t => t.type === 'default').value, 'SHA256', 'hex'),
-          ...targetText
         }
-      }
-    }))
-    return result
+      }))
+      collectedResult = collectedResult.concat(result)
+    }
+    return collectedResult
   }
 
   async update (id, data, params) {
