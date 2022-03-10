@@ -3,6 +3,8 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
 const { notifyUsers } = require('../mailer/generator')
 const Errors = require('@feathersjs/errors')
+const util = require('../util')
+const JSum = require('jsum')
 
 module.exports = {
   before: {
@@ -25,7 +27,20 @@ module.exports = {
         }
       )
     ],
-    find: [],
+    find: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        (context) => {
+          context.params.query = util.convert(context.params.query, ['group'])
+        },
+        commonHooks.iff(
+          (context) => !context.params.keepTranslations,
+          async (context) => {
+            await util.generateDefaultAggegationStages(context, ['description', 'title'])
+          }
+        )
+      )
+    ],
     get: [],
     create: [
       commonHooks.iff(
@@ -62,7 +77,17 @@ module.exports = {
         (context) => {
           context.data.accepted = { isAccepted: true, dt: new Date(), user: context.params.user._id }
         }
-      )
+      ),
+      (context) => {
+        context.data.translationSum = JSum.digest(
+          [
+            context.data.title.find(t => t.type === 'default').value,
+            context.data.description.find(t => t.type === 'default').value
+          ],
+          'SHA256',
+          'hex'
+        )
+      }
     ],
     update: [
       commonHooks.iff(
@@ -129,6 +154,19 @@ module.exports = {
             }
           )
         )
+      ),
+      commonHooks.iff(
+        (context) => context.data?.title?.find(t => t.type === 'default') || context.data?.description?.find(t => t.type === 'default'),
+        (context) => {
+          context.data.translationSum = JSum.digest(
+            [
+              context.data.title.find(t => t.type === 'default').value,
+              context.data.description.find(t => t.type === 'default').value
+            ],
+            'SHA256',
+            'hex'
+          )
+        }
       )
     ],
     remove: [
@@ -183,7 +221,20 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.alterItems(rec => {
+          if (Array.isArray(rec.title)) {
+            rec.title = rec.title.find(t => t.type === 'default')
+          }
+          if (Array.isArray(rec.description)) {
+            rec.description = rec.description.find(t => t.type === 'default')
+          }
+          return rec
+        })
+      )
+    ],
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),

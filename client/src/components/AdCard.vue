@@ -149,7 +149,6 @@
             type="ads"
             :allIds="allAdIds"
             :textParent="computedAd"
-            :ref="computedAd._id + '_text'"
           >
             <template
               v-slot:defaultLang="{ computedText, translateText }"
@@ -184,7 +183,10 @@
                     @translateText="(data) => { translateText(data) }"
                   ></TranslatableTextInfo>
                   <span
-                    v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                    v-html="adProp ?
+                      $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
+                      truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
+                    "
                   ></span>
                 </v-sheet>
               </v-col>

@@ -29,7 +29,7 @@
     <v-row>
       <v-col>
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -320,12 +320,12 @@
             </v-btn>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <span
               class="font-weight-bold"
             >
-              {{item.title}}
+              {{item.title.value}}
             </span>
           </template>
           <template
@@ -932,7 +932,7 @@ export default {
     isSending: false,
     expanded: [],
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
     itemsPerPage: 5,
@@ -1376,7 +1376,7 @@ export default {
     },
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
@@ -1448,8 +1448,15 @@ export default {
         $skip: (this.page - 1) * this.computedSkip,
         $sort: { [this.sortBy]: this.computedSortDesc }
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       return query
     },

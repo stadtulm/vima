@@ -132,6 +132,24 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('ads').publish((data, hook) => {
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.text)) {
+          message.text = message.text.find(obj => obj.type === 'default')
+        }
+        if (Array.isArray(data.title)) {
+          message.title = message.title.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.text)) {
+        data.text = data.text.find(obj => obj.type === 'default')
+      }
+      if (Array.isArray(data.title)) {
+        data.title = data.title.find(obj => obj.type === 'default')
+      }
+    }
     return app.channel('anonymous', 'authenticated')
   })
 
@@ -168,8 +186,17 @@ module.exports = function (app) {
   app.service('chat-messages').publish((data, hook) => {
     const tmpUsers = data.tmpUsers
     delete data.tmpUsers
-    if (Array.isArray(data.text)) {
-      data.text = data.text.find(obj => obj.type === 'default')[0]
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.text)) {
+          message.text = message.text.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.text)) {
+        data.text = data.text.find(obj => obj.type === 'default')
+      }
     }
     return tmpUsers.map(obj => app.channel(obj))
   })
@@ -192,7 +219,7 @@ module.exports = function (app) {
     if (Array.isArray(data)) {
       data = data.map(message => {
         if (Array.isArray(data.text)) {
-          message.text = message.text.find(obj => obj.type === 'default')[0]
+          message.text = message.text.find(obj => obj.type === 'default')
         }
         if (Array.isArray(data.latestAnswers?.text)) {
           message.latestAnswers.text = message.latestAnswers.text.find(obj => obj.type === 'default')
@@ -201,7 +228,7 @@ module.exports = function (app) {
       })
     } else {
       if (Array.isArray(data.text)) {
-        data.text = data.text.find(obj => obj.type === 'default')[0]
+        data.text = data.text.find(obj => obj.type === 'default')
       }
       if (Array.isArray(data.latestAnswers?.text)) {
         data.latestAnswers.text = data.latestAnswers.text.find(obj => obj.type === 'default')
@@ -235,6 +262,24 @@ module.exports = function (app) {
   */
 
   app.service('discussions').publish((data, hook) => {
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.description)) {
+          message.description = message.description.find(obj => obj.type === 'default')
+        }
+        if (Array.isArray(data.title)) {
+          message.title = message.title.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.description)) {
+        data.description = data.description.find(obj => obj.type === 'default')
+      }
+      if (Array.isArray(data.title)) {
+        data.title = data.title.find(obj => obj.type === 'default')
+      }
+    }
     if (
       !data.group ||
       data.group.visibility !== 'hidden'
@@ -284,6 +329,24 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('groups').publish((data, hook) => {
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.description)) {
+          message.description = message.description.find(obj => obj.type === 'default')
+        }
+        if (Array.isArray(data.title)) {
+          message.title = message.title.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.description)) {
+        data.description = data.description.find(obj => obj.type === 'default')
+      }
+      if (Array.isArray(data.title)) {
+        data.title = data.title.find(obj => obj.type === 'default')
+      }
+    }
     if (
       Array.isArray(data) ||
       !data.isActive ||

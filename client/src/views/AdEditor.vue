@@ -573,13 +573,11 @@ export default {
           map.pics = this.pics
         }
         try {
-          let result
           if (this.$route.params.id) {
-            result = await this.patchAd([this.$route.params.id, map, {}])
+            await this.patchAd([this.$route.params.id, map, {}])
           } else {
-            result = await this.createAd([map, {}])
+            await this.createAd([map, {}])
           }
-          this.updateAdItem(this.reduceTranslations(result, this.$i18n.locale, ['text', 'title']))
           this.isLoading = false
           this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
           this.$router.go(-1)

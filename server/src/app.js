@@ -184,6 +184,46 @@ app.service('ads').find({ paginate: false }).then(ads => {
 })
 */
 
+/*
+app.service('groups').find({ paginate: false }).then(groups => {
+  for (const group of groups) {
+    group.description = [{
+      type: 'default',
+      value: group.description,
+      lang: 'de'
+    }]
+    group.title = [{
+      type: 'default',
+      value: group.title,
+      lang: 'de'
+    }]
+    app.service('groups').update(group._id, group).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
+/*
+app.service('discussions').find({ paginate: false }).then(discussions => {
+  for (const discussion of discussions) {
+    discussion.description = [{
+      type: 'default',
+      value: discussion.description,
+      lang: 'de'
+    }]
+    discussion.title = [{
+      type: 'default',
+      value: discussion.title,
+      lang: 'de'
+    }]
+    app.service('discussions').update(discussion._id, discussion).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
 // New text format news
 /*
 app.service('news').find({ paginate: false }).then(news => {

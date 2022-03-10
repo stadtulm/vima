@@ -12,7 +12,7 @@
     <v-row>
       <v-col>
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -51,19 +51,19 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <div
               class="font-weight-bold"
             >
-              {{item.title}}
+              {{item.title.value}}
             </div>
           </template>
           <template
             v-slot:[`item.group`]="{ item }"
           >
             <div>
-              {{getGroup(item.group) ? getGroup(item.group).title : '-'}}
+              {{getGroup(item.group) ? getGroup(item.group).title.value : '-'}}
             </div>
           </template>
           <template
@@ -231,7 +231,7 @@ export default {
     isSending: false,
     activeAnswerField: undefined,
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
     itemsPerPage: 5,
@@ -442,9 +442,9 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
-        { text: this.$t('author'), value: 'author' },
-        { text: this.$t('group'), value: 'group' },
+        { text: this.$t('title'), value: 'title.value' },
+        { text: this.$t('author'), value: 'author', sortable: false },
+        { text: this.$t('group'), value: 'group', sortable: false },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('categories'), value: 'categories', sortable: false },
         { text: this.$t('tags'), value: 'tags', sortable: false },
@@ -460,8 +460,15 @@ export default {
         $skip: (this.page - 1) * this.computedSkip,
         $sort: { [this.sortBy]: this.computedSortDesc }
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       return query
     },

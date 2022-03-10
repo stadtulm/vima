@@ -321,7 +321,7 @@
                                         getTranslation(message._id + '_' + $i18n.locale).show
                                       "
                                     >
-                                      {{$t('translateTo')}} {{$t($i18n.locale)}}
+                                      {{$t('translateText')}}
                                       <v-icon
                                         size="20"
                                         class="ml-2"
@@ -346,7 +346,7 @@
                                         }
                                       )"
                                     >
-                                      {{$t('translateAllTo')}} {{$t($i18n.locale)}}
+                                      {{$t('translateAll')}}
                                       <v-icon
                                         size="20"
                                         class="ml-2"

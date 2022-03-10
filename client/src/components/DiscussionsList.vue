@@ -11,7 +11,7 @@
           sm="4"
         >
           <v-text-field
-            v-model="searchOwn"
+            v-model="search"
             :label="$t('filterByTitleLabel')"
             outlined
             dense
@@ -95,13 +95,13 @@
               ></v-progress-linear>
             </template>
             <template
-              v-slot:[`item.title`]="{ item }"
+              v-slot:[`item.title.value`]="{ item }"
             >
               <div
                 class="pointer font-weight-bold"
                 @click="$router.push(group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } })"
               >
-                {{item.title}}
+                {{item.title.value}}
               </div>
             </template>
             <template
@@ -283,12 +283,12 @@ export default {
     loaders: {},
     categoriesList: [],
     tagsList: [],
-    searchOwn: '',
+    search: '',
     sortBy: ['latestMessage'],
     sortDesc: [true],
     categoriesListDefault: [],
     tagsListDefault: [],
-    searchOwnDefault: '',
+    searchDefault: '',
     page: 1,
     itemsPerPage: 5,
     loading: true
@@ -508,7 +508,7 @@ export default {
       if (
         !this.areArraysEqual(this.categoriesList, this.categoriesListDefault) ||
         !this.areArraysEqual(this.tagsList, this.tagsListDefault) ||
-        this.searchOwn !== this.searchOwnDefault
+        this.search !== this.searchDefault
       ) {
         return true
       } else {
@@ -522,7 +522,7 @@ export default {
     headers () {
       if (this.isAcceptList) {
         return [
-          { text: this.$t('title'), value: 'title' },
+          { text: this.$t('title'), value: 'title.value' },
           { text: this.$t('author'), value: 'author' },
           { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
           { text: this.$t('active'), value: 'isActive', align: 'center' },
@@ -531,7 +531,7 @@ export default {
         ]
       } else {
         return [
-          { text: this.$t('title'), value: 'title' },
+          { text: this.$t('title'), value: 'title.value' },
           { text: this.$t('created'), value: 'createdAt' },
           { text: this.$t('latestPost'), value: 'latestMessage' },
           { text: this.$t('categories'), value: 'categories', sortable: false },
@@ -572,8 +572,15 @@ export default {
       } else {
         query.group = null
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       return query
     },
@@ -637,7 +644,7 @@ export default {
       if (this.resetFilterTrigger) {
         this.categoriesList = this.categoriesListDefault
         this.tagsList = this.tagsListDefault
-        this.searchOwn = this.searchOwnDefault
+        this.search = this.searchDefault
       }
     },
     computedFiltersDirty () {

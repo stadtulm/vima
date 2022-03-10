@@ -486,20 +486,12 @@ export default {
                     obj.relation === 'member'
                   )
               ).map(obj => obj.reference))]
-            },
-            $select: { title: 1 },
-            $skip: skip,
-            $limit: 1
-          }
+            }
+          },
+          $paginate: false
         }
       )
-      existingGroups.push(...tmpGroups.data)
-      if (tmpGroups.total > tmpGroups.limit + tmpGroups.skip) {
-        skip += tmpGroups.limit
-        return this.getAllGroups(existingGroups, skip)
-      } else {
-        return existingGroups
-      }
+      return tmpGroups.map(group => ({ _id: group._id, title: group.title.value }))
     },
     prepareSaveDiscussion () {
       this.showAcceptDialog = false
@@ -541,8 +533,8 @@ export default {
         this.selectedDiscussion = selectedDiscussion
       }
       if (this.selectedDiscussion) {
-        this.title = this.selectedDiscussion.title
-        this.description = this.selectedDiscussion.description
+        this.title = this.selectedDiscussion.title.value
+        this.description = this.selectedDiscussion.description.value
         this.selectedCategories = this.selectedDiscussion.categories
         this.selectedTags = this.selectedDiscussion.tags
         if (this.selectedDiscussion.pics) {
@@ -625,8 +617,18 @@ export default {
         await this.$refs.vueDropzonePics.processQueue()
       } else {
         const map = {
-          title: this.title,
-          description: this.description,
+          title: [
+            {
+              value: this.title,
+              type: 'default'
+            }
+          ],
+          description: [
+            {
+              value: this.description,
+              type: 'default'
+            }
+          ],
           categories: this.selectedCategories,
           group: this.group,
           tags: this.selectedTags

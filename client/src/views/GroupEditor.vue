@@ -474,8 +474,8 @@ export default {
         this.selectedGroup = selectedGroup
       }
       if (this.selectedGroup) {
-        this.title = this.selectedGroup.title
-        this.description = this.selectedGroup.description
+        this.title = this.selectedGroup.title.value
+        this.description = this.selectedGroup.description.value
         this.selectedCategories = this.selectedGroup.categories
         this.visibility = this.selectedGroup.visibility
         this.selectedTags = this.selectedGroup.tags
@@ -553,8 +553,18 @@ export default {
         await this.$refs.vueDropzonePics.processQueue()
       } else {
         const map = {
-          title: this.title,
-          description: this.description,
+          title: [
+            {
+              value: this.title,
+              type: 'default'
+            }
+          ],
+          description: [
+            {
+              value: this.description,
+              type: 'default'
+            }
+          ],
           categories: this.selectedCategories,
           visibility: this.visibility,
           tags: this.selectedTags

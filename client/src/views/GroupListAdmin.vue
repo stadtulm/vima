@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{categories}}
     <v-row
       class="mb-4"
     >
@@ -13,7 +12,7 @@
     <v-row>
       <v-col>
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -52,12 +51,12 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <div
               class="font-weight-bold"
             >
-              {{item.title}}
+              {{item.title.value}}
             </div>
           </template>
           <template
@@ -232,7 +231,7 @@ export default {
     message: undefined,
     activeAnswerField: undefined,
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
     itemsPerPage: 5,
@@ -442,7 +441,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('author'), value: 'owner' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('visibility'), value: 'visibility' },
@@ -460,8 +459,15 @@ export default {
         $skip: (this.page - 1) * this.computedSkip,
         $sort: { [this.sortBy]: this.computedSortDesc }
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       return query
     },

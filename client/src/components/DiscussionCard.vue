@@ -26,7 +26,13 @@
           <v-card-title
             class="word-wrap"
           >
-            {{computedDiscussion.title}}
+            <TranslatableText
+              ownField="title"
+              :allFields="['title', 'description']"
+              type="discussions"
+              :textParent="computedDiscussion"
+            >
+            </TranslatableText>
             <!-- Owner or moderator icon -->
             <v-tooltip
               right
@@ -126,10 +132,55 @@
             </v-row>
             <!-- Description -->
             <v-row>
-              <v-col
-                class="body-1"
-                v-html="discussionProp ? truncatedDescription(newTab(computedDiscussion.description)) : $sanitize(newTab(computedDiscussion.description))"
-              ></v-col>
+              <TranslatableText
+                ownField="description"
+                :allFields="['title', 'description']"
+                type="discussions"
+                :textParent="computedDiscussion"
+              >
+                <template
+                  v-slot:defaultLang="{ computedText, translateText }"
+                >
+                  <v-col
+                    class="body-1 mx-4"
+                  >
+                    <span
+                      v-html="discussionProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
+                    ></span>
+                    <TranslatableTextInfo
+                      :canTranslate="true"
+                      :canShowOriginal="false"
+                      @translateText="(data) => { translateText(data) }"
+                    ></TranslatableTextInfo>
+                  </v-col>
+                </template>
+                <template
+                  v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+                >
+                  <v-col
+                    class="pb-0"
+                  >
+                    <v-sheet
+                      class="pa-1 px-3"
+                    >
+                      <TranslatableTextInfo
+                        :canTranslate="false"
+                        :canShowOriginal="true"
+                        :needsUpdate="computedDiscussion.translationSum !== computedText.translationSum"
+                        @showOriginal="(data) => { showOriginal(data) }"
+                        @translateText="(data) => { translateText(data) }"
+                      ></TranslatableTextInfo>
+                      <span
+                        class="body-1"
+                        v-html="discussionProp ?
+                          truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
+                          $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
+                        "
+                      ></span>
+                    </v-sheet>
+                  </v-col>
+                </template>
+              </TranslatableText>
             </v-row>
           </v-card-text>
             </v-col>
@@ -250,13 +301,17 @@
 <script>
 
 import DiscussionCore from '@/components/DiscussionCore.vue'
+import TranslatableText from '@/components/TranslatableText.vue'
+import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'DiscussionCard',
 
   components: {
-    DiscussionCore
+    DiscussionCore,
+    TranslatableText,
+    TranslatableTextInfo
   },
 
   props: [

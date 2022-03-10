@@ -12,7 +12,7 @@
     <v-row>
       <v-col>
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -224,7 +224,7 @@ export default {
     isSending: false,
     activeAnswerField: undefined,
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
     itemsPerPage: 5,

@@ -104,8 +104,8 @@
             :items="[
               { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
               { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
-              { text: $t('sortTitleAsc'), value: [['title'], 1] },
-              { text: $t('sortTitleDesc'), value: [['title'], -1] }
+              { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
+              { text: $t('sortTitleDesc'), value: [['title.value'], -1] }
             ]"
           ></v-select>
         </v-col>
@@ -166,6 +166,12 @@
         >
           <GroupCard
             :groupProp="group"
+            :allGroupIds="computedGroups.map(
+                obj => ({
+                  id: obj._id,
+                  translationSum: obj.translationSum
+                })
+              )"
             @selectCategory="selectCategory"
             @selectTag="selectTag"
           ></GroupCard>
@@ -377,7 +383,14 @@ export default {
         ]
       }
       if (this.search && this.search !== '') {
-        query.title = { $regex: this.search, $options: 'i' }
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       if (this.categoriesList.length > 0) {
         query.categories = { $in: this.categoriesList }

@@ -33,7 +33,7 @@
         sm="6"
       >
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -91,12 +91,12 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <span
               class="font-weight-bold"
             >
-              {{item.title}}
+              {{item.title.value}}
             </span>
           </template>
           <template
@@ -123,7 +123,7 @@
             v-slot:[`item.group`]="{ item }"
           >
             <div>
-              {{getGroup(item.group) ? getGroup(item.group).title : '-'}}
+              {{getGroup(item.group) ? getGroup(item.group).title.value : '-'}}
             </div>
           </template>
           <template
@@ -327,7 +327,7 @@ export default {
     isUpdating: false,
     isSending: false,
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
     itemsPerPage: 5,
@@ -621,10 +621,10 @@ export default {
     },
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
-        { text: this.$t('group'), value: 'group' },
+        { text: this.$t('group'), value: 'group', sortable: false },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
         { text: this.$t('active'), value: 'isActive', align: 'center' },
         { text: this.$t('editButton'), value: 'edit', align: 'center', sortable: false },
@@ -682,8 +682,15 @@ export default {
       } else if (this.discussionsType === 'groups') {
         query.group = { $exists: true, $ne: null }
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       // Adapt query to show discussions if active and accepted and group active and accepted if user is member of hidden group
       return query

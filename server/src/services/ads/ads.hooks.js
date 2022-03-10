@@ -98,10 +98,7 @@ module.exports = {
             context.arguments[0],
             {
               query: {
-                $populate: {
-                  path: 'author',
-                  select: { user: 1 }
-                }
+                $populate: ['author']
               }
             }
           )
@@ -162,10 +159,7 @@ module.exports = {
               context.arguments[0],
               {
                 query: {
-                  $populate: {
-                    path: 'author',
-                    select: { user: 1 }
-                  }
+                  $populate: ['author']
                 }
               }
             )

@@ -25,9 +25,16 @@
             >
               <!-- Title -->
               <v-card-title
-                class="word-wrap"
+                class="word-wrap mb-3"
               >
-                {{computedGroup.title}}
+                <TranslatableText
+                  ownField="title"
+                  :allFields="['title', 'description']"
+                  type="groups"
+                  :allIds="allGroupIds"
+                  :textParent="computedGroup"
+                >
+                </TranslatableText>
                 <!-- Membership buttons / icon -->
                 <v-tooltip
                   right
@@ -147,10 +154,56 @@
                 </v-row>
                 <!-- Description -->
                 <v-row>
-                  <v-col
-                    class="body-1"
-                    v-html="groupProp ? truncatedDescription(newTab(computedGroup.description)) : $sanitize(newTab(computedGroup.description))"
-                  ></v-col>
+                  <TranslatableText
+                    ownField="description"
+                    :allFields="['title', 'description']"
+                    type="groups"
+                    :allIds="allGroupIds"
+                    :textParent="computedGroup"
+                  >
+                    <template
+                      v-slot:defaultLang="{ computedText, translateText }"
+                    >
+                      <v-col
+                        class="body-1 mx-4"
+                      >
+                        <span
+                          v-html="groupProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
+                        ></span>
+                        <TranslatableTextInfo
+                          :canTranslate="true"
+                          :canShowOriginal="false"
+                          @translateText="(data) => { translateText(data) }"
+                        ></TranslatableTextInfo>
+                      </v-col>
+                    </template>
+                    <template
+                      v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+                    >
+                      <v-col
+                        class="pb-0"
+                      >
+                        <v-sheet
+                          class="pa-1 px-3"
+                        >
+                          <TranslatableTextInfo
+                            :canTranslate="false"
+                            :canShowOriginal="true"
+                            :needsUpdate="computedGroup.translationSum !== computedText.translationSum"
+                            @showOriginal="(data) => { showOriginal(data) }"
+                            @translateText="(data) => { translateText(data) }"
+                          ></TranslatableTextInfo>
+                          <span
+                            class="body-1"
+                            v-html="groupProp ?
+                              truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
+                              $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
+                            "
+                          ></span>
+                        </v-sheet>
+                      </v-col>
+                    </template>
+                  </TranslatableText>
                 </v-row>
               </v-card-text>
             </v-col>
@@ -447,6 +500,8 @@
 
 import DiscussionsList from '@/components/DiscussionsList.vue'
 import FileDownloadList from '@/components/FileDownloadList.vue'
+import TranslatableText from '@/components/TranslatableText.vue'
+import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
@@ -454,11 +509,14 @@ export default {
 
   components: {
     DiscussionsList,
-    FileDownloadList
+    FileDownloadList,
+    TranslatableText,
+    TranslatableTextInfo
   },
 
   props: [
-    'groupProp'
+    'groupProp',
+    'allGroupIds'
   ],
 
   data: () => ({

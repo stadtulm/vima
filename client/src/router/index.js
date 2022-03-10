@@ -1104,7 +1104,6 @@ async function init (to, from, next) {
           ++i
         }, 100)
       } catch (e) {
-        console.log(e)
         let i = 0
         const matomoInterval = setInterval(() => {
           if (Vue.prototype.$matomo) {
