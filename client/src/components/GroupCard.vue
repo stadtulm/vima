@@ -1,6 +1,6 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedGroup"
     height="100%"
     :to="groupProp ? { name: 'Group', params: { group: computedGroup._id }} : ''"
@@ -401,7 +401,7 @@
       max-width="600"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text

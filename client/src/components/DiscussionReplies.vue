@@ -420,7 +420,7 @@
                           disableInputRules: true,
                           disablePasteRules: true
                         }"
-                        color="customGreyBg"
+                        color="customGreyUltraLight"
                         v-model="message"
                         :card-props="{ tile: true, flat: true }"
                         style="border: 1px solid #aaa;"

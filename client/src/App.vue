@@ -1423,7 +1423,7 @@
         >
           <v-col>
             <v-card
-              color="customGreyBg"
+              color="customGreyUltraLight"
               tile
             >
               <v-card-text>
@@ -1638,7 +1638,7 @@
       max-width="600"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -1690,7 +1690,7 @@
           <v-col>
             <v-btn
               class="mr-4"
-              color="customGreyBg"
+              color="customGreyUltraLight"
               @click="showMatomoConsent = false"
             >
               {{$t('understoodButton')}}
@@ -1713,7 +1713,7 @@
           <v-col>
             <v-btn
               class="mr-4"
-              color="customGreyBg"
+              color="customGreyUltraLight"
               @click="removeConsent()"
             >
               {{$t('no')}}

@@ -1,6 +1,6 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedAd"
     :to="adProp ? { name: 'Ad', params: { id: computedAd._id }} : ''"
   >

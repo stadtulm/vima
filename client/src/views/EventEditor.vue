@@ -7,7 +7,7 @@
         cols="12"
       >
         <v-card
-          color="customGreyBg"
+          color="customGreyUltraLight"
           tile
         >
           <v-card-text>
@@ -217,7 +217,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyBg"
+                    color="customGreyUltraLight"
                   >
                     <v-row>
                       <v-col
@@ -251,7 +251,7 @@
                                 disableInputRules: true,
                                 disablePasteRules: true
                               }"
-                              color="customGreyBg"
+                              color="customGreyUltraLight"
                               v-model="text.find(obj => obj.lang === currentLanguage).value"
                               :card-props="{ tile: true, flat: true }"
                               style="border: 1px solid #aaa"
@@ -274,7 +274,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyBg"
+                    color="customGreyUltraLight"
                   >
                     <v-row>
                       <v-col
@@ -319,7 +319,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyBg"
+                    color="customGreyUltraLight"
                   >
                     <v-row>
                       <v-col
@@ -405,7 +405,7 @@
       max-width="600"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text

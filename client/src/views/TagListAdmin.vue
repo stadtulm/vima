@@ -44,7 +44,7 @@
         <v-data-table
           @current-items="setCurrentItems"
           :item-class="itemRowBackground"
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedTags"
           @update:page="updatePage"

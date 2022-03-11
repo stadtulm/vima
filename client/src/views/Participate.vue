@@ -209,7 +209,7 @@
       >
         <v-card
           height="100%"
-          color="customGreyBg"
+          color="customGreyUltraLight"
           :to="{ name: 'News' }"
         >
           <v-container
@@ -268,7 +268,7 @@
       >
         <v-card
           height="100%"
-          color="customGreyBg"
+          color="customGreyUltraLight"
           :to="{ name: 'Events' }"
         >
           <v-container
@@ -327,7 +327,7 @@
       >
         <v-card
           height="100%"
-          color="customGreyBg"
+          color="customGreyUltraLight"
           :to="{ name: 'Organisations' }"
         >
           <v-container

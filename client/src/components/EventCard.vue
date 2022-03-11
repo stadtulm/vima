@@ -1,6 +1,6 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedEvent"
     :to="eventProp ? { name: 'Event', params: { event: computedEvent._id }} : ''"
   >

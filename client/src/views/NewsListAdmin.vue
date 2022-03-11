@@ -41,7 +41,7 @@
     <v-row>
       <v-col>
         <v-data-table
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedNews"
           :loading="isFindNewsPending"
@@ -187,7 +187,7 @@
       max-width="1200"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -203,7 +203,7 @@
           <v-row>
             <v-col>
               <v-toolbar
-                color="customGreyBg"
+                color="customGreyUltraLight"
                 flat
               >
               <v-tabs

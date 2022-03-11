@@ -20,7 +20,7 @@
     <v-row>
       <v-col>
         <v-card
-          color="customGreyBg"
+          color="customGreyUltraLight"
         >
           <v-card-text>
             <v-sheet
@@ -183,7 +183,7 @@
                                 v-on="on"
                                 icon
                                 color="customGrey"
-                                class="mb-2 customGreyBg elevation-1"
+                                class="mb-2 customGreyUltraLight elevation-1"
                                 @click="toggleShowReplies(message._id)"
                                 :title="$t('replies')"
                               >
@@ -206,7 +206,7 @@
                                 icon
                                 v-bind="attrs"
                                 v-on="on"
-                                class="mb-2 ml-2 customGreyBg elevation-1"
+                                class="mb-2 ml-2 customGreyUltraLight elevation-1"
                               >
                                 <v-icon
                                   size="14"
@@ -259,7 +259,7 @@
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn
                                 icon
-                                class="mb-2 ml-2 customGreyBg elevation-1"
+                                class="mb-2 ml-2 customGreyUltraLight elevation-1"
                                 v-bind="attrs"
                                 v-on="on"
                               >
@@ -560,7 +560,7 @@
                   disableInputRules: true,
                   disablePasteRules: true
                 }"
-                color="customGreyBg"
+                color="customGreyUltraLight"
                 v-model="message"
                 :card-props="{ tile: true, flat: true }"
                 style="border: 1px solid #aaa;"

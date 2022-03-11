@@ -6,7 +6,7 @@
       cols="12"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text>
@@ -95,7 +95,7 @@
               >
                 <v-card
                   flat
-                  color="customGreyBg"
+                  color="customGreyUltraLight"
                 >
                   <v-row>
                     <v-col
@@ -140,7 +140,7 @@
               >
                 <v-card
                   flat
-                  color="customGreyBg"
+                  color="customGreyUltraLight"
                 >
                   <v-row>
                     <v-col

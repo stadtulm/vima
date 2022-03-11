@@ -86,7 +86,7 @@
       >
         <v-data-table
           item-class="pointer"
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
           @update:page="updatePage"

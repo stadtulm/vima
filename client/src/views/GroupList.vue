@@ -46,7 +46,7 @@
           single-expand
           :expanded.sync="expanded"
           show-expand
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedGroups"
           :loading="loading"
@@ -578,7 +578,7 @@
       max-width="1200"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -594,7 +594,7 @@
           <v-row>
             <v-col>
               <v-toolbar
-                color="customGreyBg"
+                color="customGreyUltraLight"
                 flat
               >
               <v-tabs
@@ -810,7 +810,7 @@
       max-width="800"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -840,7 +840,7 @@
       max-width="800"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -870,7 +870,7 @@
       max-width="1200"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text

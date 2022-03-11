@@ -41,7 +41,7 @@
     <v-row>
       <v-col>
         <v-data-table
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="organisations"
           :loading="loading"
@@ -186,7 +186,7 @@
       max-width="800"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -202,7 +202,7 @@
           <v-row>
             <v-col>
               <v-toolbar
-                color="customGreyBg"
+                color="customGreyUltraLight"
                 flat
               >
               <v-tabs

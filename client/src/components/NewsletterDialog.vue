@@ -8,7 +8,7 @@
       @click:outside="closeDialog()"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text

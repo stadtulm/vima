@@ -1,6 +1,6 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedOrganisation"
     height="100%"
     :to="organisationProp ? { name: 'Organisation', params: { organisation: computedOrganisation._id }} : ''"

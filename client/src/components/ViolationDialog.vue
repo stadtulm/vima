@@ -10,7 +10,7 @@
       @click:outside="closeViolationDialog()"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text>

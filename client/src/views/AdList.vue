@@ -43,7 +43,7 @@
         <v-data-table
           :item-class="itemRowBackground"
           item-key="_id"
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedAds"
           :loading="loading"
@@ -300,7 +300,7 @@
       max-width="1200"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
         v-if="applicantsDialogItem"
       >
@@ -439,7 +439,7 @@
       max-width="800"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -459,7 +459,7 @@
                   disableInputRules: true,
                   disablePasteRules: true
                 }"
-                color="customGreyBg"
+                color="customGreyUltraLight"
                 v-model="message"
                 :card-props="{ tile: true, flat: true }"
                 style="border: 1px solid #aaa;"
@@ -494,7 +494,7 @@
       max-width="600"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text

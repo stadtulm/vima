@@ -15,8 +15,7 @@ const vuetify = new Vuetify({
         customGrey: colors.blueGrey.darken2,
         customGreyMedium: colors.blueGrey.lighten2,
         customGreyLight: colors.blueGrey.lighten4,
-        customGreyUltraLight: colors.blueGrey.lighten5,
-        customGreyBg: colors.blueGrey.lighten5
+        customGreyUltraLight: colors.blueGrey.lighten5
       }
     }
   },
