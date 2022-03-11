@@ -102,6 +102,19 @@ server.on('listening', () =>
   logger.info('Server application started on http://' + app.get('host') + ':' + port + ', PID: ' + process.pid)
 )
 
+// Create settings if not existant
+initSettings()
+async function initSettings() {
+  const settings = app.service('settings').find()
+  if (settings.length > 1) {
+    throw new Error('Multiple server settings found')
+  }
+  if (settings.length === 0) {
+    const backupSettings = require('../initialSettings.json')
+    await app.service('settings').create(backupSettings)
+  }
+}
+
 // After server restart set all not connected users to offline
 setTimeout(async () => {
   const re = /[0-9A-Fa-f]{6}/g

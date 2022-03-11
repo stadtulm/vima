@@ -137,3 +137,4 @@ server/config/*
 !server/config/.gitkeep
 server/src/ecosystem.config.js
 */.env*
+server/initialSettings.json

@@ -27,6 +27,8 @@ const adMessages = require('./ad-messages/ad-messages.service.js')
 const statusContainerHelper = require('./status-container-helper/status-container-helper.service.js')
 const translations = require('./translations/translations.service.js')
 
+const settings = require('./settings/settings.service.js')
+
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(users)
@@ -57,4 +59,5 @@ module.exports = function (app) {
   app.configure(adMessages)
   app.configure(statusContainerHelper)
   app.configure(translations)
+  app.configure(settings)
 }
