@@ -1,3 +1,4 @@
+const locales = require('../../locales/de.json')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const verifyHooks = require('feathers-authentication-management').hooks
 const accountService = require('../authmanagement/notifier')
@@ -41,10 +42,10 @@ module.exports = {
         async (context) => {
           const user = await context.app.service('users').get(context.arguments[0])
           if (!user.isVerified) {
-            throw new Errors.NotFound('Dieser Zugang wurde noch nicht durch den Bestätigungslink verifiziert.')
+            throw new Errors.NotFound(locales.accessNotYetVerifiedByLink)
           }
           if (!user.isActive) {
-            throw new Errors.NotFound('Dieser Zugang wurde archiviert und kann nicht mehr genutzt werden.')
+            throw new Errors.NotFound(locales.accessArchived)
           }
         }
       )
