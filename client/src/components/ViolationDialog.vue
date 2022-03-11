@@ -36,7 +36,7 @@
               <v-alert
                 color="warning"
                 dark
-                v-html="selectedViolation ? selectedViolation.originalMessage : computedMessage.text"
+                v-html="selectedViolation ? selectedViolation.originalMessage : computedMessage.text.value"
               >
               </v-alert>
             </v-col>
@@ -226,7 +226,7 @@ export default {
             chat: this.message.chat,
             discussion: this.discussion ? this.discussion._id : undefined,
             group: this.discussion && this.discussion.group ? this.discussion.group : undefined,
-            originalMessage: this.message.text,
+            originalMessage: this.message.text.value,
             originalAuthor: this.getUser(this.message.author).userName + ' (ID: ' + this.message.author + ')',
             message: {
               id: this.message._id,

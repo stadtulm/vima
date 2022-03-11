@@ -142,7 +142,26 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.alterItems(rec => {
+          if (
+            rec.discussion &&
+            Array.isArray(rec.discussion.title)
+          ) {
+            rec.discussion.title = rec.discussion.title.find(t => t.type === 'default')
+            if (
+              rec.discussion.group &&
+              Array.isArray(rec.discussion.group.title)
+            ) {
+              rec.discussion.group.title = rec.discussion.group.title.find(t => t.type === 'default')
+            }
+          }
+          return rec
+        })
+      )
+    ],
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),

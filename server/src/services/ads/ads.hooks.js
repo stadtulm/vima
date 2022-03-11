@@ -178,10 +178,10 @@ module.exports = {
         commonHooks.isProvider('external'),
         commonHooks.alterItems(rec => {
           if (Array.isArray(rec.title)) {
-            rec.title = rec.title.filter(t => t.type === 'default')[0]
+            rec.title = rec.title.find(t => t.type === 'default')
           }
           if (Array.isArray(rec.text)) {
-            rec.text = rec.text.filter(t => t.type === 'default')[0]
+            rec.text = rec.text.find(t => t.type === 'default')
           }
           return rec
         })
