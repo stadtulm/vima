@@ -47,7 +47,7 @@
           >
             <v-progress-linear
               indeterminate
-              color="customCyan"
+              :color="$settings.modules.ads.color"
             ></v-progress-linear>
           </template>
           <template
@@ -99,7 +99,7 @@
           >
             <v-btn
               icon
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               :loading="loaders[item._id + 'isActive'] === true"
               disabled
               @click="changeAdProperty(
@@ -127,7 +127,7 @@
           >
             <v-btn
               icon
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               :disabled="user.role !== 'admins'"
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeAdProperty(
@@ -160,7 +160,7 @@
             <v-btn
               fab
               small
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               class="my-4"
               :loading="loaders[item._id + 'delete'] === true"
               @click="deleteAd(item._id)"
@@ -188,7 +188,7 @@
             <v-btn
               fab
               small
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               class="my-4"
               :disabled="!item.isActive"
               :to="{name: 'Ad', params: { id: item._id } }"

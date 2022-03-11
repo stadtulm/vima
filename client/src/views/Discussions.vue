@@ -16,7 +16,7 @@
             <v-btn
               v-if="filtersDirty"
               text
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
               @click="resetFilterTrigger = Date.now()"
             >
               {{$t('resetFilters')}}
@@ -27,12 +27,12 @@
           >
             <v-badge
               :value="filtersDirty"
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
               overlap
             >
             <v-btn
               outlined
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
               @click="showFilters = !showFilters"
             >
               {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
@@ -52,7 +52,7 @@
             <v-btn
               dark
               :to="{ name: 'DiscussionEditor' }"
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
             >
               {{$t('newDiscussion')}}
               <v-icon

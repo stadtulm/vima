@@ -17,7 +17,7 @@
             <v-btn
               v-if="computedFiltersDirty"
               text
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               @click="resetFilters()"
             >
               {{$t('resetFilters')}}
@@ -28,12 +28,12 @@
           >
             <v-badge
               :value="computedFiltersDirty"
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               overlap
             >
               <v-btn
                 outlined
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 @click="showFilters = !showFilters"
               >
                 {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
@@ -53,7 +53,7 @@
             <v-btn
               dark
               :to="{ name: 'GroupEditor' }"
-              color="customPurple"
+              :color="$settings.modules.groups.color"
             >
               {{$t('newGroupButton')}}
               <v-icon
@@ -96,7 +96,7 @@
           <v-select
             v-model="combinedSort"
             color="black"
-            item-color="customPurple"
+            :item-color="$settings.modules.groups.color"
             :label="$t('sortByLabel')"
             outlined
             dense
@@ -117,7 +117,7 @@
           <v-autocomplete
             v-model="categoriesList"
             color="black"
-            item-color="customPurple"
+            :item-color="$settings.modules.groups.color"
             :label="$t('filterByCategoriesLabel')"
             multiple
             outlined
@@ -137,7 +137,7 @@
           <v-autocomplete
             v-model="tagsList"
             color="black"
-            item-color="customPurple"
+            :item-color="$settings.modules.groups.color"
             :label="$t('filterByTagsLabel')"
             multiple
             outlined
@@ -180,7 +180,7 @@
       <v-row>
         <v-col>
           <v-pagination
-            color="customPurple"
+            :color="$settings.modules.groups.color"
             v-model="page"
             :length="Math.ceil(total / itemsPerPage)"
             :total-visible="6"
@@ -212,7 +212,7 @@
           class="text-center"
         >
           <v-progress-circular
-            color="customPurple"
+            :color="$settings.modules.groups.color"
             indeterminate
             size="160"
             width="6"

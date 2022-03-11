@@ -357,12 +357,8 @@ export default {
       ]
     },
     computedColor () {
-      if (this.$route.params.type === 'ads') {
-        return 'customCyan'
-      } else if (this.$route.params.type === 'discussions') {
-        return 'customTeal'
-      } else if (this.$route.params.type === 'groups') {
-        return 'customPurple'
+      if (this.$settings.modules[this.$route.params.type] && this.$settings.modules[this.$route.params.type].color) {
+        return this.$settings.modules[this.$route.params.type].color
       } else {
         return 'customGrey'
       }

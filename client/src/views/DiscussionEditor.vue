@@ -48,7 +48,7 @@
                     dense
                     outlined
                     :label="$t('headline')"
-                    color="customTeal"
+                    :color="$settings.modules.discussions.color"
                     background-color="#fff"
                     v-model="title"
                     :rules="[rules.required]"
@@ -64,8 +64,8 @@
                 <v-col>
                   <v-select
                     dense
-                    color="customTeal"
-                    item-color="customTeal"
+                    :color="$settings.modules.discussions.color"
+                    :item-color="$settings.modules.discussions.color"
                     background-color="#fff"
                     outlined
                     v-model="group"
@@ -86,8 +86,8 @@
                   <v-select
                     dense
                     multiple
-                    color="customTeal"
-                    item-color="customTeal"
+                    :color="$settings.modules.discussions.color"
+                    :item-color="$settings.modules.discussions.color"
                     background-color="#fff"
                     outlined
                     v-model="selectedCategories"
@@ -113,8 +113,8 @@
                     deletable-chips
                     auto-select-first
                     hide-details
-                    color="customTeal"
-                    item-color="customTeal"
+                    :color="$settings.modules.discussions.color"
+                    :item-color="$settings.modules.discussions.color"
                     background-color="#fff"
                     outlined
                     v-model="selectedTags"
@@ -131,7 +131,7 @@
                 >
                   <v-btn
                     text
-                    color="customTeal"
+                    :color="$settings.modules.discussions.color"
                     @click="showTagProposalDialog = true"
                   >
                     {{$t('proposeNewTags')}}
@@ -283,7 +283,7 @@
                         >
                           <v-text-field
                             dense
-                            color="customTeal"
+                            :color="$settings.modules.discussions.color"
                             v-model="pic.credit"
                             :label="$t('copyrightOwner') + ' ' + $t('pic') + ' ' + (i + 1)"
                             outlined
@@ -306,7 +306,7 @@
               <v-btn
                 block
                 :dark="isValid"
-                color="customTeal"
+                :color="$settings.modules.discussions.color"
                 :loading="isLoading"
                 :disabled="!isValid"
                 @click="saveOrWarn()"
@@ -364,7 +364,7 @@
             <v-btn
               @click="prepareSaveDiscussion()"
               dark
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
             >
               {{$t('understoodButton')}}
             </v-btn>

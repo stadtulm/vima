@@ -425,9 +425,9 @@ export default {
       } else {
         if (this.discussionsType === 'all') {
           if (item.group) {
-            return 'customPurpleBg'
+            return this.$settings.modules.groups.bgColor
           } else {
-            return 'customTealBg'
+            return this.$settings.modules.discussions.bgColor
           }
         } else {
           return ''
@@ -611,10 +611,8 @@ export default {
       getGroup: 'get'
     }),
     computedColor () {
-      if (this.discussionsType === 'discussions') {
-        return 'customTeal'
-      } else if (this.discussionsType === 'groups') {
-        return 'customPurple'
+      if (this.$settings.modules[this.discussionsType] && this.$settings.modules[this.discussionsType].color) {
+        return this.$settings.modules[this.discussionsType].color
       } else {
         return 'customGrey'
       }

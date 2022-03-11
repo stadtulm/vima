@@ -32,7 +32,7 @@
       >
         <v-card
           height="100%"
-          color="customCyanBg"
+          :color="$settings.modules.ads.bgColor"
           :to="{ name: 'CategoryList', params: { type: 'ads' } }"
         >
           <v-container
@@ -62,7 +62,7 @@
                 class="pb-0 shrink right-text align-self-center"
               >
                 <v-btn
-                  class="customCyan--text"
+                  :style="'color:' + $settings.modules.ads.color"
                   :to="{ name: 'CategoryList', params: { type: 'ads' } }"
                   tour-step="3"
                 >
@@ -70,7 +70,7 @@
                   <v-icon
                     class="ml-3"
                     size="18"
-                    color="customCyan"
+                    :color="$settings.modules.ads.color"
                   >
                     fas fa-arrow-right
                   </v-icon>
@@ -92,7 +92,7 @@
       >
         <v-card
           height="100%"
-          color="customPurpleBg"
+          :color="$settings.modules.groups.bgColor"
           :to="{ name: 'Groups' }"
         >
           <v-container
@@ -121,14 +121,14 @@
                 class="pb-0 shrink right-text align-self-center"
               >
                 <v-btn
-                  class="customPurple--text"
+                  :style="'color:' + $settings.modules.groups.color"
                   :to="{ name: 'Groups' }"
                 >
                   {{$t('viewButton')}}
                   <v-icon
                     class="ml-3"
                     size="18"
-                    color="customPurple"
+                    :color="$settings.modules.groups.color"
                   >
                     fas fa-arrow-right
                   </v-icon>
@@ -150,7 +150,7 @@
       >
         <v-card
           height="100%"
-          color="customTealBg"
+          :color="$settings.modules.discussions.bgColor"
           :to="{ name: 'Discussions' }"
         >
           <v-container
@@ -179,14 +179,14 @@
                 class="pb-0 shrink right-text align-self-center"
               >
                 <v-btn
-                  class="customTeal--text"
+                  :style="'color:' + $settings.modules.discussions.color"
                   :to="{ name: 'Discussions' }"
                 >
                   {{$t('viewButton')}}
                   <v-icon
                     class="ml-3"
                     size="18"
-                    color="customTeal"
+                    :color="$settings.modules.discussions.color"
                   >
                     fas fa-arrow-right
                   </v-icon>

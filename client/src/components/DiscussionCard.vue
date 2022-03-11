@@ -72,7 +72,7 @@
                   v-if="!discussionProp"
                   icon
                   class="ml-3"
-                  color="customTeal"
+                  :color="$settings.modules.discussions.color"
                   :disabled="user ? false : true"
                   @click="toggleDiscussionSubscription()"
                   :title="computedStatusContainers.map(obj => obj.relation).includes('subscriber') ? $t('unsubscribeDiscussion') : $t('subscribeDiscussion')"
@@ -279,14 +279,14 @@
             <v-btn
               large
               block
-              class="customTeal--text"
+              class="red--text"
               :to="{ name: 'Discussion', params: { id: computedDiscussion._id }}"
             >
               {{$t('viewButton')}}
               <v-icon
                 class="ml-3"
                 size="18"
-                color="customTeal"
+                :color="$settings.modules.discussions.color"
               >
                 fas fa-arrow-right
               </v-icon>

@@ -331,7 +331,7 @@
                 <v-alert
                   dark
                   icon="fas fa-info-circle"
-                  color="customTeal"
+                  :color="$settings.modules.discussions.color"
                 >
                   <v-row>
                     <v-col>
@@ -376,7 +376,7 @@
                 <v-alert
                   dark
                   icon="fas fa-info-circle"
-                  color="customTeal"
+                  :color="$settings.modules.discussions.color"
                 >
                   <v-row>
                     <v-col>
@@ -437,7 +437,7 @@
                         :loading="isSending"
                         :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                         @click="sendMessage()"
-                        color="customTeal"
+                        :color="$settings.modules.discussions.color"
                       >
                         <template
                           slot="loader"

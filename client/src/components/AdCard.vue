@@ -38,14 +38,15 @@
                     v-bind="attrs"
                     v-on="on"
                     color="#fff"
-                    class="customCyan--text ml-3"
+                    class="ml-3"
+                    :style="'color:' + $settings.modules.ads.bgColor"
                     icon
                     :disabled="user ? false : true"
                     @click="toggleAdSubscription()"
                     :title="$t(computedAdStatus.textKey)"
                   >
                     <v-icon
-                      color="customCyan"
+                      :color="$settings.modules.ads.color"
                     >
                       {{computedAdStatus.value === 'subscriber' ? 'fas fa-star' : 'far fa-star'}}
                     </v-icon>
@@ -87,7 +88,7 @@
           >
             <!-- View more button -->
             <v-btn
-              class="customCyan--text"
+              :style="'color:' + $settings.modules.ads.color"
               :class="$vuetify.breakpoint.mdAndUp ? '' : 'mx-4 mb-4'"
               :to="{ name: 'Ad', params: { id: computedAd._id } }"
             >
@@ -95,7 +96,7 @@
               <v-icon
                 class="ml-3"
                 size="18"
-                color="customCyan"
+                :color="$settings.modules.ads.color"
               >
                 fas fa-arrow-right
               </v-icon>
@@ -269,7 +270,7 @@
             class="mx-4 mb-2"
             dark
             icon="fas fa-info-circle"
-            color="customCyan"
+            :color="$settings.modules.ads.color"
           >
             <v-row>
               <v-col>
@@ -319,7 +320,7 @@
             class="mx-4 mb-2"
             dark
             icon="fas fa-info-circle"
-            color="customCyan"
+            :color="$settings.modules.ads.color"
           >
             <v-row>
               <v-col>
@@ -368,7 +369,7 @@
                             :loading="isSending"
                             :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                             @click="sendMessage()"
-                            color="customCyan"
+                            :color="$settings.modules.ads.color"
                             class="mx-1"
                             style="margin-top: -5px;"
                           >

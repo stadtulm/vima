@@ -16,7 +16,7 @@
             <v-btn
               v-if="computedFiltersDirty"
               text
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               @click="resetFilters()"
             >
               {{$t('resetFilters')}}
@@ -27,12 +27,12 @@
           >
             <v-badge
               :value="computedFiltersDirty"
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               overlap
             >
               <v-btn
                 outlined
-                color="customCyan"
+                :color="$settings.modules.ads.color"
                 @click="showFilters = !showFilters"
               >
                 {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
@@ -52,7 +52,7 @@
             <v-btn
               dark
               :to="{ name: 'AdEditor' }"
-              color="customCyan"
+              :color="$settings.modules.ads.color"
             >
               {{$t('newAdButton')}}
               <v-icon
@@ -94,7 +94,7 @@
           <v-select
             v-model="type"
             color="black"
-            item-color="customCyan"
+            :item-color="$settings.modules.ads.color"
             :label="$t('type')"
             outlined
             dense
@@ -114,7 +114,7 @@
           <v-select
             v-model="combinedSort"
             color="black"
-            item-color="customCyan"
+            :item-color="$settings.modules.ads.color"
             :label="$t('sortByLabel')"
             outlined
             dense
@@ -135,7 +135,7 @@
           <v-autocomplete
             v-model="categoriesList"
             color="black"
-            item-color="customCyan"
+            :item-color="$settings.modules.ads.color"
             :label="$t('filterByCategoriesLabel')"
             multiple
             outlined
@@ -155,7 +155,7 @@
           <v-autocomplete
             v-model="tagsList"
             color="black"
-            item-color="customCyan"
+            :item-color="$settings.modules.ads.color"
             :label="$t('filterByTagsLabel')"
             multiple
             outlined
@@ -197,7 +197,7 @@
       <v-row>
         <v-col>
           <v-pagination
-            color="customCyan"
+            :color="$settings.modules.ads.color"
             v-model="page"
             :length="Math.ceil(total / itemsPerPage)"
             :total-visible="6"
@@ -229,7 +229,7 @@
           class="text-center"
         >
           <v-progress-circular
-            color="customCyan"
+            :color="$settings.modules.ads.color"
             indeterminate
             size="160"
             width="6"

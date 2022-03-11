@@ -47,7 +47,7 @@
           >
             <v-progress-linear
               indeterminate
-              color="customPurple"
+              :color="$settings.modules.groups.color"
             ></v-progress-linear>
           </template>
           <template
@@ -108,7 +108,7 @@
           >
             <v-btn
               icon
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               :loading="loaders[item._id + 'isActive'] === true"
               disabled
               @click="changeGroupsProperty(
@@ -136,7 +136,7 @@
           >
             <v-btn
               icon
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               :disabled="user.role !== 'admins'"
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeGroupsProperty(
@@ -169,7 +169,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               class="my-4"
               :loading="loaders[item._id + 'delete'] === true"
               @click="deleteGroup(item._id)"
@@ -197,7 +197,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               class="my-4"
               :disabled="!item.isActive"
               :to="{name: 'Group', params: { group: item._id } }"

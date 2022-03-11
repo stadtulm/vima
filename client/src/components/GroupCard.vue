@@ -105,7 +105,7 @@
                   <v-col>
                     <v-btn
                       dark
-                      color="customPurple"
+                      :color="$settings.modules.groups.color"
                       :loading="isLoading"
                       @click="showApplyDialog = true"
                     >
@@ -302,7 +302,7 @@
                     <v-btn
                       dark
                       :to="{ name: 'GroupDiscussionEditor', params: { group: computedGroup._id } }"
-                      color="customPurple"
+                      :color="$settings.modules.groups.color"
                     >
                       {{$t('newDiscussion')}}
                       <v-icon
@@ -354,7 +354,7 @@
                 <v-alert
                   dark
                   icon="fas fa-info-circle"
-                  color="customPurple"
+                  :color="$settings.modules.groups.color"
                 >
                   <v-row>
                     <v-col>
@@ -379,14 +379,14 @@
             <v-btn
               large
               block
-              class="customPurple--text"
+              :style="'color:' + $settings.modules.groups.color"
               :to="{ name: 'Group', params: { group: computedGroup._id }}"
             >
               {{$t('viewButton')}}
               <v-icon
                 class="ml-3"
                 size="18"
-                color="customPurple"
+                :color="$settings.modules.groups.color"
               >
                 fas fa-arrow-right
               </v-icon>
@@ -452,7 +452,7 @@
               <v-btn
                 @click="applyForGroupMembership()"
                 :dark="message ? true : false"
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 :loading="isLoading"
                 :disabled="!message"
               >
@@ -484,7 +484,7 @@
               <v-btn
                 @click="showApplyDialog = false"
                 dark
-                color="customPurple"
+                :color="$settings.modules.groups.color"
               >
                 {{$t('understoodButton')}}
               </v-btn>

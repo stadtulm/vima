@@ -48,7 +48,7 @@
                     dense
                     outlined
                     :label="$t('groupName')"
-                    color="customPurple"
+                    :color="$settings.modules.groups.color"
                     background-color="#fff"
                     v-model="title"
                     :rules="[rules.required]"
@@ -62,8 +62,8 @@
                 <v-col>
                   <v-select
                     dense
-                    color="customPurple"
-                    item-color="customPurple"
+                    :color="$settings.modules.groups.color"
+                    :item-color="$settings.modules.groups.color"
                     background-color="#fff"
                     outlined
                     v-model="visibility"
@@ -81,8 +81,8 @@
                   <v-select
                     dense
                     multiple
-                    color="customPurple"
-                    item-color="customPurple"
+                    :color="$settings.modules.groups.color"
+                    :item-color="$settings.modules.groups.color"
                     background-color="#fff"
                     outlined
                     v-model="selectedCategories"
@@ -108,8 +108,8 @@
                     deletable-chips
                     auto-select-first
                     hide-details
-                    color="customPurple"
-                    item-color="customPurple"
+                    :color="$settings.modules.groups.color"
+                    :item-color="$settings.modules.groups.color"
                     background-color="#fff"
                     outlined
                     v-model="selectedTags"
@@ -126,7 +126,7 @@
                 >
                   <v-btn
                     text
-                    color="customPurple"
+                    :color="$settings.modules.groups.color"
                     @click="showTagProposalDialog = true"
                   >
                     {{$t('proposeNewTags')}}
@@ -278,7 +278,7 @@
                         >
                           <v-text-field
                             dense
-                            color="customPurple"
+                            :color="$settings.modules.groups.color"
                             v-model="pic.credit"
                             :label="$t('copyrightOwner') + ' ' + $t('pic') + ' ' + (i + 1)"
                             outlined
@@ -301,7 +301,7 @@
               <v-btn
                 block
                 :dark="isValid"
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 :loading="isLoading"
                 :disabled="!isValid"
                 @click="user.role === 'admins' ? saveGroup() : showAcceptDialog = true"
@@ -352,7 +352,7 @@
             <v-btn
               @click="prepareSaveGroup()"
               dark
-              color="customPurple"
+              :color="$settings.modules.groups.color"
             >
               {{$t('understoodButton')}}
             </v-btn>

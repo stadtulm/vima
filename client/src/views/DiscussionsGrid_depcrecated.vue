@@ -8,7 +8,7 @@
           large
           dark
           :to="{ name: 'DiscussionEditor' }"
-          color="customTeal"
+          :color="$settings.modules.discussions.color"
         >
           Neues Diskussions-Thema erstellen
           <v-icon
@@ -78,7 +78,7 @@
               <v-select
                 v-model="categoriesList"
                 color="customGrey"
-                item-color="customTeal"
+                :item-color="$settings.modules.discussions.color"
                 label="Filter nach Kategorien ..."
                 multiple
                 outlined
@@ -97,7 +97,7 @@
               <v-select
                 v-model="sortBy"
                 color="customGrey"
-                item-color="customTeal"
+                :item-color="$settings.modules.discussions.color"
                 label="Sortieren nach ..."
                 outlined
                 dense
@@ -116,7 +116,7 @@
               <v-select
                 v-model="sortDesc"
                 color="customGrey"
-                item-color="customTeal"
+                :item-color="$settings.modules.discussions.color"
                 label="Reihenfolge ..."
                 outlined
                 dense
@@ -150,7 +150,7 @@
       <v-row>
         <v-col>
           <v-pagination
-            color="customTeal"
+            :color="$settings.modules.discussions.color"
             v-model="page"
             :length="Math.ceil(total / itemsPerPage)"
             :total-visible="6"
@@ -182,7 +182,7 @@
           class="text-center"
         >
           <v-progress-circular
-            color="customTeal"
+            :color="$settings.modules.discussions.color"
             indeterminate
             size="160"
             width="6"

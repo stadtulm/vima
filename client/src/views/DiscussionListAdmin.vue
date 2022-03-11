@@ -47,7 +47,7 @@
           >
             <v-progress-linear
               indeterminate
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
             ></v-progress-linear>
           </template>
           <template
@@ -106,7 +106,7 @@
           >
             <v-btn
               icon
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
               :loading="loaders[item._id + 'isActive'] === true"
               disabled
               @click="changeDiscussionProperty(
@@ -134,7 +134,7 @@
           >
             <v-btn
               icon
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
               :disabled="user.role !== 'admins'"
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeDiscussionProperty(
@@ -167,7 +167,7 @@
             <v-btn
               fab
               small
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
               class="my-4"
               :loading="loaders[item._id + 'delete'] ===  true"
               @click="deleteDiscussion(item._id)"
@@ -195,7 +195,7 @@
             <v-btn
               fab
               small
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
               class="my-4"
               :disabled="!item.isActive"
               :to="{name: 'Discussion', params: { id: item._id } }"

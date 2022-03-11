@@ -48,7 +48,7 @@
                     dense
                     outlined
                     :label="$t('headline')"
-                    color="customCyan"
+                    :color="$settings.modules.ads.color"
                     background-color="#fff"
                     v-model="title"
                     :rules="[rules.required]"
@@ -62,8 +62,8 @@
                 <v-col>
                   <v-select
                     dense
-                    color="customCyan"
-                    item-color="customCyan"
+                    :color="$settings.modules.ads.color"
+                    :item-color="$settings.modules.ads.color"
                     background-color="#fff"
                     outlined
                     v-model="type"
@@ -81,8 +81,8 @@
                   <v-select
                     dense
                     multiple
-                    color="customCyan"
-                    item-color="customCyan"
+                    :color="$settings.modules.ads.color"
+                    :item-color="$settings.modules.ads.color"
                     background-color="#fff"
                     outlined
                     v-model="selectedCategories"
@@ -108,8 +108,8 @@
                     deletable-chips
                     auto-select-first
                     hide-details
-                    color="customCyan"
-                    item-color="customCyan"
+                    :color="$settings.modules.ads.color"
+                    :item-color="$settings.modules.ads.color"
                     background-color="#fff"
                     outlined
                     v-model="selectedTags"
@@ -126,7 +126,7 @@
                 >
                   <v-btn
                     text
-                    color="customCyan"
+                    :color="$settings.modules.ads.color"
                     @click="showTagProposalDialog = true"
                   >
                     {{$t('proposeNewTags')}}
@@ -278,8 +278,8 @@
                         >
                           <v-text-field
                             dense
-                            color="customCyan"
-                            item-color="customCyan"
+                            :color="$settings.modules.ads.color"
+                            :item-color="$settings.modules.ads.color"
                             v-model="pic.credit"
                             :label="$t('copyrightOwner') + ' ' + $t('pic') + ' ' + (i + 1)"
                             outlined
@@ -302,7 +302,7 @@
               <v-btn
                 block
                 :dark="isValid"
-                color="customCyan"
+                :color="$settings.modules.ads.color"
                 :loading="isLoading"
                 :disabled="!isValid"
                 @click="user.role === 'admins' ? saveAd() : showAcceptDialog = true"
@@ -353,7 +353,7 @@
             <v-btn
               @click="prepareSaveAd()"
               dark
-              color="customCyan"
+              :color="$settings.modules.ads.color"
             >
               {{$t('understoodButton')}}
             </v-btn>

@@ -26,7 +26,7 @@
                 fab
                 :dark="user && groupStatus && groupStatus.isMember"
                 small
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 :disabled="!user || !groupStatus || !groupStatus.isMember"
                 :loading="loaders[file.url] === true"
               >

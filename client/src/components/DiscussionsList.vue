@@ -26,7 +26,7 @@
           <v-autocomplete
             v-model="categoriesList"
             color="black"
-            item-color="customTeal"
+            :item-color="$settings.modules.discussions.color"
             :label="$t('filterByCategoriesLabel')"
             multiple
             outlined
@@ -45,7 +45,7 @@
           <v-autocomplete
             v-model="tagsList"
             color="black"
-            item-color="customTeal"
+            :item-color="$settings.modules.discussions.color"
             :label="$t('filterByTagsLabel')"
             multiple
             outlined
@@ -243,7 +243,7 @@
                 fab
                 small
                 class="my-3"
-                :color="'custom' + computedColor"
+                :color="computedColor"
                 :to="group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } }"
               >
                 <v-icon
@@ -543,9 +543,9 @@ export default {
     },
     computedColor () {
       if (this.group) {
-        return 'Purple'
+        return this.$settings.modules.groups.color
       } else {
-        return 'Teal'
+        return this.$settings.modules.discussions.color
       }
     },
     discussionsQueryWhen () {

@@ -5,7 +5,7 @@
         <v-select
           v-model="sortDesc"
           color="customGrey"
-          item-color="customTeal"
+          :item-color="$settings.modules.discussions.color"
           :label="$t('orderLabel')"
           outlined
           dense
@@ -429,7 +429,7 @@
       style="bottom: 180px; right: calc(50% - 90px);"
       absolute
       dark
-      color="customTeal"
+      :color="$settings.modules.discussions.color"
       @click="goToNewMessages()"
       v-if="hasNewMessages"
     >
@@ -444,7 +444,7 @@
     <v-row>
       <v-col>
         <v-pagination
-          color="customTeal"
+          :color="$settings.modules.discussions.color"
           v-model="page"
           :length="Math.ceil(total / itemsPerPage)"
           :total-visible="6"
@@ -463,7 +463,7 @@
         <v-alert
           dark
           icon="fas fa-info-circle"
-          color="customTeal"
+          :color="$settings.modules.discussions.color"
         >
           <v-row>
             <v-col>
@@ -508,7 +508,7 @@
         <v-alert
           dark
           icon="fas fa-info-circle"
-          color="customTeal"
+          :color="$settings.modules.discussions.color"
         >
           <v-row>
             <v-col>
@@ -578,7 +578,7 @@
                 :loading="isSending"
                 :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                 @click="sendMessage()"
-                color="customTeal"
+                :color="$settings.modules.discussions.color"
                 :title="$t('sendButton')"
               >
                 <template

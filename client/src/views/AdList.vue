@@ -14,7 +14,7 @@
         <v-btn
           dark
           :to="{ name: 'AdEditor' }"
-          color="customCyan"
+          :color="$settings.modules.ads.color"
         >
           {{$t('newAdButton')}}
           <v-icon
@@ -64,7 +64,7 @@
           >
             <v-progress-linear
               indeterminate
-              color="customCyan"
+              :color="$settings.modules.ads.color"
             ></v-progress-linear>
           </template>
           <template
@@ -85,7 +85,7 @@
               <v-btn
                 fab
                 small
-                color="customCyan"
+                :color="$settings.modules.ads.color"
                 @click="applicantsDialogItem = item"
                 :disabled="
                   !isOwnAd(item._id) ||
@@ -163,7 +163,7 @@
           >
             <v-btn
               icon
-              color="cyan"
+              :color="$settings.modules.ads.color"
               :loading="loaders[item._id + 'isActive'] === true"
               :disabled="!isOwnAd(item._id)"
               @click="changeAdProperty(
@@ -191,7 +191,7 @@
           >
             <v-btn
               icon
-              color="cyan"
+              :color="$settings.modules.ads.color"
               disabled
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeAdProperty(
@@ -224,7 +224,7 @@
             <v-btn
               fab
               small
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               class="my-4"
               :to="{name: 'AdEditor', params: { id: item._id } }"
               :disabled="!isOwnAd(item._id)"
@@ -243,7 +243,7 @@
             <v-btn
               fab
               small
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               class="my-4"
               :disabled="!isOwnAd(item._id)"
               :loading="loaders[item._id + 'delete'] === true"
@@ -272,7 +272,7 @@
             <v-btn
               fab
               small
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               class="my-4"
               :disabled="
                 !statusContainers.find(obj => obj.reference === item._id && obj.user === user._id && obj.relation === 'owner') &&
@@ -394,7 +394,7 @@
                     <v-btn
                       v-if="!item.replies || item.replies.length === 0"
                       @click="answerDialogItem = item"
-                      color="customCyan"
+                      :color="$settings.modules.ads.color"
                       dark
                     >
                       {{$t('writeAnswer')}}
@@ -416,7 +416,7 @@
                     fab
                     v-if="item.chat"
                     :to="{ name: 'IdChat', params: { chat: item.chat } }"
-                    color="customCyan"
+                    :color="$settings.modules.ads.color"
                     small
                   >
                     <v-icon
@@ -478,7 +478,7 @@
                 :dark="!(!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === '')"
                 :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                 @click="sendMessage(answerDialogItem)"
-                color="customCyan"
+                :color="$settings.modules.ads.color"
               >
                 {{$t('sendAnswer')}}
               </v-btn>

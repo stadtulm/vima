@@ -179,7 +179,7 @@
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item
-            color="customCyan"
+            :color="$settings.modules.ads.color"
             :to="{ name: 'CategoryList', params: { type: 'ads' } }"
           >
             <v-list-item-title
@@ -188,7 +188,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
-            color="customPurple"
+            :color="$settings.modules.groups.color"
             :to="{ name: 'Groups' }"
           >
             <v-list-item-title
@@ -197,7 +197,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
-            color="customTeal"
+            :color="$settings.modules.discussions.color"
             :to="{ name: 'Discussions', params: { type: 'discussions' } }"
           >
             <v-list-item-title

@@ -14,7 +14,7 @@
         <v-btn
           dark
           :to="{ name: 'GroupEditor' }"
-          color="customPurple"
+          :color="$settings.modules.groups.color"
         >
           {{$t('newGroupButton')}}
           <v-icon
@@ -67,7 +67,7 @@
           >
             <v-progress-linear
               indeterminate
-              color="customPurple"
+              :color="$settings.modules.groups.color"
             ></v-progress-linear>
           </template>
           <template
@@ -76,7 +76,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               @click="expand(!isExpanded)"
               :disabled="!isOwnGroup(item._id) || !item.accepted || !item.accepted.isAccepted"
             >
@@ -135,7 +135,7 @@
               <v-btn
                 fab
                 small
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 @click="membersDialogItem = item"
                 :disabled="
                   (
@@ -202,7 +202,7 @@
               <v-btn
                 fab
                 small
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 @click="discussionsDialogItem = item"
                 :disabled="
                   (
@@ -274,7 +274,7 @@
               <v-btn
                 fab
                 small
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 @click="violationsDialogItem = item"
                 :disabled="
                   (
@@ -300,7 +300,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               @click="filesDialogItem = item"
               :disabled="
                 (
@@ -392,8 +392,8 @@
               v-else
             >
               <v-select
-                color="customPurple"
-                item-color="customPurple"
+                :color="$settings.modules.groups.color"
+                :item-color="$settings.modules.groups.color"
                 multiple
                 chips
                 deletable-chips
@@ -414,7 +414,7 @@
           >
             <v-btn
               icon
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               :loading="loaders[item._id + 'isActive'] === true"
               :disabled="!isOwnGroup(item._id)"
               @click="changeGroupProperty(
@@ -442,7 +442,7 @@
           >
             <v-btn
               icon
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               disabled
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeGroupProperty(
@@ -475,7 +475,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               class="my-4"
               :to="{name: 'GroupEditor', params: { id: item._id } }"
               :disabled="!isOwnGroup(item._id)"
@@ -494,7 +494,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               class="my-4"
               :loading="loaders[item._id + 'delete'] === true"
               :disabled="!isOwnGroup(item._id)"
@@ -523,7 +523,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               :disabled="
                 !item.isActive ||
                 !item.accepted ||
@@ -553,8 +553,8 @@
                             :items="computedPossibleModerators"
                             :value="computedExpandedModerators"
                             @change="changeExpandedModerators"
-                            color="customPurple"
-                            item-color="customPurple"
+                            :color="$settings.modules.groups.color"
+                            :item-color="$settings.modules.groups.color"
                             multiple
                             :label="$t('possibleGroupModeratorsHint')"
                             chips
@@ -598,7 +598,7 @@
                 flat
               >
               <v-tabs
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 v-model="membersTab"
               >
                 <v-tab>{{$t('currentGroupMembers')}}</v-tab>
@@ -672,7 +672,7 @@
                               fab
                               small
                               dark
-                              color="customPurple"
+                              :color="$settings.modules.groups.color"
                             >
                               <v-icon
                                 size="18"
@@ -695,7 +695,7 @@
                       <UserTable
                         :customActionText="$t('invite')"
                         customActionIcon="fas fa-plus"
-                        customColor="customPurple"
+                        custom:color="$settings.modules.groups.color"
                         :customQuery="
                           computedCustomQuery
                         "
@@ -714,7 +714,7 @@
                       <UserTable
                         :customActionText="$t('remove')"
                         customActionIcon="fas fa-times"
-                        customColor="customPurple"
+                        custom:color="$settings.modules.groups.color"
                         :customQuery="
                           {
                             _id: { $in: computedMemberStatusContainers.filter(obj => obj.relation === 'invitation').map(obj => obj.user) }
@@ -769,7 +769,7 @@
                               fab
                               small
                               dark
-                              color="customPurple"
+                              :color="$settings.modules.groups.color"
                             >
                               <v-icon
                                 size="18"
@@ -784,7 +784,7 @@
                               fab
                               small
                               dark
-                              color="customPurple"
+                              :color="$settings.modules.groups.color"
                             >
                               <v-icon
                                 size="18"

@@ -1129,7 +1129,12 @@ async function init (to, from, next) {
     }
     document.cookie = 'clientLanguage=' + i18n.locale + '; path=/; SameSite=Lax; expires=31 Dec 2100 23:59:59 UTC'
     // Load stuff
-    await Store.dispatch('settings/find')
+    const settings = await Store.dispatch('settings/find')
+    if (settings.length === 1) {
+      Vue.prototype.$settings = settings[0]
+    } else {
+      throw Error('No settings available on server')
+    }
     await Store.dispatch('categories/find', { $paginate: false })
     const query = {}
     if (!Store.getters['auth/user'] || (Store.getters['auth/user'] && Store.getters['auth/user'].role !== 'admins')) {
