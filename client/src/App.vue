@@ -228,7 +228,7 @@
             :to="{ name: 'Organisations' }"
           >
             <v-list-item-title
-              v-html="$t('partnersTitle')"
+              v-html="$t('organisationsTitle')"
             >
             </v-list-item-title>
           </v-list-item>
@@ -1805,12 +1805,6 @@ export default {
       left: { r: 255, g: 255, b: 255 },
       right: { r: 207, g: 216, b: 220 }
     },
-    stepColors: {
-      default: { left: { r: 255, g: 255, b: 255 }, right: { r: 207, g: 216, b: 220 } },
-      ads: { left: { r: 255, g: 255, b: 255 }, right: { r: 128, g: 222, b: 234 } },
-      discussions: { left: { r: 255, g: 255, b: 255 }, right: { r: 144, g: 222, b: 215 } },
-      groups: { left: { r: 255, g: 255, b: 255 }, right: { r: 187, g: 156, b: 240 } }
-    },
     statusContainerTrigger: 1,
     isNavigationDrawer: false,
     showSnackbar: false
@@ -1909,7 +1903,7 @@ export default {
       }
       if (step && this.stepColors[step]) {
         this.tween(this.stepColors[step])
-      } else if (this.$route.params.type) {
+      } else if (this.$route.params.type && this.stepColors[this.$route.params.type]) {
         this.tween(this.stepColors[this.$route.params.type])
       } else {
         this.tween(this.stepColors.default)
@@ -1967,6 +1961,80 @@ export default {
     ...mapGetters('status-containers', {
       statusContainers: 'list'
     }),
+    ...mapGetters('settings', {
+      settings: 'list'
+    }),
+    stepColors () {
+      if (this.settings && this.settings.length === 1) {
+        return {
+          default: { left: { r: 255, g: 255, b: 255 }, right: { r: 207, g: 216, b: 220 } },
+          ads: {
+            left: {
+              r: 255, g: 255, b: 255
+            },
+            right: {
+              r: this.$settings.modules.ads.gradientColor.r,
+              g: this.$settings.modules.ads.gradientColor.g,
+              b: this.$settings.modules.ads.gradientColor.b
+            }
+          },
+          discussions: {
+            left: {
+              r: 255, g: 255, b: 255
+            },
+            right: {
+              r: this.$settings.modules.discussions.gradientColor.r,
+              g: this.$settings.modules.discussions.gradientColor.g,
+              b: this.$settings.modules.discussions.gradientColor.b
+            }
+          },
+          groups: {
+            left: {
+              r: 255, g: 255, b: 255
+            },
+            right: {
+              r: this.$settings.modules.groups.gradientColor.r,
+              g: this.$settings.modules.groups.gradientColor.g,
+              b: this.$settings.modules.groups.gradientColor.b
+            }
+          }
+        }
+      } else {
+        return {
+          default: { left: { r: 255, g: 255, b: 255 }, right: { r: 207, g: 216, b: 220 } },
+          ads: {
+            left: {
+              r: 255, g: 255, b: 255
+            },
+            right: {
+              r: 207,
+              g: 216,
+              b: 220
+            }
+          },
+          discussions: {
+            left: {
+              r: 255, g: 255, b: 255
+            },
+            right: {
+              r: 207,
+              g: 216,
+              b: 220
+            }
+          },
+          groups: {
+            left: {
+              r: 255, g: 255, b: 255
+            },
+            right: {
+              r: 207,
+              g: 216,
+              b: 220
+            }
+          }
+        }
+      }
+    },
     computedSteps () {
       const steps = [
         {

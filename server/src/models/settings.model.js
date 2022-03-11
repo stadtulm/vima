@@ -22,6 +22,11 @@ module.exports = function (app) {
         position: { type: Number, required: true },
         color: { type: String, required: true },
         bgColor: { type: String, required: true },
+        gradientColor: {
+          r: { type: Number, required: true },
+          g: { type: Number, required: true },
+          b: { type: Number, required: true }
+        },
         pic: { type: String }
       },
       groups: {
@@ -29,6 +34,11 @@ module.exports = function (app) {
         position: { type: Number, required: true },
         color: { type: String, required: true },
         bgColor: { type: String, required: true },
+        gradientColor: {
+          r: { type: Number, required: true },
+          g: { type: Number, required: true },
+          b: { type: Number, required: true }
+        },
         pic: { type: String }
       },
       discussions: {
@@ -36,6 +46,11 @@ module.exports = function (app) {
         position: { type: Number, required: true },
         color: { type: String, required: true },
         bgColor: { type: String, required: true },
+        gradientColor: {
+          r: { type: Number, required: true },
+          g: { type: Number, required: true },
+          b: { type: Number, required: true }
+        },
         pic: { type: String }
       },
       news: {

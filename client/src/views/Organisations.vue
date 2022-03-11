@@ -7,7 +7,7 @@
         <v-row>
           <v-col
             class="text-h5 font-weight-bold customGrey--text text-uppercase"
-            v-html="$t('partnersTitle')"
+            v-html="$t('organisationsTitle')"
           >
           </v-col>
           <v-col

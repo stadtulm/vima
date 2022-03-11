@@ -27,13 +27,15 @@
     </v-row>
     <v-row>
       <v-col
+        v-for="(module, i) in computedModules"
+        :key="i"
         cols="12"
         md="4"
       >
         <v-card
           height="100%"
-          :color="$settings.modules.ads.bgColor"
-          :to="{ name: 'CategoryList', params: { type: 'ads' } }"
+          :color="module.bgColor"
+          :to="{ name: module.to, params: { type: module.type } }"
         >
           <v-container
             fluid
@@ -43,17 +45,16 @@
               class="align-self-start"
             >
               <v-img
-                src="/pics/ads.jpg"
+                :src="module.pic"
                 height="200px"
-                :alt="$t('adsSectionPic')"
-                title="© ILEU e.V."
-                tour-step-container="3"
+                :alt="$t(module.type + 'SectionPic')"
+                :tour-step-container="i === 0 || null"
               ></v-img>
               <v-col
                 class="px-0 pb-0"
               >
                 <v-card-title
-                  v-html="$t('adsTitle')"
+                  v-html="$t(module.type + 'Title')"
                   class="word-wrap"
                 >
                 </v-card-title>
@@ -62,15 +63,15 @@
                 class="pb-0 shrink right-text align-self-center"
               >
                 <v-btn
-                  :style="'color:' + $settings.modules.ads.color"
-                  :to="{ name: 'CategoryList', params: { type: 'ads' } }"
+                  :style="'color:' + module.color"
+                  :to="{ name: module.to, params: { type: module.type } }"
                   tour-step="3"
                 >
                   {{$t('viewButton')}}
                   <v-icon
                     class="ml-3"
                     size="18"
-                    :color="$settings.modules.ads.color"
+                    :color="module.color"
                   >
                     fas fa-arrow-right
                   </v-icon>
@@ -80,303 +81,10 @@
                 cols="12"
                 class="pb-4 px-4 body-1 black--text"
               >
-                {{$t('adsBody')}}
+                {{$t(module.type + 'Body')}}
               </v-col>
             </v-row>
-          </v-container>
-        </v-card>
-      </v-col>
-      <v-col
-        cols="12"
-        md="4"
-      >
-        <v-card
-          height="100%"
-          :color="$settings.modules.groups.bgColor"
-          :to="{ name: 'Groups' }"
-        >
-          <v-container
-            fluid
-            class="fill-height"
-          >
-            <v-row
-              class="align-self-start"
-            >
-              <v-img
-                src="/pics/groups.jpg"
-                height="200px"
-                :alt="$t('groupsSectionPic')"
-                title="© ILEU e.V."
-              ></v-img>
-              <v-col
-                class="px-0 pb-0"
-              >
-                <v-card-title
-                  v-html="$t('groupsTitle')"
-                  class="word-wrap"
-                >
-                </v-card-title>
-              </v-col>
-              <v-col
-                class="pb-0 shrink right-text align-self-center"
-              >
-                <v-btn
-                  :style="'color:' + $settings.modules.groups.color"
-                  :to="{ name: 'Groups' }"
-                >
-                  {{$t('viewButton')}}
-                  <v-icon
-                    class="ml-3"
-                    size="18"
-                    :color="$settings.modules.groups.color"
-                  >
-                    fas fa-arrow-right
-                  </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col
-                cols="12"
-                class="pb-4 px-4 body-1 black--text"
-              >
-                {{$t('groupsBody')}}
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-col>
-      <v-col
-        cols="12"
-        md="4"
-      >
-        <v-card
-          height="100%"
-          :color="$settings.modules.discussions.bgColor"
-          :to="{ name: 'Discussions' }"
-        >
-          <v-container
-            fluid
-            class="fill-height"
-          >
-            <v-row
-              class="align-self-start"
-            >
-              <v-img
-                src="/pics/discussions.jpg"
-                height="200px"
-                :alt="$t('discussionsSectionPic')"
-                title="© ILEU e.V."
-              ></v-img>
-              <v-col
-                class="px-0 pb-0"
-              >
-                <v-card-title
-                  v-html="$t('discussionsTitle')"
-                  class="word-wrap"
-                >
-                </v-card-title>
-              </v-col>
-              <v-col
-                class="pb-0 shrink right-text align-self-center"
-              >
-                <v-btn
-                  :style="'color:' + $settings.modules.discussions.color"
-                  :to="{ name: 'Discussions' }"
-                >
-                  {{$t('viewButton')}}
-                  <v-icon
-                    class="ml-3"
-                    size="18"
-                    :color="$settings.modules.discussions.color"
-                  >
-                    fas fa-arrow-right
-                  </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col
-                cols="12"
-                class="pb-4 px-4 body-1 black--text"
-              >
-                {{$t('discussionsBody')}}
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-col>
-      <!-- -->
-      <v-col
-        cols="12"
-        md="4"
-      >
-        <v-card
-          height="100%"
-          color="customGreyUltraLight"
-          :to="{ name: 'News' }"
-        >
-          <v-container
-            fluid
-            class="fill-height"
-          >
-            <v-row
-              class="align-self-start"
-            >
-              <v-img
-                src="/pics/news.jpg"
-                height="200px"
-                width="100%"
-                :alt="$t('newsSectionPic')"
-                title="© ILEU e.V."
-              ></v-img>
-              <v-col
-                class="px-0 pb-0"
-              >
-                <v-card-title
-                  v-html="$t('newsTitle')"
-                  class="word-wrap"
-                >
-                </v-card-title>
-              </v-col>
-              <v-col
-                class="pb-0 shrink right-text align-self-center"
-              >
-                <v-btn
-                  class="customGrey--text"
-                  :to="{ name: 'News' }"
-                >
-                  {{$t('viewButton')}}
-                  <v-icon
-                    class="ml-3"
-                    size="18"
-                    color="customGrey"
-                  >
-                    fas fa-arrow-right
-                  </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col
-                cols="12"
-                class="pb-t px-4 body-1 black--text"
-              >
-                {{$t('newsBody')}}
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-col>
-      <v-col
-        cols="12"
-        md="4"
-      >
-        <v-card
-          height="100%"
-          color="customGreyUltraLight"
-          :to="{ name: 'Events' }"
-        >
-          <v-container
-            fluid
-            class="fill-height"
-          >
-            <v-row
-              class="align-self-start"
-            >
-              <v-img
-                src="/pics/events.jpg"
-                height="200px"
-                width="100%"
-                :alt="$t('eventsSectionPic')"
-                title="© ILEU e.V."
-              ></v-img>
-              <v-col
-                class="px-0 pb-0"
-              >
-                <v-card-title
-                  class="word-wrap"
-                  v-html="$t('calendarTitle')"
-                >
-                </v-card-title>
-              </v-col>
-              <v-col
-                class="pb-0 shrink right-text align-self-center"
-              >
-                <v-btn
-                  class="customGrey--text"
-                  :to="{ name: 'Events' }"
-                >
-                  {{$t('viewButton')}}
-                  <v-icon
-                    class="ml-3"
-                    size="18"
-                    color="customGrey"
-                  >
-                    fas fa-arrow-right
-                  </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col
-                cols="12"
-                class="pt-0 px-4 body-1 black--text"
-              >
-                {{$t('calendarBody')}}
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-col>
-      <v-col
-        cols="12"
-        md="4"
-      >
-        <v-card
-          height="100%"
-          color="customGreyUltraLight"
-          :to="{ name: 'Organisations' }"
-        >
-          <v-container
-            fluid
-            class="fill-height"
-          >
-            <v-row
-              class="align-self-start"
-            >
-              <v-img
-                src="/pics/partners.jpg"
-                height="200px"
-                width="100%"
-                :alt="$t('partnersSectionPic')"
-                title="© ILEU e.V."
-              ></v-img>
-              <v-col
-                class="px-0 pb-0"
-              >
-                <v-card-title
-                  class="word-wrap"
-                  v-html="$t('partnersTitle')"
-                >
-                </v-card-title>
-              </v-col>
-              <v-col
-                class="pb-0 shrink right-text align-self-center"
-              >
-                <v-btn
-                  class="customGrey--text"
-                  :to="{ name: 'Organisations' }"
-                >
-                  {{$t('viewButton')}}
-                  <v-icon
-                    class="ml-3"
-                    size="18"
-                    color="customGrey"
-                  >
-                    fas fa-arrow-right
-                  </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col
-                cols="12"
-                class="pt-0 px-4 body-1 black--text"
-              >
-                {{$t('partnersBody')}}
-              </v-col>
-            </v-row>
+            {{module.to}}
           </v-container>
         </v-card>
       </v-col>
@@ -406,6 +114,18 @@ export default {
   },
 
   computed: {
+    computedModules () {
+      return Object.keys(this.$settings.modules)
+        .map(
+          moduleKey => ({
+            ...this.$settings.modules[moduleKey],
+            type: moduleKey,
+            to: moduleKey === 'ads' ? 'CategoryList' : moduleKey[0].toUpperCase() + moduleKey.substr(1)
+          })
+        )
+        .filter(module => module.isActive)
+        .sort((a, b) => (a.position > b.position) ? 1 : -1)
+    }
   }
 }
 </script>
