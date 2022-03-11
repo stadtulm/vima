@@ -123,7 +123,6 @@
                                   class="align-center"
                                 >
                                   <v-menu
-                                    offset-y
                                     open-on-hover
                                     v-if="isOwnMessage(message)"
                                   >
@@ -141,52 +140,41 @@
                                         </v-icon>
                                       </v-btn>
                                     </template>
-                                    <v-card>
-                                      <v-card-text>
-                                        <v-row
-                                          dense
-                                        >
-                                          <v-col>
-                                            <v-btn
-                                              block
-                                              outlined
-                                              small
-                                              color="customGrey"
-                                              @click="editMessage(message)"
-                                            >
-                                              {{$t('editButton')}}
-                                              <v-icon
-                                                size="14"
-                                                class="ml-2"
-                                              >
-                                                fas fa-pen
-                                              </v-icon>
-                                            </v-btn>
-                                          </v-col>
-                                        </v-row>
-                                        <v-row
-                                          dense
-                                        >
-                                          <v-col>
-                                            <v-btn
-                                              block
-                                              outlined
-                                              small
-                                              color="customGrey"
-                                              @click="deleteMessage(message._id)"
-                                            >
-                                              {{$t('deleteButton')}}
-                                              <v-icon
-                                                size="14"
-                                                class="ml-2"
-                                              >
-                                                fas fa-trash
-                                              </v-icon>
-                                            </v-btn>
-                                          </v-col>
-                                        </v-row>
-                                      </v-card-text>
-                                    </v-card>
+                                    <v-list
+                                      dense
+                                      rounded
+                                    >
+                                      <!-- Edit button -->
+                                      <v-list-item
+                                        @click="editMessage(message)"
+                                      >
+                                        <v-list-item-avatar>
+                                          <v-icon>
+                                            fas fa-pen
+                                          </v-icon>
+                                        </v-list-item-avatar>
+                                        <v-list-item-content>
+                                          <v-list-item-title>
+                                            {{$t('editButton')}}
+                                          </v-list-item-title>
+                                        </v-list-item-content>
+                                      </v-list-item>
+                                      <!-- Delete button -->
+                                      <v-list-item
+                                        @click="deleteMessage(message._id)"
+                                      >
+                                        <v-list-item-avatar>
+                                          <v-icon>
+                                            fas fa-trash
+                                          </v-icon>
+                                        </v-list-item-avatar>
+                                        <v-list-item-content>
+                                          <v-list-item-title>
+                                            {{$t('deleteButton')}}
+                                          </v-list-item-title>
+                                        </v-list-item-content>
+                                      </v-list-item>
+                                    </v-list>
                                   </v-menu>
                                   <v-col
                                     class="shrink px-0"
@@ -208,81 +196,55 @@
                                   <v-col
                                     class="text-left"
                                   >
-                                    <template
-                                      v-if="
-                                        getTranslation(message._id + '_' + $i18n.locale) &&
-                                        getTranslation(message._id + '_' + $i18n.locale).show
-                                      "
+
+                                    <TranslatableText
+                                      ownField="text"
+                                      :allFields="['text']"
+                                      :allIds="chatMessages.filter(m => !isOwnMessage(m)).map(m => ({ id: m._id, translationSum: m.translationSum }))"
+                                      type="chat-messages"
+                                      :textParent="message"
                                     >
-                                      <v-sheet
-                                        :color="isOwnMessage(message) ? '#fff' : 'customGreyLight'"
-                                        :class="{'rounded-l-xl rounded-tr-xl': isOwnMessage(message), 'rounded-r-xl rounded-tl-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
-                                        class="px-3 pt-1 pb-3 elevation-4"
+                                      <template
+                                        v-slot:defaultLang="{ computedText, translateText }"
                                       >
                                         <v-sheet
-                                          class="py-1 mt-3 mb-4 px-2 rounded"
-                                          color="rgba(255,255,255,0.3)"
-                                          v-html="$sanitize(newTab(getTranslation(message._id + '_' + $i18n.locale).value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
-                                        ></v-sheet>
-                                        <v-row
-                                          dense
+                                          v-html="$sanitize(newTab(computedText.value))"
+                                          :color="isOwnMessage(message) ? '#fff' : 'customGreyLight'"
+                                          :class="{'rounded-l-xl rounded-tr-xl': isOwnMessage(message), 'rounded-r-xl rounded-tl-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
+                                          class="px-3 py-1 elevation-4"
                                         >
-                                          <v-col
-                                            cols="12"
-                                            class="caption text-center"
-                                            v-if="message.translationSum !== getTranslation(message._id + '_' + $i18n.locale).translationSum"
-                                          >
-                                            <v-icon
-                                              small
-                                              color="error"
-                                              class="mb-1 mr-1"
-                                            >
-                                              fas fa-sync
-                                            </v-icon>
-                                            {{$t('defaultLanguageEdited')}}
-                                            <v-btn
-                                              text
-                                              x-small
-                                              @click="translateText({ texts: [{ id: message._id, translationSum: message.translationSum }], force: true })"
-                                            >
-                                              {{$t('updateTranslation')}}
-                                            </v-btn>
-                                          </v-col>
-                                          <v-col
-                                            cols="12"
-                                            class="caption text-center"
-                                          >
-                                            <v-icon
-                                              small
-                                              class="mb-1 mr-1"
-                                            >
-                                              fas fa-info-circle
-                                            </v-icon>
-                                            {{$t('machineTranslationHint')}}
-                                            <v-btn
-                                              text
-                                              x-small
-                                              @click="updateTranslationItem({ _id: message._id + '_' + $i18n.locale, show: false })"
-                                            >
-                                              {{$t('showOriginal')}}
-                                            </v-btn>
-                                          </v-col>
-                                        </v-row>
-                                      </v-sheet>
-                                    </template>
-                                    <v-sheet
-                                      v-show="
-                                        !(
-                                          getTranslation(message._id + '_' + $i18n.locale) &&
-                                          getTranslation(message._id + '_' + $i18n.locale).show
-                                        )
-                                      "
-                                      v-html="message.text ? $sanitize(newTab(message.text.value)) : ''"
-                                      :color="isOwnMessage(message) ? '#fff' : 'customGreyLight'"
-                                      :class="{'rounded-l-xl rounded-tr-xl': isOwnMessage(message), 'rounded-r-xl rounded-tl-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
-                                      class="px-3 py-1 elevation-4"
-                                    >
-                                    </v-sheet>
+                                        </v-sheet>
+                                        <TranslatableTextInfo
+                                          v-if="!isOwnMessage(message)"
+                                          :canTranslate="true"
+                                          :canTranslateAll="chatMessages.filter(m => !isOwnMessage(m)).length > 1"
+                                          @translateText="(data) => { translateText(data) }"
+                                        ></TranslatableTextInfo>
+                                      </template>
+
+                                      <template
+                                        v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+                                      >
+                                        <v-sheet
+                                          :color="isOwnMessage(message) ? '#fff' : 'customGreyLight'"
+                                          :class="{'rounded-l-xl rounded-tr-xl': isOwnMessage(message), 'rounded-r-xl rounded-tl-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
+                                          class="px-3 pt-1 pb-3 elevation-4"
+                                        >
+                                          <v-sheet
+                                            class="py-1 mt-3 mb-4 px-2 rounded"
+                                            color="rgba(255,255,255,0.3)"
+                                            v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                          ></v-sheet>
+                                        </v-sheet>
+                                        <TranslatableTextInfo
+                                          :canShowOriginal="true"
+                                          :needsUpdate="message.translationSum !== computedText.translationSum"
+                                          @showOriginal="(data) => { showOriginal(data) }"
+                                          @translateText="(data) => { translateText(data) }"
+                                        ></TranslatableTextInfo>
+                                      </template>
+                                    </TranslatableText>
+
                                   </v-col>
                                   <v-btn
                                     v-if="!isOwnMessage(message)"
@@ -298,7 +260,6 @@
                                     </v-icon>
                                   </v-btn>
                                   <v-menu
-                                    offset-y
                                     open-on-hover
                                     v-if="!isOwnMessage(message)"
                                   >
@@ -316,75 +277,26 @@
                                         </v-icon>
                                       </v-btn>
                                     </template>
-                                    <v-card>
-                                      <v-card-text>
-                                        <v-row dense>
-                                          <v-col>
-                                            <v-btn
-                                              block
-                                              outlined
-                                              small
-                                              color="customGrey"
-                                              @click="translateText({ texts: [{ id: message._id, translationSum: message.translationSum }]})"
-                                              :disabled="
-                                                getTranslation(message._id + '_' + $i18n.locale) &&
-                                                getTranslation(message._id + '_' + $i18n.locale).show
-                                              "
-                                            >
-                                              {{$t('translateTo')}} {{$t($i18n.locale)}}
-                                              <v-icon
-                                                size="20"
-                                                class="ml-2"
-                                              >
-                                                fas fa-language
-                                              </v-icon>
-                                            </v-btn>
-                                          </v-col>
-                                        </v-row>
-                                        <v-row dense>
-                                          <v-col>
-                                            <v-btn
-                                              block
-                                              outlined
-                                              small
-                                              color="customGrey"
-                                              @click="translateText(
-                                                {
-                                                  texts: chatMessages
-                                                    .filter(m => !isOwnMessage(m))
-                                                    .map(m => { return { id: m._id, translationSum: m.translationSum } })
-                                                }
-                                              )"
-                                            >
-                                              {{$t('translateAllTo')}} {{$t($i18n.locale)}}
-                                              <v-icon
-                                                size="20"
-                                                class="ml-2"
-                                              >
-                                                fas fa-language
-                                              </v-icon>
-                                            </v-btn>
-                                          </v-col>
-                                        </v-row>
-                                        <v-row dense>
-                                          <v-btn
-                                            block
-                                            outlined
-                                            small
-                                            color="customGrey"
-                                            @click="openReportDialog(message)"
-                                          >
+                                    <v-list
+                                      dense
+                                      rounded
+                                    >
+                                      <!-- Report button -->
+                                      <v-list-item
+                                        @click="openReportDialog(message)"
+                                      >
+                                        <v-list-item-avatar>
+                                          <v-icon>
+                                            fas fa-exclamation-triangle
+                                          </v-icon>
+                                        </v-list-item-avatar>
+                                        <v-list-item-content>
+                                          <v-list-item-title>
                                             {{$t('reportButton')}}
-                                            <v-icon
-                                              size="14"
-                                              class="ml-2"
-                                            >
-                                              fas fa-exclamation-triangle
-                                            </v-icon>
-                                          </v-btn>
-                                        </v-row>
-                                      </v-card-text>
-                                    </v-card>
+                                          </v-list-item-title>
+                                        </v-list-item-content>
+                                      </v-list-item>
+                                    </v-list>
                                   </v-menu>
                                 </v-row>
                               </v-sheet>
@@ -417,7 +329,6 @@
                                   :selectedChat="selectedChat"
                                   @checkVisibleMessages="checkVisibleMessages"
                                   @report="openReportDialog"
-                                  @translateText="translateText"
                                   :computedOwnStatusContainer="computedOwnStatusContainer"
                                   :computedOtherStatusContainers="computedOtherStatusContainers"
                                 ></ChatReplies>
@@ -574,6 +485,8 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChatReplies from '@/views/ChatReplies.vue'
 import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import ViolationDialog from '@/components/ViolationDialog.vue'
+import TranslatableText from '@/components/TranslatableText.vue'
+import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 
 export default {
   name: 'Chat',
@@ -583,7 +496,9 @@ export default {
   components: {
     ChatReplies,
     TiptapVuetify,
-    ViolationDialog
+    ViolationDialog,
+    TranslatableText,
+    TranslatableTextInfo
   },
   data: () => ({
     showViolationDialog: undefined,
@@ -700,29 +615,6 @@ export default {
       findCommonChat: 'find',
       patchChatMessageNotifications: 'patch'
     }),
-    async translateText ({ texts, force }) {
-      let textsToTranslate
-      let textsToShow
-      if (force) {
-        textsToTranslate = texts
-        textsToShow = []
-      } else {
-        textsToTranslate = texts.filter(text => !this.getTranslation(text.id + '_' + this.$i18n.locale))
-        textsToShow = texts.filter(text => this.getTranslation(text.id + '_' + this.$i18n.locale))
-      }
-      if (textsToTranslate.length > 0) {
-        await this.createTranslation([
-          {
-            type: 'chat-messages',
-            texts: textsToTranslate,
-            target: this.$i18n.locale
-          }
-        ])
-      }
-      for (const text of textsToShow) {
-        this.updateTranslationItem({ _id: text.id + '_' + this.$i18n.locale, show: true })
-      }
-    },
     openReportDialog (message) {
       this.itemToReport = message
     },

@@ -140,7 +140,11 @@ module.exports = {
         }
       ),
       (context) => {
-        context.data.translationSum = JSum.digest(context.data.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
+        context.data.translationSum = JSum.digest(
+          ['text'].map(field => context.data[field].find(t => t.type === 'default').value),
+          'SHA256',
+          'hex'
+        )
       }
     ],
     update: [
@@ -164,7 +168,11 @@ module.exports = {
       commonHooks.iff(
         (context) => context.data?.text?.find(t => t.type === 'default'),
         (context) => {
-          context.data.translationSum = JSum.digest(context.data.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
+          context.data.translationSum = JSum.digest(
+            ['text'].map(field => context.data[field].find(t => t.type === 'default').value),
+            'SHA256',
+            'hex'
+          )
         }
       )
     ],

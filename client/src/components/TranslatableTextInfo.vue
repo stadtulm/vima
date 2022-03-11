@@ -17,14 +17,19 @@
           </v-icon>
         </v-btn>
       </template>
-      <v-list>
+      <v-list
+        rounded
+        dense
+      >
         <v-list-item
+          dense
+          disabled
           v-if="canShowOriginal"
         >
           <v-list-item-avatar>
             <v-icon
-              small
               class="mb-1 mr-1"
+              color="customGreyLight"
             >
               fas fa-info-circle
             </v-icon>
@@ -34,16 +39,32 @@
               {{$t('machineTranslationHint')}}
             </v-list-item-title>
           </v-list-item-content>
-          <v-list-item-action>
-            <v-btn
-              @click="$emit('showOriginal')"
+        </v-list-item>
+        <v-list-item
+          v-if="canShowOriginal"
+          @click="$emit('showOriginal')"
+        >
+          <v-list-item-avatar>
+            <v-icon
+              small
+              class="mb-1 mr-1"
             >
+              fa fa-undo
+            </v-icon>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>
               {{$t('showOriginal')}}
-            </v-btn>
-          </v-list-item-action>
+            </v-list-item-title>
+          </v-list-item-content>
         </v-list-item>
         <v-list-item
           v-if="needsUpdate && canShowOriginal"
+          @click="$emit('translateText', {
+            allTexts: false,
+            allFields: true,
+            force: true
+          })"
         >
           <v-list-item-avatar>
             <v-icon
@@ -56,22 +77,12 @@
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>
-              {{$t('defaultLanguageEdited')}}
-            </v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-btn
-              text
-              x-small
-              @click="$emit('translateText', {
-                allTexts: false,
-                allFields: true,
-                force: true
-              })"
-            >
               {{$t('updateTranslation')}}
-            </v-btn>
-          </v-list-item-action>
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{$t('defaultLanguageEdited')}}
+            </v-list-item-subtitle>
+          </v-list-item-content>
         </v-list-item>
         <v-list-item
           v-if="canTranslate"
@@ -93,7 +104,7 @@
           </v-list-item-title>
         </v-list-item>
         <v-list-item
-          v-if="canTranslate"
+          v-if="canTranslateObject"
           @click="$emit('translateText', {
             allTexts: false,
             allFields: true,
@@ -112,7 +123,7 @@
           </v-list-item-title>
         </v-list-item>
         <v-list-item
-          v-if="translateAll"
+          v-if="canTranslateAll"
           @click="$emit('translateText', {
               allTexts: true,
               allFields: true,
@@ -143,7 +154,8 @@ export default {
 
   props: [
     'canTranslate',
-    'translateAll',
+    'canTranslateObject',
+    'canTranslateAll',
     'canShowOriginal',
     'needsUpdate'
   ],

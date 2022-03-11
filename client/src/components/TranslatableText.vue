@@ -11,7 +11,8 @@
         {{computedText.value}}
         <TranslatableTextInfo
           :canTranslate="true"
-          :canShowOriginal="false"
+          :canTranslateAll="allIds ? allIds.length > 1 : false"
+          :canTranslateObject="allFields ? allFields.length > 1 : false"
           @translateText="translateText"
         ></TranslatableTextInfo>
       </slot>
@@ -30,8 +31,8 @@
         >
             {{computedText.value}}
             <TranslatableTextInfo
-              :canTranslate="false"
               :canShowOriginal="true"
+              :canTranslateObject="allFields.length > 1"
               :needsUpdate="textParent.translationSum !== computedText.translationSum"
               @showOriginal="showOriginal"
               @translateText="translateText"
@@ -55,12 +56,11 @@ export default {
   },
 
   props: [
-    'textParent',
-    'ownField',
-    'allFields',
-    'type',
-    'showControls',
-    'allIds'
+    'textParent', // Object
+    'ownField', // String
+    'allFields', // [fieldString, fieldString]
+    'type', // String
+    'allIds' // [{ id, translationSum }]
   ],
 
   data: () => ({
@@ -83,8 +83,7 @@ export default {
     async translateText ({ allTexts, allFields, force }) {
       let textsToTranslate
       let textsToShow
-
-      textsToTranslate = (allTexts ? this.allIds : [this.textParent._id]).map(id => ({ id: id, translationSum: this.textParent.translationSum }))
+      textsToTranslate = allTexts ? this.allIds : [{ id: this.textParent._id, translationSum: this.textParent.translationSum }]
 
       if (force) {
         textsToShow = []
