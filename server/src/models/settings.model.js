@@ -10,7 +10,7 @@ module.exports = function (app) {
     name: { type: String, required: true, unique: true },
     headerColor: { type: String, required: true },
     indicatorColor: { type: String, required: true },
-    headerLogo: { type: String, required: true },
+    headerLogo: { type: String },
     socialMediaURls: {
       fb: { type: String },
       instagram: { type: String },
@@ -21,43 +21,42 @@ module.exports = function (app) {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
         color: { type: String, required: true },
-        pic: { type: String, required: true }
+        bgColor: { type: String, required: true },
+        pic: { type: String }
       },
       groups: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
         color: { type: String, required: true },
-        pic: { type: String, required: true }
+        bgColor: { type: String, required: true },
+        pic: { type: String }
       },
       discussions: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
         color: { type: String, required: true },
-        pic: { type: String, required: true }
+        bgColor: { type: String, required: true },
+        pic: { type: String }
       },
       news: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
-        color: { type: String, required: true },
-        pic: { type: String, required: true }
+        pic: { type: String }
       },
       events: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
-        color: { type: String, required: true },
-        pic: { type: String, required: true }
+        pic: { type: String }
       },
       organisations: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
-        color: { type: String, required: true },
-        pic: { type: String, required: true }
+        pic: { type: String }
       },
       blog: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
-        color: { type: String, required: true },
-        pic: { type: String, required: true }
+        pic: { type: String }
       }
     }
   }, {

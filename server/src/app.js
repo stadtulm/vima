@@ -104,8 +104,8 @@ server.on('listening', () =>
 
 // Create settings if not existant
 initSettings()
-async function initSettings() {
-  const settings = app.service('settings').find()
+async function initSettings () {
+  const settings = await app.service('settings').find()
   if (settings.length > 1) {
     throw new Error('Multiple server settings found')
   }
