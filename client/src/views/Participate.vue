@@ -45,10 +45,11 @@
               class="align-self-start"
             >
               <v-img
-                :src="module.pic"
+                :src="module.pic ? (s3 + module.pic.url) : ''"
                 height="200px"
                 :alt="$t(module.type + 'SectionPic')"
                 :tour-step-container="i === 0 || null"
+                :title="module.pic && module.pic.credit ? '© ' + module.pic.credit : ''"
               ></v-img>
               <v-col
                 class="px-0 pb-0"
@@ -94,6 +95,8 @@
 
 <script>
 
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'Home',
 
@@ -114,6 +117,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters([
+      's3'
+    ]),
     computedModules () {
       return Object.keys(this.$settings.modules)
         .map(
