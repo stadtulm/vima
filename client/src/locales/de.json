@@ -612,5 +612,6 @@
   "isActiveModule": "Module aktiv",
   "position": "Position",
   "uniquePositionError": "Position darf nur einmal vergeben werden",
-  "brand": "Logo"
+  "brand": "Logo",
+  "startUpload": "Upload starten"
 }

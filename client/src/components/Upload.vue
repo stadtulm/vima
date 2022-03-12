@@ -8,11 +8,11 @@
       >
         <v-card
           flat
-          color="customGreyUltraLight"
+          :color="bgColor"
         >
           <v-row>
             <v-col
-              class="subtitle-1"
+              :class="titleType"
               cols="12"
             >
               {{label}} {{optional ? $t('optionalLabelExtension') : ''}}
@@ -24,11 +24,11 @@
             <v-col
               cols="12"
               tabIndex="0"
-              @keypress="$refs.vueDropzonePics.$el.click()"
+              @keypress="$refs[_uid + '_vueDropzone'].$el.click()"
             >
               <vue-dropzone
-                id="vueDropzonePics"
-                ref="vueDropzonePics"
+                :id="_uid + '_vueDropzone'"
+                :ref="_uid + '_vueDropzone'"
                 :options="dropzoneOptionsPics"
                 :headers="dropzoneOptionsPics.headers"
                 @vdropzone-success="uploadSuccessPics"
@@ -46,6 +46,7 @@
       </v-col>
     </v-row>
     <v-row
+      dense
       v-if="pics && pics.length > 0"
     >
       <v-col
@@ -78,7 +79,7 @@
             </v-col>
           </v-row>
           <v-form
-            ref="uploadForm"
+            :ref="_uid + '_uploadForm'"
             v-model="isValid"
           >
             <v-row
@@ -95,7 +96,7 @@
                   color="customGrey"
                   item-color="customGrey"
                   v-model="pic.credit"
-                  :label="$t('copyrightOwner') + ' ' + $t('pic') + ' ' + (i + 1)"
+                  :label="$t('copyrightOwner') + (maxFiles > 1 ? ' ' + $t('pic') + ' ' + (i + 1) : '')"
                   outlined
                   :rules="[rules.required]"
                   background-color="#fff"
@@ -107,16 +108,18 @@
         </v-card>
       </v-col>
     </v-row>
-    PICS: {{pics}}<br>
-    QUEUED: {{isQueued}}<br>
-    ERROR: {{dropzoneError}}
     <v-row>
       <v-col>
         <v-btn
+          block
+          large
+          :dark="!(!isValid || dropzoneError || !isQueued)"
+          color="customGreyMedium"
+          :loading="isLoading"
           :disabled="!isValid || dropzoneError || !isQueued"
           @click="processQueue()"
         >
-          Upload
+          {{$t('startUpload')}}
         </v-btn>
       </v-col>
     </v-row>
@@ -145,7 +148,9 @@ export default {
     'resizeWidth', // 1080,
     'resizeMethod', // 'contain',
     'resizeQuality', // 0.5
-    'patchParentMethod'
+    'patchParentMethod',
+    'titleType',
+    'bgColor'
   ],
 
   components: {
@@ -180,27 +185,26 @@ export default {
     },
     dropzoneMountedPics () {
       // Since this is loaded before anything else, do adapt stuff here
-      if (this.parent) {
-        if (this.parent && this.parent[this.path]) {
-          if (Array.isArray(this.parent[this.path])) {
-            this.pics = this.parent[this.path]
-          } else {
-            this.pics = [this.parent[this.path]]
-          }
+      const picProperty = this.resolveProperty(this.path, this.parent)
+      if (this.parent && picProperty) {
+        if (Array.isArray(picProperty)) {
+          this.pics = picProperty
         } else {
-          this.pics = []
+          this.pics = [picProperty]
         }
+      } else {
+        this.pics = []
       }
-      if (this.$refs.uploadForm) {
+      if (this.$refs[this._uid + '_uploadForm']) {
         this.$nextTick(() => {
-          this.$refs.uploadForm.validate()
+          this.$refs[this._uid + '_uploadForm'].validate()
         })
       }
       // Add dummies for already uploaded files to dropzone
       for (const pic of this.pics) {
         const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
         tmpMockFile.name = pic.url
-        this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + pic.url)
+        this.$refs[this._uid + '_vueDropzone'].manuallyAddFile(tmpMockFile, this.s3 + pic.url)
       }
     },
     updateQueuedFiles (files) {
@@ -225,7 +229,7 @@ export default {
       try {
         // Reset queued status
         if (file.status === 'queued') {
-          if (this.$refs.vueDropzonePics.getQueuedFiles().length === 0) {
+          if (this.$refs[this._uid + '_vueDropzone'].getQueuedFiles().length === 0) {
             this.isQueued = false
           }
         // Remove file from s3
@@ -236,17 +240,18 @@ export default {
           }
           await this.removeUpload([file.name, {}, {}])
           let tmpPictures = []
-          if (this.parent && this.path && this.parent[this.path]) {
-            if (Array.isArray(this.parent[this.path])) {
-              tmpPictures = this.parent[this.path]
+          const picProperty = this.resolveProperty(this.path, this.parent)
+          if (this.parent && picProperty) {
+            if (Array.isArray(picProperty)) {
+              tmpPictures = picProperty
             } else {
-              tmpPictures = [this.parent[this.path]]
+              tmpPictures = [picProperty]
             }
           }
           tmpPictures = tmpPictures.filter(obj => obj.url !== file.name)
-          if (this.parent && this.path && this.parent[this.path]) {
+          if (this.parent && picProperty) {
             if (this.maxFiles > 1) {
-              tmpPictures = this.parent[this.path]
+              tmpPictures = picProperty
             } else {
               tmpPictures = null
             }
@@ -257,7 +262,7 @@ export default {
         } else if (this.isLoading) {
           throw error
         // Reset error state if no more errors exist
-        } else if (file.status === 'error' && this.$refs.vueDropzonePics.getRejectedFiles().length === 0) {
+        } else if (file.status === 'error' && this.$refs[this._uid + '_vueDropzone'].getRejectedFiles().length === 0) {
           this.dropzoneError = false
         }
         // Remove pic from pics array is existant
@@ -273,7 +278,7 @@ export default {
     },
     async processQueue () {
       this.isLoading = true
-      await this.$refs.vueDropzonePics.processQueue()
+      await this.$refs[this._uid + '_vueDropzone'].processQueue()
     },
     uploadSuccessPics (file, response) {
       if (file.status === 'success') {
@@ -281,11 +286,11 @@ export default {
         this.$set(this.pics.find(obj => obj.url === response.uuid), 'url', response.id)
       }
     },
-    async queueComplete () {
+    async queueComplete (a, b, c) {
       if (this.isQueued) {
         this.isQueued = false
         let hasErrors = false
-        for (const file of this.$refs.vueDropzonePics.getAcceptedFiles()) {
+        for (const file of this.$refs[this._uid + '_vueDropzone'].getAcceptedFiles()) {
           // Check response for corresponding element in pics
           const newPic = this.pics.find(obj => obj.uuid === file.upload.uuid)
           // Create error if not existant and return
@@ -302,10 +307,10 @@ export default {
           }
           // Replace real pic with mockfile pointing to s3
           file.toReplace = true
-          this.$refs.vueDropzonePics.removeFile(file)
+          this.$refs[this._uid + '_vueDropzone'].removeFile(file)
           const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
           tmpMockFile.name = newPic.url
-          this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + newPic.url)
+          this.$refs[this._uid + '_vueDropzone'].manuallyAddFile(tmpMockFile, this.s3 + newPic.url)
         }
         if (this.isLoading) {
           // Now update parent object
@@ -313,12 +318,14 @@ export default {
             await this.patchParentMethod([this.parent._id, { [this.path]: this.pics }, {}])
           } else {
             const result = await this.patchParentMethod([this.parent._id, { [this.path]: this.pics[0] }, {}])
-            if (Array.isArray(result[this.path])) {
-              this.pics = result[this.path]
+            const picProperty = this.resolveProperty(this.path, result)
+            if (Array.isArray(picProperty)) {
+              this.pics = picProperty
             } else {
-              this.pics = [result[this.path]]
+              this.pics = [picProperty]
             }
           }
+          this.isLoading = false
           this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         }
       }
@@ -328,7 +335,8 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'resolveProperty'
     ]),
     ...mapGetters('auth', [
       'user'
@@ -361,8 +369,8 @@ export default {
   watch: {
     pics () {
       this.$nextTick(() => {
-        if (this.$refs.uploadForm) {
-          this.$refs.uploadForm.validate()
+        if (this.$refs[this._uid + '_uploadForm']) {
+          this.$refs[this._uid + '_uploadForm'].validate()
         }
       })
     }

@@ -30,7 +30,10 @@ module.exports = function (app) {
           g: { type: Number, required: true },
           b: { type: Number, required: true }
         },
-        pic: { type: String }
+        pic: {
+          url: { type: String },
+          credit: { type: String }
+        }
       },
       groups: {
         isActive: { type: Boolean, required: true },
@@ -42,7 +45,10 @@ module.exports = function (app) {
           g: { type: Number, required: true },
           b: { type: Number, required: true }
         },
-        pic: { type: String }
+        pic: {
+          url: { type: String },
+          credit: { type: String }
+        }
       },
       discussions: {
         isActive: { type: Boolean, required: true },
@@ -54,27 +60,42 @@ module.exports = function (app) {
           g: { type: Number, required: true },
           b: { type: Number, required: true }
         },
-        pic: { type: String }
+        pic: {
+          url: { type: String },
+          credit: { type: String }
+        }
       },
       news: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
-        pic: { type: String }
+        pic: {
+          url: { type: String },
+          credit: { type: String }
+        }
       },
       events: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
-        pic: { type: String }
+        pic: {
+          url: { type: String },
+          credit: { type: String }
+        }
       },
       organisations: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
-        pic: { type: String }
+        pic: {
+          url: { type: String },
+          credit: { type: String }
+        }
       },
       blog: {
         isActive: { type: Boolean, required: true },
         position: { type: Number, required: true },
-        pic: { type: String }
+        pic: {
+          url: { type: String },
+          credit: { type: String }
+        }
       }
     }
   }, {

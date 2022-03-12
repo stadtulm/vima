@@ -33,6 +33,8 @@
               resizeMethod="contain"
               :resizeQuality="0.5"
               :patchParentMethod="patchSettings"
+              titleType="title"
+              bgColor="customGreyUltraLight"
             ></Upload>
             <v-divider
               :class="headerLogo ? 'mb-9 mt-5' : 'mb-9 mt-12'"
@@ -271,6 +273,21 @@
                         </v-card>
                       </v-col>
                     </v-row>
+                    <Upload
+                      :optional="false"
+                      :label="$t('pic')"
+                      :parent="settings[0]"
+                      :path="'modules.' + key + '.pic'"
+                      :maxFilesize="1"
+                      :maxFiles="1"
+                      resolutionString="1400x400"
+                      :resizeWidth="1080"
+                      resizeMethod="contain"
+                      :resizeQuality="0.5"
+                      :patchParentMethod="patchSettings"
+                      titleType="subtitle-2"
+                      bgColor="white"
+                    ></Upload>
                   </v-card-text>
                 </v-card>
 
