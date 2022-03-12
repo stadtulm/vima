@@ -379,7 +379,7 @@
         </v-list-item>
         <v-divider></v-divider>
         <v-list-item
-          :to="{ name: 'UserEditor', params: { user: user._id }}"
+          :to="{ name: 'UserEditor', params: { user: user._id } }"
         >
           <v-list-item-title
           class="font-weight-bold customGrey--text"
@@ -388,7 +388,7 @@
           </v-list-item-title>
         </v-list-item>
         <v-list-item
-          :to="{ name: 'PreferencesEditor', params: { user: user._id }}"
+          :to="{ name: 'PreferencesEditor', params: { user: user._id } }"
         >
           <v-list-item-title
           class="font-weight-bold customGrey--text"
@@ -1335,6 +1335,16 @@
               </template>
               {{$t('newViolationsToAccept')}}
             </v-tooltip>
+          </v-list-item>
+
+          <v-list-item
+            :to="{ name: 'SettingsEditor' }"
+          >
+            <v-list-item-title
+              class="font-weight-bold customGrey--text"
+            >
+              {{$t('settings')}}
+            </v-list-item-title>
           </v-list-item>
         </v-list-group>
         <v-divider></v-divider>

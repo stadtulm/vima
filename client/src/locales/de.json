@@ -596,5 +596,21 @@
   "translateText": "Diesen Text übersetzen",
   "translateObject": "Ganzen Beitrag übersetzen",
   "translateAll": "Alle angezeigten Beiträge übersetzen",
-  "from": "vom"
+  "from": "vom",
+  "settings": "Einstellungen",
+  "headerColor": "Kopfzeilen-Farbe",
+  "indicatorColor": "Signal-Farbe",
+  "groups": "Interessengruppen",
+  "events": "Veranstaltungen",
+  "organisations": "Kooperationspartner",
+  "blog": "Blog",
+  "modules": "Module",
+  "colors": "Farben",
+  "color": "Farbe",
+  "bgColor": "Hintergrund-Farbe",
+  "gradientColor": "Verlaufs-Farbe",
+  "isActiveModule": "Module aktiv",
+  "position": "Position",
+  "uniquePositionError": "Position darf nur einmal vergeben werden",
+  "brand": "Logo"
 }

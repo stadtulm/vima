@@ -7,7 +7,7 @@
         cols="12"
       >
         <v-card
-          color="customGreyUltraLight"
+          color="customGreyBg"
           tile
         >
           <v-card-text>
@@ -258,7 +258,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyUltraLight"
+                    color="customGreyBg"
                   >
                     <v-row>
                       <v-col
@@ -303,7 +303,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyUltraLight"
+                    color="customGreyBg"
                   >
                     <v-row>
                       <v-col
@@ -401,7 +401,7 @@
       max-width="600"
     >
       <v-card
-        color="customGreyUltraLight"
+        color="customGreyBg"
         tile
       >
         <v-card-text
@@ -464,7 +464,7 @@
       max-width="600"
     >
       <v-card
-        color="customGreyUltraLight"
+        color="customGreyBg"
         tile
       >
         <v-card-text

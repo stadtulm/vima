@@ -8,9 +8,12 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const schema = new Schema({
     name: { type: String, required: true, unique: true },
-    headerColor: { type: String, required: true },
+    headerLogo: {
+      url: { type: String },
+      credit: { type: String }
+    },
     indicatorColor: { type: String, required: true },
-    headerLogo: { type: String },
+    headerColor: { type: String, required: true },
     socialMediaURls: {
       fb: { type: String },
       instagram: { type: String },

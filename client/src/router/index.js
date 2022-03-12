@@ -10,6 +10,7 @@ import Site from '@/views/Site.vue'
 import Faq from '@/views/Faq.vue'
 import CategoryListAdmin from '@/views/CategoryListAdmin.vue'
 import CategoryEditor from '@/views/CategoryEditor.vue'
+import SettingsEditor from '@/views/SettingsEditor.vue'
 import TagListAdmin from '@/views/TagListAdmin.vue'
 import TagEditor from '@/views/TagEditor.vue'
 import Login from '@/views/Login.vue'
@@ -369,6 +370,21 @@ const routes = [
       breadCrumbPredecessors: [
         ['Participate'],
         ['CategoryListAdmin']
+      ]
+    },
+    beforeEnter: Multiguard([
+      checkLoggedIn,
+      checkAdmin
+    ])
+  },
+  {
+    path: '/admin/einstellungen/editor',
+    name: 'SettingsEditor',
+    component: SettingsEditor,
+    meta: {
+      breadCrumbTextKey: 'editSettings',
+      breadCrumbPredecessors: [
+        ['Participate']
       ]
     },
     beforeEnter: Multiguard([
