@@ -603,7 +603,6 @@
   "groups": "Interessengruppen",
   "events": "Veranstaltungen",
   "organisations": "Kooperationspartner",
-  "blog": "Blog",
   "modules": "Module",
   "colors": "Farben",
   "color": "Farbe",
@@ -615,5 +614,10 @@
   "brand": "Logo",
   "startUpload": "Upload starten",
   "linkTo": "Link zu",
-  "socialMedia": "Soziale Medien"
+  "socialMedia": "Soziale Medien",
+  "blog": "Blog",
+  "blogTitle": "Blog",
+  "editBlog": "Blog-Eintrag bearbeiten",
+  "blogAdminOverview": "Blog Admin-Überblick",
+  "blogDetail": "Blog Detail"
 }

@@ -179,6 +179,7 @@
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.ads.isActive"
             :color="$settings.modules.ads.color"
             :to="{ name: 'CategoryList', params: { type: 'ads' } }"
           >
@@ -188,6 +189,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.groups.isActive"
             :color="$settings.modules.groups.color"
             :to="{ name: 'Groups' }"
           >
@@ -197,6 +199,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.discussions.isActive"
             :color="$settings.modules.discussions.color"
             :to="{ name: 'Discussions', params: { type: 'discussions' } }"
           >
@@ -206,6 +209,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.news.isActive"
             color="customGrey"
             :to="{ name: 'News' }"
           >
@@ -215,6 +219,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.events.isActive"
             color="customGrey"
             :to="{ name: 'Events' }"
           >
@@ -224,6 +229,17 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.blog.isActive"
+            color="customGrey"
+            :to="{ name: 'Blog' }"
+          >
+            <v-list-item-title
+              v-html="$t('blogTitle')"
+            >
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item
+            v-if="computedSetting && computedSetting.modules.organisations.isActive"
             color="customGrey"
             :to="{ name: 'Organisations' }"
           >
@@ -479,6 +495,7 @@
           </v-tooltip>
         </v-list-item>
         <v-list-item
+          v-if="computedSetting && computedSetting.modules.ads.isActive"
           :to="{ name: 'AdList', params: { id: user._id } }"
         >
           <v-list-item-title
@@ -560,6 +577,7 @@
           </v-tooltip>
         </v-list-item>
         <v-list-item
+          v-if="computedSetting && computedSetting.modules.discussions.isActive"
           :to="{ name: 'DiscussionList', params: { id: user._id } }"
         >
           <v-list-item-title
@@ -677,6 +695,7 @@
           </v-tooltip>
         </v-list-item>
         <v-list-item
+          v-if="computedSetting && computedSetting.modules.groups.isActive"
           :to="{ name: 'GroupList', params: { id: user._id } }"
         >
           <v-list-item-title
@@ -997,6 +1016,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="computedSetting && computedSetting.modules.events.isActive"
               :to="{ name: 'EventList', params: { organisation: computedUserOrganisationId } }"
             >
               <v-list-item-title
@@ -1006,6 +1026,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="computedSetting && computedSetting.modules.events.isActive"
               :to="{
                 name: 'ApiKeyEditor',
                 params: {
@@ -1075,6 +1096,17 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.blog.isActive"
+            :to="{ name: 'BlogListAdmin' }"
+          >
+            <v-list-item-title
+              class="font-weight-bold customGrey--text"
+            >
+              {{$t('blog')}}
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item
+            v-if="computedSetting && computedSetting.modules.news.isActive"
             :to="{ name: 'NewsListAdmin' }"
           >
             <v-list-item-title
@@ -1084,6 +1116,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.events.isActive"
             :to="{ name: 'EventListAdmin' }"
           >
             <v-list-item-title
@@ -1102,6 +1135,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.ads.isActive"
             :to="{ name: 'AdListAdmin' }"
           >
             <v-list-item-title
@@ -1147,6 +1181,7 @@
             </v-tooltip>
           </v-list-item>
           <v-list-item
+             v-if="computedSetting && computedSetting.modules.discussions.isActive"
             :to="{ name: 'DiscussionListAdmin' }"
           >
             <v-list-item-title
@@ -1192,6 +1227,7 @@
             </v-tooltip>
           </v-list-item>
           <v-list-item
+            v-if="computedSetting && computedSetting.modules.groups.isActive"
             :to="{ name: 'GroupListAdmin' }"
           >
             <v-list-item-title
@@ -1968,12 +2004,18 @@ export default {
       'isAuthenticated',
       'user'
     ]),
+    ...mapGetters('settings', {
+      settings: 'list'
+    }),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
     }),
     ...mapGetters('settings', {
       settings: 'list'
     }),
+    computedSetting () {
+      return this.settings[0]
+    },
     stepColors () {
       if (this.settings && this.settings.length === 1) {
         return {
@@ -2155,7 +2197,7 @@ export default {
       return organisationStatusContainer ? organisationStatusContainer.reference : undefined
     },
     computedShowConnectionDialog () {
-      if (this.isDisconnected && !this.connectionDelay) {
+      if (this.isDisconnected && !this.connectionDelay && !this.computedSetting) {
         return true
       } else {
         return false

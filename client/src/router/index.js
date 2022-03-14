@@ -34,6 +34,9 @@ import SiteListAdmin from '@/views/SiteListAdmin.vue'
 import News from '@/views/News.vue'
 import NewsEditor from '@/views/NewsEditor.vue'
 import NewsListAdmin from '@/views/NewsListAdmin.vue'
+import Blog from '@/views/Blog.vue'
+import BlogEditor from '@/views/BlogEditor.vue'
+import BlogListAdmin from '@/views/BlogListAdmin.vue'
 import ViolationListAdmin from '@/views/ViolationListAdmin.vue'
 import Organisations from '@/views/Organisations.vue'
 import Organisation from '@/components/OrganisationCard.vue'
@@ -42,6 +45,7 @@ import OrganisationEditor from '@/views/OrganisationEditor.vue'
 import Participate from '@/views/Participate.vue'
 import CategoriesListView from '@/views/CategoriesListView.vue'
 import NewsEntry from '@/components/NewsCard.vue'
+import BlogEntry from '@/components/BlogCard.vue'
 import Ad from '@/components/AdCard.vue'
 import AdsListView from '@/views/AdsListView.vue'
 import AdEditor from '@/views/AdEditor.vue'
@@ -289,9 +293,11 @@ const routes = [
       breadCrumbTextKey: 'editApiKey',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
+      ],
+      step: 'events'
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMember
@@ -306,9 +312,29 @@ const routes = [
       breadCrumbPredecessors: [
         ['Participate'],
         ['NewsListAdmin']
-      ]
+      ],
+      step: 'news'
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
+      checkLoggedIn,
+      checkAdmin
+    ])
+  },
+  {
+    path: '/admin/blog/editor/:id?',
+    name: 'BlogEditor',
+    component: BlogEditor,
+    meta: {
+      breadCrumbTextKey: 'editBlog',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['BlogListAdmin']
+      ],
+      step: 'blog'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdmin
     ])
@@ -330,7 +356,7 @@ const routes = [
     ])
   },
   {
-    path: '/organisationen/editor/:organisation?',
+    path: '/organisationen/editor/:organisation',
     name: 'OrganisationEditor',
     component: OrganisationEditor,
     meta: {
@@ -417,9 +443,11 @@ const routes = [
       breadCrumbPredecessors: [
         ['Participate'],
         ['EventList', 'EventListAdmin']
-      ]
+      ],
+      step: 'events'
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMemberOrNew
@@ -438,6 +466,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkOwnerModeratorMemberOrNew
     ])
@@ -455,6 +484,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkOwnerModeratorMember
     ])
@@ -472,6 +502,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdmin
     ])
@@ -489,6 +520,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkOwnerOrNew
     ])
@@ -520,6 +552,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn
     ])
   },
@@ -531,9 +564,11 @@ const routes = [
       breadCrumbTextKey: 'eventsOverview',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
+      ],
+      step: 'events'
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdmin
     ])
@@ -546,9 +581,11 @@ const routes = [
       breadCrumbTextKey: 'eventsOverview',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
+      ],
+      step: 'events'
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMember
@@ -562,9 +599,11 @@ const routes = [
       breadCrumbTextKey: 'myDiscussions',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
+      ],
+      step: 'discussions'
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn
     ])
   },
@@ -580,6 +619,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn
     ])
   },
@@ -596,6 +636,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdmin
     ])
@@ -612,6 +653,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdmin
     ])
@@ -628,6 +670,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdmin
     ])
@@ -655,9 +698,28 @@ const routes = [
       breadCrumbTextKey: 'newsAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
+      ],
+      step: 'news'
     },
     beforeEnter: Multiguard([
+      checkModuleActive,
+      checkLoggedIn,
+      checkAdmin
+    ])
+  },
+  {
+    path: '/admin/blog/uebersicht',
+    name: 'BlogListAdmin',
+    component: BlogListAdmin,
+    meta: {
+      breadCrumbTextKey: 'blogAdminOverview',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ],
+      step: 'blog'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive,
       checkLoggedIn,
       checkAdmin
     ])
@@ -778,8 +840,12 @@ const routes = [
       breadCrumbTextKey: 'organisationsOverview',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
-    }
+      ],
+      step: 'organisations'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/veranstaltungen',
@@ -789,8 +855,12 @@ const routes = [
       breadCrumbTextKey: 'eventsOverview',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
-    }
+      ],
+      step: 'events'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/suchebiete',
@@ -803,7 +873,10 @@ const routes = [
         ['Participate'],
         ['CategoryList']
       ]
-    }
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/diskussionsforen',
@@ -815,7 +888,10 @@ const routes = [
       breadCrumbPredecessors: [
         ['Participate']
       ]
-    }
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/interessengruppen',
@@ -827,7 +903,10 @@ const routes = [
       breadCrumbPredecessors: [
         ['Participate']
       ]
-    }
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/neuigkeiten',
@@ -837,8 +916,27 @@ const routes = [
       breadCrumbTextKey: 'news',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
-    }
+      ],
+      step: 'news'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
+  },
+  {
+    path: '/blog',
+    name: 'Blog',
+    component: Blog,
+    meta: {
+      breadCrumbTextKey: 'blog',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ],
+      step: 'blog'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   // Detail
   {
@@ -856,7 +954,10 @@ const routes = [
         ['AdsListView', 'AdList', 'AdListAdmin']
       ],
       step: 'ads'
-    }
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/diskussionsforen/:id',
@@ -869,7 +970,10 @@ const routes = [
         ['$Discussions', '$DiscussionList', '$DiscussionListAdmin']
       ],
       step: 'discussions'
-    }
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/interessengruppen/:group',
@@ -882,7 +986,10 @@ const routes = [
         ['Groups', 'GroupList', 'GroupListAdmin']
       ],
       step: 'groups'
-    }
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/kooperationspartner/:organisation',
@@ -893,8 +1000,12 @@ const routes = [
       breadCrumbPredecessors: [
         ['Participate'],
         ['Organisations']
-      ]
-    }
+      ],
+      step: 'organisations'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/veranstaltungen/:event',
@@ -905,8 +1016,12 @@ const routes = [
       breadCrumbPredecessors: [
         ['Participate'],
         ['Events']
-      ]
-    }
+      ],
+      step: 'events'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/interessengruppen/:group/gruppendiskussionen/:id',
@@ -920,7 +1035,10 @@ const routes = [
         ['Group']
       ],
       step: 'groups'
-    }
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/neuigkeiten/:id',
@@ -931,8 +1049,28 @@ const routes = [
       breadCrumbPredecessors: [
         ['Participate'],
         ['News']
-      ]
-    }
+      ],
+      step: 'news'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
+  },
+  {
+    path: '/blog/:id',
+    name: 'BlogEntry',
+    component: BlogEntry,
+    meta: {
+      breadCrumbTextKey: 'blogDetail',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['Blog']
+      ],
+      step: 'blog'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
   },
   {
     path: '/mitglieder/:user',
@@ -1172,7 +1310,17 @@ async function init (to, from, next) {
   next()
 }
 
-// Check if user can update
+function checkModuleActive (to, from, next) {
+  if (
+    !Store.getters['settings/list'] ||
+    !Store.getters['settings/list'][0] ||
+    !Store.getters['settings/list'][0].modules[to.meta.step].isActive
+  ) {
+    return next({ name: 'Forbidden', query: { redirect: from.path } })
+  }
+  next()
+}
+
 function checkLoggedIn (to, from, next) {
   if (!Store.getters['auth/user']) {
     return next({ name: 'Login', query: { redirect: to.path } })
