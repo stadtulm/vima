@@ -613,5 +613,7 @@
   "position": "Position",
   "uniquePositionError": "Position darf nur einmal vergeben werden",
   "brand": "Logo",
-  "startUpload": "Upload starten"
+  "startUpload": "Upload starten",
+  "linkTo": "Link zu",
+  "socialMedia": "Soziale Medien"
 }

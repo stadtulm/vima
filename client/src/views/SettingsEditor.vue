@@ -43,6 +43,57 @@
               <v-col
                 class="title"
               >
+                {{$t('socialMedia')}}
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="12"
+              >
+                <v-text-field
+                  dense
+                  outlined
+                  :label="$t('linkTo') + ' facebook'"
+                  color="customGrey"
+                  background-color="#fff"
+                  v-model="fb"
+                  :rules="[rules.webLink]"
+                >
+                </v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+              >
+                <v-text-field
+                  dense
+                  outlined
+                  :label="$t('linkTo') + ' instagram'"
+                  color="customGrey"
+                  background-color="#fff"
+                  v-model="instagram"
+                  :rules="[rules.webLink]"
+                >
+                </v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+              >
+                <v-text-field
+                  dense
+                  outlined
+                  :label="$t('linkTo') + ' twitter'"
+                  color="customGrey"
+                  background-color="#fff"
+                  v-model="twitter"
+                  :rules="[rules.webLink]"
+                >
+                </v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                class="title"
+              >
                 {{$t('colors')}}
               </v-col>
             </v-row>
@@ -305,7 +356,7 @@
               color="customGrey"
               :loading="isLoading"
               :disabled="!isValid"
-              @click="saveOrganisation()"
+              @click="saveSettings()"
             >
               {{$t('saveDataButton')}}
             </v-btn>
@@ -321,6 +372,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import Upload from '@/components/Upload.vue'
+const appName = process.env.VUE_APP_NAME
 
 export default {
   name: 'SettingsEditor',
@@ -336,7 +388,10 @@ export default {
     isQueued: false,
     isLoading: false,
     isValid: false,
-    headerLogo: undefined
+    headerLogo: undefined,
+    fb: undefined,
+    instagram: undefined,
+    twitter: undefined
   }),
 
   async mounted () {
@@ -348,41 +403,64 @@ export default {
       setSnackbar: 'SET_SNACKBAR'
     }),
     ...mapActions('settings', {
-      patchSettings: 'patch',
-      createOrganisation: 'create',
-      requestOrganisation: 'get'
+      patchSettings: 'patch'
     }),
     ...mapActions('uploads', {
       removeUpload: 'remove'
     }),
     async adapt () {
       if (this.settings) {
-        this.headerColor = this.settings[0].headerColor
-        this.indicatorColor = this.settings[0].indicatorColor
-        this.modules = this.settings[0].modules
+        const tmpSettings = JSON.parse(JSON.stringify(this.settings[0]))
+        this.headerColor = this.parseRgbString(tmpSettings.headerColor)
+        this.indicatorColor = this.parseRgbString(tmpSettings.indicatorColor)
+        if (tmpSettings.socialMediaUrls) {
+          this.fb = tmpSettings.socialMediaUrls.fb
+          this.instagram = tmpSettings.socialMediaUrls.instagram
+          this.twitter = tmpSettings.socialMediaUrls.twitter
+        }
+        for (const key of Object.keys(tmpSettings.modules)) {
+          if (tmpSettings.modules[key].color) {
+            tmpSettings.modules[key].color = this.parseRgbString(tmpSettings.modules[key].color)
+          }
+          if (tmpSettings.modules[key].bgColor) {
+            tmpSettings.modules[key].bgColor = this.parseRgbString(tmpSettings.modules[key].bgColor)
+          }
+        }
+        this.modules = tmpSettings.modules
         this.$nextTick(() => {
           this.$refs.settingsForm.validate()
         })
       }
     },
-    async saveOrganisation () {
+    async saveSettings () {
       this.isLoading = true
+      const tmpModules = JSON.parse(JSON.stringify(this.modules))
+      for (const key of Object.keys(tmpModules)) {
+        if (tmpModules[key].color) {
+          tmpModules[key].color = `rgba(${tmpModules[key].color.r}, ${tmpModules[key].color.g}, ${tmpModules[key].color.b}, 1)`
+        }
+        if (tmpModules[key].bgColor) {
+          tmpModules[key].bgColor = `rgba(${tmpModules[key].bgColor.r}, ${tmpModules[key].bgColor.g}, ${tmpModules[key].bgColor.b}, 1)`
+        }
+      }
       const map = {
-        name: this.name,
-        description: this.description,
-        website: this.website,
-        isActive: this.isActive
+        name: appName,
+        headerColor: `rgba(${this.headerColor.r}, ${this.headerColor.g}, ${this.headerColor.b}, 1)`,
+        indicatorColor: `rgba(${this.indicatorColor.r}, ${this.indicatorColor.g}, ${this.indicatorColor.b}, 1)`,
+        socialMediaUrls: {
+          fb: this.fb,
+          instagram: this.instagram,
+          twitter: this.twitter
+        },
+        modules: tmpModules
       }
       try {
-        if (this.selectedOrganisation) {
-          await this.patchOrganisation([this.selectedOrganisation._id, map, {}])
-        } else {
-          await this.createOrganisation([map, {}])
-        }
+        await this.patchSettings([this.settings[0]._id, map, {}])
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         this.$router.go(-1)
       } catch (e) {
+        console.log(e)
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
@@ -392,7 +470,8 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'parseRgbString'
     ]),
     ...mapGetters('auth', [
       'user'

@@ -8,6 +8,14 @@ const state = {
   userCount: undefined,
   firstLoad: true,
   showTour: true,
+  parseRgbString (str) {
+    var vals = str.substring(str.indexOf('(') + 1, str.length - 1).split(', ')
+    return {
+      r: vals[0],
+      g: vals[1],
+      b: vals[2]
+    }
+  },
   resolveProperty (path, obj = self, separator = '.') {
     const properties = Array.isArray(path) ? path : path.split(separator)
     return properties.reduce((prev, curr) => prev && prev[curr], obj)
@@ -210,6 +218,9 @@ const getters = {
   },
   hydrateTranslations: state => {
     return state.hydrateTranslations
+  },
+  parseRgbString: state => {
+    return state.parseRgbString
   },
   resolveProperty: state => {
     return state.resolveProperty

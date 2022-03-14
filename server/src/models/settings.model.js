@@ -14,7 +14,7 @@ module.exports = function (app) {
     },
     indicatorColor: { type: String, required: true },
     headerColor: { type: String, required: true },
-    socialMediaURls: {
+    socialMediaUrls: {
       fb: { type: String },
       instagram: { type: String },
       twitter: { type: String }
