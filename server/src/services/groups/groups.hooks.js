@@ -11,6 +11,11 @@ module.exports = {
     all: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
+        (context) => {
+          if (!context.app.settings.modules.groups.isActive) {
+            throw new Errors.Forbidden('Module is not active')
+          }
+        },
         allowAnonymous(),
         authenticate('jwt', 'anonymous'),
         (context) => {

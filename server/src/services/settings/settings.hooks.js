@@ -65,9 +65,17 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [
+      (context) => {
+        context.app.customSettings = context.result
+      }
+    ],
     update: [],
-    patch: [],
+    patch: [
+      (context) => {
+        context.app.customSettings = context.result
+      }
+    ],
     remove: []
   },
 

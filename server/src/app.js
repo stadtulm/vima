@@ -105,14 +105,16 @@ server.on('listening', () =>
 // Create settings if not existant
 initSettings()
 async function initSettings () {
-  const settings = await app.service('settings').find()
+  let settings = await app.service('settings').find()
   if (settings.length > 1) {
     throw new Error('Multiple server settings found')
   }
   if (settings.length === 0) {
     const backupSettings = require('../initialSettings.json')
-    await app.service('settings').create(backupSettings)
+    settings = await app.service('settings').create(backupSettings)
+    settings = [settings]
   }
+  app.customSettings = settings[0]
 }
 
 // After server restart set all not connected users to offline
