@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row
-      v-if="selectedNews || !$route.params.id"
+      v-if="selectedBlog || !$route.params.id"
     >
       <v-col
         cols="12"
@@ -17,14 +17,15 @@
               <v-col
                 class="text-h5 font-weight-bold"
               >
-                {{$t('newsEntry')}} {{ selectedNews ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+                {{$t('blogEntry')}} {{ selectedBlog ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
               </v-col>
             </v-row>
             <v-form
               v-model="isValid"
-              ref="newsEditorForm"
+              ref="blogEditorForm"
             >
               <v-row
+                v-if="title"
                 dense
               >
                 <v-col
@@ -51,6 +52,7 @@
                 </v-col>
               </v-row>
               <v-row
+                v-if="subTitle"
                 dense
               >
                 <v-col
@@ -81,7 +83,7 @@
                   <v-checkbox
                     color="customGrey"
                     v-model="isActive"
-                    :label="$t('newsActiveCheckbox')"
+                    :label="$t('blogActiveCheckbox')"
                   >
                   </v-checkbox>
                 </v-col>
@@ -93,13 +95,79 @@
                   <v-checkbox
                     color="customGrey"
                     v-model="isInternal"
-                    :label="$t('newsOnlyForMembersCheckbox')"
+                    :label="$t('blogOnlyForMembersCheckbox')"
                   >
                   </v-checkbox>
                 </v-col>
               </v-row>
+              <v-row
+                dense
+              >
+                <v-col>
+                  <v-select
+                    dense
+                    multiple
+                    color="customGrey"
+                    item-color="customGrey"
+                    background-color="#fff"
+                    outlined
+                    v-model="selectedCategories"
+                    item-text="text.value"
+                    item-value="_id"
+                    :label="$t('categories')"
+                    :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+                    :rules="[rules.minOneCategory, rules.maxThreeCategories]"
+                  >
+                  </v-select>
+                </v-col>
+              </v-row>
+              <v-row
+                dense
+              >
+                <v-col
+                  cols="12"
+                >
+                  <v-autocomplete
+                    dense
+                    multiple
+                    chips
+                    deletable-chips
+                    auto-select-first
+                    hide-details
+                    color="customGrey"
+                    item-color="customGrey"
+                    background-color="#fff"
+                    outlined
+                    v-model="selectedTags"
+                    item-text="text.value"
+                    item-value="_id"
+                    :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
+                    :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+                  >
+                  </v-autocomplete>
+                </v-col>
+                <v-col
+                  cols="12"
+                  class="text-right"
+                >
+                  <v-btn
+                    text
+                    color="customGrey"
+                    @click="showTagProposalDialog = true"
+                  >
+                    {{$t('proposeNewTags')}}
+                    <v-icon
+                      size="18"
+                      class="ml-3 pb-1"
+                    >
+                      fas fa-lightbulb
+                    </v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
               <v-divider class="mt-4 mb-9"></v-divider>
               <v-row
+                v-if="text"
                 dense
                 class="mb-6"
               >
@@ -187,7 +255,7 @@
                       </v-col>
                     </v-row>
                     <template
-                      v-if="selectedNews"
+                      v-if="selectedBlog"
                     >
                       <v-row
                         dense
@@ -463,7 +531,7 @@
                 color="customGrey"
                 :loading="isLoading"
                 :disabled="!isValid"
-                @click="saveNews()"
+                @click="saveBlog()"
               >
                 {{$t('saveDataButton')}}
               </v-btn>
@@ -472,6 +540,10 @@
         </v-card>
       </v-col>
     </v-row>
+    <TagProposalDialog
+      :showTagProposalDialog="showTagProposalDialog"
+      @closeTagProposalDialog="showTagProposalDialog = false"
+    ></TagProposalDialog>
   </div>
 </template>
 
@@ -482,6 +554,7 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link, Heading } from 'tiptap-vuetify'
 import LanguageSelect from '@/components/LanguageSelect.vue'
+import TagProposalDialog from '@/components/TagProposalDialog.vue'
 
 const server = process.env.VUE_APP_SERVER_URL
 
@@ -491,12 +564,14 @@ export default {
   components: {
     vueDropzone: vue2Dropzone,
     TiptapVuetify,
-    LanguageSelect
+    LanguageSelect,
+    TagProposalDialog
   },
 
   data: () => ({
+    showTagProposalDialog: false,
     isQueued: false,
-    selectedNews: undefined,
+    selectedBlog: undefined,
     isInternal: false,
     isActive: true,
     isLoading: false,
@@ -504,6 +579,8 @@ export default {
     title: undefined,
     subTitle: undefined,
     text: undefined,
+    selectedTags: [],
+    selectedCategories: [],
     videoId: undefined,
     videoType: undefined,
     videos: [],
@@ -535,7 +612,7 @@ export default {
   async mounted () {
     window.load = () => {
       try {
-        this.$refs.newsEditorForm.resetValidation()
+        this.$refs.blogEditorForm.resetValidation()
       } catch (e) {}
     }
     await this.adapt()
@@ -546,10 +623,10 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
-    ...mapActions('news', {
-      patchNews: 'patch',
-      createNews: 'create',
-      getNews: 'get'
+    ...mapActions('blog', {
+      patchBlog: 'patch',
+      createBlog: 'create',
+      getBlog: 'get'
     }),
     ...mapActions('uploads', {
       removeUpload: 'remove'
@@ -573,8 +650,8 @@ export default {
       })
     },
     dropzoneMountedPics () {
-      if (this.selectedNews && this.selectedNews.pics) {
-        for (const pic of this.selectedNews.pics) {
+      if (this.selectedBlog && this.selectedBlog.pics) {
+        for (const pic of this.selectedBlog.pics) {
           const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
           tmpMockFile.name = pic.url
           this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + pic.url)
@@ -583,21 +660,27 @@ export default {
     },
     async adapt () {
       if (this.$route.params.id) {
-        this.selectedNews = await this.getNews([this.$route.params.id, { keepTranslations: true }])
+        this.selectedBlog = await this.getBlog([this.$route.params.id, { keepTranslations: true }])
       }
       this.tmpVideos = []
-      if (this.selectedNews) {
-        this.title = this.hydrateTranslations(this.selectedNews.title)
-        this.subTitle = this.hydrateTranslations(this.selectedNews.subTitle)
-        this.text = this.hydrateTranslations(this.selectedNews.text)
-        this.isInternal = this.selectedNews.isInternal
-        this.isActive = this.selectedNews.isActive
-        if (this.selectedNews.pics) {
-          this.pics = this.selectedNews.pics
+      if (this.selectedBlog) {
+        this.title = this.hydrateTranslations(this.selectedBlog.title)
+        this.subTitle = this.hydrateTranslations(this.selectedBlog.subTitle)
+        this.text = this.hydrateTranslations(this.selectedBlog.text)
+        this.isInternal = this.selectedBlog.isInternal
+        this.isActive = this.selectedBlog.isActive
+        this.selectedCategories = this.selectedBlog.categories
+        this.selectedTags = this.selectedBlog.tags
+        if (this.selectedBlog.pics) {
+          this.pics = this.selectedBlog.pics
         }
-        if (this.selectedNews.videos) {
-          this.videos = this.selectedNews.videos
+        if (this.selectedBlog.videos) {
+          this.videos = this.selectedBlog.videos
         }
+      } else {
+        this.title = this.hydrateTranslations()
+        this.subTitle = this.hydrateTranslations()
+        this.text = this.hydrateTranslations()
       }
     },
     async uploadSuccessPics (file, response) {
@@ -629,7 +712,7 @@ export default {
         }
         this.isQueued = false
         if (this.isLoading) {
-          this.saveNews()
+          this.saveBlog()
         }
       }
     },
@@ -640,14 +723,14 @@ export default {
             this.isQueued = false
           }
         } else if (file.status !== 'error') {
-          if (this.selectedNews) {
+          if (this.selectedBlog) {
             await this.removeUpload([file.name, {}, {}])
             let tmpPictures = []
-            if (this.selectedNews && this.selectedNews.pics) {
-              tmpPictures = this.selectedNews.pics
+            if (this.selectedBlog && this.selectedBlog.pics) {
+              tmpPictures = this.selectedBlog.pics
             }
             tmpPictures = tmpPictures.filter(obj => obj.url !== file.name)
-            await this.patchNews([this.selectedNews._id, { pics: tmpPictures }, {}])
+            await this.patchBlog([this.selectedBlog._id, { pics: tmpPictures }, {}])
             this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
           }
         } else if (this.isLoading) {
@@ -663,7 +746,7 @@ export default {
         }
       }
     },
-    async saveNews () {
+    async saveBlog () {
       this.isLoading = true
       if (this.isQueued) {
         await this.$refs.vueDropzonePics.processQueue()
@@ -676,6 +759,8 @@ export default {
           subTitle: this.subTitle.filter(language => language.value && language.value !== ''),
           isInternal: this.isInternal,
           isActive: this.isActive,
+          categories: this.selectedCategories,
+          tags: this.selectedTags,
           text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>'),
           videos: this.videos.concat(this.tmpVideos),
           author: this.user._id
@@ -685,9 +770,9 @@ export default {
         }
         try {
           if (this.$route.params.id) {
-            await this.patchNews([this.$route.params.id, map, {}])
+            await this.patchBlog([this.$route.params.id, map, {}])
           } else {
-            await this.createNews([map, {}])
+            await this.createBlog([map, {}])
           }
           this.isLoading = false
           this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
@@ -715,6 +800,16 @@ export default {
     ...mapGetters('auth', [
       'user'
     ]),
+    ...mapGetters('categories', {
+      categories: 'list'
+    }),
+    ...mapGetters('tags', {
+      tags: 'list'
+    }),
+    computedTags () {
+      return this.tags
+        .filter(obj => obj.isActive && obj.isAccepted)
+    },
     dropzoneOptionsPics () {
       return {
         url: server + 'uploads',
@@ -750,20 +845,20 @@ export default {
 
   watch: {
     pics () {
-      if (this.$refs.newsEditorForm) {
+      if (this.$refs.blogEditorForm) {
         this.$nextTick(() => {
-          this.$refs.newsEditorForm.validate()
+          this.$refs.blogEditorForm.validate()
         })
       }
     },
     videos () {
-      if (this.$refs.newsEditorForm) {
-        this.$refs.newsEditorForm.validate()
+      if (this.$refs.blogEditorForm) {
+        this.$refs.blogEditorForm.validate()
       }
     },
     tmpVideos () {
-      if (this.$refs.newsEditorForm) {
-        this.$refs.newsEditorForm.validate()
+      if (this.$refs.blogEditorForm) {
+        this.$refs.blogEditorForm.validate()
       }
     }
   }

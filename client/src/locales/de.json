@@ -616,8 +616,16 @@
   "linkTo": "Link zu",
   "socialMedia": "Soziale Medien",
   "blog": "Blog",
+  "blogEntry": "Blog-Eintrag",
   "blogTitle": "Blog",
   "editBlog": "Blog-Eintrag bearbeiten",
   "blogAdminOverview": "Blog Admin-Überblick",
-  "blogDetail": "Blog Detail"
+  "blogDetail": "Blog Detail",
+  "newBlogButton": "Neuen Blog-Eintrag",
+  "blogSectionPic": "Blog-Bereichsbild",
+  "blogBody": "tba",
+  "noBlogYet": "Noch keine Blog-Einträge vorhanden",
+  "blogPic": "Blog-Bild",
+  "blogActiveCheckbox": "Wird angezeigt (ist diese Option deaktiviert, ist der Blog-Eintrag nicht sichtbar)",
+  "blogOnlyForMembersCheckbox": "Nur für angemeldete Nutzer*innen sichtbar (falls der Blog-Eintrag sichtbar ist)"
 }

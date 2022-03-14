@@ -395,6 +395,41 @@ module.exports = function (app) {
   })
 
   /*
+  * Blog
+  */
+
+  // eslint-disable-next-line no-unused-vars
+  app.service('blog').publish((data, hook) => {
+    let isPublic = true
+    let isInternal = false
+    if (Array.isArray(data)) {
+      if (data.find(blogEntry => !blogEntry.isActive)) {
+        isPublic = false
+      }
+      if (data.find(blogEntry => !blogEntry.isInternal)) {
+        isInternal = true
+      }
+    } else {
+      if (!data.isActive) {
+        isPublic = false
+      }
+      if (data.isInternal) {
+        isInternal = true
+      }
+    }
+
+    if (isPublic) {
+      if (isInternal) {
+        return createLanguageChannels(app, data, app.channel('authenticated'), ['title', 'subTitle', 'text'])
+      } else {
+        return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['title', 'subTitle', 'text'])
+      }
+    } else {
+      return createLanguageChannels(app, data, app.channel('admins'), ['title', 'subTitle', 'text'])
+    }
+  })
+
+  /*
   * Organisations
   */
 

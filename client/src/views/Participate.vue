@@ -85,7 +85,6 @@
                 {{$t(module.type + 'Body')}}
               </v-col>
             </v-row>
-            {{module.to}}
           </v-container>
         </v-card>
       </v-col>

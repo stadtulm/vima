@@ -16,6 +16,9 @@ module.exports = {
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
+        (context) => {
+          context.params.query = util.convert(context.params.query, [])
+        },
         commonHooks.iff(
           (context) => !context.params.keepTranslations,
           async (context) => {
@@ -31,7 +34,7 @@ module.exports = {
         commonHooks.iff(
           (context) => context.params.user?.role !== 'admins',
           () => {
-            throw new Errors.Forbidden('Only administrators can create news')
+            throw new Errors.Forbidden('Only administrators can create blog entries')
           }
         )
       )
@@ -50,7 +53,7 @@ module.exports = {
         commonHooks.iff(
           (context) => context.params.user?.role !== 'admins',
           () => {
-            throw new Errors.Forbidden('Only administrator can patch news')
+            throw new Errors.Forbidden('Only administrator can patch blog entries')
           }
         )
       )
@@ -61,7 +64,7 @@ module.exports = {
         commonHooks.iff(
           (context) => context.params.user?.role !== 'admins',
           () => {
-            throw new Errors.Forbidden('Only administrator can remove news')
+            throw new Errors.Forbidden('Only administrator can remove blog entries')
           }
         )
       )
@@ -76,24 +79,24 @@ module.exports = {
         // Skip if user is admin
         commonHooks.iff(
           (context) => context.params.user?.role !== 'admins',
-          // Check for internal news
+          // Check for internal blog entries
           (context) => {
-            const internalNews = context.result.data.filter(obj => obj.isInteral)
+            const internalBlogEntry = context.result.data.filter(obj => obj.isInteral)
             if (
-              internalNews.length > 0 &&
+              internalBlogEntry.length > 0 &&
               (
                 !context.params.user ||
                 context.params.user.role === 'anonymous'
               )
             ) {
-              throw new Errors.Forbidden('Only logged in users can request internal news')
+              throw new Errors.Forbidden('Only logged in users can request internal blog entries')
             }
           },
-          // Check for inactive news
+          // Check for inactive blog entries
           (context) => {
-            const inactiveNews = context.result.data.filter(obj => !obj.isActive)
-            if (inactiveNews.length > 0) {
-              throw new Errors.Forbidden('Only administrators can request inactive news')
+            const inactiveBlogEntry = context.result.data.filter(obj => !obj.isActive)
+            if (inactiveBlogEntry.length > 0) {
+              throw new Errors.Forbidden('Only administrators can request inactive blog entries')
             }
           }
         )
@@ -105,7 +108,7 @@ module.exports = {
         // Skip if user is admin
         commonHooks.iff(
           (context) => context.params.user?.role !== 'admins',
-          // Check for internal news
+          // Check for internal blog entry
           (context) => {
             if (
               context.result.isInternal &&
@@ -114,13 +117,13 @@ module.exports = {
                 context.params.user.role === 'anonymous'
               )
             ) {
-              throw new Errors.Forbidden('Only logged in users can request internal news')
+              throw new Errors.Forbidden('Only logged in users can request internal blog entries')
             }
           },
-          // Check for inactive news
+          // Check for inactive blog entry
           (context) => {
             if (!context.result.isActive) {
-              throw new Errors.Forbidden('Only logged in users can request inactive news')
+              throw new Errors.Forbidden('Only logged in users can request inactive blog entries')
             }
           }
         )

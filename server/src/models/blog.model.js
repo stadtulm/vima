@@ -13,6 +13,18 @@ module.exports = function (app) {
     title: [{ type: Translation, required: true }],
     subTitle: [{ type: Translation }],
     text: [{ type: Translation, required: true }],
+    categories: [
+      {
+        type: ObjectId,
+        ref: 'categories'
+      }
+    ],
+    tags: [
+      {
+        type: ObjectId,
+        ref: 'tags'
+      }
+    ],
     pics: [
       {
         url: { type: String },

@@ -6,17 +6,17 @@
       <v-col
         class="text-h5 font-weight-bold customGrey--text text-uppercase"
       >
-        {{$t('adminView')}} {{$t('news')}}
+        {{$t('adminView')}} {{$t('blog')}}
       </v-col>
       <v-col
         class="shrink align-self-center"
       >
         <v-btn
           dark
-          :to="{ name: 'NewsEditor' }"
+          :to="{ name: 'BlogEditor' }"
           color="customGrey"
         >
-          {{$t('newNewsButton')}}
+          {{$t('newBlogButton')}}
           <v-icon
             class="ml-3"
             size="18"
@@ -43,8 +43,8 @@
         <v-data-table
           class="customGreyUltraLight elevation-3"
           :headers="headers"
-          :items="computedNews"
-          :loading="isFindNewsPending"
+          :items="computedBlog"
+          :loading="isFindBlogPending"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -104,31 +104,13 @@
               small
               color="customGrey"
               class="my-3"
-              :to="{ name: 'NewsEditor', params: { id: item._id } }"
+              :to="{ name: 'BlogEditor', params: { id: item._id } }"
             >
               <v-icon
                 color="white"
                 size="18"
               >
                 fa fa-pen
-              </v-icon>
-            </v-btn>
-          </template>
-          <template
-            v-slot:[`item.send`]="{ item }"
-          >
-            <v-btn
-              fab
-              small
-              color="customGrey"
-              class="my-3"
-              @click="newsletterDialogItem = item"
-            >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-inbox
               </v-icon>
             </v-btn>
           </template>
@@ -141,7 +123,7 @@
               color="customGrey"
               class="my-3"
               :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteNews(item._id)"
+              @click="deleteBlog(item._id)"
             >
               <template
                 slot="loader"
@@ -168,7 +150,7 @@
               small
               color="customGrey"
               class="my-4"
-              :to="{name: 'NewsEntry', params: { id: item._id } }"
+              :to="{name: 'BlogEntry', params: { id: item._id } }"
             >
               <v-icon
                 color="white"
@@ -181,200 +163,6 @@
         </v-data-table>
       </v-col>
     </v-row>
-    <!-- Newsletter dialog -->
-    <v-dialog
-      v-model="showNewsletterDialog"
-      max-width="1200"
-    >
-      <v-card
-        color="customGreyUltraLight"
-        tile
-      >
-        <v-card-text
-          class="pa-8"
-        >
-          <v-row>
-            <v-col
-              class="text-h5 font-weight-bold"
-            >
-              {{$t('manageNewsletter')}}
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-toolbar
-                color="customGreyUltraLight"
-                flat
-              >
-              <v-tabs
-                color="customGrey"
-                v-model="newsletterTab"
-              >
-                <v-tab>
-                  {{$t('sendButton')}}
-                </v-tab>
-                <v-tab
-                  :disabled="sendStats ? false : true"
-                >
-                  {{$t('alreadySent')}}
-                </v-tab>
-                <v-tab
-                  :disabled="sendStats ? false : true"
-                >
-                  {{$t('sendErrors')}}
-                </v-tab>
-                <v-tab>
-                  {{$t('overview')}} {{$t('recipients')}}
-                </v-tab>
-              </v-tabs>
-              </v-toolbar>
-              <v-tabs-items v-model="newsletterTab">
-                <v-tab-item>
-                  <v-card flat>
-                    <v-card-text
-                      class="my-4"
-                    >
-                      <template
-                        v-if="sendStats"
-                      >
-                        <v-row>
-                          <v-col>
-                            <v-progress-linear
-                              color="success"
-                              height="60"
-                              dark
-                              :value="sendStats.sent.length / (sendStats.sent.length + sendStats.error.length) * 100"
-                            >
-                              {{ sendStats.sent.length }} / {{ sendStats.sent.length + sendStats.error.length }}
-                            </v-progress-linear>
-                          </v-col>
-                        </v-row>
-                        <v-divider
-                          class="my-6"
-                        ></v-divider>
-                      </template>
-                      <v-row>
-                        <v-col>
-                          <v-btn
-                            block
-                            dark
-                            :loading="isSending"
-                            color="customGrey"
-                            @click="sendNewsletter()"
-                          >
-                            {{sendStats ? $t('sendToPending'): $t('sendToAll')}}
-                          </v-btn>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <v-btn
-                            block
-                            dark
-                            :loading="isSending"
-                            color="customGrey"
-                            @click="sendTestNewsletter()"
-                          >
-                            {{$t('sendToMe', { email: this.user.email })}}
-                          </v-btn>
-                        </v-col>
-                      </v-row>
-                    </v-card-text>
-                  </v-card>
-                </v-tab-item>
-                <v-tab-item>
-                  <v-data-table
-                    v-if="sendStats"
-                    :headers="[
-                      { text: this.$t('id'), value: 'id' },
-                      { text: this.$t('email'), value: 'email' },
-                      { text: this.$t('type'), value: 'type' },
-                      { text: this.$t('dt'), value: 'dt' },
-                    ]"
-                    :items="sendStats.sent"
-                    :footer-props="{ itemsPerPageText: '' }"
-                  >
-                    <template
-                      v-slot:[`item.type`]="{ item }"
-                    >
-                      {{newsletterTypes[item.type]}}
-                    </template>
-                    <template
-                      v-slot:[`item.dt`]="{ item }"
-                    >
-                      {{$moment(item.dt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
-                    </template>
-                  </v-data-table>
-                </v-tab-item>
-                <v-tab-item>
-                  <v-data-table
-                    v-if="sendStats"
-                    :headers="[
-                      { text: this.$t('id'), value: 'id' },
-                      { text: this.$t('email'), value: 'email' },
-                      { text: this.$t('type'), value: 'type' },
-                      { text: this.$t('dt'), value: 'dt' },
-                      { text: this.$t('errorMessage'), value: 'message' },
-                    ]"
-                    :items="sendStats.error"
-                    :footer-props="{ itemsPerPageText: '' }"
-                  >
-                    <template
-                      v-slot:[`item.type`]="{ item }"
-                    >
-                      {{newsletterTypes[item.type]}}
-                    </template>
-                    <template
-                      v-slot:[`item.dt`]="{ item }"
-                    >
-                      {{$moment(item.dt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
-                    </template>
-                  </v-data-table>
-                </v-tab-item>
-                <v-tab-item>
-                  <v-card>
-                    <v-card-text>
-                      <v-row>
-                        <v-col>
-                          <v-text-field
-                            v-model="searchRecipients"
-                            background-color="white"
-                            :label="$t('filterByEmailLabel')"
-                            outlined
-                            dense
-                            hide-details
-                            color="customGrey"
-                          ></v-text-field>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <v-data-table
-                            :headers="[
-                              { text: this.$t('id'), value: 'id' },
-                              { text: this.$t('email'), value: 'email' },
-                              { text: this.$t('type'), value: 'type' },
-                            ]"
-                            :items="computedRecievers"
-                            :footer-props="{ itemsPerPageText: '' }"
-                          >
-                            <template
-                              v-slot:[`item.type`]="{ item }"
-                            >
-                              {{newsletterTypes[item.type]}}
-                            </template>
-                          </v-data-table>
-                        </v-col>
-                      </v-row>
-                    </v-card-text>
-                  </v-card>
-                </v-tab-item>
-              </v-tabs-items>
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -389,17 +177,7 @@ export default {
   },
 
   data: () => ({
-    isFindNewsPending: false,
-    searchRecipients: undefined,
-    newsletterTypes: {
-      users: 'Mitglied',
-      subscribers: 'Abonnent'
-    },
-    triggerStats: 1,
-    isSending: false,
-    newsletterTab: 0,
-    newsletterDialogItem: undefined,
-    showNewsletterDialog: false,
+    isFindBlogPending: false,
     loaders: {},
     search: '',
     page: 1,
@@ -419,68 +197,14 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
-    ...mapActions('news', {
-      removeNews: 'remove',
-      findNews: 'find'
+    ...mapActions('blog', {
+      removeBlog: 'remove',
+      findBlog: 'find'
     }),
-    ...mapActions('sendstats', {
-      findSendstats: 'find',
-      patchSendStats: 'patch',
-      createSendStats: 'create'
-    }),
-    ...mapActions('newsletter', {
-      findRecipients: 'find',
-      createTestNewsletter: 'create'
-    }),
-    async sendTestNewsletter () {
-      try {
-        await this.createTestNewsletter(
-          {
-            reference: this.newsletterDialogItem._id,
-            type: 'news',
-            tmpTestUser: {
-              email: this.user.email,
-              id: this.user._id
-            }
-          }
-        )
-      } catch (e) {
-        this.isSending = false
-      }
-    },
-    async sendNewsletter () {
-      this.isSending = true
-      if (this.sendStats) {
-        try {
-          await this.patchSendStats(
-            [
-              this.sendStats._id,
-              {},
-              {}
-            ]
-          )
-        } catch (e) {
-          this.isSending = false
-        }
-      } else {
-        try {
-          await this.createSendStats(
-            {
-              reference: this.newsletterDialogItem._id,
-              type: 'news'
-            }
-          )
-        } catch (e) {
-          this.isSending = false
-        }
-      }
-      this.triggerStats = Date.now()
-      this.isSending = false
-    },
-    async deleteNews (id) {
+    async deleteBlog (id) {
       this.$set(this.loaders, id + 'delete', true)
       try {
-        await this.removeNews(id)
+        await this.removeBlog(id)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
         this.$set(this.loaders, id + 'delete', undefined)
       } catch (e) {
@@ -598,21 +322,9 @@ export default {
         { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
         { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
         { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
-        { text: this.$t('sendButton'), value: 'send', sortable: false, align: 'center' },
         { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
         { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
       ]
-    },
-    computedRecievers () {
-      if (this.recipients) {
-        if (this.searchRecipients) {
-          return this.recipients.filter(obj => obj.email.includes(this.searchRecipients))
-        } else {
-          return this.recipients
-        }
-      } else {
-        return []
-      }
     },
     computedLimit () {
       if (this.itemsPerPage === -1) {
@@ -635,9 +347,9 @@ export default {
         return -1
       }
     },
-    computedNews () {
-      if (this.computedNewsData && this.computedNewsData.data) {
-        return this.computedNewsData.data
+    computedBlog () {
+      if (this.computedBlogData && this.computedBlogData.data) {
+        return this.computedBlogData.data
       } else {
         return []
       }
@@ -645,8 +357,8 @@ export default {
   },
 
   asyncComputed: {
-    async computedNewsData () {
-      this.isFindNewsPending = true
+    async computedBlogData () {
+      this.isFindBlogPending = true
       const query = {
         $limit: this.computedLimit,
         $skip: (this.page - 1) * this.computedSkip,
@@ -667,56 +379,25 @@ export default {
           }
         }
       }
-      const tmpNews = await this.findNews(
+      const tmpBlog = await this.findBlog(
         {
           query
         }
       )
-      return tmpNews
-    },
-    async sendStats () {
-      if (this.newsletterDialogItem && this.triggerStats) {
-        const tmpSendStats = await this.findSendstats(
-          {
-            query: {
-              reference: this.newsletterDialogItem._id,
-              type: 'news'
-            }
-          }
-        )
-        if (tmpSendStats && tmpSendStats.data) {
-          return tmpSendStats.data[0]
-        }
-      }
-    },
-    async recipients () {
-      const tmpRecipients = await this.findRecipients()
-      return tmpRecipients
+      return tmpBlog
     }
   },
 
   watch: {
-    computedNews (newValue, oldValue) {
+    computedBlog (newValue, oldValue) {
       //
-      this.total = this.computedNewsData.total
+      this.total = this.computedBlogData.total
       //
       if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
         this.page = Math.ceil(this.total / this.itemsPerPage) + 1
       }
       //
-      this.isFindNewsPending = false
-    },
-    newsletterDialogItem () {
-      if (this.newsletterDialogItem) {
-        this.showNewsletterDialog = true
-      } else {
-        this.showNewsletterDialog = false
-      }
-    },
-    showNewsletterDialog () {
-      if (!this.showNewsletterDialog) {
-        this.newsletterDialogItem = undefined
-      }
+      this.isFindBlogPending = false
     }
   }
 }
