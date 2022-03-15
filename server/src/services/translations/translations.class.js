@@ -35,8 +35,6 @@ exports.Translations = class Translations {
       }
     }
 
-    // TODO: Compare translated version and original version and only set language if its the same
-
     // Create missing translations
     await createTranslations(this.app, messages, data)
 

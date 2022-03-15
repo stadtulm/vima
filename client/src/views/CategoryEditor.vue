@@ -223,10 +223,11 @@ export default {
     text: undefined,
     description: undefined,
     pic: undefined,
-    currentLanguage: 'de'
+    currentLanguage: 'en'
   }),
 
   async mounted () {
+    this.currentLanguage = this.$i18n.locale
     await this.adapt()
     this.$refs.tabStart.focus()
   },

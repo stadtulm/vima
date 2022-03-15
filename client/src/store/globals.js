@@ -1,10 +1,10 @@
 import i18n from '@/i18n.js'
 import Store from '@/store'
+import Vue from 'vue'
 
 const state = {
   hasMatomo: false,
   isDisconnected: true,
-  currentLanguage: 'de',
   userCount: undefined,
   firstLoad: true,
   showTour: true,
@@ -98,8 +98,7 @@ const state = {
         } else {
           data[property] = {
             value: i18n.t('noDefaultValue'),
-            type: 'error',
-            lang: 'de'
+            type: 'error'
           }
         }
       }
@@ -107,12 +106,11 @@ const state = {
     return data
   },
   hydrateTranslations: function (data) {
-    // TODO: Replace with real languages list and maybe change default language value
     let tmpLanguages = JSON.parse(JSON.stringify(data || []))
     if (!Array.isArray(tmpLanguages)) {
       tmpLanguages = [tmpLanguages]
     }
-    for (const language of ['de', 'en']) {
+    for (const language of Vue.prototype.$settings.languages) {
       if (!tmpLanguages.find(obj => obj.lang === language)) {
         tmpLanguages.push({
           type: i18n.fallbackLocale === language ? 'default' : 'author',
@@ -239,9 +237,6 @@ const getters = {
   },
   isDisconnected: state => {
     return state.isDisconnected
-  },
-  currentLanguage: state => {
-    return state.currentLanguage
   },
   rules: state => {
     return state.rules

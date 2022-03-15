@@ -150,8 +150,6 @@
 
 <script>
 
-import { mapGetters } from 'vuex'
-
 export default {
   name: 'Home',
 
@@ -191,9 +189,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      'currentLanguage'
-    ]),
     computedPics () {
       const picSet = this.shuffle()
       let pics = []

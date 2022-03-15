@@ -12,7 +12,7 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         (context) => {
-          if (!context.app.settings.modules.discussions.isActive) {
+          if (!context.app.customSettings.modules.discussions.isActive) {
             throw new Errors.Forbidden('Module is not active')
           }
         },

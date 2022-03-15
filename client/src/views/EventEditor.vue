@@ -496,7 +496,7 @@ export default {
       size: '',
       type: ''
     },
-    currentLanguage: 'de',
+    currentLanguage: 'en',
     extensions: [
       Bold,
       Italic,
@@ -510,6 +510,7 @@ export default {
   }),
 
   async mounted () {
+    this.currentLanguage = this.$i18n.locale
     await this.adapt()
     this.$refs.tabStart.focus()
   },

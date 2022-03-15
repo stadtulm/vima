@@ -1286,6 +1286,7 @@ async function init (to, from, next) {
     const settings = await Store.dispatch('settings/find')
     if (settings.length === 1) {
       Vue.prototype.$settings = settings[0]
+      i18n.fallbackLocale = settings[0].defaultLanguage
     } else {
       throw Error('No settings available on server')
     }

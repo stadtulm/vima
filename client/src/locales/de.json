@@ -627,5 +627,9 @@
   "noBlogYet": "Noch keine Blog-Einträge vorhanden",
   "blogPic": "Blog-Bild",
   "blogActiveCheckbox": "Wird angezeigt (ist diese Option deaktiviert, ist der Blog-Eintrag nicht sichtbar)",
-  "blogOnlyForMembersCheckbox": "Nur für angemeldete Nutzer*innen sichtbar (falls der Blog-Eintrag sichtbar ist)"
+  "blogOnlyForMembersCheckbox": "Nur für angemeldete Nutzer*innen sichtbar (falls der Blog-Eintrag sichtbar ist)",
+  "languages": "Sprachen",
+  "languageRequired": "Es muss mindestens eine Sprache definiert sein",
+  "languageFormatRule": "Sprachcodes bestehen immer aus zwei Buchstaben (z.B. en, de, ...)",
+  "notEditable": "Kann nicht verändert werden"
 }

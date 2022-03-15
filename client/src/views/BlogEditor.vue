@@ -591,7 +591,7 @@ export default {
       size: '',
       type: ''
     },
-    currentLanguage: 'de',
+    currentLanguage: 'en',
     extensions: [
       Bold,
       Italic,
@@ -610,6 +610,7 @@ export default {
   }),
 
   async mounted () {
+    this.currentLanguage = this.$i18n.locale
     window.load = () => {
       try {
         this.$refs.blogEditorForm.resetValidation()

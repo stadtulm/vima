@@ -103,10 +103,11 @@ export default {
     isValid: false,
     text: undefined,
     isActive: true,
-    currentLanguage: 'de'
+    currentLanguage: 'en'
   }),
 
   async mounted () {
+    this.currentLanguage = this.$i18n.locale
     await this.adapt()
   },
 

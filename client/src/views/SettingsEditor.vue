@@ -43,6 +43,54 @@
               <v-col
                 class="title"
               >
+                {{$t('languages')}}
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col>
+                <v-text-field
+                  dense
+                  outlined
+                  :label="$t('defaultLanguage')"
+                  color="customGrey"
+                  v-model="defaultLanguage"
+                  disabled
+                  persistent-hint
+                  :hint="$t('notEditable')"
+                >
+                </v-text-field>
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col>
+                <v-combobox
+                  chips
+                  deletable-chips
+                  dense
+                  multiple
+                  color="customGrey"
+                  item-color="customGrey"
+                  outlined
+                  background-color="#fff"
+                  v-model="languages"
+                  :items="languages"
+                  :label="$t('languages')"
+                  :disabled="user.role !== 'admins'"
+                  :rules="[
+                    v => (v.length > 0) || $t('languageRequired'),
+                    v => (v.includes(this.defaultLanguage)) || $t('defaultLanguageRequired'),
+                    v => (v.filter(lang => lang.length !== 2).length === 0) || $t('languageFormatRule')
+                  ]"
+                >
+                </v-combobox>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                class="title"
+              >
                 {{$t('socialMedia')}}
               </v-col>
             </v-row>
@@ -391,7 +439,9 @@ export default {
     headerLogo: undefined,
     fb: undefined,
     instagram: undefined,
-    twitter: undefined
+    twitter: undefined,
+    languages: [],
+    defaultLanguage: undefined
   }),
 
   async mounted () {
@@ -413,6 +463,8 @@ export default {
         const tmpSettings = JSON.parse(JSON.stringify(this.settings[0]))
         this.headerColor = this.parseRgbString(tmpSettings.headerColor)
         this.indicatorColor = this.parseRgbString(tmpSettings.indicatorColor)
+        this.defaultLanguage = tmpSettings.defaultLanguage
+        this.languages = tmpSettings.languages
         if (tmpSettings.socialMediaUrls) {
           this.fb = tmpSettings.socialMediaUrls.fb
           this.instagram = tmpSettings.socialMediaUrls.instagram
@@ -443,8 +495,11 @@ export default {
           tmpModules[key].bgColor = `rgba(${tmpModules[key].bgColor.r}, ${tmpModules[key].bgColor.g}, ${tmpModules[key].bgColor.b}, 1)`
         }
       }
+      // Sort default language to start
+      this.languages.unshift(this.languages.splice(this.languages.indexOf(this.defaultLanguage), 1)[0])
       const map = {
         name: appName,
+        languages: this.languages,
         headerColor: `rgba(${this.headerColor.r}, ${this.headerColor.g}, ${this.headerColor.b}, 1)`,
         indicatorColor: `rgba(${this.indicatorColor.r}, ${this.indicatorColor.g}, ${this.indicatorColor.b}, 1)`,
         socialMediaUrls: {

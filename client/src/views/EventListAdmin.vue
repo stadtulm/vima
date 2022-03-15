@@ -362,7 +362,7 @@ export default {
               { value: { $regex: this.search, $options: 'i' } },
               {
                 $or: [
-                  { lang: 'de' },
+                  { lang: this.$i18n.locale },
                   { type: 'default' }
                 ]
               }

@@ -95,10 +95,11 @@ export default {
     isTagLoading: false,
     tagProposal: undefined,
     isValidTagProposal: false,
-    currentLanguage: 'de'
+    currentLanguage: 'en'
   }),
 
   async mounted () {
+    this.currentLanguage = this.$i18n.locale
   },
 
   methods: {
@@ -116,7 +117,7 @@ export default {
             text: [
               {
                 value: this.tagProposal,
-                type: this.currentLanguage === 'de' ? 'default' : 'author',
+                type: this.currentLanguage === this.$settings.defaultLanguage ? 'default' : 'author',
                 lang: this.currentLanguage
               }
             ]

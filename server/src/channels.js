@@ -1,8 +1,7 @@
 const Cookie = require('cookie')
 
 function createLanguageChannels (app, data, connections, properties) {
-  // TODO: Replace with real languages list
-  const languages = ['de', 'en']
+  const languages = app.customSettings.languages
   const isArray = Array.isArray(data)
   if (!isArray) {
     data = [data]

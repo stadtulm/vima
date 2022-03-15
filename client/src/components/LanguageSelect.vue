@@ -34,7 +34,7 @@
     >
       <v-list-item
         dense
-        v-for="language in languages"
+        v-for="language in $settings.languages"
         :key="language"
         :value="language"
       >
@@ -76,7 +76,6 @@ export default {
   ],
 
   data: () => ({
-    languages: ['de', 'en', 'ro'],
     selectedLanguage: ''
   }),
 
