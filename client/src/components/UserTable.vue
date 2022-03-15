@@ -159,9 +159,6 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
-    ...mapActions('chats', {
-      removeChat: 'remove'
-    }),
     ...mapActions('users', {
       findUsers: 'find'
     }),

@@ -438,6 +438,9 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    ...mapMutations('groups', {
+      updateGroupItem: 'updateItem'
+    }),
     ...mapActions('discussions', {
       patchDiscussion: 'patch',
       createDiscussion: 'create',
@@ -491,7 +494,9 @@ export default {
           $paginate: false
         }
       )
-      return tmpGroups.map(group => ({ _id: group._id, title: group.title.value }))
+      for (const group of tmpGroups) {
+        this.updateGroupItem(this.reduceTranslations(group, this.$i18n.locale, ['title', 'description']))
+      }
     },
     prepareSaveDiscussion () {
       this.showAcceptDialog = false
@@ -656,7 +661,8 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'reduceTranslations'
     ]),
     ...mapGetters('discussions', {
       getDiscussion: 'get'

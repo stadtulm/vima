@@ -695,7 +695,7 @@
                       <UserTable
                         :customActionText="$t('invite')"
                         customActionIcon="fas fa-plus"
-                        custom:color="$settings.modules.groups.color"
+                        :customColor="$settings.modules.groups.color"
                         :customQuery="
                           computedCustomQuery
                         "
@@ -714,7 +714,7 @@
                       <UserTable
                         :customActionText="$t('remove')"
                         customActionIcon="fas fa-times"
-                        custom:color="$settings.modules.groups.color"
+                        :customColor="$settings.modules.groups.color"
                         :customQuery="
                           {
                             _id: { $in: computedMemberStatusContainers.filter(obj => obj.relation === 'invitation').map(obj => obj.user) }

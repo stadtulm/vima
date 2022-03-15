@@ -197,7 +197,8 @@ module.exports = {
           (context) => context.params.user?.role !== 'admins',
           // Check for group membership of hidden groups
           async (context) => {
-            const hiddenGroupIds = context.result.data
+            const resultToFilter = context.result.data || context.result
+            const hiddenGroupIds = resultToFilter
               .filter(obj => obj.visibility === 'hidden')
               .map(obj => obj._id)
             const userStatusContainers = await context.app.service('status-containers').Model.countDocuments(

@@ -22,7 +22,7 @@ module.exports = {
     const tmpMailBodyType = type
     if (type === 'newTagsToAccept') {
       item.tag = {}
-      item.tag.name = item.name
+      item.tag.name = item.text[0].value
       item.tag._id = item._id
     } else if (type === 'newGroupApplicants') {
       item.group = await app.service('groups').get(item.reference)
@@ -33,7 +33,7 @@ module.exports = {
       type === 'newAcceptedGroupDiscussions'
     ) {
       item.discussion = {}
-      item.discussion.title = item.title
+      item.discussion.title = item.title.value
       item.discussion._id = item._id
       if (
         type === 'newGroupDiscussionsToAccept' ||
@@ -43,11 +43,11 @@ module.exports = {
       }
     } else if (type === 'newAdsToAccept' || type === 'newAcceptedAds') {
       item.ad = {}
-      item.ad.title = item.title
+      item.ad.title = item.title.value
       item.ad._id = item._id
     } else if (type === 'newGroupsToAccept' || type === 'newAcceptedGroups') {
       item.group = {}
-      item.group.title = item.title
+      item.group.title = item.title.value
       item.group._id = item._id
     } else if (type === 'newAdApplicants') {
       item.ad = await app.service('ads').get(item.reference)
@@ -76,14 +76,14 @@ module.exports = {
         .replaceAll('{{recipient}}', user.email)
         .replaceAll('{{firstName}}', user.firstName)
         .replaceAll('{{lastName}}', user.lastName)
-        .replaceAll('{{groupTitle}}', item.group?.title)
+        .replaceAll('{{groupTitle}}', reducedDefaultTranslation(item.group?.title))
         .replaceAll('{{groupId}}', item.group?._id)
-        .replaceAll('{{adTitle}}', item.ad?.title)
+        .replaceAll('{{adTitle}}', reducedDefaultTranslation(item.ad?.title))
         .replaceAll('{{adId}}', item.ad?._id)
-        .replaceAll('{{discussionTitle}}', item.discussion?.title)
+        .replaceAll('{{discussionTitle}}', reducedDefaultTranslation(item.discussion?.title))
         .replaceAll('{{discussionId}}', item.discussion?._id)
         .replaceAll('{{tagId}}', item.tag?._id)
-        .replaceAll('{{tagName}}', item.tag?.name)
+        .replaceAll('{{tagName}}', reducedDefaultTranslation(item.tag?.text))
       await app.service('mailer').create(
         JSON.parse(tmpBody)
       )
@@ -392,5 +392,18 @@ const mailBodies = {
         locales.checkGroupNotification1 + '<a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' + locales.checkGroupNotification2 +
         locales.bestRegards
     }
+  }
+}
+
+function reducedDefaultTranslation (item) {
+  console.log(item)
+  if (item) {
+    if (Array.isArray(item)) {
+      return item.find(t => t.type === 'default').value
+    } else {
+      return item
+    }
+  } else {
+    return undefined
   }
 }
