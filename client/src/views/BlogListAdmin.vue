@@ -184,7 +184,8 @@ export default {
     total: 0,
     itemsPerPage: 5,
     sortBy: ['updatedAt'],
-    sortDesc: [true]
+    sortDesc: [true],
+    triggerReload: 1
   }),
 
   async mounted () {
@@ -316,6 +317,9 @@ export default {
     ...mapGetters('auth', {
       user: 'user'
     }),
+    ...mapGetters('blog', {
+      blog: 'list'
+    }),
     headers () {
       return [
         { text: this.$t('title'), value: 'title.value' },
@@ -358,6 +362,7 @@ export default {
 
   asyncComputed: {
     async computedBlogData () {
+      if (this.triggerReload) {}
       this.isFindBlogPending = true
       const query = {
         $limit: this.computedLimit,
@@ -389,6 +394,9 @@ export default {
   },
 
   watch: {
+    blog () {
+      this.triggerReload = Date.now()
+    },
     computedBlog (newValue, oldValue) {
       //
       this.total = this.computedBlogData.total

@@ -24,12 +24,12 @@
         alt="Vima Logo"
         :title="computedSetting && computedSetting.headerLogo ? computedSetting.headerLogo.credit : ''"
       />
-      <soan
+      <span
         v-else
         class="subtitle-2"
       >
         {{computedSetting.name}}
-      </soan>
+      </span>
       <v-toolbar-title
         v-if="$vuetify.breakpoint.lgAndUp"
         class="text-h4 font-weight-bold pointer align-self-center pt-3"

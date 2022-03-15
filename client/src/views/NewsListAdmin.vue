@@ -406,7 +406,8 @@ export default {
     total: 0,
     itemsPerPage: 5,
     sortBy: ['updatedAt'],
-    sortDesc: [true]
+    sortDesc: [true],
+    triggerReload: 1
   }),
 
   async mounted () {
@@ -592,6 +593,9 @@ export default {
     ...mapGetters('auth', {
       user: 'user'
     }),
+    ...mapGetters('news', {
+      news: 'list'
+    }),
     headers () {
       return [
         { text: this.$t('title'), value: 'title.value' },
@@ -646,6 +650,7 @@ export default {
 
   asyncComputed: {
     async computedNewsData () {
+      if (this.triggerReload) {}
       this.isFindNewsPending = true
       const query = {
         $limit: this.computedLimit,
@@ -696,6 +701,9 @@ export default {
   },
 
   watch: {
+    news () {
+      this.triggerReload = Date.now()
+    },
     computedNews (newValue, oldValue) {
       //
       this.total = this.computedNewsData.total

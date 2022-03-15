@@ -425,7 +425,7 @@ export default {
   },
 
   watch: {
-    async events () {
+    events () {
       this.triggerReload = Date.now()
     }
   }

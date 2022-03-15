@@ -170,7 +170,8 @@ export default {
     total: 0,
     itemsPerPage: 5,
     sortBy: ['updatedAt'],
-    sortDesc: [true]
+    sortDesc: [true],
+    triggerReload: 1
   }),
 
   async mounted () {
@@ -302,6 +303,9 @@ export default {
     ...mapGetters([
       's3'
     ]),
+    ...mapGetters('events', {
+      events: 'list'
+    }),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -349,6 +353,7 @@ export default {
 
   asyncComputed: {
     async computedEventsData () {
+      if (this.triggerReload) {}
       this.isFindEventsPending = true
       const query = {
         $limit: this.computedLimit,
@@ -380,6 +385,9 @@ export default {
   },
 
   watch: {
+    events () {
+      this.triggerReload = Date.now()
+    },
     async computedEvents () {
     //
       this.total = this.computedEventsData.total
