@@ -265,6 +265,21 @@ app.service('news').find({ paginate: false }).then(news => {
 })
 */
 
+/*
+app.service('sites').find({ paginate: false }).then(sites => {
+  for (const site of sites) {
+    site.text = [{
+      type: 'default',
+      value: site.text,
+      lang: 'de'
+    }]
+    app.service('sites').update(site._id, site).then(res => {
+      console.log(res)
+    })
+  }
+})
+*/
+
 // New text format events
 
 /*

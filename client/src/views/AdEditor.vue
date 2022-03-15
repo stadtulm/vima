@@ -593,8 +593,7 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3',
-      'reduceTranslations'
+      's3'
     ]),
     ...mapGetters('ads', {
       getAd: 'get'

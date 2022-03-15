@@ -55,7 +55,23 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+
+        commonHooks.alterItems((rec, context) => {
+          if (Array.isArray(rec.text)) {
+            const langText = rec.text.find(t => t.lang === context.params.connection.language)
+            if (langText) {
+              rec.text = langText
+            } else {
+              rec.text = rec.text.find(t => t.type === 'default')
+            }
+          }
+          return rec
+        })
+      )
+    ],
     find: [],
     get: [],
     create: [],

@@ -53,6 +53,7 @@
               <v-row
                 dense
                 class="mb-6"
+                v-if="text"
               >
                 <v-col
                   cols="12"
@@ -76,10 +77,17 @@
                         cols="12"
                       >
                         <v-input
-                          :rules="[rules.tiptapRequired]"
-                          v-model="text"
+                          :rules="[v => (text.find(obj => obj.type === 'default').value !== '' && text.find(obj => obj.type === 'default').value !== '<p></p>') || $t('defaultLanguageRequired')]"
+                          v-model="text.find(obj => obj.lang === currentLanguage).value"
                           width="100%"
                         >
+                          <template v-slot:prepend>
+                            <LanguageSelect
+                              :currentLanguage="currentLanguage"
+                              :languageObjects="text"
+                              @setLanguage="(l) => { currentLanguage = l }"
+                            ></LanguageSelect>
+                          </template>
                           <template slot="default">
                             <tiptap-vuetify
                               :editor-properties="{
@@ -87,7 +95,7 @@
                                 disablePasteRules: true
                               }"
                               color="customGreyUltraLight"
-                              v-model="text"
+                              v-model="text.find(obj => obj.lang === currentLanguage).value"
                               :card-props="{ tile: true, flat: true }"
                               style="border: 1px solid #aaa;"
                               :extensions="extensions"
@@ -128,12 +136,14 @@
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link, Heading } from 'tiptap-vuetify'
+import LanguageSelect from '@/components/LanguageSelect.vue'
 
 export default {
   name: 'SiteEditor',
 
   components: {
-    TiptapVuetify
+    TiptapVuetify,
+    LanguageSelect
   },
 
   data: () => ({
@@ -142,6 +152,7 @@ export default {
     isLoading: false,
     isValid: false,
     text: undefined,
+    currentLanguage: 'en',
     extensions: [
       Bold,
       Italic,
@@ -160,6 +171,7 @@ export default {
   }),
 
   async mounted () {
+    this.currentLanguage = this.$i18n.locale
     await this.adapt()
   },
 
@@ -183,14 +195,16 @@ export default {
       }
       if (this.selectedSite) {
         this.type = this.selectedSite.type
-        this.text = this.selectedSite.text
+        this.text = this.hydrateTranslations(this.selectedSite.text)
+      } else {
+        this.text = this.hydrateTranslations()
       }
     },
     async saveSite () {
       this.isLoading = true
       const map = {
         type: this.type,
-        text: this.text
+        text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>')
       }
       try {
         if (this.$route.params.site) {
@@ -211,14 +225,23 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'hydrateTranslations'
     ]),
     ...mapGetters('sites', {
       getSite: 'get'
     }),
     ...mapGetters('auth', [
       'user'
-    ])
+    ]),
+    sanitizedText () {
+      return this.text.map(language => {
+        return {
+          ...language,
+          value: this.$sanitize(language.value)
+        }
+      })
+    }
   },
 
   asyncComputed: {
@@ -233,14 +256,6 @@ export default {
         ]
       )
       return types.data.map(obj => obj.type)
-    }
-  },
-
-  watch: {
-    text () {
-      if (this.text) {
-        this.text = this.$sanitize(this.text)
-      }
     }
   }
 }
