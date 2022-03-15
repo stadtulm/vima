@@ -15,14 +15,21 @@
         ></v-img>
       </template>
       <img
+        v-if="$vuetify.breakpoint.smAndUp"
         class="py-2 mr-3 pointer"
         :height="$vuetify.breakpoint.mdAndUp ? '50px' : ($vuetify.breakpoint.smAndUp ? '30px': '30px')"
-        :src="$vuetify.breakpoint.smAndUp ? '/pics/logo.svg' : '/pics/vima.svg'"
+        :src="computedSetting && computedSetting.headerLogo ? s3 + computedSetting.headerLogo.url : ''"
         @click="$router.push({ name: 'Home' })"
         style="margin-bottom: -1px"
         alt="Vima Logo"
-        title="© ILEU e.V."
+        :title="computedSetting && computedSetting.headerLogo ? computedSetting.headerLogo.credit : ''"
       />
+      <soan
+        v-else
+        class="subtitle-2"
+      >
+        {{computedSetting.name}}
+      </soan>
       <v-toolbar-title
         v-if="$vuetify.breakpoint.lgAndUp"
         class="text-h4 font-weight-bold pointer align-self-center pt-3"

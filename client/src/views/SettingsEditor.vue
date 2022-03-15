@@ -26,7 +26,7 @@
               :label="$t('brand')"
               :parent="settings[0]"
               path="headerLogo"
-              :maxFilesize="2"
+              :maxFilesize="0.1"
               :maxFiles="1"
               resolutionString="1400x400"
               :resizeWidth="1080"
@@ -35,6 +35,7 @@
               :patchParentMethod="patchSettings"
               titleType="title"
               bgColor="customGreyUltraLight"
+              acceptedMimeTypes="image/svg+xml, image/png"
             ></Upload>
             <v-divider
               :class="headerLogo ? 'mb-9 mt-5' : 'mb-9 mt-12'"

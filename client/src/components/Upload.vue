@@ -137,21 +137,51 @@ const server = process.env.VUE_APP_SERVER_URL
 export default {
   name: 'Upload',
 
-  props: [
-    'optional', // Bool
-    'label', // String
-    'parent',
-    'path',
-    'maxFilesize',
-    'maxFiles',
-    'resolutionString', // '1400x400',
-    'resizeWidth', // 1080,
-    'resizeMethod', // 'contain',
-    'resizeQuality', // 0.5
-    'patchParentMethod',
-    'titleType',
-    'bgColor'
-  ],
+  props: {
+    optional: {
+      type: Boolean
+    },
+    label: {
+      type: String
+    },
+    parent: {
+      type: Object
+    },
+    path: {
+      type: String // dot notation possible
+    },
+    maxFilesize: {
+      type: Number // in mb
+    },
+    maxFiles: {
+      type: Number
+    },
+    resolutionString: {
+      type: String
+    },
+    resizeWidth: {
+      type: Number // pixels
+    },
+    resizeMethod: {
+      type: String // e.g. contain
+    },
+    resizeQuality: {
+      type: Number // 0-1
+    },
+    patchParentMethod: {
+      type: Function
+    },
+    titleType: {
+      type: String // class name
+    },
+    bgColor: {
+      type: String // class name
+    },
+    acceptedMimeTypes: {
+      type: String,
+      default: 'image/png, image/jpeg'
+    }
+  },
 
   components: {
     vueDropzone: vue2Dropzone
@@ -358,7 +388,7 @@ export default {
         dictFileTooBig: this.$t('fileTooBigError'),
         dictInvalidFileType: this.$t('fileTypeNotAcceptedError'),
         dictMaxFilesExceeded: this.$t('noMorePicsError'),
-        acceptedMimeTypes: 'image/png, image/jpeg',
+        acceptedMimeTypes: this.acceptedMimeTypes,
         resizeWidth: this.resizeWidth,
         resizeMethod: this.resizeMethod,
         resizeQuality: this.resizeQuality
