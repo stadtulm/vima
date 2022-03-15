@@ -24,6 +24,7 @@
           >
             <v-row
               dense
+              v-if="text"
             >
               <v-col
                 cols="12"
@@ -50,6 +51,7 @@
             </v-row>
             <v-row
               dense
+              v-if="description"
             >
               <v-col
                 cols="12"
@@ -278,6 +280,9 @@ export default {
         this.pic = this.selectedCategory.pic
         this.text = this.hydrateTranslations(this.selectedCategory.text)
         this.description = this.hydrateTranslations(this.selectedCategory.description)
+      } else {
+        this.text = this.hydrateTranslations()
+        this.description = this.hydrateTranslations()
       }
     },
     async uploadSuccess (file, response) {

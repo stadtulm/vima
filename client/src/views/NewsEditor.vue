@@ -25,6 +25,7 @@
               ref="newsEditorForm"
             >
               <v-row
+                v-if="title"
                 dense
               >
                 <v-col
@@ -52,6 +53,7 @@
               </v-row>
               <v-row
                 dense
+                v-if="subTitle"
               >
                 <v-col
                   cols="12"
@@ -100,6 +102,7 @@
               </v-row>
               <v-divider class="mt-4 mb-9"></v-divider>
               <v-row
+                v-if="text"
                 dense
                 class="mb-6"
               >
@@ -599,6 +602,10 @@ export default {
         if (this.selectedNews.videos) {
           this.videos = this.selectedNews.videos
         }
+      } else {
+        this.title = this.hydrateTranslations()
+        this.subTitle = this.hydrateTranslations()
+        this.text = this.hydrateTranslations()
       }
     },
     async uploadSuccessPics (file, response) {

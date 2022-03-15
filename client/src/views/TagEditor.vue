@@ -24,6 +24,7 @@
           >
             <v-row
               dense
+              v-if="text"
             >
               <v-col
                 cols="12"
@@ -133,6 +134,8 @@ export default {
       if (this.selectedTag) {
         this.text = this.hydrateTranslations(this.selectedTag.text)
         this.isActive = this.selectedTag.isActive
+      } else {
+        this.text = this.hydrateTranslations()
       }
     },
     async saveTag () {

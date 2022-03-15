@@ -26,6 +26,7 @@
             >
               <v-row
                 dense
+                v-if="title"
               >
                 <v-col
                   cols="12"
@@ -209,6 +210,7 @@
                 </v-col>
               </v-row>
               <v-row
+                v-if="text"
                 dense
                 class="mb-6"
               >
@@ -579,6 +581,9 @@ export default {
         if (this.selectedEvent.pics) {
           this.pics = this.selectedEvent.pics
         }
+      } else {
+        this.title = this.hydrateTranslations()
+        this.text = this.hydrateTranslations()
       }
     },
     async uploadSuccessPics (file, response) {
