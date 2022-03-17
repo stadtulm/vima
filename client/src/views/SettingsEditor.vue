@@ -419,7 +419,6 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import Upload from '@/components/Upload.vue'
 const appName = process.env.VUE_APP_NAME
 

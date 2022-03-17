@@ -45,84 +45,94 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row
-      dense
-      v-if="pics && pics.length > 0"
+    <v-form
+      :ref="_uid + '_uploadForm'"
+      v-model="isValid"
     >
-      <v-col
-        cols="12"
+      <v-row
+        class="mt-4"
+        dense
+        v-if="pics.concat(queuedPics).length > 0"
       >
-        <v-card
-          flat
-          color="customGreyUltraLight"
+        <v-col
+          cols="12"
         >
-          <v-row>
-            <v-col
-              cols="12"
-              class="subtitle-1"
-            >
-              {{$t('copyrightOwner')}}
-            </v-col>
-          </v-row>
-          <v-row
-            dense
+          <v-card
+            flat
+            :color="bgColor"
           >
-            <v-col>
-              <v-alert
-                icon="fas fa-info-circle"
-                color="customGrey"
-                dark
-                outlined
-              >
-                {{$t('publicHint')}}
-              </v-alert>
-            </v-col>
-          </v-row>
-          <v-form
-            :ref="_uid + '_uploadForm'"
-            v-model="isValid"
-          >
-            <v-row
-              dense
-              v-for="(pic, i) in pics"
-              :key="i"
-              class="align-center"
-            >
+            <v-row>
               <v-col
                 cols="12"
+                class="subtitle-1"
               >
-                <v-text-field
-                  dense
-                  color="customGrey"
-                  item-color="customGrey"
-                  v-model="pic.credit"
-                  :label="$t('copyrightOwner') + (maxFiles > 1 ? ' ' + $t('pic') + ' ' + (i + 1) : '')"
-                  outlined
-                  :rules="[rules.required]"
-                  background-color="#fff"
-                >
-                </v-text-field>
+                {{$t('copyrightOwner')}}
               </v-col>
             </v-row>
-          </v-form>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
+            <v-row
+              dense
+            >
+              <v-col>
+                <v-alert
+                  icon="fas fa-info-circle"
+                  color="customGrey"
+                  dark
+                  outlined
+                >
+                  {{$t('publicHint')}}
+                </v-alert>
+              </v-col>
+            </v-row>
+              <v-row
+                dense
+                v-for="(pic, i) in pics.concat(queuedPics)"
+                :key="i"
+                class="align-center"
+              >
+                <v-col
+                  cols="12"
+                >
+                  <v-text-field
+                    dense
+                    color="customGrey"
+                    item-color="customGrey"
+                    v-model="pic.credit"
+                    :label="$t('copyrightOwner') + (maxFiles > 1 ? ' ' + $t('pic') + ' ' + (i + 1) : '')"
+                    outlined
+                    :rules="[rules.required]"
+                    background-color="#fff"
+                  >
+                  </v-text-field>
+                </v-col>
+              </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-card-actions
+        class="px-0 pt-4"
+      >
         <v-btn
-          block
+          large
+          :dark="!(!isValid || dropzoneError || !isQueued)"
+          color="customGreyMedium"
+          :loading="isLoading"
+          @click="hideUpload(true)"
+        >
+          {{$t('cancelButton')}}
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn
           large
           :dark="!(!isValid || dropzoneError || !isQueued)"
           color="customGreyMedium"
           :loading="isLoading"
           :disabled="!isValid || dropzoneError || !isQueued"
-          @click="processQueue()"
+          @click="hideUpload(false)"
         >
-          {{$t('startUpload')}}
+          {{$t('done')}}
         </v-btn>
-      </v-col>
-    </v-row>
+      </v-card-actions>
+    </v-form>
   </div>
 </template>
 
@@ -138,17 +148,14 @@ export default {
   name: 'Upload',
 
   props: {
+    pics: {
+      type: Array
+    },
     optional: {
       type: Boolean
     },
     label: {
       type: String
-    },
-    parent: {
-      type: Object
-    },
-    path: {
-      type: String // dot notation possible
     },
     maxFilesize: {
       type: Number // in mb
@@ -168,9 +175,6 @@ export default {
     resizeQuality: {
       type: Number // 0-1
     },
-    patchParentMethod: {
-      type: Function
-    },
     titleType: {
       type: String // class name
     },
@@ -188,15 +192,16 @@ export default {
   },
 
   data: () => ({
+    queuedPics: [],
     isValid: false,
     isQueued: false,
     isLoading: false,
-    pics: [],
     dropzoneError: false,
     mockFile: {
       name: '',
       size: '',
-      type: ''
+      type: '',
+      _id: ''
     }
   }),
 
@@ -210,32 +215,28 @@ export default {
     ...mapActions('uploads', {
       removeUpload: 'remove'
     }),
+    hideUpload (clear) {
+      this.$emit(
+        'hideUpload',
+        clear ? null : this.$refs[this._uid + '_vueDropzone'].getQueuedFiles()
+      )
+    },
     addUuid (file, xhr, formData) {
       formData.append('uuid', file.upload.uuid)
     },
     dropzoneMountedPics () {
-      // Since this is loaded before anything else, do adapt stuff here
-      const picProperty = this.resolveProperty(this.path, this.parent)
-      if (this.parent && picProperty) {
-        if (Array.isArray(picProperty)) {
-          this.pics = picProperty
-        } else {
-          this.pics = [picProperty]
-        }
-      } else {
-        this.pics = []
-      }
-      if (this.$refs[this._uid + '_uploadForm']) {
-        this.$nextTick(() => {
-          this.$refs[this._uid + '_uploadForm'].validate()
-        })
-      }
       // Add dummies for already uploaded files to dropzone
       for (const pic of this.pics) {
         const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
         tmpMockFile.name = pic.url
+        tmpMockFile._id = pic._id
         this.$refs[this._uid + '_vueDropzone'].manuallyAddFile(tmpMockFile, this.s3 + pic.url)
       }
+      this.$nextTick(() => {
+        if (this.$refs[this._uid + '_uploadForm']) {
+          this.$refs[this._uid + '_uploadForm'].validate()
+        }
+      })
     },
     updateQueuedFiles (files) {
       // Update pics array or error
@@ -243,7 +244,7 @@ export default {
         for (const file of files) {
           if (file.status !== 'error') {
             this.isQueued = true
-            this.pics.push(
+            this.queuedPics.push(
               {
                 credit: undefined,
                 url: file.upload.uuid
@@ -269,25 +270,7 @@ export default {
             return
           }
           await this.removeUpload([file.name, {}, {}])
-          let tmpPictures = []
-          const picProperty = this.resolveProperty(this.path, this.parent)
-          if (this.parent && picProperty) {
-            if (Array.isArray(picProperty)) {
-              tmpPictures = picProperty
-            } else {
-              tmpPictures = [picProperty]
-            }
-          }
-          tmpPictures = tmpPictures.filter(obj => obj.url !== file.name)
-          if (this.parent && picProperty) {
-            if (this.maxFiles > 1) {
-              tmpPictures = picProperty
-            } else {
-              tmpPictures = null
-            }
-          }
-          await this.patchParentMethod([this.parent._id, { [this.path]: tmpPictures }, {}])
-          this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+          this.$emit('picRemoved', file)
         // Something went wrong
         } else if (this.isLoading) {
           throw error
@@ -296,10 +279,7 @@ export default {
           this.dropzoneError = false
         }
         // Remove pic from pics array is existant
-        const index = this.pics.findIndex(obj => obj.url === file.upload?.uuid || obj.url === file.name)
-        if (index !== -1) {
-          this.pics.splice(index, 1)
-        }
+        this.queuedPics = this.queuedPics.filter(obj => obj.url !== file.upload?.uuid && obj.url !== file.name)
       } catch (e) {
         if (this.isLoading) {
           this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
@@ -309,20 +289,23 @@ export default {
     async processQueue () {
       this.isLoading = true
       await this.$refs[this._uid + '_vueDropzone'].processQueue()
+      const timerPromise = new Promise(resolve => this.$on('donedone', resolve))
+      await timerPromise
+      return this.queuedPics
     },
     uploadSuccessPics (file, response) {
       if (file.status === 'success') {
-        this.$set(this.pics.find(obj => obj.url === response.uuid), 'uuid', response.uuid)
-        this.$set(this.pics.find(obj => obj.url === response.uuid), 'url', response.id)
+        this.$set(this.queuedPics.find(obj => obj.url === response.uuid), 'uuid', response.uuid)
+        this.$set(this.queuedPics.find(obj => obj.url === response.uuid), 'url', response.id)
       }
     },
-    async queueComplete (a, b, c) {
+    async queueComplete () {
       if (this.isQueued) {
         this.isQueued = false
         let hasErrors = false
         for (const file of this.$refs[this._uid + '_vueDropzone'].getAcceptedFiles()) {
           // Check response for corresponding element in pics
-          const newPic = this.pics.find(obj => obj.uuid === file.upload.uuid)
+          const newPic = this.queuedPics.find(obj => obj.uuid === file.upload.uuid)
           // Create error if not existant and return
           if (!newPic) {
             file.previewElement.querySelector('.dz-error-message > span').innerHTML = this.$t('uploadFailed')
@@ -340,22 +323,12 @@ export default {
           this.$refs[this._uid + '_vueDropzone'].removeFile(file)
           const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
           tmpMockFile.name = newPic.url
+          tmpMockFile._id = newPic._id
           this.$refs[this._uid + '_vueDropzone'].manuallyAddFile(tmpMockFile, this.s3 + newPic.url)
         }
         if (this.isLoading) {
-          // Now update parent object
-          if (this.maxFiles > 1) {
-            await this.patchParentMethod([this.parent._id, { [this.path]: this.pics }, {}])
-          } else {
-            const result = await this.patchParentMethod([this.parent._id, { [this.path]: this.pics[0] }, {}])
-            const picProperty = this.resolveProperty(this.path, result)
-            if (Array.isArray(picProperty)) {
-              this.pics = picProperty
-            } else {
-              this.pics = [picProperty]
-            }
-          }
           this.isLoading = false
+          this.$emit('donedone')
           this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         }
       }
@@ -397,7 +370,7 @@ export default {
   },
 
   watch: {
-    pics () {
+    queuedPics () {
       this.$nextTick(() => {
         if (this.$refs[this._uid + '_uploadForm']) {
           this.$refs[this._uid + '_uploadForm'].validate()

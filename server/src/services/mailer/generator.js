@@ -396,7 +396,6 @@ const mailBodies = {
 }
 
 function reducedDefaultTranslation (item) {
-  console.log(item)
   if (item) {
     if (Array.isArray(item)) {
       return item.find(t => t.type === 'default').value

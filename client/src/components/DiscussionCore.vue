@@ -169,6 +169,20 @@
                               ></TranslatableTextInfo>
                             </template>
                           </TranslatableText>
+                          <v-row
+                            v-if="message.pics && message.pics.length > 0"
+                            class="my-3"
+                          >
+                            <v-col
+                              cols=2
+                              v-for="(pic, i) in message.pics"
+                              :key="i"
+                            >
+                              <Lightbox
+                                :pic="pic"
+                              ></Lightbox>
+                            </v-col>
+                          </v-row>
                         </v-col>
                         <v-col
                           cols="12"
@@ -197,7 +211,6 @@
                             <span>{{$t('replies')}}</span>
                           </v-tooltip>
                           <v-menu
-                            offset-y
                             open-on-hover
                             v-if="isOwnMessage(message)"
                           >
@@ -252,7 +265,6 @@
                             </v-list>
                           </v-menu>
                           <v-menu
-                            offset-y
                             open-on-hover
                             v-else-if="!isOwnMessage(message) && user"
                           >
@@ -546,7 +558,17 @@
               class="font-weight-bold"
               cols="12"
             >
-              {{$t('writeNewPostTitle')}}:
+              {{ isEditMessage ? $t('editPostTitle') : $t('writeNewPostTitle')}}
+              <v-btn
+                v-if="isEditMessage"
+                text
+                small
+                outlined
+                class="ml-2"
+                @click="resetInput"
+              >
+                {{$t('cancelButton')}}
+              </v-btn>
             </v-col>
           </v-row>
           <v-row
@@ -590,6 +612,7 @@
                     indeterminate
                   ></v-progress-circular>
                 </template>
+                <div ref="test"></div>
                 <v-icon
                   size="18"
                   color="white"
@@ -599,9 +622,60 @@
               </v-btn>
             </v-col>
           </v-row>
+          <v-row
+            v-if="dropzones.discussionMessageUpload && dropzones.discussionMessageUpload.pics.length > 0"
+          >
+            <v-col
+              v-for="(pic, i) of dropzones.discussionMessageUpload.pics"
+              :key="i"
+              cols="2"
+            >
+              <v-img
+                :src="pic.url ? s3 + pic.url : pic.dataURL"
+                @click="showUpload()"
+                class="pointer"
+                :class="pic.dataURL ? 'progress': ''"
+                aspect-ratio="1"
+                cover
+              >
+              </v-img>
+            </v-col>
+          </v-row>
         </v-form>
       </v-col>
     </v-row>
+    <v-dialog
+      eager
+      persistent
+      v-model="isUploadVisible"
+    >
+      <v-card>
+          <v-container>
+            <v-row>
+              <v-col>
+                <Upload
+                  ref="discussionMessageUpload"
+                  :pics="isEditMessage && isEditMessage.pics ? isEditMessage.pics : []"
+                  :key="dropzones.discussionMessageUpload.key"
+                  :optional="false"
+                  :label="$t('pics')"
+                  :maxFilesize="2"
+                  :maxFiles="5"
+                  resolutionString="1400x400"
+                  :resizeWidth="1080"
+                  resizeMethod="contain"
+                  :resizeQuality="0.5"
+                  :patchParentMethod="patchMessage"
+                  titleType="title"
+                  bgColor="white"
+                  @hideUpload="(queuedPics) => { hideUpload('discussionMessageUpload', queuedPics) }"
+                  @picRemoved="(removedPic) => { removePic('discussionMessageUpload', removedPic) }"
+                ></Upload>
+              </v-col>
+            </v-row>
+          </v-container>
+      </v-card>
+    </v-dialog>
     <ViolationDialog
       :type="discussion.group ? 'groups': 'discussions'"
       :discussion="discussion"
@@ -621,6 +695,10 @@ import ViolationDialog from '@/components/ViolationDialog.vue'
 import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
+import Upload from '@/components/Upload.vue'
+import Vue from 'vue'
+import UploadButton from '@/components/UploadButton.vue'
+import Lightbox from '@/components/Lightbox.vue'
 
 export default {
   name: 'DiscussionCore',
@@ -630,12 +708,22 @@ export default {
     TiptapVuetify,
     ViolationDialog,
     TranslatableText,
-    TranslatableTextInfo
+    TranslatableTextInfo,
+    Upload,
+    Lightbox
   },
 
   props: ['discussion'],
 
   data: () => ({
+    dropzoneKey: 1,
+    dropzones: {
+      discussionMessageUpload: {
+        key: 1,
+        pics: []
+      }
+    },
+    isUploadVisible: false,
     itemToReport: undefined,
     showViolationDialog: false,
     checkForNewPage: false,
@@ -672,6 +760,14 @@ export default {
   }),
 
   async mounted () {
+    this.$nextTick(() => {
+      const ComponentClass = Vue.extend(UploadButton)
+      const instance = new ComponentClass()
+      instance.$mount()
+      const el = document.querySelector('.tiptap-vuetify-editor__toolbar .v-toolbar__content div')
+      el.appendChild(instance.$el)
+      instance.$el.addEventListener('click', this.showUpload)
+    })
     if (this.init) {
       // Init listeners
       this.$nextTick(() => {
@@ -712,6 +808,55 @@ export default {
     ...mapActions('status-container-helper', {
       patchDiscussionMessageNotifications: 'patch'
     }),
+    removePic (name, pic) {
+      this.patchMessage([
+        this.isEditMessage._id,
+        {
+          $pull: {
+            pics: {
+              _id: pic._id
+            }
+          }
+        }
+      ])
+    },
+    resetInput () {
+      this.isEditMessage = undefined
+      this.dropzones.discussionMessageUpload = {
+        pics: [],
+        key: Date.now()
+      }
+      this.$refs.messagesForm.reset()
+      this.message = undefined
+    },
+    showUpload () {
+      this.isUploadVisible = true
+    },
+    hideUpload (name, queuedPics) {
+      this.isUploadVisible = undefined
+      if (!queuedPics) {
+        this.dropzones[name] = {
+          key: Date.now(),
+          pics: []
+        }
+      } else {
+        this.dropzones[name].pics = this.getAllPics(
+          [
+            this.isEditMessage ? this.isEditMessage.pics : [],
+            queuedPics
+          ]
+        )
+      }
+    },
+    getAllPics (picArrays) {
+      let result = []
+      for (const picArray of picArrays) {
+        if (picArray && Array.isArray(picArray)) {
+          result = result.concat(picArray)
+        }
+      }
+      return result
+    },
     async translateText ({ texts, force }) {
       let textsToTranslate
       let textsToShow
@@ -789,8 +934,16 @@ export default {
       }
     },
     async editMessage (message) {
-      this.isEditMessage = message._id
+      this.isEditMessage = message
       this.message = message.text.value
+      this.dropzones.discussionMessageUpload = {
+        pics: this.getAllPics(
+          [
+            this.isEditMessage ? this.isEditMessage.pics : []
+          ]
+        ),
+        key: Date.now()
+      }
       document.querySelector('#messageInput').scrollIntoView({ block: 'start', behavior: 'smooth' })
     },
     async sendMessage () {
@@ -798,6 +951,7 @@ export default {
       if (!this.isEditMessage) {
         this.manualLoad = 'create'
         try {
+          const pics = await this.$refs.discussionMessageUpload.processQueue()
           await this.createMessage(
             [
               {
@@ -809,29 +963,31 @@ export default {
                     lang: null,
                     type: 'default'
                   }
-                ]
+                ],
+                pics
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
-          this.$refs.messagesForm.reset()
+          this.resetInput()
           this.$nextTick(() => {
             this.$nextTick(() => {
               document.querySelector('#messageContainer').scrollTop = document.querySelector('#messageContainer').scrollHeight
               this.checkVisibleMessages()
             })
           })
-          this.message = undefined
           this.triggerNewMessage = Date.now()
         } catch (e) {
+          console.log(e)
           this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
         }
       } else {
         this.manualLoad = 'patch'
         try {
+          const pics = await this.$refs.discussionMessageUpload.processQueue()
           await this.patchMessage(
             [
-              this.isEditMessage,
+              this.isEditMessage._id,
               {
                 text: [
                   {
@@ -840,16 +996,21 @@ export default {
                     type: 'default'
                   }
                 ],
+                pics: this.getAllPics(
+                  [
+                    this.isEditMessage.pics,
+                    pics
+                  ]
+                ),
                 editedAt: new Date()
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
-          this.$refs.messagesForm.reset()
-          this.message = undefined
-          this.isEditMessage = undefined
+          this.resetInput()
           this.triggerNewMessage = Date.now()
         } catch (e) {
+          console.log(e)
           this.setSnackbar({ text: this.$t('snackbarEditError'), color: 'error' })
         }
       }
@@ -1082,3 +1243,17 @@ export default {
   }
 }
 </script>
+
+<style>
+  .progress:after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: calc(100% - 60px);
+    height: 16px;
+    background-color: rgba(255,255,255,0.7);
+    top: calc(50% - 8px);
+    left: 30px;
+    border-radius: 10px;
+  }
+</style>
