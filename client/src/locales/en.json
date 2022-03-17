@@ -581,5 +581,6 @@
   "replyToAd": "What happens when I reply to an advertisement?",
   "chatAfterReply": "The person who posted the ad will be notified and can read your message. Once they reply, you will know who they are and you can continue your conversation in your private chat.",
   "replayToMyAd": "What happens when someone replies to one of my ads?",
-  "chatAfterReplyToMyAd": "You can view the replies to a post at \"My ViMA\" -> \"Search-Offer\" -> \"Visitors\". As soon as you reply to a request there, the interested person will be notified and you can continue the conversation in your private chat."
+  "chatAfterReplyToMyAd": "You can view the replies to a post at \"My ViMA\" -> \"Search-Offer\" -> \"Visitors\". As soon as you reply to a request there, the interested person will be notified and you can continue the conversation in your private chat.",
+  "ua": "Ukrainian"
 }

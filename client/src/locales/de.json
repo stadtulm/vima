@@ -632,5 +632,6 @@
   "languageRequired": "Es muss mindestens eine Sprache definiert sein",
   "languageFormatRule": "Sprachcodes bestehen immer aus zwei Buchstaben (z.B. en, de, ...)",
   "notEditable": "Kann nicht verändert werden",
-  "editPostTitle": "Beitrag editieren"
+  "editPostTitle": "Beitrag editieren",
+  "ua": "Ukrainisch"
 }
