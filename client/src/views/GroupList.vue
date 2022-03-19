@@ -93,7 +93,7 @@
           >
             <v-badge
               overlap
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               :value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
@@ -160,7 +160,7 @@
           >
             <v-badge
               overlap
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               :value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
@@ -228,7 +228,7 @@
           >
             <v-badge
               overlap
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               :value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&

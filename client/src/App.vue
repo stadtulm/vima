@@ -11,7 +11,7 @@
       <template v-slot:img="{ props }">
         <v-img
           v-bind="props"
-          gradient="to right, rgba(212, 225, 87, 1), rgba(240, 244, 195, 1)"
+          :gradient="'to right, ' + computedSetting.headerColor + ', ' + computedSetting.headerColor.substr(0, computedSetting.headerColor.length - 2) + '0.2)'"
         ></v-img>
       </template>
       <img
@@ -304,7 +304,7 @@
         <template slot="badge">
           <v-icon
             size="12"
-            color="customLimeBg"
+            :color="$settings.indicatorColor"
           >
             fas fa-exclamation
           </v-icon>
@@ -351,7 +351,7 @@
       <v-img
         height="100%"
         slot="img"
-        gradient="to right, rgba(240, 244, 195, 1), rgba(255, 255, 255, 1)"
+        :gradient="'to right, ' + computedSetting.headerColor.substr(0, computedSetting.headerColor.length - 2) + '0.2), rgba(255, 255, 255, 1)'"
       ></v-img>
       <v-list
         class="pt-0"
@@ -435,7 +435,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -471,7 +471,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -517,7 +517,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -553,7 +553,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -599,7 +599,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -635,7 +635,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -671,7 +671,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -717,7 +717,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -753,7 +753,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -789,7 +789,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -825,7 +825,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -861,7 +861,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -897,7 +897,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                color="customLimeBg"
+                :color="$settings.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -933,7 +933,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  color="customLimeBg"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1065,7 +1065,7 @@
               <template slot="badge">
                 <v-icon
                   size="12"
-                  color="customLimeBg"
+                  :color="$settings.indicatorColor"
                 >
                   fas fa-exclamation
                 </v-icon>
@@ -1157,7 +1157,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  color="customLimeBg"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1203,7 +1203,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  color="customLimeBg"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1249,7 +1249,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  color="customLimeBg"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1303,7 +1303,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  color="customLimeBg"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1349,7 +1349,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  color="customLimeBg"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >

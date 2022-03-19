@@ -72,7 +72,7 @@
           >
             <v-badge
               :value="isOwnAd(item._id) && getOwnStatusContainerOfAd(item._id).unread.length > 0"
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               overlap
             >
               <template slot="badge">

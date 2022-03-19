@@ -265,7 +265,7 @@
           >
             <v-badge
               :value="(getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber') ? true : false) && (getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber').unread.length > 0 ? true : false)"
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               overlap
             >
               <template

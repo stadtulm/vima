@@ -359,7 +359,7 @@
                                   {{ showRepliesObj[message._id] ? 'fas fa-chevron-up' : 'fas fa-chevron-down' }}
                                 </v-icon>
                                 <v-sheet
-                                  color="customLimeBg"
+                                  :color="$settings.indicatorColor"
                                   class="ml-4 px-2 pt-1"
                                   v-if="message.replies.filter(obj => computedOwnStatusContainer.unread.map(unread => unread.id).includes(obj)).length > 0"
                                 >
@@ -386,7 +386,7 @@
                     style="bottom: 120px; right: calc(50% - 105px);"
                     absolute
                     large
-                    color="customLimeBg"
+                    :color="$settings.indicatorColor"
                     @click="scrollDown()"
                     v-if="showScrollDown"
                   >
@@ -637,7 +637,7 @@ export default {
           }
         } else {
           if (this.computedOwnStatusContainer.unread.map(unread => unread.id).includes(message._id)) {
-            return 'customLimeBg'
+            return this.$settings.indicatorColor
           } else {
             return '#f6f6f6'
           }

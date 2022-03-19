@@ -85,7 +85,7 @@
                   >
                     <v-sheet
                       class="px-4 py-2 foreign-sheet"
-                      :color="isOwnMessage(message) ? (isEditMessage === message._id ? '#ffeac2' : '#f0f0f0') : (computedOwnStatusContainer.unread.map(unread => unread.id).includes(message._id)) ? 'customLimeBg': '#f6f6f6'"
+                      :color="isOwnMessage(message) ? (isEditMessage === message._id ? '#ffeac2' : '#f0f0f0') : (computedOwnStatusContainer.unread.map(unread => unread.id).includes(message._id)) ? $settings.indicatorColor: '#f6f6f6'"
                     >
                       <!-- Date -->
                       <v-row
