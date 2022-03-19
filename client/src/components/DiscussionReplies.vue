@@ -87,7 +87,7 @@
                   >
                     <v-sheet
                       class="px-4 py-2 foreign-sheet"
-                      :color="isOwnMessage(message) ? (isEditMessage === message._id ? '#ffeac2' : '#f0f0f0') : (computedOwnSubscriberStatusContainer && computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(message._id)) ? 'customLimeBg': '#f6f6f6'"
+                      :color="isOwnMessage(message) ? (isEditMessage && isEditMessage._id === message._id ? '#ffeac2' : '#f0f0f0') : (computedOwnSubscriberStatusContainer && computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(message._id)) ? 'customLimeBg': '#f6f6f6'"
                     >
                       <!-- User -->
                       <v-row
@@ -208,6 +208,20 @@
                                         ></TranslatableTextInfo>
                                       </template>
                                     </TranslatableText>
+                                    <v-row
+                                      v-if="message.pics && message.pics.length > 0"
+                                      class="my-3"
+                                    >
+                                      <v-col
+                                        cols=2
+                                        v-for="(pic, i) in message.pics"
+                                        :key="i"
+                                      >
+                                        <Lightbox
+                                          :pic="pic"
+                                        ></Lightbox>
+                                      </v-col>
+                                    </v-row>
                                   </v-col>
                                   <v-col
                                     cols="12"
@@ -409,6 +423,24 @@
                   ref="messagesForm"
                   v-model="isValid"
                 >
+                  <v-row dense>
+                    <v-col
+                      class="font-weight-bold pb-0 pt-3"
+                      cols="12"
+                    >
+                      {{ isEditMessage ? $t('editAnswerTitle') : $t('writeNewAnswer')}}
+                      <v-btn
+                        v-if="isEditMessage"
+                        text
+                        small
+                        outlined
+                        class="ml-2"
+                        @click="uploadResetInput"
+                      >
+                        {{$t('cancelButton')}}
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                   <v-row
                     class="align-end"
                   >
@@ -457,6 +489,25 @@
                       </v-btn>
                     </v-col>
                   </v-row>
+                  <v-row
+                    v-if="dropzones.discussionReplyUpload && dropzones.discussionReplyUpload.pics.length > 0"
+                  >
+                    <v-col
+                      v-for="(pic, i) of dropzones.discussionReplyUpload.pics"
+                      :key="i"
+                      cols="2"
+                    >
+                      <v-img
+                        :src="pic.url ? s3 + pic.url : pic.dataURL"
+                        @click="uploadShowDialog()"
+                        class="pointer"
+                        :class="pic.dataURL ? 'progress': ''"
+                        aspect-ratio="1"
+                        cover
+                      >
+                      </v-img>
+                    </v-col>
+                  </v-row>
                 </v-form>
               </v-col>
             </v-row>
@@ -464,6 +515,38 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-dialog
+      eager
+      persistent
+      v-model="isUploadVisible"
+    >
+      <v-card>
+        <v-container>
+          <v-row>
+            <v-col>
+              <Upload
+                ref="discussionReplyUpload"
+                :pics="isEditMessage && isEditMessage.pics ? isEditMessage.pics : []"
+                :key="dropzones.discussionReplyUpload.key"
+                :optional="false"
+                :label="$t('pics') + ' REPLY'"
+                :maxFilesize="2"
+                :maxFiles="5"
+                resolutionString="1400x400"
+                :resizeWidth="1080"
+                resizeMethod="contain"
+                :resizeQuality="0.5"
+                :patchParentMethod="patchMessage"
+                titleType="title"
+                bgColor="white"
+                @uploadHideDialog="(queuedPics) => { uploadHideDialog('discussionReplyUpload', queuedPics) }"
+                @uploadRemovePic="(removedPic) => { uploadRemovePic('discussionReplyUpload', removedPic) }"
+              ></Upload>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -474,6 +557,10 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
+import Upload from '@/components/Upload.vue'
+import Vue from 'vue'
+import UploadButton from '@/components/UploadButton.vue'
+import Lightbox from '@/components/Lightbox.vue'
 
 export default {
   name: 'DiscussionReplies',
@@ -484,15 +571,20 @@ export default {
     'mainMessage',
     'discussion',
     'computedOwnSubscriberStatusContainer',
-    'computedGroupStatus'
+    'computedGroupStatus',
+    'dropzones',
+    'uploadGetAllPics'
   ],
   components: {
     TiptapVuetify,
     TranslatableText,
-    TranslatableTextInfo
+    TranslatableTextInfo,
+    Upload,
+    Lightbox
   },
 
   data: () => ({
+    isUploadVisible: false,
     isUpdating: false,
     isEditMessage: undefined,
     showRepliesObj: {},
@@ -523,6 +615,14 @@ export default {
   }),
 
   async mounted () {
+    this.$nextTick(() => {
+      const ComponentClass = Vue.extend(UploadButton)
+      const instance = new ComponentClass()
+      instance.$mount()
+      const el = document.querySelector('.tiptap-vuetify-editor__toolbar .v-toolbar__content div')
+      el.appendChild(instance.$el)
+      instance.$el.addEventListener('click', this.uploadShowDialog)
+    })
   },
 
   methods: {
@@ -537,6 +637,46 @@ export default {
       patchMessage: 'patch',
       removeMessage: 'remove'
     }),
+    uploadRemovePic (name, pic) {
+      this.patchMessage([
+        this.isEditMessage._id,
+        {
+          $pull: {
+            pics: {
+              _id: pic._id
+            }
+          }
+        }
+      ])
+    },
+    uploadResetInput () {
+      this.isEditMessage = undefined
+      this.dropzones.discussionReplyUpload = {
+        pics: [],
+        key: Date.now()
+      }
+      this.$refs.messagesForm.reset()
+      this.message = undefined
+    },
+    uploadShowDialog () {
+      this.isUploadVisible = true
+    },
+    uploadHideDialog (name, queuedPics) {
+      this.isUploadVisible = undefined
+      if (!queuedPics) {
+        this.dropzones[name] = {
+          key: Date.now(),
+          pics: []
+        }
+      } else {
+        this.dropzones[name].pics = this.uploadGetAllPics(
+          [
+            this.isEditMessage ? this.isEditMessage.pics : [],
+            queuedPics
+          ]
+        )
+      }
+    },
     loadMoreReplies () {
       this.manualLoad = true
       this.page++
@@ -557,14 +697,23 @@ export default {
       }
     },
     async editMessage (message) {
-      this.isEditMessage = message._id
+      this.isEditMessage = message
       this.message = message.text.value
+      this.dropzones.discussionReplyUpload = {
+        pics: this.uploadGetAllPics(
+          [
+            this.isEditMessage ? this.isEditMessage.pics : []
+          ]
+        ),
+        key: Date.now()
+      }
       document.querySelector('#replyInput' + this.mainMessage._id).scrollIntoView()
     },
     async sendMessage () {
       this.isSending = true
       if (!this.isEditMessage) {
         try {
+          const pics = await this.$refs.discussionReplyUpload.processQueue()
           await this.createMessage(
             [
               {
@@ -577,12 +726,13 @@ export default {
                     type: 'default'
                   }
                 ],
-                repliesTo: this.mainMessage._id
+                repliesTo: this.mainMessage._id,
+                pics
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
-          this.$refs.messagesForm.reset()
+          this.uploadResetInput()
           this.$nextTick(() => {
             this.$nextTick(() => {
               this.$emit('checkVisibleMessages')
@@ -594,9 +744,10 @@ export default {
         }
       } else {
         try {
+          const pics = await this.$refs.discussionReplyUpload.processQueue()
           await this.patchMessage(
             [
-              this.isEditMessage,
+              this.isEditMessage._id,
               {
                 text: [
                   {
@@ -605,14 +756,13 @@ export default {
                     type: 'default'
                   }
                 ],
+                pics,
                 editedAt: new Date()
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
-          this.$refs.messagesForm.reset()
-          this.message = undefined
-          this.isEditMessage = undefined
+          this.uploadResetInput()
         } catch (e) {
           this.setSnackbar({ text: this.$t('snackbarEditError'), color: 'error' })
         }

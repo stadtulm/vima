@@ -323,6 +323,8 @@
                               @translateText="translateText"
                               :computedOwnSubscriberStatusContainer="computedOwnSubscriberStatusContainer"
                               :computedGroupStatus="computedGroupStatus"
+                              :dropzones="dropzones"
+                              :uploadGetAllPics="uploadGetAllPics"
                             ></DiscussionReplies>
                           </v-col>
                         </v-row>
@@ -565,7 +567,7 @@
                 small
                 outlined
                 class="ml-2"
-                @click="resetInput"
+                @click="uploadResetInput"
               >
                 {{$t('cancelButton')}}
               </v-btn>
@@ -632,7 +634,7 @@
             >
               <v-img
                 :src="pic.url ? s3 + pic.url : pic.dataURL"
-                @click="showUpload()"
+                @click="uploadShowDialog()"
                 class="pointer"
                 :class="pic.dataURL ? 'progress': ''"
                 aspect-ratio="1"
@@ -650,30 +652,30 @@
       v-model="isUploadVisible"
     >
       <v-card>
-          <v-container>
-            <v-row>
-              <v-col>
-                <Upload
-                  ref="discussionMessageUpload"
-                  :pics="isEditMessage && isEditMessage.pics ? isEditMessage.pics : []"
-                  :key="dropzones.discussionMessageUpload.key"
-                  :optional="false"
-                  :label="$t('pics')"
-                  :maxFilesize="2"
-                  :maxFiles="5"
-                  resolutionString="1400x400"
-                  :resizeWidth="1080"
-                  resizeMethod="contain"
-                  :resizeQuality="0.5"
-                  :patchParentMethod="patchMessage"
-                  titleType="title"
-                  bgColor="white"
-                  @hideUpload="(queuedPics) => { hideUpload('discussionMessageUpload', queuedPics) }"
-                  @picRemoved="(removedPic) => { removePic('discussionMessageUpload', removedPic) }"
-                ></Upload>
-              </v-col>
-            </v-row>
-          </v-container>
+        <v-container>
+          <v-row>
+            <v-col>
+              <Upload
+                ref="discussionMessageUpload"
+                :pics="isEditMessage && isEditMessage.pics ? isEditMessage.pics : []"
+                :key="dropzones.discussionMessageUpload.key"
+                :optional="false"
+                :label="$t('pics')"
+                :maxFilesize="2"
+                :maxFiles="5"
+                resolutionString="1400x400"
+                :resizeWidth="1080"
+                resizeMethod="contain"
+                :resizeQuality="0.5"
+                :patchParentMethod="patchMessage"
+                titleType="title"
+                bgColor="white"
+                @uploadHideDialog="(queuedPics) => { uploadHideDialog('discussionMessageUpload', queuedPics) }"
+                @uploadRemovePic="(removedPic) => { uploadRemovePic('discussionMessageUpload', removedPic) }"
+              ></Upload>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-card>
     </v-dialog>
     <ViolationDialog
@@ -721,6 +723,10 @@ export default {
       discussionMessageUpload: {
         key: 1,
         pics: []
+      },
+      discussionReplyUpload: {
+        key: 1,
+        pics: []
       }
     },
     isUploadVisible: false,
@@ -766,7 +772,7 @@ export default {
       instance.$mount()
       const el = document.querySelector('.tiptap-vuetify-editor__toolbar .v-toolbar__content div')
       el.appendChild(instance.$el)
-      instance.$el.addEventListener('click', this.showUpload)
+      instance.$el.addEventListener('click', this.uploadShowDialog)
     })
     if (this.init) {
       // Init listeners
@@ -808,7 +814,7 @@ export default {
     ...mapActions('status-container-helper', {
       patchDiscussionMessageNotifications: 'patch'
     }),
-    removePic (name, pic) {
+    uploadRemovePic (name, pic) {
       this.patchMessage([
         this.isEditMessage._id,
         {
@@ -820,7 +826,7 @@ export default {
         }
       ])
     },
-    resetInput () {
+    uploadResetInput () {
       this.isEditMessage = undefined
       this.dropzones.discussionMessageUpload = {
         pics: [],
@@ -829,10 +835,10 @@ export default {
       this.$refs.messagesForm.reset()
       this.message = undefined
     },
-    showUpload () {
+    uploadShowDialog () {
       this.isUploadVisible = true
     },
-    hideUpload (name, queuedPics) {
+    uploadHideDialog (name, queuedPics) {
       this.isUploadVisible = undefined
       if (!queuedPics) {
         this.dropzones[name] = {
@@ -840,7 +846,7 @@ export default {
           pics: []
         }
       } else {
-        this.dropzones[name].pics = this.getAllPics(
+        this.dropzones[name].pics = this.uploadGetAllPics(
           [
             this.isEditMessage ? this.isEditMessage.pics : [],
             queuedPics
@@ -848,7 +854,7 @@ export default {
         )
       }
     },
-    getAllPics (picArrays) {
+    uploadGetAllPics (picArrays) {
       let result = []
       for (const picArray of picArrays) {
         if (picArray && Array.isArray(picArray)) {
@@ -937,7 +943,7 @@ export default {
       this.isEditMessage = message
       this.message = message.text.value
       this.dropzones.discussionMessageUpload = {
-        pics: this.getAllPics(
+        pics: this.uploadGetAllPics(
           [
             this.isEditMessage ? this.isEditMessage.pics : []
           ]
@@ -969,7 +975,7 @@ export default {
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
-          this.resetInput()
+          this.uploadResetInput()
           this.$nextTick(() => {
             this.$nextTick(() => {
               document.querySelector('#messageContainer').scrollTop = document.querySelector('#messageContainer').scrollHeight
@@ -996,7 +1002,7 @@ export default {
                     type: 'default'
                   }
                 ],
-                pics: this.getAllPics(
+                pics: this.uploadGetAllPics(
                   [
                     this.isEditMessage.pics,
                     pics
@@ -1007,7 +1013,7 @@ export default {
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
-          this.resetInput()
+          this.uploadResetInput()
           this.triggerNewMessage = Date.now()
         } catch (e) {
           console.log(e)

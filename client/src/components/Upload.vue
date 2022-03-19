@@ -217,7 +217,7 @@ export default {
     }),
     hideUpload (clear) {
       this.$emit(
-        'hideUpload',
+        'uploadHideDialog',
         clear ? null : this.$refs[this._uid + '_vueDropzone'].getQueuedFiles()
       )
     },
@@ -270,7 +270,7 @@ export default {
             return
           }
           await this.removeUpload([file.name, {}, {}])
-          this.$emit('picRemoved', file)
+          this.$emit('uploadRemovePic', file)
         // Something went wrong
         } else if (this.isLoading) {
           throw error
@@ -289,7 +289,7 @@ export default {
     async processQueue () {
       this.isLoading = true
       await this.$refs[this._uid + '_vueDropzone'].processQueue()
-      const timerPromise = new Promise(resolve => this.$on('donedone', resolve))
+      const timerPromise = new Promise(resolve => this.$on('queueFinished', resolve))
       await timerPromise
       return this.queuedPics
     },
@@ -328,7 +328,7 @@ export default {
         }
         if (this.isLoading) {
           this.isLoading = false
-          this.$emit('donedone')
+          this.$emit('queueFinished')
           this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         }
       }

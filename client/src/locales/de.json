@@ -633,5 +633,6 @@
   "languageFormatRule": "Sprachcodes bestehen immer aus zwei Buchstaben (z.B. en, de, ...)",
   "notEditable": "Kann nicht verändert werden",
   "editPostTitle": "Beitrag editieren",
-  "ua": "Ukrainisch"
+  "ua": "Ukrainisch",
+  "editAnswerTitle": "Antwort editieren"
 }
