@@ -1,18 +1,19 @@
 <template>
   <div>
     <v-sheet
-      class="pointer"
+      :class="files.length < maxFiles ? 'pointer' : ''"
       width="100%"
       min-height="200px"
       @dragover.prevent
-      @drop.prevent="addFile($event, 'drop')"
+      @drop.prevent="files.length < maxFiles ? addFile($event, 'drop')  : null"
       @dragenter.prevent="isInsideDroparea = true"
       @dragleave.prevent="isInsideDroparea = false"
-      :color="isInsideDroparea ? 'success': 'info'"
+      :color="isInsideDroparea ? (files.length < maxFiles ? 'success' : 'error'): 'info'"
       @click="$refs.hiddenInput.click()"
     >
     <input
       multiple
+      :disabled="files.length >= maxFiles"
       type="file"
       ref="hiddenInput"
       style="display:none"
@@ -30,26 +31,28 @@
             <v-card>
               <v-img
                 class="text-center align-center"
-                :src="file.uri"
+                :src="file.state === 'uploaded' ? s3 + file.url : file.uri"
                 max-height="200"
               >
                 <v-tooltip
+                  v-if="file.state"
                   bottom
                 >
                   <template v-slot:activator="{ on, attrs }">
-                <v-icon
-                  v-bind="attrs"
-                  v-on="on"
-                  color="white"
-                  size="50"
-                >
-                  {{fileStates[file.state].icon}}
-                </v-icon>
+                    <v-icon
+                      v-bind="attrs"
+                      v-on="on"
+                      color="white"
+                      size="50"
+                    >
+                      {{fileStates[file.state].icon}}
+                    </v-icon>
                   </template>
                   <span>{{fileStates[file.state].tooltip}}</span>
                 </v-tooltip>
               </v-img>
                 <v-text-field
+                  v-model="file.credit"
                   class="mx-3 mt-3"
                   @click.stop
                   :label="$t('copyrightOwner')"
@@ -85,6 +88,12 @@ export default {
     isPrivate: {
       type: Boolean,
       default: false
+    },
+    value: {
+    },
+    maxFiles: {
+      type: Number,
+      default: 1
     }
   },
 
@@ -108,21 +117,61 @@ export default {
   }),
 
   async mounted () {
-    this.$set(this.files, [])
+    this.adapt()
   },
 
   computed: {
     ...mapGetters([
+      's3',
       'rules'
     ])
   },
 
   methods: {
     ...mapActions('uploads', {
-      createUpload: 'create'
+      createUpload: 'create',
+      removeUpload: 'remove'
     }),
+    async upload () {
+      for (const file of this.files.filter(file => file.state === 'pending')) {
+        const result = await this.createUpload(file)
+        delete file.uri
+        file.url = result.id
+      }
+      if (this.maxFiles > 1) {
+        this.$emit('input', this.files)
+      } else {
+        this.$emit('input', this.files[0])
+      }
+    },
+    adapt () {
+      if (!this.value) {
+        this.files = []
+      } else {
+        if (Array.isArray(this.value)) {
+          if (this.maxFiles > 1) {
+            this.files = this.value.map(file => ({
+              ...file,
+              state: file.state || 'uploaded'
+            }))
+          } else {
+            throw new Error('Max files ist set to 1 or below. Array ist not allowed as value.')
+          }
+        } else {
+          this.files = [{
+            ...this.value,
+            state: this.value.state || 'uploaded'
+          }]
+        }
+      }
+    },
     updateFileCredit (e, i) {
       this.$set(this.files, i, { ...this.files[i], credit: e })
+      if (this.maxFiles > 1) {
+        this.$emit('input', this.files)
+      } else {
+        this.$emit('input', this.files[0])
+      }
     },
     async addFile (e, type) {
       let files
@@ -135,6 +184,11 @@ export default {
       const filesWithDataUrl = await this.readAsDataURL([...files])
       this.files = this.files.concat(filesWithDataUrl)
       this.$refs.hiddenInput.value = null
+      if (this.maxFiles > 1) {
+        this.$emit('input', this.files)
+      } else {
+        this.$emit('input', this.files[0])
+      }
     },
     fileToDataURL (file) {
       var reader = new FileReader()
@@ -154,17 +208,25 @@ export default {
         state: 'pending'
       })))
     },
-    removeFile (file) {
-      this.files = this.files.filter(f => {
-        return f !== file
-      })
+    async removeFile (file) {
+      if (file.state === 'uploaded') {
+        await this.removeUpload([file.url, {}, {}])
+        this.$emit('fileRemove', file)
+      } else {
+        this.files = this.files.filter(f => {
+          return f !== file
+        })
+      }
+      // TODO PATCH AND EMIT ODER NUR PATCH
     }
   },
   watch: {
-    files: {
+    value: {
       deep: true,
-      handler () {
-        this.$emit('input', this.files)
+      handler (newValue, oldValue) {
+        if (newValue !== oldValue) {
+          this.adapt()
+        }
       }
     }
   }
