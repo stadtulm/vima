@@ -82,12 +82,17 @@ async function createTranslations (app, messages, data) {
   for (const key of data.fields) {
     await Promise.all(messages.map(async m => {
       if (!m[key].find(t => t.lang === data.target)) {
-        const translation = await translate({
-          free_api: true,
-          text: m[key].find(t => t.type === 'default').value,
-          target_lang: data.target,
-          auth_key: process.env.DEEPL_AUTH_KEY
-        })
+        let translation
+        try {
+          translation = await translate({
+            free_api: true,
+            text: m[key].find(t => t.type === 'default').value,
+            target_lang: data.target,
+            auth_key: process.env.DEEPL_AUTH_KEY
+          })
+        } catch (e) {
+          throw new Error(e.response.data.message)
+        }
         const targetText = {
           lang: data.target,
           type: 'deepl',
