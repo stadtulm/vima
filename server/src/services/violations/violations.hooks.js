@@ -147,6 +147,14 @@ module.exports = {
         commonHooks.isProvider('external'),
         commonHooks.alterItems(rec => {
           if (
+            rec.message &&
+            rec.message.id &&
+            rec.message.id.text &&
+            Array.isArray(rec.message.id.text)
+          ) {
+            rec.message.id.text = rec.message.id.text.find(t => t.type === 'default')
+          }
+          if (
             rec.discussion &&
             Array.isArray(rec.discussion.title)
           ) {

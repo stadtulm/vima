@@ -31,14 +31,27 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col
-            >
+            <v-col>
               <v-alert
                 color="warning"
                 dark
                 v-html="selectedViolation ? selectedViolation.originalMessage : computedMessage.text.value"
               >
               </v-alert>
+              <v-row
+                v-if="computedMessage && computedMessage.pics && computedMessage.pics.length > 0"
+                class="my-3"
+              >
+                <v-col
+                  cols=2
+                  v-for="(pic, i) in computedMessage.pics"
+                  :key="i"
+                >
+                  <Lightbox
+                    :pic="pic"
+                  ></Lightbox>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
           <template
@@ -129,11 +142,13 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import Lightbox from '@/components/Lightbox.vue'
 
 export default {
   name: 'ViolationDialog',
 
   components: {
+    Lightbox
   },
 
   props: [
@@ -255,6 +270,7 @@ export default {
 
   computed: {
     ...mapGetters([
+      's3',
       'rules',
       'newTab'
     ]),
