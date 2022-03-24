@@ -146,7 +146,7 @@
                 <v-col>
                   <v-checkbox
                     color="customGrey"
-                    v-model="isAgreed"
+                    v-model="isPrivacyAgreed"
                     :rules="[v => v === true || $t('acceptPrivacyRule')]"
                   >
                     <template
@@ -157,6 +157,19 @@
                       >
                       </div>
                     </template>
+                  </v-checkbox>
+                </v-col>
+              </v-row>
+              <v-row
+                dense
+              >
+                <v-col>
+                  <v-checkbox
+                    color="customGrey"
+                    v-model="isAudienceAgreed"
+                    :rules="[v => v === true || $t('acceptPrivacyRule')]"
+                    :label="$t('audienceCheckbox')"
+                  >
                   </v-checkbox>
                 </v-col>
               </v-row>
@@ -212,7 +225,8 @@ export default {
     isLoading: false,
     loginError: undefined,
     isValid: false,
-    isAgreed: false,
+    isPrivacyAgreed: false,
+    isAudienceAgreed: false,
     firstName: undefined,
     lastName: undefined,
     userName: undefined,

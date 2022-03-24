@@ -638,5 +638,6 @@
   "editAnswerTitle": "Antwort editieren",
   "uploadPending": "Datei wird beim Speichern hochgeladen",
   "uploadDone": "Datei ist hochgeladen",
-  "uploadError": "Fehler - Datei wird nicht hochgeladen"
+  "uploadError": "Fehler - Datei wird nicht hochgeladen",
+  "audienceCheckbox": "Ich bin über 18 Jahre alt."
 }
