@@ -84,7 +84,6 @@
                   v-model="languages"
                   :items="languages"
                   :label="$t('languages') + ' (ISO 3166-1)'"
-                  :disabled="user.role !== 'admins'"
                   :rules="[
                     v => (v.length > 0) || $t('languageRequired'),
                     v => (v.includes(this.defaultLanguage)) || $t('defaultLanguageRequired'),
@@ -271,7 +270,6 @@
                           v-model="module.position"
                           :label="$t('position')"
                           :items="Array.from({length: Object.keys(modules).length}, (_, i) => i + 1)"
-                          :disabled="user.role !== 'admins'"
                           :rules="[rules.required, v => Object.keys(modules).map(k => modules[k].position).filter(p => v === p).length === 1 || $t('uniquePositionError')]"
                         >
                         </v-select>
@@ -394,30 +392,6 @@
                         ></FileUpload>
                       </v-col>
                     </v-row>
-                    <!--
-                    <Upload
-                      :id="dropzones[key + 'Upload']"
-                      :isDialog="false"
-                      v-if="dropzones[key + 'Upload']"
-                      :ref="key + 'Upload'"
-                      :pics="module.pics || []"
-                      :key="dropzones[key + 'Upload'].key"
-                      :optional="false"
-                      :label="$t('pics')"
-                      :maxFilesize="1"
-                      :maxFiles="1"
-                      resolutionString="1400x400"
-                      :resizeWidth="1080"
-                      resizeMethod="contain"
-                      :resizeQuality="0.5"
-                      titleType="subtitle-2"
-                      bgColor="white"
-                      @uploadHideDialog="(queuedPics) => { uploadHideDialog('discussionMessageUpload', queuedPics) }"
-                      @uploadRemovePic="(removedPic) => { uploadRemovePic('discussionMessageUpload', removedPic) }"
-                      acceptedMimeTypes="image/svg+xml, image/png"
-                      @retriggerValidation="retriggerValidation = Date.now()"
-                    ></Upload>
-                    -->
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -458,11 +432,9 @@ export default {
   },
 
   data: () => ({
-    retriggerValidation: 1,
     headerColor: undefined,
     indicatorColor: undefined,
     modules: undefined,
-    isQueued: false,
     isLoading: false,
     isValid: false,
     headerLogo: undefined,
@@ -470,29 +442,14 @@ export default {
     instagram: undefined,
     twitter: undefined,
     languages: [],
-    defaultLanguage: undefined,
-    dropzones: {
-    }
+    defaultLanguage: undefined
   }),
 
   async mounted () {
     await this.adapt()
-    this.$set(this.dropzones, 'headerLogoUpload', {
-      key: 1,
-      pics: []
-    })
-    for (const key of Object.keys(this.$settings.modules)) {
-      this.$set(this.dropzones, key + 'Upload', {
-        key: 1,
-        pics: []
-      })
-    }
   },
 
   methods: {
-    test (a) {
-      return false
-    },
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
@@ -604,13 +561,7 @@ export default {
       'rules',
       's3',
       'parseRgbString'
-    ]),
-    ...mapGetters('auth', [
-      'user'
-    ]),
-    ...mapGetters('organisations', {
-      getOrganisation: 'get'
-    })
+    ])
   },
 
   watch: {
