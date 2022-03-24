@@ -76,7 +76,20 @@
             <v-card-subtitle
               class="pb-1"
             >
-              {{computedAd.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}} {{$t('from')}} {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}} {{ user ? $t('by') + ' ' + computedAd.author.user.userName : ''}}
+              {{computedAd.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}}
+              {{$t('from')}} {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}}
+              <template
+                v-if="user"
+              >
+                {{$t('by')}}
+                <v-btn
+                  text
+                  class="px-1"
+                  @click="$router.push({name: 'User', params: { user: computedAd.author.user._id} })"
+                >
+                {{computedAd.author.user.userName}}
+                </v-btn>
+              </template>
             </v-card-subtitle>
           </v-col>
           <v-col
