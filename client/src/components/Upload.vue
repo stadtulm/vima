@@ -293,12 +293,14 @@ export default {
     async processQueue () {
       this.isLoading = true
       await this.$refs['vueDropzone_' + this._uid].processQueue()
-      const timerPromise = new Promise(resolve => {
-        this.$on('queueFinished_' + this._uid, () => {
-          resolve()
+      if (this.isQueued) {
+        const timerPromise = new Promise(resolve => {
+          this.$on('queueFinished_' + this._uid, () => {
+            resolve()
+          })
         })
-      })
-      await timerPromise
+        await timerPromise
+      }
       return this.queuedPics
     },
     uploadSuccessPics (file, response) {
