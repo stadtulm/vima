@@ -24,17 +24,17 @@
             <v-col
               cols="12"
               tabIndex="0"
-              @keypress="$refs[_uid + '_vueDropzone'].$el.click()"
+              @keypress="$refs['vueDropzone_' + this._uid].$el.click()"
             >
               <vue-dropzone
-                :id="_uid + '_vueDropzone'"
-                :ref="_uid + '_vueDropzone'"
+                :id="'vueDropzone_' + _uid "
+                :ref="'vueDropzone_' + _uid "
                 :options="dropzoneOptionsPics"
                 :headers="dropzoneOptionsPics.headers"
                 @vdropzone-success="uploadSuccessPics"
                 @vdropzone-removed-file="removeFilePics"
                 @vdropzone-mounted="dropzoneMountedPics"
-                @vdropzone-queue-complete="queueComplete"
+                @vdropzone-queue-complete="(index, $event) => { queueComplete(index, $event, this._uid) }"
                 @vdropzone-files-added="updateQueuedFiles"
                 @vdropzone-sending="addUuid"
                 :destroyDropzone="false"
@@ -109,6 +109,7 @@
         </v-col>
       </v-row>
       <v-card-actions
+        v-if="isDialog"
         class="px-0 pt-4"
       >
         <v-btn
@@ -148,6 +149,9 @@ export default {
   name: 'Upload',
 
   props: {
+    isDialog: {
+      type: Boolean
+    },
     pics: {
       type: Array
     },
@@ -218,7 +222,7 @@ export default {
     hideUpload (clear) {
       this.$emit(
         'uploadHideDialog',
-        clear ? null : this.$refs[this._uid + '_vueDropzone'].getQueuedFiles()
+        clear ? null : this.$refs['vueDropzone_' + this._uid].getQueuedFiles()
       )
     },
     addUuid (file, xhr, formData) {
@@ -230,7 +234,7 @@ export default {
         const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
         tmpMockFile.name = pic.url
         tmpMockFile._id = pic._id
-        this.$refs[this._uid + '_vueDropzone'].manuallyAddFile(tmpMockFile, this.s3 + pic.url)
+        this.$refs['vueDropzone_' + this._uid].manuallyAddFile(tmpMockFile, this.s3 + pic.url)
       }
       this.$nextTick(() => {
         if (this.$refs[this._uid + '_uploadForm']) {
@@ -260,7 +264,7 @@ export default {
       try {
         // Reset queued status
         if (file.status === 'queued') {
-          if (this.$refs[this._uid + '_vueDropzone'].getQueuedFiles().length === 0) {
+          if (this.$refs['vueDropzone_' + this._uid].getQueuedFiles().length === 0) {
             this.isQueued = false
           }
         // Remove file from s3
@@ -275,7 +279,7 @@ export default {
         } else if (this.isLoading) {
           throw error
         // Reset error state if no more errors exist
-        } else if (file.status === 'error' && this.$refs[this._uid + '_vueDropzone'].getRejectedFiles().length === 0) {
+        } else if (file.status === 'error' && this.$refs['vueDropzone_' + this._uid].getRejectedFiles().length === 0) {
           this.dropzoneError = false
         }
         // Remove pic from pics array is existant
@@ -288,8 +292,12 @@ export default {
     },
     async processQueue () {
       this.isLoading = true
-      await this.$refs[this._uid + '_vueDropzone'].processQueue()
-      const timerPromise = new Promise(resolve => this.$on('queueFinished', resolve))
+      await this.$refs['vueDropzone_' + this._uid].processQueue()
+      const timerPromise = new Promise(resolve => {
+        this.$on('queueFinished_' + this._uid, () => {
+          resolve()
+        })
+      })
       await timerPromise
       return this.queuedPics
     },
@@ -299,11 +307,11 @@ export default {
         this.$set(this.queuedPics.find(obj => obj.url === response.uuid), 'url', response.id)
       }
     },
-    async queueComplete () {
+    async queueComplete (i, e, customId) {
       if (this.isQueued) {
         this.isQueued = false
         let hasErrors = false
-        for (const file of this.$refs[this._uid + '_vueDropzone'].getAcceptedFiles()) {
+        for (const file of this.$refs['vueDropzone_' + this._uid].getAcceptedFiles()) {
           // Check response for corresponding element in pics
           const newPic = this.queuedPics.find(obj => obj.uuid === file.upload.uuid)
           // Create error if not existant and return
@@ -320,17 +328,17 @@ export default {
           }
           // Replace real pic with mockfile pointing to s3
           file.toReplace = true
-          this.$refs[this._uid + '_vueDropzone'].removeFile(file)
+          this.$refs['vueDropzone_' + this._uid].removeFile(file)
           const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
           tmpMockFile.name = newPic.url
           tmpMockFile._id = newPic._id
-          this.$refs[this._uid + '_vueDropzone'].manuallyAddFile(tmpMockFile, this.s3 + newPic.url)
+          this.$refs['vueDropzone_' + this._uid].manuallyAddFile(tmpMockFile, this.s3 + newPic.url)
         }
-        if (this.isLoading) {
-          this.isLoading = false
-          this.$emit('queueFinished')
-          this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-        }
+      }
+      if (this.isLoading) {
+        // this.isLoading = false
+        this.$emit('queueFinished_' + this._uid)
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
       }
     }
   },
@@ -355,7 +363,7 @@ export default {
         },
         autoProcessQueue: false,
         addRemoveLinks: true,
-        dictDefaultMessage: '<i style="font-size: 40px" class="fas fa-images"></i><br><br><span class="v-label"><span class="font-weight-bold">' + this.$t('dropFilesHeadline', { filesize: this.maxFilesize }) + '</span><br><br>' + this.$t('dropFilesBody', { resolution: this.resolutionString }) + '</span>',
+        dictDefaultMessage: '<i style="font-size: 40px" class="fas fa-images"></i><br><br><span class="v-label"><span class="font-weight-bold">' + this.$t('dropFilesHeadline', { filesize: this.maxFilesize, maxfiles: this.maxFiles }) + '</span><br><br>' + this.$t('dropFilesBody', { resolution: this.resolutionString }) + '</span>',
         dictRemoveFile: '<i style="font-size: 40px" class="fas fa-times"></i>',
         dictCancelUpload: '<i style="font-size: 40px" class="fas fa-times"></i>',
         dictFileTooBig: this.$t('fileTooBigError'),
@@ -370,12 +378,17 @@ export default {
   },
 
   watch: {
+    isLoading () {
+    },
     queuedPics () {
       this.$nextTick(() => {
         if (this.$refs[this._uid + '_uploadForm']) {
           this.$refs[this._uid + '_uploadForm'].validate()
         }
       })
+    },
+    isValid () {
+      this.$emit('retriggerValidation')
     }
   }
 }

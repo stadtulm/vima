@@ -179,10 +179,11 @@
   "acceptGroupWarningBody": "Bevor Ihre {type} von anderen gesehen werden kann, muss sie durch eine Administrator*in freigegeben werden.<br><br>Sie erhalten dann eine Benachrichtigung.",
   "cancelButton": "Abbrechen",
   "understoodButton": "Ok, alles klar",
-  "fileTooBigError": "Datei zu groß ({{filesize}}MB). Die maximale Größe beträgt {{maxFilesize}}MB.",
-  "dropFilesHeadline": "Dateien (max. {filesize}MB) hier ablegen oder klicken.",
+  "fileTooBigError": "Datei zu groß ({filesize}MB). Die maximale Größe beträgt {maxFilesize}MB.",
+  "dropFilesHeadline": "Dateien (max. {maxfiles} x {filesize}MB) hier ablegen oder klicken.",
   "dropFilesBody": "Die maximal angezeigte Größe beträgt {resolution} px.",
-  "fileTypeNotAcceptedError": "Unerlaubter Dateityp. Erlaubt sind jpeg und png.",
+  "fileTypeNotAcceptedError": "Unerlaubter Dateityp \"{filetype}\".",
+  "acceptedFileTypes": "Erlaubt sind \"{filetypes}\".",
   "name": "Name",
   "groupName": "Name der Interessengruppe",
   "description": "Beschreibung",
@@ -634,5 +635,8 @@
   "notEditable": "Kann nicht verändert werden",
   "editPostTitle": "Beitrag editieren",
   "ua": "Ukrainisch",
-  "editAnswerTitle": "Antwort editieren"
+  "editAnswerTitle": "Antwort editieren",
+  "uploadPending": "Datei wird beim Speichern hochgeladen",
+  "uploadDone": "Datei ist hochgeladen",
+  "uploadError": "Fehler - Datei wird nicht hochgeladen"
 }

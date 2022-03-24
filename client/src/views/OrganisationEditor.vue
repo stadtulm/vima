@@ -400,7 +400,7 @@ export default {
         },
         autoProcessQueue: false,
         addRemoveLinks: true,
-        dictDefaultMessage: '<i style="font-size: 40px" class="fas fa-images"></i><br><br><span class="v-label"><span class="font-weight-bold">' + this.$t('dropFilesHeadline', { filesize: '0.5' }) + '</span><br><br>' + this.$t('dropFilesBody', { resolution: '400x400' }) + '</span>',
+        dictDefaultMessage: '<i style="font-size: 40px" class="fas fa-images"></i><br><br><span class="v-label"><span class="font-weight-bold">' + this.$t('dropFilesHeadline', { filesize: '0.5', maxfiles: 1 }) + '</span><br><br>' + this.$t('dropFilesBody', { resolution: '400x400' }) + '</span>',
         dictRemoveFile: '<i style="font-size: 40px" class="fas fa-times"></i>',
         dictCancelUpload: '<i style="font-size: 40px" class="fas fa-times"></i>',
         dictFileTooBig: this.$t('fileTooBigError'),

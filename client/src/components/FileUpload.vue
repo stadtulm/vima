@@ -1,14 +1,15 @@
 <template>
   <div>
     <v-sheet
+      outlined
+      class="droparea"
       :class="files.length < maxFiles ? 'pointer' : ''"
       width="100%"
-      min-height="200px"
       @dragover.prevent
       @drop.prevent="files.length < maxFiles ? addFile($event, 'drop')  : null"
       @dragenter.prevent="isInsideDroparea = true"
       @dragleave.prevent="isInsideDroparea = false"
-      :color="isInsideDroparea ? (files.length < maxFiles ? 'success' : 'error'): 'info'"
+      :color="isInsideDroparea ? (files.length < maxFiles ? 'success' : 'error'): bgColor"
       @click="$refs.hiddenInput.click()"
     >
     <input
@@ -19,6 +20,30 @@
       style="display:none"
       @change="addFile($event, 'click')"
     />
+      <v-row
+        dense
+        class="pt-4"
+        v-if="files.length < maxFiles"
+      >
+        <v-col
+          cols=12
+          class="text-center title"
+        >
+          {{$t('dropFilesHeadline', { maxfiles: maxFiles, filesize: maxFileSize })}}
+        </v-col>
+        <v-col
+          cols=12
+          class="text-center"
+        >
+          {{$t('acceptedFileTypes', {filetypes: acceptedMimeTypes.join(', ')})}}
+        </v-col>
+        <v-col
+          cols=12
+          class="text-center"
+        >
+          {{$t('dropFilesBody', { resolution })}}
+        </v-col>
+      </v-row>
       <v-container
         fluid
       >
@@ -26,13 +51,15 @@
           <v-col
             v-for="(file, i) in files"
             :key="i"
-            cols="3"
+            cols="12"
+            sm="6"
           >
             <v-card>
               <v-img
                 class="text-center align-center"
                 :src="file.state === 'uploaded' ? s3 + file.url : file.uri"
-                max-height="200"
+                height="200"
+                :gradient="file.errors.length > 0 ? 'to top, red, transparent' : ''"
               >
                 <v-tooltip
                   v-if="file.state"
@@ -48,7 +75,18 @@
                       {{fileStates[file.state].icon}}
                     </v-icon>
                   </template>
-                  <span>{{fileStates[file.state].tooltip}}</span>
+                  <div>{{$t(fileStates[file.state].tooltip)}}:</div>
+                  <div
+                    v-for="error in file.errors"
+                    :key="error"
+                  >
+                    {{$t(error, {
+                      filesize: (Math.round((file.size / 1024 / 1024) * 100) / 100).toFixed(2),
+                      maxFilesize: maxFileSize,
+                      filetype: file.type,
+                      filetypes: acceptedMimeTypes.join(', ')
+                    })}}
+                  </div>
                 </v-tooltip>
               </v-img>
                 <v-text-field
@@ -58,6 +96,7 @@
                   :label="$t('copyrightOwner')"
                   :rules="[rules.required]"
                   @input="updateFileCredit($event, i)"
+                  :disabled="file.errors.length > 0"
                 ></v-text-field>
               <v-card-actions>
                 <v-btn
@@ -94,6 +133,20 @@ export default {
     maxFiles: {
       type: Number,
       default: 1
+    },
+    maxFileSize: {
+      type: Number,
+      default: 1
+    },
+    acceptedMimeTypes: {
+      type: Array,
+      default: () => []
+    },
+    resolution: {
+      type: String
+    },
+    bgColor: {
+      type: String
     }
   },
 
@@ -107,11 +160,15 @@ export default {
     fileStates: {
       uploaded: {
         icon: 'fas fa-check-circle',
-        tooltip: 'Uploaded'
+        tooltip: 'uploadDone'
       },
       pending: {
         icon: 'fas fa-arrow-circle-up',
-        tooltip: 'Pending'
+        tooltip: 'uploadPending'
+      },
+      error: {
+        icon: 'fas fa-exclamation-circle',
+        tooltip: 'uploadError'
       }
     }
   }),
@@ -160,7 +217,8 @@ export default {
         } else {
           this.files = [{
             ...this.value,
-            state: this.value.state || 'uploaded'
+            state: this.value.state || 'uploaded',
+            errors: this.value.errors || []
           }]
         }
       }
@@ -189,6 +247,8 @@ export default {
       } else {
         this.$emit('input', this.files[0])
       }
+      this.isInsideDroparea = false
+      this.$emit('fileAdd')
     },
     fileToDataURL (file) {
       var reader = new FileReader()
@@ -200,13 +260,25 @@ export default {
       })
     },
     readAsDataURL (files) {
-      return Promise.all(files.map(async file => ({
-        credit: file.credit,
-        originalname: file.name,
-        uri: await this.fileToDataURL(file),
-        private: this.isPrivate,
-        state: 'pending'
-      })))
+      return Promise.all(files.map(async file => {
+        const errors = []
+        if (file.size / 1024 / 1024 > this.maxFileSize) {
+          errors.push('fileTooBigError')
+        }
+        if (!this.acceptedMimeTypes.includes(file.type)) {
+          errors.push('fileTypeNotAcceptedError')
+        }
+        return {
+          credit: file.credit,
+          originalname: file.name,
+          uri: await this.fileToDataURL(file),
+          private: this.isPrivate,
+          state: errors.length === 0 ? 'pending' : 'error',
+          type: file.type,
+          size: file.size,
+          errors: errors
+        }
+      }))
     },
     async removeFile (file) {
       if (file.state === 'uploaded') {
@@ -232,3 +304,8 @@ export default {
   }
 }
 </script>
+
+<style>
+  .droparea * {pointer-events: none;}
+  .droparea .v-card * {pointer-events: auto}
+</style>

@@ -21,22 +21,28 @@
             v-model="isValid"
             ref="settingsForm"
           >
-            <Upload
-              :optional="false"
-              :label="$t('brand')"
-              :parent="settings[0]"
-              path="headerLogo"
-              :maxFilesize="0.1"
-              :maxFiles="1"
-              resolutionString="1400x400"
-              :resizeWidth="1080"
-              resizeMethod="contain"
-              :resizeQuality="0.5"
-              :patchParentMethod="patchSettings"
-              titleType="title"
-              bgColor="customGreyUltraLight"
-              acceptedMimeTypes="image/svg+xml, image/png"
-            ></Upload>
+            <v-row>
+              <v-col
+                class="title"
+              >
+                {{$t('brand')}}
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <FileUpload
+                  ref="headerLogoFileUpload"
+                  v-model="headerLogo"
+                  @fileRemove="patchFileRemove($event, 'headerLogo', false)"
+                  @fileAdd="$nextTick(() => { $refs.settingsForm.validate() })"
+                  :acceptedMimeTypes="['image/png', 'image/svg+xml']"
+                  :maxFileSize="0.25"
+                  :maxFiles="1"
+                  resolution="50"
+                  bgColor="white"
+                ></FileUpload>
+              </v-col>
+            </v-row>
             <v-divider
               :class="headerLogo ? 'mb-9 mt-5' : 'mb-9 mt-12'"
             ></v-divider>
@@ -77,7 +83,7 @@
                   background-color="#fff"
                   v-model="languages"
                   :items="languages"
-                  :label="$t('languages')"
+                  :label="$t('languages') + ' (ISO 3166-1)'"
                   :disabled="user.role !== 'admins'"
                   :rules="[
                     v => (v.length > 0) || $t('languageRequired'),
@@ -373,27 +379,49 @@
                         </v-card>
                       </v-col>
                     </v-row>
+                    <v-row>
+                      <v-col>
+                        <FileUpload
+                          :ref="key + 'Upload'"
+                          v-model="modules[key].pic"
+                          @fileRemove="patchFileRemove($event, 'modules.' + key + '.pic', false)"
+                          @fileAdd="$nextTick(() => { $refs.settingsForm.validate() })"
+                          :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                          :maxFileSize="0.5"
+                          :maxFiles="1"
+                          resolution="1000x200"
+                          bgColor="customGreyUltraLight"
+                        ></FileUpload>
+                      </v-col>
+                    </v-row>
+                    <!--
                     <Upload
+                      :id="dropzones[key + 'Upload']"
+                      :isDialog="false"
+                      v-if="dropzones[key + 'Upload']"
+                      :ref="key + 'Upload'"
+                      :pics="module.pics || []"
+                      :key="dropzones[key + 'Upload'].key"
                       :optional="false"
-                      :label="$t('pic')"
-                      :parent="settings[0]"
-                      :path="'modules.' + key + '.pic'"
+                      :label="$t('pics')"
                       :maxFilesize="1"
                       :maxFiles="1"
                       resolutionString="1400x400"
                       :resizeWidth="1080"
                       resizeMethod="contain"
                       :resizeQuality="0.5"
-                      :patchParentMethod="patchSettings"
                       titleType="subtitle-2"
                       bgColor="white"
+                      @uploadHideDialog="(queuedPics) => { uploadHideDialog('discussionMessageUpload', queuedPics) }"
+                      @uploadRemovePic="(removedPic) => { uploadRemovePic('discussionMessageUpload', removedPic) }"
+                      acceptedMimeTypes="image/svg+xml, image/png"
+                      @retriggerValidation="retriggerValidation = Date.now()"
                     ></Upload>
+                    -->
                   </v-card-text>
                 </v-card>
-
               </v-col>
             </v-row>
-
           </v-form>
           <v-card-actions
             class="px-0"
@@ -419,17 +447,18 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import Upload from '@/components/Upload.vue'
+import FileUpload from '@/components/FileUpload.vue'
 const appName = process.env.VUE_APP_NAME
 
 export default {
   name: 'SettingsEditor',
 
   components: {
-    Upload
+    FileUpload
   },
 
   data: () => ({
+    retriggerValidation: 1,
     headerColor: undefined,
     indicatorColor: undefined,
     modules: undefined,
@@ -441,14 +470,29 @@ export default {
     instagram: undefined,
     twitter: undefined,
     languages: [],
-    defaultLanguage: undefined
+    defaultLanguage: undefined,
+    dropzones: {
+    }
   }),
 
   async mounted () {
     await this.adapt()
+    this.$set(this.dropzones, 'headerLogoUpload', {
+      key: 1,
+      pics: []
+    })
+    for (const key of Object.keys(this.$settings.modules)) {
+      this.$set(this.dropzones, key + 'Upload', {
+        key: 1,
+        pics: []
+      })
+    }
   },
 
   methods: {
+    test (a) {
+      return false
+    },
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
@@ -456,15 +500,17 @@ export default {
       patchSettings: 'patch'
     }),
     ...mapActions('uploads', {
+      createUpload: 'create',
       removeUpload: 'remove'
     }),
     async adapt () {
-      if (this.settings) {
-        const tmpSettings = JSON.parse(JSON.stringify(this.settings[0]))
+      if (this.$settings) {
+        const tmpSettings = JSON.parse(JSON.stringify(this.$settings))
         this.headerColor = this.parseRgbString(tmpSettings.headerColor)
         this.indicatorColor = this.parseRgbString(tmpSettings.indicatorColor)
         this.defaultLanguage = tmpSettings.defaultLanguage
         this.languages = tmpSettings.languages
+        this.headerLogo = tmpSettings.headerLogo
         if (tmpSettings.socialMediaUrls) {
           this.fb = tmpSettings.socialMediaUrls.fb
           this.instagram = tmpSettings.socialMediaUrls.instagram
@@ -484,8 +530,37 @@ export default {
         })
       }
     },
+    async patchFileRemove (file, path, multiple) {
+      if (multiple) {
+        await this.patchMessage([
+          this.$settings._id,
+          {
+            $pull: {
+              [path]: {
+                _id: file._id
+              }
+            }
+          }
+        ])
+      } else {
+        const result = await this.patchSettings([
+          this.$settings._id,
+          {
+            [path]: null
+          }
+        ])
+        this.$settings = result
+        this.adapt()
+      }
+    },
     async saveSettings () {
       this.isLoading = true
+      // Do uploads
+      await this.$refs.headerLogoFileUpload.upload()
+      for (const key of Object.keys(this.modules)) {
+        await this.$refs[key + 'Upload'][0].upload()
+      }
+      // Parse colors
       const tmpModules = JSON.parse(JSON.stringify(this.modules))
       for (const key of Object.keys(tmpModules)) {
         if (tmpModules[key].color) {
@@ -497,6 +572,7 @@ export default {
       }
       // Sort default language to start
       this.languages.unshift(this.languages.splice(this.languages.indexOf(this.defaultLanguage), 1)[0])
+      // Prepare map
       const map = {
         name: appName,
         languages: this.languages,
@@ -507,10 +583,11 @@ export default {
           instagram: this.instagram,
           twitter: this.twitter
         },
-        modules: tmpModules
+        modules: tmpModules,
+        headerLogo: this.headerLogo
       }
       try {
-        await this.patchSettings([this.settings[0]._id, map, {}])
+        await this.patchSettings([this.$settings._id, map, {}])
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         this.$router.go(-1)
@@ -533,9 +610,6 @@ export default {
     ]),
     ...mapGetters('organisations', {
       getOrganisation: 'get'
-    }),
-    ...mapGetters('settings', {
-      settings: 'list'
     })
   },
 

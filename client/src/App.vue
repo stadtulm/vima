@@ -1,5 +1,6 @@
 <template>
   <v-app
+    v-if="computedSetting"
     :style="'background: linear-gradient(-45deg, ' + computedGradientLeft + ' 20%, ' + computedGradientRight + ' 100%);}'"
   >
     <v-app-bar
@@ -15,7 +16,7 @@
         ></v-img>
       </template>
       <img
-        v-if="$vuetify.breakpoint.smAndUp"
+        v-if="$vuetify.breakpoint.smAndUp && computedSetting.headerLogo"
         class="py-2 mr-3 pointer"
         :height="$vuetify.breakpoint.mdAndUp ? '50px' : ($vuetify.breakpoint.smAndUp ? '30px': '30px')"
         :src="computedSetting && computedSetting.headerLogo ? s3 + computedSetting.headerLogo.url : ''"
@@ -26,7 +27,8 @@
       />
       <span
         v-else
-        class="subtitle-2"
+        @click="$router.push({ name: 'Home' })"
+        class="pointer subtitle-2"
       >
         {{computedSetting.name}}
       </span>
@@ -187,7 +189,7 @@
           <v-divider></v-divider>
           <v-list-item
             v-if="computedSetting && computedSetting.modules.ads.isActive"
-            :color="$settings.modules.ads.color"
+            :color="computedSetting.modules.ads.color"
             :to="{ name: 'CategoryList', params: { type: 'ads' } }"
           >
             <v-list-item-title
@@ -197,7 +199,7 @@
           </v-list-item>
           <v-list-item
             v-if="computedSetting && computedSetting.modules.groups.isActive"
-            :color="$settings.modules.groups.color"
+            :color="computedSetting.modules.groups.color"
             :to="{ name: 'Groups' }"
           >
             <v-list-item-title
@@ -207,7 +209,7 @@
           </v-list-item>
           <v-list-item
             v-if="computedSetting && computedSetting.modules.discussions.isActive"
-            :color="$settings.modules.discussions.color"
+            :color="computedSetting.modules.discussions.color"
             :to="{ name: 'Discussions', params: { type: 'discussions' } }"
           >
             <v-list-item-title
@@ -304,7 +306,7 @@
         <template slot="badge">
           <v-icon
             size="12"
-            :color="$settings.indicatorColor"
+            :color="computedSetting.indicatorColor"
           >
             fas fa-exclamation
           </v-icon>
@@ -435,7 +437,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -471,7 +473,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSe.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -517,7 +519,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -553,7 +555,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -599,7 +601,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -635,7 +637,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -671,7 +673,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -717,7 +719,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -753,7 +755,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -789,7 +791,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -825,7 +827,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -861,7 +863,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -897,7 +899,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-badge
-                :color="$settings.indicatorColor"
+                :color="computedSetting.indicatorColor"
                 offset-x="15"
                 offset-y="15"
               >
@@ -933,7 +935,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="$settings.indicatorColor"
+                  :color="computedSetting.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1065,7 +1067,7 @@
               <template slot="badge">
                 <v-icon
                   size="12"
-                  :color="$settings.indicatorColor"
+                  :color="computedSetting.indicatorColor"
                 >
                   fas fa-exclamation
                 </v-icon>
@@ -1157,7 +1159,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="$settings.indicatorColor"
+                  :color="computedSetting.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1203,7 +1205,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="$settings.indicatorColor"
+                  :color="computedSetting.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1249,7 +1251,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="$settings.indicatorColor"
+                  :color="computedSetting.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1303,7 +1305,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="$settings.indicatorColor"
+                  :color="computedSetting.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -1349,7 +1351,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="$settings.indicatorColor"
+                  :color="computedSetting.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -2032,9 +2034,9 @@ export default {
               r: 255, g: 255, b: 255
             },
             right: {
-              r: this.$settings.modules.ads.gradientColor.r,
-              g: this.$settings.modules.ads.gradientColor.g,
-              b: this.$settings.modules.ads.gradientColor.b
+              r: this.computedSetting.modules.ads.gradientColor.r,
+              g: this.computedSetting.modules.ads.gradientColor.g,
+              b: this.computedSetting.modules.ads.gradientColor.b
             }
           },
           discussions: {
@@ -2042,9 +2044,9 @@ export default {
               r: 255, g: 255, b: 255
             },
             right: {
-              r: this.$settings.modules.discussions.gradientColor.r,
-              g: this.$settings.modules.discussions.gradientColor.g,
-              b: this.$settings.modules.discussions.gradientColor.b
+              r: this.computedSetting.modules.discussions.gradientColor.r,
+              g: this.computedSetting.modules.discussions.gradientColor.g,
+              b: this.computedSetting.modules.discussions.gradientColor.b
             }
           },
           groups: {
@@ -2052,9 +2054,9 @@ export default {
               r: 255, g: 255, b: 255
             },
             right: {
-              r: this.$settings.modules.groups.gradientColor.r,
-              g: this.$settings.modules.groups.gradientColor.g,
-              b: this.$settings.modules.groups.gradientColor.b
+              r: this.computedSetting.modules.groups.gradientColor.r,
+              g: this.computedSetting.modules.groups.gradientColor.g,
+              b: this.computedSetting.modules.groups.gradientColor.b
             }
           }
         }

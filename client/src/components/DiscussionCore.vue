@@ -670,6 +670,7 @@
                 :patchParentMethod="patchMessage"
                 titleType="title"
                 bgColor="white"
+                :isDialog="true"
                 @uploadHideDialog="(queuedPics) => { uploadHideDialog('discussionMessageUpload', queuedPics) }"
                 @uploadRemovePic="(removedPic) => { uploadRemovePic('discussionMessageUpload', removedPic) }"
               ></Upload>
