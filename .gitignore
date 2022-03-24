@@ -138,3 +138,4 @@ server/config/*
 server/src/ecosystem.config.js
 */.env*
 server/initialSettings.json
+server/vima-*.json
