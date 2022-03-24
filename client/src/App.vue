@@ -1554,6 +1554,45 @@
         class="py-4"
       >
         <v-col
+          v-if="computedSetting.socialMediaUrls"
+          class="text-center"
+          cols="12"
+        >
+          <v-btn
+            class="mx-4"
+            icon
+            target="_blank"
+            v-if="computedSetting.socialMediaUrls.fb"
+            :href="computedSetting.socialMediaUrls.fb"
+          >
+            <v-icon>
+              fab fa-facebook
+            </v-icon>
+          </v-btn>
+          <v-btn
+            class="mx-4"
+            icon
+            target="_blank"
+            v-if="computedSetting.socialMediaUrls.instagram"
+            :href="computedSetting.socialMediaUrls.instagram"
+          >
+            <v-icon>
+              fab fa-instagram
+            </v-icon>
+          </v-btn>
+          <v-btn
+            class="mx-4"
+            icon
+            target="_blank"
+            v-if="computedSetting.socialMediaUrls.twitter"
+            :href="computedSetting.socialMediaUrls.twitter"
+          >
+            <v-icon>
+              fab fa-twitter
+            </v-icon>
+          </v-btn>
+        </v-col>
+        <v-col
           cols="12"
           md="4"
         >
