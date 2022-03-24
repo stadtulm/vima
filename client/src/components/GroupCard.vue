@@ -260,7 +260,7 @@
                     :key="pic.url"
                   >
                     <v-img
-                      :height="groupProp ? 300 : 500"
+                      :height="groupProp ? 300 : 350"
                       :src="s3 + pic.url"
                       :contain="groupProp ? false : true"
                       :alt="$t('groupTitlePic')"
