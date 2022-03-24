@@ -1,12 +1,17 @@
 const Errors = require('@feathersjs/errors')
-const translate = require('deepl')
+const { Translate } = require('@google-cloud/translate').v2
 const JSum = require('jsum')
+const projectId = 'vima-345111'
+const fs = require('fs')
 
 /* eslint-disable no-unused-vars */
 exports.Translations = class Translations {
   constructor (options, app) {
     this.options = options || {}
     this.app = app
+    const credentials = JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS))
+    const translator = new Translate({ projectId, credentials })
+    this.translator = translator
   }
 
   async find (params) {
@@ -36,7 +41,7 @@ exports.Translations = class Translations {
     }
 
     // Create missing translations
-    await createTranslations(this.app, messages, data)
+    await createTranslations(this.app, this.translator, messages, data)
 
     // Update messages
     messages = await this.app.service(data.type).find({
@@ -78,25 +83,15 @@ exports.Translations = class Translations {
   }
 }
 
-async function createTranslations (app, messages, data) {
+async function createTranslations (app, translator, messages, data) {
   for (const key of data.fields) {
     await Promise.all(messages.map(async m => {
       if (!m[key].find(t => t.lang === data.target)) {
-        let translation
-        try {
-          translation = await translate({
-            free_api: true,
-            text: m[key].find(t => t.type === 'default').value,
-            target_lang: data.target,
-            auth_key: process.env.DEEPL_AUTH_KEY
-          })
-        } catch (e) {
-          throw new Error(e.response.data.message)
-        }
+        const translation = await translator.translate(m[key].find(t => t.type === 'default').value, data.target)
         const targetText = {
           lang: data.target,
-          type: 'deepl',
-          value: translation.data.translations[0].text
+          type: 'ai',
+          value: translation[0]
         }
         // Push translation object
         await app.service(data.type).patch(m._id, {
@@ -108,7 +103,7 @@ async function createTranslations (app, messages, data) {
         await app.service(data.type).patch(
           m._id,
           {
-            [key + '.$.lang']: translation.data.translations[0].detected_source_language.toLocaleLowerCase()
+            [key + '.$.lang']: translation[1].data.translations[0].detectedSourceLanguage
           },
           {
             query: {

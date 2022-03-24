@@ -7,7 +7,7 @@ module.exports = new Schema({
   },
   type: {
     type: String,
-    enum: ['default', 'deepl', 'author']
+    enum: ['default', 'ai', 'author']
   },
   value: {
     type: String
