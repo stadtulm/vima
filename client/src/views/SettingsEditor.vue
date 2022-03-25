@@ -505,33 +505,48 @@ export default {
       }
     },
     async patchFileRemove (file, path, multiple) {
-      if (multiple) {
-        await this.patchMessage([
-          this.$settings._id,
-          {
-            $pull: {
-              [path]: {
-                _id: file._id
+      this.isLoading = true
+      try {
+        if (multiple) {
+          await this.patchMessage([
+            this.$settings._id,
+            {
+              $pull: {
+                [path]: {
+                  _id: file._id
+                }
               }
             }
-          }
-        ])
-      } else {
-        await this.patchSettings([
-          this.$settings._id,
-          {
-            [path]: null
-          }
-        ])
+          ])
+        } else {
+          await this.patchSettings([
+            this.$settings._id,
+            {
+              [path]: null
+            }
+          ])
+        }
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.adapt()
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
         this.adapt()
       }
     },
     async saveSettings () {
       this.isLoading = true
       // Do uploads
-      await this.$refs.headerLogoFileUpload.upload()
-      for (const key of Object.keys(this.modules)) {
-        await this.$refs[key + 'Upload'][0].upload()
+      try {
+        await this.$refs.headerLogoFileUpload.upload()
+        for (const key of Object.keys(this.modules)) {
+          await this.$refs[key + 'Upload'][0].upload()
+        }
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
       }
       // Parse colors
       const tmpModules = JSON.parse(JSON.stringify(this.modules))

@@ -52,9 +52,15 @@
             v-for="(file, i) in files"
             :key="i"
             cols="12"
-            sm="6"
+            sm="4"
+                          style="cursor: auto !important"
+
           >
-            <v-card>
+            <v-card
+              :ripple="false"
+              @click.stop
+              style="cursor: auto !important"
+            >
               <v-img
                 class="text-center align-center"
                 :src="file.state === 'uploaded' ? s3 + file.url : file.uri"
@@ -67,6 +73,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon
+                      class="pointer"
                       v-bind="attrs"
                       v-on="on"
                       color="white"
@@ -89,17 +96,19 @@
                   </div>
                 </v-tooltip>
               </v-img>
-                <v-text-field
-                  v-model="file.credit"
-                  class="mx-3 mt-3"
-                  @click.stop
-                  :label="$t('copyrightOwner')"
-                  :rules="[rules.required]"
-                  @input="updateFileCredit($event, i)"
-                  :disabled="file.errors.length > 0"
-                  :hint="$t('publicHint')"
-                  persistent-hint
-                ></v-text-field>
+              <v-card-text>
+              <v-text-field
+                v-model="file.credit"
+                @click.stop
+                :label="$t('copyrightOwner')"
+                :rules="[rules.required]"
+                @keypress.stop
+                @input="updateFileCredit($event, i)"
+                :disabled="file.errors.length > 0"
+                :hint="$t('publicHint')"
+                persistent-hint
+              ></v-text-field>
+              </v-card-text>
               <v-card-actions>
                 <v-btn
                   color="customGrey"
@@ -113,13 +122,13 @@
             </v-card>
           </v-col>
           <v-col
-            v-if="isLoading"
             cols="12"
-            sm="6"
+            sm="4"
           >
             <v-card
+              v-if="files.length > 0 || isLoading"
               class="fill-height"
-              flat
+              :flat="!isLoading"
             >
               <v-img
                 min-height="200"
@@ -127,6 +136,7 @@
                 class="text-center align-center"
               >
                 <v-progress-circular
+                  v-if="isLoading"
                   indeterminate
                   :width="5"
                   :size="60"
@@ -244,7 +254,8 @@ export default {
           if (this.maxFiles > 1) {
             this.files = this.value.map(file => ({
               ...file,
-              state: file.state || 'uploaded'
+              state: file.state || 'uploaded',
+              errors: this.value.errors || []
             }))
           } else {
             throw new Error('Max files ist set to 1 or below. Array ist not allowed as value.')

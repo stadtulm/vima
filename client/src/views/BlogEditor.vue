@@ -440,88 +440,29 @@
                       <v-col
                         cols="12"
                         tabIndex="0"
-                        @keypress="$refs.vueDropzonePics.$el.click()"
+                        @keypress="$refs.blogUpload.fakeClick()"
                       >
-                        <vue-dropzone
-                          id="vueDropzonePics"
-                          ref="vueDropzonePics"
-                          :options="dropzoneOptionsPics"
-                          :headers="dropzoneOptionsPics.headers"
-                          @vdropzone-success="uploadSuccessPics"
-                          @vdropzone-removed-file="removeFilePics"
-                          @vdropzone-mounted="dropzoneMountedPics"
-                          @vdropzone-queue-complete="queueComplete"
-                          @vdropzone-files-added="updateQueuedFiles"
-                          @vdropzone-sending="addUuid"
-                          :destroyDropzone="false"
-                        >
-                        </vue-dropzone>
+                        <FileUpload
+                          ref="blogUpload"
+                          v-model="pics"
+                          @fileRemove="patchFileRemove"
+                          @fileAdd="$nextTick(() => { $refs.blogEditorForm.validate() })"
+                          :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                          :maxFileSize="2"
+                          :maxFiles="10"
+                          bgColor="white"
+                          :scaleToFit="[1080, 1080]"
+                          :resizeQuality="50"
+                        ></FileUpload>
                       </v-col>
                     </v-row>
                   </v-card>
                 </v-col>
               </v-row>
-              <v-row
-                v-if="pics && pics.length > 0"
-              >
-                <v-col
-                  cols="12"
-                >
-                  <v-card
-                    flat
-                    color="customGreyUltraLight"
-                  >
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        class="subtitle-1"
-                      >
-                        {{$t('copyrightOwner')}}
-                      </v-col>
-                    </v-row>
-                    <v-row
-                      dense
-                    >
-                      <v-col>
-                        <v-alert
-                          icon="fas fa-info-circle"
-                          color="customGrey"
-                          dark
-                          outlined
-                        >
-                          {{$t('publicHint')}}
-                        </v-alert>
-                      </v-col>
-                    </v-row>
-                      <v-row
-                        dense
-                        v-for="(pic, i) in pics"
-                        :key="i"
-                        class="align-center"
-                      >
-                        <v-col
-                          cols="12"
-                        >
-                          <v-text-field
-                            dense
-                            color="customGrey"
-                            item-color="customGrey"
-                            v-model="pic.credit"
-                            :label="$t('copyrightOwner') + ' ' + $t('pic') + ' ' + (i + 1)"
-                            outlined
-                            :rules="[rules.required]"
-                            background-color="#fff"
-                          >
-                          </v-text-field>
-                        </v-col>
-                    </v-row>
-                  </v-card>
-                </v-col>
-              </v-row>
-              <v-divider
-                :class="isQueued ? 'mb-9 mt-3' : 'my-9'"
-              ></v-divider>
             </v-form>
+            <v-divider
+              class="my-9"
+            ></v-divider>
             <v-card-actions
               class="px-0"
             >
@@ -550,19 +491,16 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import vue2Dropzone from 'vue2-dropzone'
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link, Heading } from 'tiptap-vuetify'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 import TagProposalDialog from '@/components/TagProposalDialog.vue'
-
-const server = process.env.VUE_APP_SERVER_URL
+import FileUpload from '@/components/FileUpload.vue'
 
 export default {
   name: 'BlogEditor',
 
   components: {
-    vueDropzone: vue2Dropzone,
+    FileUpload,
     TiptapVuetify,
     LanguageSelect,
     TagProposalDialog
@@ -570,7 +508,6 @@ export default {
 
   data: () => ({
     showTagProposalDialog: false,
-    isQueued: false,
     selectedBlog: undefined,
     isInternal: false,
     isActive: true,
@@ -586,11 +523,6 @@ export default {
     videos: [],
     tmpVideos: [],
     pics: [],
-    mockFile: {
-      name: '',
-      size: '',
-      type: ''
-    },
     currentLanguage: 'en',
     extensions: [
       Bold,
@@ -632,31 +564,26 @@ export default {
     ...mapActions('uploads', {
       removeUpload: 'remove'
     }),
-    addUuid (file, xhr, formData) {
-      formData.append('uuid', file.upload.uuid)
-    },
-    updateQueuedFiles (files) {
-      this.isQueued = true
-      this.$nextTick(() => {
-        for (const file of files) {
-          if (file.status !== 'error') {
-            this.pics.push(
-              {
-                credit: undefined,
-                url: file.upload.uuid
+    async patchFileRemove (file) {
+      this.isLoading = true
+      try {
+        await this.patchBlog([
+          this.selectedBlog._id,
+          {
+            $pull: {
+              pics: {
+                _id: file._id
               }
-            )
+            }
           }
-        }
-      })
-    },
-    dropzoneMountedPics () {
-      if (this.selectedBlog && this.selectedBlog.pics) {
-        for (const pic of this.selectedBlog.pics) {
-          const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
-          tmpMockFile.name = pic.url
-          this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + pic.url)
-        }
+        ])
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.adapt()
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.adapt()
       }
     },
     async adapt () {
@@ -684,104 +611,46 @@ export default {
         this.text = this.hydrateTranslations()
       }
     },
-    async uploadSuccessPics (file, response) {
-      if (file.status === 'success') {
-        this.$set(this.pics.find(obj => obj.url === response.uuid), 'uuid', response.uuid)
-        this.$set(this.pics.find(obj => obj.url === response.uuid), 'url', response.id)
-      }
-    },
-    queueComplete () {
-      if (this.isQueued) {
-        let hasErrors = false
-        for (const file of this.$refs.vueDropzonePics.getAcceptedFiles()) {
-          const newPic = this.pics.find(obj => obj.uuid === file.upload.uuid)
-          if (!newPic) {
-            file.previewElement.querySelector('.dz-error-message > span').innerHTML = this.$t('uploadFailed')
-            hasErrors = true
-            if (this.isLoading) {
-              this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-            }
-          }
-          if (hasErrors) {
-            this.isLoading = false
-            return
-          }
-          this.$refs.vueDropzonePics.removeFile(file)
-          const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
-          tmpMockFile.name = newPic.url
-          this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + newPic.url)
-        }
-        this.isQueued = false
-        if (this.isLoading) {
-          this.saveBlog()
-        }
-      }
-    },
-    async removeFilePics (file, error, xhr) {
-      try {
-        if (file.status === 'queued') {
-          if (this.$refs.vueDropzonePics.getQueuedFiles().length === 0) {
-            this.isQueued = false
-          }
-        } else if (file.status !== 'error') {
-          if (this.selectedBlog) {
-            await this.removeUpload([file.name, {}, {}])
-            let tmpPictures = []
-            if (this.selectedBlog && this.selectedBlog.pics) {
-              tmpPictures = this.selectedBlog.pics
-            }
-            tmpPictures = tmpPictures.filter(obj => obj.url !== file.name)
-            await this.patchBlog([this.selectedBlog._id, { pics: tmpPictures }, {}])
-            this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-          }
-        } else if (this.isLoading) {
-          throw error
-        }
-        const index = this.pics.findIndex(obj => obj.url === file.upload?.uuid || obj.url === file.name)
-        if (index !== -1) {
-          this.pics.splice(index, 1)
-        }
-      } catch (e) {
-        if (this.isLoading) {
-          this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        }
-      }
-    },
     async saveBlog () {
       this.isLoading = true
-      if (this.isQueued) {
-        await this.$refs.vueDropzonePics.processQueue()
-      } else {
-        if (this.videoId && this.videoType) {
-          this.addTmpVideo()
+      try {
+        await this.$refs.blogUpload.upload()
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
+      }
+      // Prepare videos
+      if (this.videoId && this.videoType) {
+        this.addTmpVideo()
+      }
+      // Prepare map
+      const map = {
+        title: this.title.filter(language => language.value && language.value !== ''),
+        subTitle: this.subTitle.filter(language => language.value && language.value !== ''),
+        isInternal: this.isInternal,
+        isActive: this.isActive,
+        categories: this.selectedCategories,
+        tags: this.selectedTags,
+        text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>'),
+        videos: this.videos.concat(this.tmpVideos),
+        author: this.user._id
+      }
+      if (this.pics) {
+        map.pics = this.pics
+      }
+      try {
+        if (this.$route.params.id) {
+          await this.patchBlog([this.$route.params.id, map, {}])
+        } else {
+          await this.createBlog([map, {}])
         }
-        const map = {
-          title: this.title.filter(language => language.value && language.value !== ''),
-          subTitle: this.subTitle.filter(language => language.value && language.value !== ''),
-          isInternal: this.isInternal,
-          isActive: this.isActive,
-          categories: this.selectedCategories,
-          tags: this.selectedTags,
-          text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>'),
-          videos: this.videos.concat(this.tmpVideos),
-          author: this.user._id
-        }
-        if (this.pics) {
-          map.pics = this.pics
-        }
-        try {
-          if (this.$route.params.id) {
-            await this.patchBlog([this.$route.params.id, map, {}])
-          } else {
-            await this.createBlog([map, {}])
-          }
-          this.isLoading = false
-          this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-          this.$router.go(-1)
-        } catch (e) {
-          this.isLoading = false
-          this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        }
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.$router.go(-1)
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
     },
     addTmpVideo () {
@@ -811,29 +680,6 @@ export default {
       return this.tags
         .filter(obj => obj.isActive && obj.isAccepted)
     },
-    dropzoneOptionsPics () {
-      return {
-        url: server + 'uploads',
-        maxFilesize: 2,
-        maxFiles: 10,
-        paramName: 'uri',
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('feathers-jwt')
-        },
-        autoProcessQueue: false,
-        addRemoveLinks: true,
-        dictDefaultMessage: '<i style="font-size: 40px" class="fas fa-images"></i><br><br><span class="v-label"><span class="font-weight-bold">' + this.$t('dropFilesHeadline', { filesize: '2', maxfiles: 10 }) + '</span><br><br>' + this.$t('dropFilesBody', { resolution: '1400x400' }) + '</span>',
-        dictRemoveFile: '<i style="font-size: 40px" class="fas fa-times"></i>',
-        dictCancelUpload: '<i style="font-size: 40px" class="fas fa-times"></i>',
-        dictFileTooBig: this.$t('fileTooBigError'),
-        dictInvalidFileType: this.$t('fileTypeNotAcceptedError'),
-        dictMaxFilesExceeded: this.$t('noMorePicsError'),
-        acceptedMimeTypes: 'image/png, image/jpeg',
-        resizeWidth: 1080,
-        resizeMethod: 'contain',
-        resizeQuality: 0.5
-      }
-    },
     sanitizedText () {
       return this.text.map(language => {
         return {
@@ -845,13 +691,6 @@ export default {
   },
 
   watch: {
-    pics () {
-      if (this.$refs.blogEditorForm) {
-        this.$nextTick(() => {
-          this.$refs.blogEditorForm.validate()
-        })
-      }
-    },
     videos () {
       if (this.$refs.blogEditorForm) {
         this.$refs.blogEditorForm.validate()

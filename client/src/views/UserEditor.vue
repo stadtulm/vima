@@ -156,9 +156,6 @@
                   </v-text-field>
                 </v-col>
               </v-row>
-              <v-divider
-                class="mb-9 mt-3"
-              ></v-divider>
               <v-row
                 v-if="selectedUser"
               >
@@ -293,9 +290,6 @@
                   </v-card>
                 </v-col>
               </v-row>
-              <v-divider
-                :class="pic ? 'mb-9 mt-3' : 'my-9'"
-              ></v-divider>
               <v-row
                 v-if="!selectedUser"
               >
@@ -529,11 +523,12 @@ export default {
         ])
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         this.isLoading = false
+        this.adapt()
       } catch (e) {
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.adapt()
       }
-      this.adapt()
     },
     checkPassword () {
       if (this.pw) {
@@ -612,6 +607,7 @@ export default {
         await this.$refs.userPicUpload.upload()
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
         return
       }
       // Prepare map
