@@ -112,6 +112,29 @@
               </v-card-actions>
             </v-card>
           </v-col>
+          <v-col
+            v-if="isLoading"
+            cols="12"
+            sm="6"
+          >
+            <v-card
+              class="fill-height"
+              flat
+            >
+              <v-img
+                min-height="200"
+                height="100%"
+                class="text-center align-center"
+              >
+                <v-progress-circular
+                  indeterminate
+                  :width="5"
+                  :size="60"
+                  color="customGrey"
+                ></v-progress-circular>
+              </v-img>
+            </v-card>
+          </v-col>
         </v-row>
       </v-container>
     </v-sheet>
@@ -121,6 +144,7 @@
 <script>
 
 import { mapActions, mapGetters } from 'vuex'
+import Jimp from 'jimp'
 
 export default {
   name: 'FileUpload',
@@ -149,6 +173,14 @@ export default {
     },
     bgColor: {
       type: String
+    },
+    scaleToFit: {
+      type: Array,
+      default: () => [1400, 400]
+    },
+    resizeQuality: {
+      type: Number,
+      default: 100
     }
   },
 
@@ -156,6 +188,7 @@ export default {
   },
 
   data: () => ({
+    isLoading: false,
     isInsideDroparea: false,
     files: [],
     isUploadingFile: false,
@@ -238,9 +271,7 @@ export default {
     },
     async addFile (e, type) {
       this.isInsideDroparea = false
-      if (this.files.length >= this.maxFiles) {
-        return
-      }
+      if (this.files.length >= this.maxFiles) return
       let files
       if (type === 'click') {
         files = this.$refs.hiddenInput.files
@@ -248,7 +279,32 @@ export default {
         files = e.dataTransfer.files
       }
       if (!files || files.length === 0) return
+      this.isLoading = true
       const filesWithDataUrl = await this.readAsDataURL([...files])
+
+      // JIMP READ
+      // if allowedtypes includes image
+      try {
+        for (const pic of filesWithDataUrl) {
+          if ([
+            'image/jpg',
+            'image/jpeg',
+            'image/png',
+            'image/tiff',
+            'image/gif',
+            'image/bmp'
+          ].includes(pic.type)) {
+            const jimpPic = await Jimp.read(pic.uri)
+            pic.uri = await jimpPic
+              .scaleToFit(this.scaleToFit[0], this.scaleToFit[1])
+              .quality(this.resizeQuality)
+              .getBase64Async(pic.type)
+          }
+        }
+      } catch (e) {
+        console.log(e)
+      }
+
       this.files = this.files.concat(filesWithDataUrl)
       this.$refs.hiddenInput.value = null
       if (this.maxFiles > 1) {
@@ -258,6 +314,7 @@ export default {
       }
       this.isInsideDroparea = false
       this.$emit('fileAdd')
+      this.isLoading = false
     },
     fileToDataURL (file) {
       var reader = new FileReader()

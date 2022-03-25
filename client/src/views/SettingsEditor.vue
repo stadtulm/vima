@@ -40,6 +40,8 @@
                   :maxFiles="1"
                   resolution="50"
                   bgColor="white"
+                  :scaleToFit="[100, 100]"
+                  :resizeQuality="100"
                 ></FileUpload>
               </v-col>
             </v-row>
@@ -404,6 +406,8 @@
                           :maxFiles="1"
                           resolution="1000x200"
                           bgColor="customGreyUltraLight"
+                          :scaleToFit="[1000, 1000]"
+                          :resizeQuality="75"
                         ></FileUpload>
                       </v-col>
                     </v-row>

@@ -46,7 +46,8 @@
             >
               <v-img
                 :src="module.pic ? (s3 + module.pic.url) : ''"
-                height="200px"
+                max-height="200px"
+                width="100%"
                 :alt="$t(module.type + 'SectionPic')"
                 :tour-step-container="i === 0 || null"
                 :title="module.pic && module.pic.credit ? '© ' + module.pic.credit : ''"
