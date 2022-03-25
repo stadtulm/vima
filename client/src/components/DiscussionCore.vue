@@ -768,12 +768,14 @@ export default {
 
   async mounted () {
     this.$nextTick(() => {
-      const ComponentClass = Vue.extend(UploadButton)
-      const instance = new ComponentClass()
-      instance.$mount()
       const el = document.querySelector('.tiptap-vuetify-editor__toolbar .v-toolbar__content div')
-      el.appendChild(instance.$el)
-      instance.$el.addEventListener('click', this.uploadShowDialog)
+      if (el) {
+        const ComponentClass = Vue.extend(UploadButton)
+        const instance = new ComponentClass()
+        instance.$mount()
+        el.appendChild(instance.$el)
+        instance.$el.addEventListener('click', this.uploadShowDialog)
+      }
     })
     if (this.init) {
       // Init listeners

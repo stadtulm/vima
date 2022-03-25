@@ -8,6 +8,11 @@ module.exports = {
     all: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
+        (context) => {
+          if (!context.app.customModuleVisibilities.organisations) {
+            throw new Errors.Forbidden('Module is not active')
+          }
+        },
         allowAnonymous(),
         authenticate('jwt', 'anonymous')
       )

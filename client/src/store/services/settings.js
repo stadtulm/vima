@@ -1,5 +1,6 @@
 import feathersClient, { makeServicePlugin, BaseModel } from '../../feathers-client'
-
+import Vue from 'vue'
+import Store from '@/store'
 class settings extends BaseModel {
   // eslint-disable-next-line no-useless-constructor
   constructor (data, options) {
@@ -32,7 +33,20 @@ feathersClient.service(servicePath).hooks({
     remove: []
   },
   after: {
-    all: [],
+    all: [context => {
+      if (context.method !== 'remove') {
+        if (Array.isArray(context.result)) {
+          Vue.prototype.$settings = context.result[0]
+        } else {
+          Vue.prototype.$settings = context.result
+        }
+        const tmpVisibilities = {}
+        for (const key of Object.keys(Vue.prototype.$settings.modules)) {
+          Vue.prototype.$set(tmpVisibilities, key, Store.getters.isModuleActiveOrDependency(key))
+        }
+        Store.commit('SET_MODULE_VISIBILITIES', tmpVisibilities)
+      }
+    }],
     find: [],
     get: [],
     create: [],

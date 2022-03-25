@@ -8,6 +8,23 @@ const state = {
   userCount: undefined,
   firstLoad: true,
   showTour: true,
+  moduleVisibilities: {},
+  isModuleActiveOrDependency (moduleKey) {
+    if (!Vue.prototype.$settings) {
+      return false
+    }
+    if (
+      Vue.prototype.$settings.modules[moduleKey].isActive ||
+      (
+        Vue.prototype.$settings.modules[moduleKey].dependents && Vue.prototype.$settings.modules[moduleKey].dependents.length > 0 &&
+        Vue.prototype.$settings.modules[moduleKey].dependents.map(depKey => Vue.prototype.$settings.modules[depKey]).find(dependent => dependent.isActive)
+      )
+    ) {
+      return true
+    } else {
+      return false
+    }
+  },
   parseRgbString (str) {
     var vals = str.substring(str.indexOf('(') + 1, str.length - 1).split(', ')
     return {
@@ -202,6 +219,12 @@ const state = {
 }
 
 const getters = {
+  moduleVisibilities: state => {
+    return state.moduleVisibilities
+  },
+  isModuleActiveOrDependency: state => {
+    return state.isModuleActiveOrDependency
+  },
   hasMatomo: state => {
     return state.hasMatomo
   },
@@ -280,6 +303,9 @@ const getters = {
 }
 
 const mutations = {
+  SET_MODULE_VISIBILITIES: (state, msg) => {
+    state.moduleVisibilities = msg
+  },
   SET_SHOW_TOUR: (state, msg) => {
     state.showTour = msg
   },

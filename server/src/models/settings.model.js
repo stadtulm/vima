@@ -42,7 +42,12 @@ module.exports = function (app) {
         pic: {
           url: { type: String },
           credit: { type: String }
-        }
+        },
+        dependents: [
+          {
+            type: String
+          }
+        ]
       },
       groups: {
         isActive: { type: Boolean, required: true },
@@ -57,7 +62,12 @@ module.exports = function (app) {
         pic: {
           url: { type: String },
           credit: { type: String }
-        }
+        },
+        dependents: [
+          {
+            type: String
+          }
+        ]
       },
       discussions: {
         isActive: { type: Boolean, required: true },
@@ -72,7 +82,12 @@ module.exports = function (app) {
         pic: {
           url: { type: String },
           credit: { type: String }
-        }
+        },
+        dependents: [
+          {
+            type: String
+          }
+        ]
       },
       news: {
         isActive: { type: Boolean, required: true },
@@ -80,7 +95,12 @@ module.exports = function (app) {
         pic: {
           url: { type: String },
           credit: { type: String }
-        }
+        },
+        dependents: [
+          {
+            type: String
+          }
+        ]
       },
       events: {
         isActive: { type: Boolean, required: true },
@@ -88,7 +108,12 @@ module.exports = function (app) {
         pic: {
           url: { type: String },
           credit: { type: String }
-        }
+        },
+        dependents: [
+          {
+            type: String
+          }
+        ]
       },
       organisations: {
         isActive: { type: Boolean, required: true },
@@ -96,7 +121,12 @@ module.exports = function (app) {
         pic: {
           url: { type: String },
           credit: { type: String }
-        }
+        },
+        dependents: [
+          {
+            type: String
+          }
+        ]
       },
       blog: {
         isActive: { type: Boolean, required: true },
@@ -104,7 +134,12 @@ module.exports = function (app) {
         pic: {
           url: { type: String },
           credit: { type: String }
-        }
+        },
+        dependents: [
+          {
+            type: String
+          }
+        ]
       }
     }
   }, {

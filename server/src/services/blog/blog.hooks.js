@@ -10,7 +10,7 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         (context) => {
-          if (!context.app.customSettings.modules.blog.isActive) {
+          if (!context.app.customModuleVisibilities.blog) {
             throw new Errors.Forbidden('Module is not active')
           }
         },

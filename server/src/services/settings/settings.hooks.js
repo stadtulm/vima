@@ -2,6 +2,7 @@ const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const Errors = require('@feathersjs/errors')
 const allowAnonymous = require('../authmanagement/anonymous')
+const util = require('../util')
 
 module.exports = {
   before: {
@@ -62,20 +63,19 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        (context) => context.method !== 'remove',
+        (context) => {
+          util.createModuleVisibilities(context.app, context.result)
+        }
+      )
+    ],
     find: [],
     get: [],
-    create: [
-      (context) => {
-        context.app.customSettings = context.result
-      }
-    ],
+    create: [],
     update: [],
-    patch: [
-      (context) => {
-        context.app.customSettings = context.result
-      }
-    ],
+    patch: [],
     remove: []
   },
 

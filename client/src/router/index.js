@@ -297,7 +297,7 @@ const routes = [
       step: 'events'
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMember
@@ -316,7 +316,7 @@ const routes = [
       step: 'news'
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -334,7 +334,7 @@ const routes = [
       step: 'blog'
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -348,9 +348,11 @@ const routes = [
       breadCrumbPredecessors: [
         ['Participate'],
         ['OrganisationListAdmin']
-      ]
+      ],
+      step: 'organisations'
     },
     beforeEnter: Multiguard([
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -363,9 +365,11 @@ const routes = [
       breadCrumbTextKey: 'editOrganisation',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
+      ],
+      step: 'organisations'
     },
     beforeEnter: Multiguard([
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMember
@@ -447,7 +451,7 @@ const routes = [
       step: 'events'
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMemberOrNew
@@ -466,7 +470,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkOwnerModeratorMemberOrNew
     ])
@@ -484,7 +488,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkOwnerModeratorMember
     ])
@@ -502,7 +506,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -520,7 +524,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkOwnerOrNew
     ])
@@ -552,7 +556,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn
     ])
   },
@@ -568,7 +572,7 @@ const routes = [
       step: 'events'
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -585,7 +589,7 @@ const routes = [
       step: 'events'
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMember
@@ -603,7 +607,7 @@ const routes = [
       step: 'discussions'
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn
     ])
   },
@@ -619,7 +623,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn
     ])
   },
@@ -636,7 +640,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -653,7 +657,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -670,7 +674,7 @@ const routes = [
       ]
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -702,7 +706,7 @@ const routes = [
       step: 'news'
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -719,7 +723,7 @@ const routes = [
       step: 'blog'
     },
     beforeEnter: Multiguard([
-      checkModuleActive,
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -747,9 +751,11 @@ const routes = [
       breadCrumbTextKey: 'organisationsAdminOverview',
       breadCrumbPredecessors: [
         ['Participate']
-      ]
+      ],
+      step: 'organisations'
     },
     beforeEnter: Multiguard([
+      checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdmin
     ])
@@ -956,7 +962,7 @@ const routes = [
       step: 'ads'
     },
     beforeEnter: Multiguard([
-      checkModuleActive
+      checkModuleActiveOrDependency
     ])
   },
   {
@@ -972,7 +978,7 @@ const routes = [
       step: 'discussions'
     },
     beforeEnter: Multiguard([
-      checkModuleActive
+      checkModuleActiveOrDependency
     ])
   },
   {
@@ -988,7 +994,7 @@ const routes = [
       step: 'groups'
     },
     beforeEnter: Multiguard([
-      checkModuleActive
+      checkModuleActiveOrDependency
     ])
   },
   {
@@ -1004,7 +1010,7 @@ const routes = [
       step: 'organisations'
     },
     beforeEnter: Multiguard([
-      checkModuleActive
+      checkModuleActiveOrDependency
     ])
   },
   {
@@ -1020,7 +1026,7 @@ const routes = [
       step: 'events'
     },
     beforeEnter: Multiguard([
-      checkModuleActive
+      checkModuleActiveOrDependency
     ])
   },
   {
@@ -1037,7 +1043,7 @@ const routes = [
       step: 'groups'
     },
     beforeEnter: Multiguard([
-      checkModuleActive
+      checkModuleActiveOrDependency
     ])
   },
   {
@@ -1053,7 +1059,7 @@ const routes = [
       step: 'news'
     },
     beforeEnter: Multiguard([
-      checkModuleActive
+      checkModuleActiveOrDependency
     ])
   },
   {
@@ -1069,7 +1075,7 @@ const routes = [
       step: 'blog'
     },
     beforeEnter: Multiguard([
-      checkModuleActive
+      checkModuleActiveOrDependency
     ])
   },
   {
@@ -1285,7 +1291,6 @@ async function init (to, from, next) {
     // Load stuff
     const settings = await Store.dispatch('settings/find')
     if (settings.length === 1) {
-      Vue.prototype.$settings = settings[0]
       i18n.fallbackLocale = settings[0].defaultLanguage
     } else {
       throw Error('No settings available on server')
@@ -1308,6 +1313,13 @@ async function init (to, from, next) {
     Store.commit('SET_FIRST_LOAD', false)
   }
   // Go
+  next()
+}
+
+function checkModuleActiveOrDependency (to, from, next) {
+  if (!Store.getters.moduleVisibilities[to.meta.step]) {
+    return next({ name: 'Forbidden', query: { redirect: from.path } })
+  }
   next()
 }
 

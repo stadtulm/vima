@@ -53,11 +53,7 @@
             outlined
             dense
             hide-details
-            :items="[
-              { text: $t('allDiscussions'), value: 'all'},
-              { text: $t('discussionForums'), value: 'discussions'},
-              { text: $t('groupDiscussions'), value: 'groups'},
-            ]"
+            :items="computedDiscussionTypes"
           ></v-select>
       </v-col>
     </v-row>
@@ -323,7 +319,7 @@ export default {
   },
 
   data: () => ({
-    discussionsType: 'all',
+    discussionsType: undefined,
     isUpdating: false,
     isSending: false,
     loaders: {},
@@ -610,6 +606,19 @@ export default {
     ...mapGetters('groups', {
       getGroup: 'get'
     }),
+    computedDiscussionTypes () {
+      const tmpTypes = []
+      if (this.$settings.modules.discussions.isActive) {
+        tmpTypes.push({ text: this.$t('discussionForums'), value: 'discussions' })
+      }
+      if (this.$settings.modules.groups.isActive) {
+        tmpTypes.push({ text: this.$t('groupDiscussions'), value: 'groups' })
+      }
+      if (tmpTypes.length > 1) {
+        tmpTypes.unshift({ text: this.$t('allDiscussions'), value: 'all' })
+      }
+      return tmpTypes
+    },
     computedColor () {
       if (this.$settings.modules[this.discussionsType] && this.$settings.modules[this.discussionsType].color) {
         return this.$settings.modules[this.discussionsType].color
@@ -744,6 +753,9 @@ export default {
   },
 
   watch: {
+    computedDiscussionTypes () {
+      this.discussionsType = this.computedDiscussionTypes[0].value
+    },
     discussionsType (newValue, oldValue) {
       if (newValue !== oldValue) {
         this.$emit('setStep', this.discussionsType)

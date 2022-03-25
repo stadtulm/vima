@@ -275,6 +275,21 @@
                         </v-select>
                       </v-col>
                     </v-row>
+                     <v-row>
+                      <v-col>
+                        <v-select
+                          dense
+                          color="customGrey"
+                          item-color="customGrey"
+                          outlined
+                          multiple
+                          v-model="module.dependents"
+                          :label="$t('dependentsOfThisModule')"
+                          :items="Object.keys($settings.modules).map(key => ({value: key, text: $t(key)}))"
+                        >
+                        </v-select>
+                      </v-col>
+                    </v-row>
                     <v-row
                       v-if="module.color"
                     >
@@ -500,13 +515,12 @@ export default {
           }
         ])
       } else {
-        const result = await this.patchSettings([
+        await this.patchSettings([
           this.$settings._id,
           {
             [path]: null
           }
         ])
-        this.$settings = result
         this.adapt()
       }
     },

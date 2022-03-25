@@ -21,6 +21,8 @@ const authentication = require('./authentication')
 
 const mongoose = require('./mongoose')
 
+const util = require('./services/util')
+
 const app = express(feathers())
 
 // Load app configuration
@@ -112,9 +114,8 @@ async function initSettings () {
   if (settings.length === 0) {
     const backupSettings = require('../initialSettings.json')
     settings = await app.service('settings').create(backupSettings)
-    settings = [settings]
   }
-  app.customSettings = settings[0]
+  util.createModuleVisibilities(app, settings)
 }
 
 // After server restart set all not connected users to offline

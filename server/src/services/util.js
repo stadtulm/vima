@@ -1,6 +1,37 @@
 const mongoose = require('mongoose')
 
 module.exports = {
+
+  createModuleVisibilities (app, settings) {
+    if (Array.isArray(settings)) {
+      app.customSettings = settings[0]
+    } else {
+      app.customSettings = settings
+    }
+    const tmpVisibilities = {}
+    for (const key of Object.keys(app.customSettings.modules)) {
+      tmpVisibilities[key] = this.isModuleActiveOrDependency(app.customSettings, key)
+    }
+    app.customModuleVisibilities = tmpVisibilities
+  },
+
+  isModuleActiveOrDependency (settings, moduleKey) {
+    if (!settings) {
+      return false
+    }
+    if (
+      settings.modules[moduleKey].isActive ||
+      (
+        settings.modules[moduleKey].dependents && settings.modules[moduleKey].dependents.length > 0 &&
+        settings.modules[moduleKey].dependents.map(depKey => settings.modules[depKey]).find(dependent => dependent.isActive)
+      )
+    ) {
+      return true
+    } else {
+      return false
+    }
+  },
+
   reduceTranslations: function (data, language, properties) {
     for (const property of properties) {
       if (data[property] && Array.isArray(data[property])) {

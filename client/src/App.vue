@@ -2,8 +2,9 @@
   <v-app
     :style="'background: linear-gradient(-45deg, ' + computedGradientLeft + ' 20%, ' + computedGradientRight + ' 100%);}'"
   >
-    <template
-      v-if="computedSetting"
+    <div
+      :key="$settings.updatedAt"
+      v-if="$settings"
     >
       <v-app-bar
         v-if="$route.name && $route.name !== 'Home'"
@@ -14,25 +15,25 @@
         <template v-slot:img="{ props }">
           <v-img
             v-bind="props"
-            :gradient="'to right, ' + computedSetting.headerColor + ', ' + computedSetting.headerColor.substr(0, computedSetting.headerColor.length - 2) + '0.2)'"
+            :gradient="'to right, ' + $settings.headerColor + ', ' + $settings.headerColor.substr(0, $settings.headerColor.length - 2) + '0.2)'"
           ></v-img>
         </template>
         <img
-          v-if="$vuetify.breakpoint.smAndUp && computedSetting.headerLogo"
+          v-if="$vuetify.breakpoint.smAndUp && $settings.headerLogo"
           class="py-2 mr-3 pointer"
           :height="$vuetify.breakpoint.mdAndUp ? '50px' : ($vuetify.breakpoint.smAndUp ? '30px': '30px')"
-          :src="computedSetting && computedSetting.headerLogo ? s3 + computedSetting.headerLogo.url : ''"
+          :src="$settings && $settings.headerLogo ? s3 + $settings.headerLogo.url : ''"
           @click="$router.push({ name: 'Home' })"
           style="margin-bottom: -1px"
           alt="Vima Logo"
-          :title="computedSetting && computedSetting.headerLogo ? computedSetting.headerLogo.credit : ''"
+          :title="$settings && $settings.headerLogo ? $settings.headerLogo.credit : ''"
         />
         <span
           v-else
           @click="$router.push({ name: 'Home' })"
           class="pointer subtitle-2"
         >
-          {{computedSetting.name}}
+          {{$settings.name}}
         </span>
         <v-toolbar-title
           v-if="$vuetify.breakpoint.lgAndUp"
@@ -190,8 +191,8 @@
             </v-list-item>
             <v-divider></v-divider>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.ads.isActive"
-              :color="computedSetting.modules.ads.color"
+              v-if="$settings.modules.ads.isActive"
+              :color="$settings.modules.ads.color"
               :to="{ name: 'CategoryList', params: { type: 'ads' } }"
             >
               <v-list-item-title
@@ -200,8 +201,8 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.groups.isActive"
-              :color="computedSetting.modules.groups.color"
+              v-if="$settings.modules.groups.isActive"
+              :color="$settings.modules.groups.color"
               :to="{ name: 'Groups' }"
             >
               <v-list-item-title
@@ -210,8 +211,8 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.discussions.isActive"
-              :color="computedSetting.modules.discussions.color"
+              v-if="$settings.modules.discussions.isActive"
+              :color="$settings.modules.discussions.color"
               :to="{ name: 'Discussions', params: { type: 'discussions' } }"
             >
               <v-list-item-title
@@ -220,7 +221,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.news.isActive"
+              v-if="$settings.modules.news.isActive"
               color="customGrey"
               :to="{ name: 'News' }"
             >
@@ -230,7 +231,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.events.isActive"
+              v-if="$settings.modules.events.isActive"
               color="customGrey"
               :to="{ name: 'Events' }"
             >
@@ -240,7 +241,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.blog.isActive"
+              v-if="$settings.modules.blog.isActive"
               color="customGrey"
               :to="{ name: 'Blog' }"
             >
@@ -250,7 +251,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.organisations.isActive"
+              v-if="$settings.modules.organisations.isActive"
               color="customGrey"
               :to="{ name: 'Organisations' }"
             >
@@ -308,7 +309,7 @@
           <template slot="badge">
             <v-icon
               size="12"
-              :color="computedSetting.indicatorColor"
+              :color="$settings.indicatorColor"
             >
               fas fa-exclamation
             </v-icon>
@@ -355,7 +356,7 @@
         <v-img
           height="100%"
           slot="img"
-          :gradient="'to right, ' + computedSetting.headerColor.substr(0, computedSetting.headerColor.length - 2) + '0.2), rgba(255, 255, 255, 1)'"
+          :gradient="'to right, ' + $settings.headerColor.substr(0, $settings.headerColor.length - 2) + '0.2), rgba(255, 255, 255, 1)'"
         ></v-img>
         <v-list
           class="pt-0"
@@ -439,7 +440,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -506,7 +507,7 @@
             </v-tooltip>
           </v-list-item>
           <v-list-item
-            v-if="computedSetting && computedSetting.modules.ads.isActive"
+            v-if="moduleVisibilities.ads"
             :to="{ name: 'AdList', params: { id: user._id } }"
           >
             <v-list-item-title
@@ -521,7 +522,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -557,7 +558,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -588,7 +589,7 @@
             </v-tooltip>
           </v-list-item>
           <v-list-item
-            v-if="computedSetting && computedSetting.modules.discussions.isActive"
+            v-if="moduleVisibilities.discussions"
             :to="{ name: 'DiscussionList', params: { id: user._id } }"
           >
             <v-list-item-title
@@ -603,7 +604,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -639,7 +640,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -675,7 +676,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -706,7 +707,7 @@
             </v-tooltip>
           </v-list-item>
           <v-list-item
-            v-if="computedSetting && computedSetting.modules.groups.isActive"
+            v-if="moduleVisibilities.groups"
             :to="{ name: 'GroupList', params: { id: user._id } }"
           >
             <v-list-item-title
@@ -721,7 +722,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -757,7 +758,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -793,7 +794,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -829,7 +830,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -865,7 +866,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -901,7 +902,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSetting.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
@@ -937,7 +938,7 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-badge
-                    :color="computedSetting.indicatorColor"
+                    :color="$settings.indicatorColor"
                     offset-x="15"
                     offset-y="15"
                   >
@@ -983,7 +984,8 @@
                 user.role === 'partners' ||
                 user.role === 'admins'
               ) &&
-              computedUserOrganisationId
+              computedUserOrganisationId &&
+              moduleVisibilities.organisations
             "
           >
             <v-divider></v-divider>
@@ -1013,6 +1015,7 @@
               </template>
 
               <v-list-item
+                v-if="moduleVisibilities.organisations"
                 :to="{
                   name: 'OrganisationEditor',
                   params: {
@@ -1027,7 +1030,7 @@
                 </v-list-item-title>
               </v-list-item>
               <v-list-item
-                v-if="computedSetting && computedSetting.modules.events.isActive"
+                v-if="moduleVisibilities.events"
                 :to="{ name: 'EventList', params: { organisation: computedUserOrganisationId } }"
               >
                 <v-list-item-title
@@ -1037,7 +1040,7 @@
                 </v-list-item-title>
               </v-list-item>
               <v-list-item
-                v-if="computedSetting && computedSetting.modules.events.isActive"
+                v-if="moduleVisibilities.events"
                 :to="{
                   name: 'ApiKeyEditor',
                   params: {
@@ -1069,7 +1072,7 @@
                 <template slot="badge">
                   <v-icon
                     size="12"
-                    :color="computedSetting.indicatorColor"
+                    :color="$settings.indicatorColor"
                   >
                     fas fa-exclamation
                   </v-icon>
@@ -1098,6 +1101,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="moduleVisibilities.organisations"
               :to="{ name: 'OrganisationListAdmin' }"
             >
               <v-list-item-title
@@ -1107,7 +1111,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.blog.isActive"
+              v-if="moduleVisibilities.blog"
               :to="{ name: 'BlogListAdmin' }"
             >
               <v-list-item-title
@@ -1117,7 +1121,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.news.isActive"
+              v-if="moduleVisibilities.news"
               :to="{ name: 'NewsListAdmin' }"
             >
               <v-list-item-title
@@ -1127,7 +1131,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.events.isActive"
+              v-if="moduleVisibilities.events"
               :to="{ name: 'EventListAdmin' }"
             >
               <v-list-item-title
@@ -1146,7 +1150,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.ads.isActive"
+              v-if="moduleVisibilities.ads"
               :to="{ name: 'AdListAdmin' }"
             >
               <v-list-item-title
@@ -1161,7 +1165,7 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-badge
-                    :color="computedSetting.indicatorColor"
+                    :color="$settings.indicatorColor"
                     offset-x="15"
                     offset-y="15"
                   >
@@ -1192,7 +1196,7 @@
               </v-tooltip>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.discussions.isActive"
+              v-if="moduleVisibilities.discussions"
               :to="{ name: 'DiscussionListAdmin' }"
             >
               <v-list-item-title
@@ -1207,7 +1211,7 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-badge
-                    :color="computedSetting.indicatorColor"
+                    :color="$settings.indicatorColor"
                     offset-x="15"
                     offset-y="15"
                   >
@@ -1238,7 +1242,7 @@
               </v-tooltip>
             </v-list-item>
             <v-list-item
-              v-if="computedSetting && computedSetting.modules.groups.isActive"
+              v-if="moduleVisibilities.groups"
               :to="{ name: 'GroupListAdmin' }"
             >
               <v-list-item-title
@@ -1253,7 +1257,7 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-badge
-                    :color="computedSetting.indicatorColor"
+                    :color="$settings.indicatorColor"
                     offset-x="15"
                     offset-y="15"
                   >
@@ -1307,7 +1311,7 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-badge
-                    :color="computedSetting.indicatorColor"
+                    :color="$settings.indicatorColor"
                     offset-x="15"
                     offset-y="15"
                   >
@@ -1353,7 +1357,7 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-badge
-                    :color="computedSetting.indicatorColor"
+                    :color="$settings.indicatorColor"
                     offset-x="15"
                     offset-y="15"
                   >
@@ -1556,7 +1560,7 @@
           class="py-4"
         >
           <v-col
-            v-if="computedSetting.socialMediaUrls"
+            v-if="$settings.socialMediaUrls"
             class="text-center"
             cols="12"
           >
@@ -1564,8 +1568,8 @@
               class="mx-4"
               icon
               target="_blank"
-              v-if="computedSetting.socialMediaUrls.fb"
-              :href="computedSetting.socialMediaUrls.fb"
+              v-if="$settings.socialMediaUrls.fb"
+              :href="$settings.socialMediaUrls.fb"
             >
               <v-icon>
                 fab fa-facebook
@@ -1575,8 +1579,8 @@
               class="mx-4"
               icon
               target="_blank"
-              v-if="computedSetting.socialMediaUrls.instagram"
-              :href="computedSetting.socialMediaUrls.instagram"
+              v-if="$settings.socialMediaUrls.instagram"
+              :href="$settings.socialMediaUrls.instagram"
             >
               <v-icon>
                 fab fa-instagram
@@ -1586,8 +1590,8 @@
               class="mx-4"
               icon
               target="_blank"
-              v-if="computedSetting.socialMediaUrls.twitter"
-              :href="computedSetting.socialMediaUrls.twitter"
+              v-if="$settings.socialMediaUrls.twitter"
+              :href="$settings.socialMediaUrls.twitter"
             >
               <v-icon>
                 fab fa-twitter
@@ -1832,7 +1836,7 @@
       </v-snackbar>
       <!-- Tour -->
       <v-tour name="app" :options="tourOptions" :steps="computedSteps"></v-tour>
-    </template>
+    </div>
     <!-- Connection dialog -->
     <v-dialog
       v-model="computedShowConnectionDialog"
@@ -2041,6 +2045,7 @@ export default {
 
   computed: {
     ...mapGetters([
+      'moduleVisibilities',
       's3',
       'snackbar',
       'statusItems',
@@ -2064,7 +2069,7 @@ export default {
     ...mapGetters('settings', {
       settings: 'list'
     }),
-    computedSetting () {
+    $settings () {
       return this.settings[0]
     },
     stepColors () {
@@ -2076,9 +2081,9 @@ export default {
               r: 255, g: 255, b: 255
             },
             right: {
-              r: this.computedSetting.modules.ads.gradientColor.r,
-              g: this.computedSetting.modules.ads.gradientColor.g,
-              b: this.computedSetting.modules.ads.gradientColor.b
+              r: this.$settings.modules.ads.gradientColor.r,
+              g: this.$settings.modules.ads.gradientColor.g,
+              b: this.$settings.modules.ads.gradientColor.b
             }
           },
           discussions: {
@@ -2086,9 +2091,9 @@ export default {
               r: 255, g: 255, b: 255
             },
             right: {
-              r: this.computedSetting.modules.discussions.gradientColor.r,
-              g: this.computedSetting.modules.discussions.gradientColor.g,
-              b: this.computedSetting.modules.discussions.gradientColor.b
+              r: this.$settings.modules.discussions.gradientColor.r,
+              g: this.$settings.modules.discussions.gradientColor.g,
+              b: this.$settings.modules.discussions.gradientColor.b
             }
           },
           groups: {
@@ -2096,9 +2101,9 @@ export default {
               r: 255, g: 255, b: 255
             },
             right: {
-              r: this.computedSetting.modules.groups.gradientColor.r,
-              g: this.computedSetting.modules.groups.gradientColor.g,
-              b: this.computedSetting.modules.groups.gradientColor.b
+              r: this.$settings.modules.groups.gradientColor.r,
+              g: this.$settings.modules.groups.gradientColor.g,
+              b: this.$settings.modules.groups.gradientColor.b
             }
           }
         }
@@ -2248,7 +2253,7 @@ export default {
       return organisationStatusContainer ? organisationStatusContainer.reference : undefined
     },
     computedShowConnectionDialog () {
-      if (this.isDisconnected && !this.connectionDelay && !this.computedSetting) {
+      if (this.isDisconnected && !this.connectionDelay && !this.$settings) {
         return true
       } else {
         return false
