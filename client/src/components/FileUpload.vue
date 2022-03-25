@@ -1,15 +1,15 @@
 <template>
-  <div>
+  <div class="droparea-container">
     <v-sheet
       outlined
       class="droparea"
       :class="files.length < maxFiles ? 'pointer' : ''"
       width="100%"
       @dragover.prevent
-      @drop.prevent="files.length < maxFiles ? addFile($event, 'drop')  : null"
+      @drop.prevent="addFile($event, 'drop')"
       @dragenter.prevent="isInsideDroparea = true"
       @dragleave.prevent="isInsideDroparea = false"
-      :color="isInsideDroparea ? (files.length < maxFiles ? 'success' : 'error'): bgColor"
+      :color="isInsideDroparea ? (files.length < maxFiles ? 'customGreyLight' : 'error'): bgColor"
       @click="$refs.hiddenInput.click()"
     >
     <input
@@ -97,6 +97,8 @@
                   :rules="[rules.required]"
                   @input="updateFileCredit($event, i)"
                   :disabled="file.errors.length > 0"
+                  :hint="$t('publicHint')"
+                  persistent-hint
                 ></v-text-field>
               <v-card-actions>
                 <v-btn
@@ -189,6 +191,9 @@ export default {
       createUpload: 'create',
       removeUpload: 'remove'
     }),
+    fakeClick () {
+      this.$refs.hiddenInput.click()
+    },
     async upload () {
       for (const file of this.files.filter(file => file.state === 'pending')) {
         const result = await this.createUpload(file)
@@ -232,6 +237,10 @@ export default {
       }
     },
     async addFile (e, type) {
+      this.isInsideDroparea = false
+      if (this.files.length >= this.maxFiles) {
+        return
+      }
       let files
       if (type === 'click') {
         files = this.$refs.hiddenInput.files
@@ -306,6 +315,10 @@ export default {
 </script>
 
 <style>
+  .droparea-container {
+    border-radius: 3px;
+    border: thin solid rgba(69, 90, 100, 0.5);
+  }
   .droparea * {pointer-events: none;}
   .droparea .v-card * {pointer-events: auto}
 </style>
