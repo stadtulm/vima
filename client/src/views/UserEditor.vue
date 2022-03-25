@@ -284,7 +284,6 @@
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
                           :maxFileSize="0.5"
                           :maxFiles="1"
-                          resolution="50"
                           bgColor="customGreyUltraLight"
                           :scaleToFit="[400, 400]"
                           :resizeQuality="75"

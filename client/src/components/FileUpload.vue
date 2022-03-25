@@ -41,7 +41,7 @@
           cols=12
           class="text-center"
         >
-          {{$t('dropFilesBody', { resolution })}}
+          {{$t('dropFilesBody', { resolution: scaleToFit.join('x') })}}
         </v-col>
       </v-row>
       <v-container
@@ -167,9 +167,6 @@ export default {
     acceptedMimeTypes: {
       type: Array,
       default: () => []
-    },
-    resolution: {
-      type: String
     },
     bgColor: {
       type: String
