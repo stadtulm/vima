@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import Store from '@/store'
 import i18n from '@/i18n'
 import Multiguard from 'vue-router-multiguard'
-import Cookie from 'cookie'
+import Cookies from 'js-cookie'
 
 import Home from '@/views/Home.vue'
 import Site from '@/views/Site.vue'
@@ -69,6 +69,9 @@ import DiscussionEditor from '@/views/DiscussionEditor.vue'
 import ChatList from '@/views/ChatList.vue'
 import Chat from '@/views/Chat.vue'
 import helpItems from '@/data/help.js'
+
+const appMode = process.env.VUE_APP_MODE
+const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
 
 Vue.use(VueRouter)
 
@@ -1281,13 +1284,19 @@ async function init (to, from, next) {
       }
     }
     // Set language
-    const cookies = Cookie.parse(document.cookie)
+    const langCookie = Cookies.get('clientLanguage', { path: '/' })
     if (Store.getters['auth/user'] && Store.getters['auth/user'].language) {
       i18n.locale = Store.getters['auth/user'].language
-    } else if (cookies.clientLanguage) {
-      i18n.locale = cookies.clientLanguage
+    } else if (langCookie) {
+      i18n.locale = langCookie
     }
-    document.cookie = 'clientLanguage=' + i18n.locale + '; path=/; SameSite=Lax; expires=31 Dec 2100 23:59:59 UTC'
+    document.cookie = Cookies.set('clientLanguage', i18n.locale, {
+      domain: serverDomain,
+      path: '/',
+      sameSite: appMode === 'production' ? 'None' : 'Lax',
+      secure: appMode === 'production',
+      expires: 365 * 100
+    })
     // Load stuff
     const settings = await Store.dispatch('settings/find')
     if (settings.length === 1) {

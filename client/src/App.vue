@@ -1879,6 +1879,9 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { Tween } from '@createjs/tweenjs'
 import NewsletterDialog from '@/components/NewsletterDialog.vue'
 import LanguageSelect from '@/components/LanguageSelect.vue'
+import Cookies from 'js-cookie'
+const appMode = process.env.VUE_APP_MODE
+const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
 
 export default {
   name: 'App',
@@ -1958,7 +1961,13 @@ export default {
     }),
     async setLanguage (languageCode) {
       // Update cookie
-      document.cookie = 'clientLanguage=' + languageCode + '; path=/; SameSite=Lax; expires=31 Dec 2100 23:59:59 UTC'
+      document.cookie = Cookies.set('clientLanguage', languageCode, {
+        domain: serverDomain,
+        path: '/',
+        sameSite: appMode === 'production' ? 'None' : 'Lax',
+        secure: appMode === 'production',
+        expires: 365 * 100
+      })
       // Update user language
       if (this.user && this.user._id) {
         await this.patchUser([

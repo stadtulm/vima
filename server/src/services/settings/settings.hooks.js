@@ -67,7 +67,6 @@ module.exports = {
       commonHooks.iff(
         (context) => context.method !== 'remove' && context.result && context.result.length === 1,
         (context) => {
-          console.log(context.result)
           util.createModuleVisibilities(context.app, context.result)
         }
       )

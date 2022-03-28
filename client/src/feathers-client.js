@@ -6,11 +6,19 @@ import { iff, discard, traverse, paramsForServer } from 'feathers-hooks-common'
 import feathersVuex from 'feathers-vuex'
 import Store from '@/store'
 import { decode } from 'he'
-import Cookie from 'cookie'
+import Cookies from 'js-cookie'
 import i18n from '@/i18n'
+const appMode = process.env.VUE_APP_MODE
+const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
 
-if (!Cookie.parse(document.cookie).clientLanguage) {
-  document.cookie = 'clientLanguage=' + i18n.locale + '; path=/; SameSite=Lax; expires=31 Dec 2100 23:59:59 UTC'
+if (!Cookies.get('clientLanguage', { path: '/' })) {
+  document.cookie = Cookies.set('clientLanguage', i18n.locale, {
+    domain: serverDomain,
+    path: '/',
+    sameSite: appMode === 'production' ? 'None' : 'Lax',
+    secure: appMode === 'production',
+    expires: 365 * 100
+  })
 }
 
 const socket = io(process.env.VUE_APP_SERVER_URL, {
