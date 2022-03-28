@@ -129,6 +129,7 @@
               v-if="files.length > 0 || isLoading"
               class="fill-height"
               :flat="!isLoading"
+              :color="bgColor"
             >
               <v-img
                 min-height="200"
