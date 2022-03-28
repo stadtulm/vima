@@ -476,7 +476,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-badge
-                  :color="computedSe.indicatorColor"
+                  :color="$settings.indicatorColor"
                   offset-x="15"
                   offset-y="15"
                 >
