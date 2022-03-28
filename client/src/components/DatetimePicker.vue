@@ -25,7 +25,6 @@
     </template>
 
     <v-card>
-      {{error}}
       <v-card-text class="px-0 py-0">
         <v-tabs color="customGrey" fixed-tabs v-model="activeTab">
           <v-tab key="calendar">
