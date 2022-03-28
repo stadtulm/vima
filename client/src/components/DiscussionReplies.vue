@@ -652,10 +652,12 @@ export default {
     },
     uploadResetInput () {
       this.isEditMessage = undefined
-      this.dropzones.discussionReplyUpload = {
+      const clonedDropzones = JSON.parse(JSON.stringify(this.dropzones))
+      clonedDropzones.discussionReplyUpload = {
         pics: [],
         key: Date.now()
       }
+      this.$emit('dropzonesChanges', clonedDropzones)
       this.$refs.messagesForm.reset()
       this.message = undefined
     },
@@ -664,19 +666,21 @@ export default {
     },
     uploadHideDialog (name, queuedPics) {
       this.isUploadVisible = undefined
+      const clonedDropzones = JSON.parse(JSON.stringify(this.dropzones))
       if (!queuedPics) {
-        this.dropzones[name] = {
+        clonedDropzones[name] = {
           key: Date.now(),
           pics: []
         }
       } else {
-        this.dropzones[name].pics = this.uploadGetAllPics(
+        clonedDropzones[name].pics = this.uploadGetAllPics(
           [
             this.isEditMessage ? this.isEditMessage.pics : [],
             queuedPics
           ]
         )
       }
+      this.$emit('dropzonesChanges', clonedDropzones)
     },
     loadMoreReplies () {
       this.manualLoad = true
@@ -700,7 +704,8 @@ export default {
     async editMessage (message) {
       this.isEditMessage = message
       this.message = message.text.value
-      this.dropzones.discussionReplyUpload = {
+      const clonedDropzones = JSON.parse(JSON.stringify(this.dropzones))
+      clonedDropzones.discussionReplyUpload = {
         pics: this.uploadGetAllPics(
           [
             this.isEditMessage ? this.isEditMessage.pics : []
@@ -708,6 +713,7 @@ export default {
         ),
         key: Date.now()
       }
+      this.$emit('dropzonesChanges', clonedDropzones)
       document.querySelector('#replyInput' + this.mainMessage._id).scrollIntoView()
     },
     async sendMessage () {

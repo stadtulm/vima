@@ -325,7 +325,7 @@ export default {
       this.isLoading = false
     },
     fileToDataURL (file) {
-      var reader = new FileReader()
+      const reader = new FileReader()
       return new Promise(function (resolve, reject) {
         reader.onload = function (event) {
           resolve(event.target.result)

@@ -321,6 +321,7 @@
                               @checkVisibleMessages="checkVisibleMessages"
                               @report="openReportDialog"
                               @translateText="translateText"
+                              @dropzonesChanged="($event) => dropzones = $event"
                               :computedOwnSubscriberStatusContainer="computedOwnSubscriberStatusContainer"
                               :computedGroupStatus="computedGroupStatus"
                               :dropzones="dropzones"

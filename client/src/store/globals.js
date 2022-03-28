@@ -26,7 +26,7 @@ const state = {
     }
   },
   parseRgbString (str) {
-    var vals = str.substring(str.indexOf('(') + 1, str.length - 1).split(', ')
+    const vals = str.substring(str.indexOf('(') + 1, str.length - 1).split(', ')
     return {
       r: vals[0],
       g: vals[1],
@@ -72,6 +72,7 @@ const state = {
             return tag
           } else {
             Store.dispatch('logging/create', { type: 'error', route: window.location.pathname, user: (Store.getters['auth/user'] ? Store.getters['auth/user']._id : '-'), method: 'getTags', message: 'Not existant tag: ' + obj })
+            return false
           }
         })
         .filter(obj => !!obj)
@@ -89,6 +90,7 @@ const state = {
             return category
           } else {
             Store.dispatch('logging/create', { type: 'error', route: window.location.pathname, user: (Store.getters['auth/user'] ? Store.getters['auth/user']._id : '-'), method: 'getCategories', message: 'Not existant category: ' + obj })
+            return false
           }
         })
         .filter(obj => !!obj)

@@ -4,7 +4,7 @@
     <v-dialog
       max-width="600"
       persistent
-      v-model="showTagProposalDialog"
+      :value="showTagProposalDialog"
       @click:outside="$emit('closeTagProposalDialog')"
     >
       <v-card

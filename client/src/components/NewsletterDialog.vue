@@ -4,7 +4,7 @@
     <v-dialog
       max-width="600"
       persistent
-      v-model="showNewsletterDialog"
+      :value="showNewsletterDialog"
       @click:outside="closeDialog()"
     >
       <v-card

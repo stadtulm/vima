@@ -6,7 +6,7 @@
     <v-dialog
       max-width="800"
       persistent
-      v-model="showViolationDialog"
+      :value="showViolationDialog"
       @click:outside="closeViolationDialog()"
     >
       <v-card

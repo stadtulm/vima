@@ -320,6 +320,7 @@ export default {
                 return tag
               } else {
                 this.createLog({ type: 'error', route: window.location.pathname, user: (this.user ? this.user._id : '-'), method: 'getTags (CategoriesListView)', message: 'Not existant category: ' + obj })
+                return false
               }
             })
             .filter(obj => !!obj)
