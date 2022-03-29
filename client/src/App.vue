@@ -1,9 +1,9 @@
 <template>
   <v-app
     :style="'background: linear-gradient(-45deg, ' + computedGradientLeft + ' 20%, ' + computedGradientRight + ' 100%);}'"
+    :key="$settings ? $settings.updatedAt : $settings"
   >
-    <div
-      :key="$settings.updatedAt"
+    <template
       v-if="$settings"
     >
       <v-app-bar
@@ -1556,9 +1556,10 @@
         dark
         color="secondary"
       >
-        <v-row
-          class="py-4"
+        <v-container
+          fluid
         >
+        <v-row>
           <v-col
             v-if="$settings.socialMediaUrls"
             class="text-center"
@@ -1700,6 +1701,7 @@
             </v-sheet>
           </v-col>
         </v-row>
+        </v-container>
       </v-footer>
       <v-snackbar
         v-model="showSnackbar"
@@ -1836,7 +1838,7 @@
       </v-snackbar>
       <!-- Tour -->
       <v-tour name="app" :options="tourOptions" :steps="computedSteps"></v-tour>
-    </div>
+    </template>
     <!-- Connection dialog -->
     <v-dialog
       v-model="computedShowConnectionDialog"
