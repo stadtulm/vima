@@ -54,7 +54,10 @@
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
           mobile-breakpoint="0"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
@@ -160,7 +163,7 @@ export default {
     search: '',
     page: 1,
     total: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['updatedAt'],
     sortDesc: [true],
     loaders: {}
@@ -306,7 +309,8 @@ export default {
   computed: {
     ...mapGetters([
       's3',
-      'newTab'
+      'newTab',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'

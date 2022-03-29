@@ -8,6 +8,7 @@ const state = {
   userCount: undefined,
   firstLoad: true,
   showTour: true,
+  itemsPerPageOptions: [10, 25, 50, 100, -1],
   deepSort: function (sortBy, sortDesc, arr) {
     const prop = sortBy.split('.')
     const len = prop.length
@@ -156,6 +157,9 @@ const state = {
 }
 
 const getters = {
+  itemsPerPageOptions: state => {
+    return state.itemsPerPageOptions
+  },
   hasMatomo: state => {
     return state.hasMatomo
   },

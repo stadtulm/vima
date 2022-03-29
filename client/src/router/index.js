@@ -1069,11 +1069,15 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
   scrollBehavior (to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition
-    } else {
-      return { x: 0, y: 0 }
-    }
+    return new Promise((resolve, reject) => {
+      Vue.nextTick(() => {
+        if (savedPosition) {
+          resolve(savedPosition)
+        } else {
+          resolve({ x: 0, y: 0 })
+        }
+      })
+    })
   }
 })
 

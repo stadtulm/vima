@@ -83,7 +83,8 @@
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :footer-props="{
-              itemsPerPageText: ''
+              itemsPerPageText: '',
+              itemsPerPageOptions
             }"
           >
             <template
@@ -291,7 +292,7 @@ export default {
     tagsListDefault: [],
     searchOwnDefault: '',
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     loading: true
   }),
 
@@ -488,7 +489,8 @@ export default {
     ...mapGetters([
       'deepSort',
       'getTags',
-      'getCategories'
+      'getCategories',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'

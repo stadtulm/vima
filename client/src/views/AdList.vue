@@ -57,7 +57,10 @@
           :items-per-page.sync="itemsPerPage"
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
@@ -340,7 +343,10 @@
                   { text: this.$t('answer'), value: 'answer' },
                   { text: this.$t('goToChat'), value: 'goToChat', sortable: false, align: 'center' }
                 ]"
-                :footer-props="{ itemsPerPageText: '' }"
+                :footer-props="{
+                  itemsPerPageText: '',
+                  itemsPerPageOptions
+                }"
               >
                 <template
                   v-slot:[`item.pic.url`]="{ item }"
@@ -570,7 +576,7 @@ export default {
     page: 1,
     loading: true,
     total: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['createdAt'],
     sortDesc: [true],
     extensions: [
@@ -827,7 +833,8 @@ export default {
       's3',
       'relationItems',
       'deepSort',
-      'newTab'
+      'newTab',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'

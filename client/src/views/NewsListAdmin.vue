@@ -56,7 +56,10 @@
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
           mobile-breakpoint="0"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
@@ -292,7 +295,10 @@
                       { text: this.$t('dt'), value: 'dt' },
                     ]"
                     :items="sendStats.sent"
-                    :footer-props="{ itemsPerPageText: '' }"
+                    :footer-props="{
+                      itemsPerPageText: '',
+                      itemsPerPageOptions
+                    }"
                   >
                     <template
                       v-slot:[`item.type`]="{ item }"
@@ -317,7 +323,10 @@
                       { text: this.$t('errorMessage'), value: 'message' },
                     ]"
                     :items="sendStats.error"
-                    :footer-props="{ itemsPerPageText: '' }"
+                    :footer-props="{
+                      itemsPerPageText: '',
+                      itemsPerPageOptions
+                    }"
                   >
                     <template
                       v-slot:[`item.type`]="{ item }"
@@ -356,7 +365,10 @@
                               { text: this.$t('type'), value: 'type' },
                             ]"
                             :items="computedRecievers"
-                            :footer-props="{ itemsPerPageText: '' }"
+                            :footer-props="{
+                              itemsPerPageText: '',
+                              itemsPerPageOptions
+                            }"
                           >
                             <template
                               v-slot:[`item.type`]="{ item }"
@@ -407,7 +419,7 @@ export default {
     page: 1,
     loading: true,
     total: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['updatedAt'],
     sortDesc: [true]
   }),
@@ -592,7 +604,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'
