@@ -2108,7 +2108,7 @@ export default {
       return organisationStatusContainer ? organisationStatusContainer.reference : undefined
     },
     computedShowConnectionDialog () {
-      if (this.isDisconnected && !this.connectionDelay) {
+      if (this.$route.path !== '/' && this.isDisconnected && !this.connectionDelay) {
         return true
       } else {
         return false

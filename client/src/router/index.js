@@ -75,9 +75,14 @@ const routes = [
       breadCrumbPredecessors: []
     },
     beforeEnter: Multiguard([
-      (to, from, next) => {
-        if (!from.name && localStorage.getItem('skipWelcome')) {
-          next({ name: 'Participate' })
+      async (to, from, next) => {
+        if (!from.name && localStorage.getItem('skipWelcome') && Store.getters.isDisconnected) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+          if (!from.name && localStorage.getItem('skipWelcome') && !Store.getters.isDisconnected) {
+            next({ name: 'Participate' })
+          } else {
+            next()
+          }
         } else {
           localStorage.setItem('skipWelcome', true)
           next()
@@ -1071,11 +1076,13 @@ const router = new VueRouter({
   scrollBehavior (to, from, savedPosition) {
     return new Promise((resolve, reject) => {
       Vue.nextTick(() => {
-        if (savedPosition) {
-          resolve(savedPosition)
-        } else {
-          resolve({ x: 0, y: 0 })
-        }
+        setTimeout(() => {
+          if (savedPosition) {
+            resolve(savedPosition)
+          } else {
+            resolve({ x: 0, y: 0 })
+          }
+        }, 500)
       })
     })
   }
@@ -1097,7 +1104,12 @@ router.beforeEach(async (to, from, next) => {
   } else {
     Store.commit('SET_SHOW_TOUR', false)
   }
-  await init(to, from, next)
+  if (to.path !== '/') {
+    await init(to, from, next)
+  } else {
+    init(to, from, next)
+    next()
+  }
 })
 
 async function init (to, from, next) {

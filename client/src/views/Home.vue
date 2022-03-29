@@ -88,12 +88,27 @@
                           </p>
                         </v-col>
                       </v-row>
+                      <v-alert
+                        v-if="isDisconnected"
+                        color="customGreyUltraLight"
+                      >
+                        <template v-slot:prepend>
+                          <v-progress-circular
+                            size="18"
+                            width="2"
+                            indeterminate
+                            class="mr-4"
+                          ></v-progress-circular>
+                        </template>
+                        {{$t('connectingToServer')}}
+                      </v-alert>
                       <v-row>
                         <v-col
                           cols="12"
                           md="6"
                         >
                           <v-btn
+                            v-if="!isDisconnected"
                             color="customGrey"
                             dark
                             large
@@ -114,7 +129,9 @@
                           </v-btn>
                         </v-col>
                       </v-row>
-                      <v-row>
+                      <v-row
+                        v-if="!isDisconnected"
+                      >
                         <v-col
                           cols="12"
                         >
@@ -213,7 +230,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      'currentLanguage'
+      'currentLanguage',
+      'isDisconnected'
     ]),
     computedPics () {
       const picSet = this.shuffle()

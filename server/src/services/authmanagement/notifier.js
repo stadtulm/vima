@@ -32,13 +32,11 @@ module.exports = function (app) {
       let role
       let greeting = ''
       let emailResult
-      console.log('inside notifier')
       const roles = [
         { text: locales.member, value: 'users' },
         { text: locales.partner, value: 'partners' },
         { text: locales.admin, value: 'admins' }
       ]
-      console.log(roles)
       switch (type) {
         case 'verifySubscriberSignup':
           tokenLink = getLink('bestaetigen', user._id + '/' + user.verifyToken)
