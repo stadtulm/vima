@@ -441,7 +441,8 @@ export default {
             type: 'news',
             tmpTestUser: {
               email: this.user.email,
-              id: this.user._id
+              id: this.user._id,
+              language: this.user.language
             }
           }
         )

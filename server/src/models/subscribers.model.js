@@ -8,6 +8,7 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const schema = new Schema({
     email: { type: String, required: true, unique: true },
+    language: { type: String, required: true },
     isVerified: { type: Boolean },
     verifyToken: { type: String }
   }, {
