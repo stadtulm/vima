@@ -582,5 +582,8 @@
   "replyToAd": "Was passiert, wenn ich auf ein Inserat antworte?",
   "chatAfterReply": "Die Person, die das Inserat eingestellt hat, wird benachrichtigt und kann Ihre Nachricht lesen. Sobald sie antwortet, erfahren Sie um wen es sich handelt und Sie können Ihre Konversation in Ihrem privaten Chat fortführen.",
   "replayToMyAd": "Was passiert, wenn jemand auf ein Inserat von mir antwortet?",
-  "chatAfterReplyToMyAd": "Die Antworten auf ein Inserat können Sie unter \"Mein ViMA\" -> \"Suche-Biete\" -> \"Interessent*innen\" ansehen. Sobald Sie dort auf eine Anfrage antworten, wird die interessierte Person benachrichtigt und Sie können die Konversation in Ihrem privaten Chat fortführen."
+  "chatAfterReplyToMyAd": "Die Antworten auf ein Inserat können Sie unter \"Mein ViMA\" -> \"Suche-Biete\" -> \"Interessent*innen\" ansehen. Sobald Sie dort auf eine Anfrage antworten, wird die interessierte Person benachrichtigt und Sie können die Konversation in Ihrem privaten Chat fortführen.",
+  "prominentCategories": "Hervorgehobene Kategorien",
+  "prominentCategoriesHint": "Diese Kategorien werden als Raster auf der Gruppen-Seite angezeigt.",
+  "interestGroupSelection": "Interessengruppe Kategorie"
 }

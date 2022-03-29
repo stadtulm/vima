@@ -3,7 +3,7 @@
     color="customGreyBg"
     v-if="computedGroup"
     height="100%"
-    :to="groupProp ? { name: 'Group', params: { group: computedGroup._id }} : ''"
+    :to="groupProp ? { name: 'Group', params: { group: computedGroup._id } } : ''"
   >
     <v-container
       fluid
@@ -51,8 +51,16 @@
                   </span>
                 </v-tooltip>
               </v-card-title>
+              <v-card-title
+                v-if="computedCategory"
+                class="pt-0 pb-8"
+              >
+                {{computedCategory.name}}
+              </v-card-title>
               <!-- Subtitle -->
-              <v-card-subtitle>
+              <v-card-subtitle
+                v-if="!computedCategory"
+              >
                 {{$t('createdAt')}} {{$moment(computedGroup.createdAt).format('DD.MM.YYYY')}} {{$t('by')}}
                 <span
                   class="font-weight-bold"
@@ -64,7 +72,9 @@
               </v-card-subtitle>
               <v-card-text>
                 <!-- Visibility -->
-                <v-row>
+                <v-row
+                  v-if="!computedCategory"
+                >
                   <v-col>
                     <v-tooltip
                       right
@@ -93,7 +103,12 @@
                 </v-row>
                 <!-- Interaction -->
                 <v-row
-                  v-if="!computedGroupStatus && !groupProp && user"
+                  v-if="
+                    !computedGroupStatus &&
+                    !groupProp &&
+                    user &&
+                    !computedCategory
+                  "
                 >
                   <v-col>
                     <v-btn
@@ -114,7 +129,11 @@
                 </v-row>
                 <!-- Categories -->
                 <v-row
-                  v-if="computedGroup.categories && computedGroup.categories.length > 0"
+                  v-if="
+                    !computedCategory &&
+                    computedGroup.categories &&
+                    computedGroup.categories.length > 0
+                  "
                 >
                   <v-col>
                     <v-chip
@@ -130,7 +149,11 @@
                 </v-row>
                 <!-- Tags -->
                 <v-row
-                  v-if="computedGroup.tags && computedGroup.tags.length > 0"
+                  v-if="
+                    !computedCategory &&
+                    computedGroup.tags &&
+                    computedGroup.tags.length > 0
+                  "
                 >
                   <v-col>
                     <v-chip
@@ -144,16 +167,28 @@
                   </v-col>
                 </v-row>
                 <!-- Description -->
-                <v-row>
+                <v-row
+                  v-if="!computedCategory"
+                >
                   <v-col
                     class="body-1"
                     v-html="groupProp ? truncatedDescription(newTab(computedGroup.description)) : $sanitize(newTab(computedGroup.description))"
                   ></v-col>
                 </v-row>
+                <v-row
+                  v-else
+                >
+                  <v-col
+                    class="body-1"
+                  >
+                    {{computedCategory.description}}
+                  </v-col>
+                </v-row>
               </v-card-text>
             </v-col>
             <!-- Carousel -->
             <v-col
+              v-if="!computedCategory"
               cols="12"
               sm="12"
               :md="groupProp ? 12 : 6"
@@ -233,12 +268,107 @@
             <template
               v-if="!groupProp"
             >
-              <v-divider
-                class="mx-4 mt-8 mb-10"
-              ></v-divider>
+              <!-- Group discussions grid -->
+              <template
+                v-if="
+                  !computedCategory &&
+                  computedGroup.prominentCategories &&
+                  computedGroup.prominentCategories.length > 0
+                "
+              >
+                <v-divider
+                  class="mx-4 mt-8 mb-10"
+                ></v-divider>
+                <v-row>
+                  <v-col
+                    class="mx-6 title"
+                  >
+                    {{$t('prominentCategories')}}
+                  </v-col>
+                </v-row>
+                <v-row
+                  class="mx-1"
+                >
+                  <v-col
+                    v-for="(cat, i) in getCategories(computedGroup.prominentCategories)"
+                    :key="i"
+                  >
+                    <v-card
+                      height="100%"
+                      @click="$router.push({ name: 'GroupSelection', params: { group: computedGroup._id, category: cat._id } })"
+                    >
+                      <v-container
+                        fluid
+                        class="fill-height"
+                      >
+                        <v-row
+                          class="align-self-start"
+                        >
+                          <v-img
+                            :src="cat.pic ? s3 + cat.pic.url: ''"
+                            height="200px"
+                            width="100%"
+                            :title="cat.pic ? cat.pic.credit : ''"
+                          ></v-img>
+                          <v-col
+                            class="px-0 pb-0"
+                          >
+                            <v-card-title
+                              class="word-wrap"
+                            >
+                              {{cat.name}}
+                            </v-card-title>
+                          </v-col>
+                          <v-col
+                            class="pb-0 shrink right-text align-self-center"
+                          >
+                            <v-btn
+                              class="customCyan--text"
+                              @click="$router.push({ name: 'GroupSelection', params: { group: computedGroup._id, category: cat._id } })"
+                            >
+                              {{$t('viewButton')}}
+                              <v-icon
+                                class="ml-3"
+                                size="18"
+                              >
+                                fas fa-arrow-right
+                              </v-icon>
+                            </v-btn>
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            class="pb-4 px-4 body-1 black--text"
+                          >
+                            {{cat.description}}
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </template>
+              <template
+                v-if="!computedCategory"
+              >
+                <v-divider
+                  class="mb-9 mt-10 mx-6"
+                ></v-divider>
+                <v-row>
+                  <v-col
+                    class="mx-6 title"
+                  >
+                    {{$t('allDiscussions')}}
+                  </v-col>
+                </v-row>
+              </template>
               <!-- New discussion button -->
               <v-row
-                v-if="user && computedGroupStatus && computedGroupStatus.isMember"
+                v-if="
+                  !computedCategory &&
+                  user &&
+                  computedGroupStatus &&
+                  computedGroupStatus.isMember
+                "
                 class="mx-1"
               >
                 <v-col
@@ -259,13 +389,14 @@
                     </v-btn>
                 </v-col>
               </v-row>
-              <!-- Group discussions -->
+              <!-- Group discussions list -->
               <v-row
                 class="mx-1"
               >
                 <v-col>
                   <DiscussionsList
                     :group="computedGroup"
+                    :category="computedCategory"
                   ></DiscussionsList>
                 </v-col>
               </v-row>
@@ -318,7 +449,7 @@
       >
         <v-col>
           <v-card-actions
-            class="mx-2 pb-4 grow"
+            class="pb-4 grow"
             v-if="groupProp"
           >
             <v-btn
@@ -538,6 +669,13 @@ export default {
     ...mapGetters('categories', {
       categories: 'list'
     }),
+    computedCategory () {
+      if (this.$route.params.category) {
+        return this.getCategories([this.$route.params.category])[0]
+      } else {
+        return undefined
+      }
+    },
     computedGroupStatus () {
       if (this.computedStatusContainers) {
         if (this.computedStatusContainers.find(obj => obj.relation === 'owner')) {
@@ -580,7 +718,14 @@ export default {
       if (this.groupProp) {
         return this.groupProp
       } else {
-        if (this.$route.name === 'Group' && this.$route.params.group && !this.groupProp) {
+        if (
+          (
+            this.$route.name === 'Group' ||
+            this.$route.name === 'GroupSelection'
+          ) &&
+          this.$route.params.group &&
+          !this.groupProp
+        ) {
           let selectedGroup = this.getGroup(this.$route.params.group)
           if (!selectedGroup) {
             selectedGroup = await this.requestGroup(

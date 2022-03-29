@@ -855,6 +855,20 @@ const routes = [
     }
   },
   {
+    path: '/interessengruppen/:group/kategorie/:category',
+    name: 'GroupSelection',
+    component: Group,
+    meta: {
+      breadCrumbTextKey: 'interestGroupSelection',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['Groups', 'GroupList', 'GroupListAdmin'],
+        ['Group']
+      ],
+      step: 'groups'
+    }
+  },
+  {
     path: '/interessengruppen/:group',
     name: 'Group',
     component: Group,

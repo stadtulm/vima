@@ -275,7 +275,8 @@ export default {
     'group',
     'showFilters',
     'resetFilterTrigger',
-    'isAcceptList'
+    'isAcceptList',
+    'category'
   ],
 
   data: () => ({
@@ -529,15 +530,18 @@ export default {
           { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
         ]
       } else {
-        return [
+        const tmpHeaders = [
           { text: this.$t('title'), value: 'title' },
           { text: this.$t('created'), value: 'createdAt' },
           { text: this.$t('latestPost'), value: 'latestMessage' },
-          { text: this.$t('categories'), value: 'categories', sortable: false },
           { text: this.$t('tags'), value: 'tags', sortable: false },
           { text: this.$t('posts'), value: 'messagesCount', sortable: false },
           { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
         ]
+        if (!this.category) {
+          tmpHeaders.splice(3, 0, { text: this.$t('categories'), value: 'categories', sortable: false })
+        }
+        return tmpHeaders
       }
     },
     computedColor () {
@@ -629,6 +633,13 @@ export default {
   },
 
   watch: {
+    category (newValue, oldValue) {
+      if (newValue && !this.categoriesList.includes(newValue._id)) {
+        this.categoriesList.push(newValue._id)
+      } else if (!newValue && oldValue) {
+        this.categoriesList = this.categoriesList.filter(category => category !== oldValue._id)
+      }
+    },
     discussions () {
       this.findDiscussionsTrigger = Date.now()
     },

@@ -80,7 +80,6 @@
               </v-row>
               <v-row
                 dense
-                v-if="!group"
               >
                 <v-col>
                   <v-select
