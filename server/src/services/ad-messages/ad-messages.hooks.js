@@ -1,4 +1,3 @@
-const locales = require('../../locales/de.json')
 const commonHooks = require('feathers-hooks-common')
 const Errors = require('@feathersjs/errors')
 const { authenticate } = require('@feathersjs/authentication').hooks
@@ -255,7 +254,8 @@ module.exports = {
               {
                 chat: chatId,
                 text: [{
-                  value: '<blockquote class="blockquote"><p>' + locales.subject + ': ' + locales.ad + ' "' + ad.title.find(obj => obj.type === 'default').value + '"</blockquote>' +
+                  value: '<blockquote class="blockquote"><p>' +
+                    '⮌ "' + ad.title.find(obj => obj.type === 'default').value + '"</blockquote>' +
                   '<p>' + context.params.tmpApplicantAdMessage.text.find(obj => obj.type === 'default').value + '</p>',
                   type: 'default'
                 }],

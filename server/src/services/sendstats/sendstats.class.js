@@ -1,4 +1,3 @@
-const locales = require('../../locales/de.json')
 const { Service } = require('feathers-mongoose')
 
 exports.Sendstats = class Sendstats extends Service {
@@ -89,7 +88,9 @@ exports.sendNewsletter = async function sendNewsletter (app, allRecipients, refe
               '<h1>' + tmpTitle.value + '</h1>' +
               (tmpSubTitle.value ? '<h2>' + tmpSubTitle.value + '</h2>' : '') +
               '<div>' + newsText.value + '</div>' +
-              locales.unsubscribeNewsletterNote1 + '<a href="' + process.env.CLIENT_URL + 'austragen/' + recipient.id + '">' + locales.unsubscribeNewsletterNote2
+              app.i18n.__({ phrase: 'unsubscribeNewsletterNote1', locale: languageKey }) +
+              '<a href="' + process.env.CLIENT_URL + 'austragen/' + recipient.id + '">' +
+              app.i18n.__({ phrase: 'unsubscribeNewsletterNote2', locale: languageKey })
           }
         )
         sent.push(

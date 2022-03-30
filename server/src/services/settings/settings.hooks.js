@@ -63,19 +63,20 @@ module.exports = {
   },
 
   after: {
-    all: [
-      commonHooks.iff(
-        (context) => context.method !== 'remove' && context.result && context.result.length === 1,
-        (context) => {
-          util.createModuleVisibilities(context.app, context.result)
-        }
-      )
-    ],
+    all: [],
     find: [],
     get: [],
-    create: [],
+    create: [
+      (context) => {
+        util.createModuleVisibilities(context.app, context.result)
+      }
+    ],
     update: [],
-    patch: [],
+    patch: [
+      (context) => {
+        util.createModuleVisibilities(context.app, context.result)
+      }
+    ],
     remove: []
   },
 

@@ -1,4 +1,3 @@
-const locales = require('../../locales/de.json')
 const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
@@ -69,7 +68,7 @@ module.exports = {
               )
             }
             // Throw error indicating that the user exists
-            throw new Errors.Conflict(locales.profileAlreadyExistedSettingsAdjusted)
+            throw new Errors.Conflict(context.app.i18n.__({ phrase: 'profileAlreadyExistedSettingsAdjusted', locale: context.params.connection.language }))
           }
         }
       )
@@ -101,29 +100,29 @@ module.exports = {
             const ObjectId = require('mongoose').Types.ObjectId
             // Throw if subscriber id is invalid
             if (!ObjectId.isValid(context.arguments[0])) {
-              throw new Errors.NotFound(locales.confirmationIdInvalid)
+              throw new Errors.NotFound(context.app.i18n.__({ phrase: 'confirmationIdInvalid', locale: context.params.connection.language }))
             }
             // Throw subscriber id is not existing
             let subscriber
             try {
               subscriber = await context.app.service('subscribers').get(context.arguments[0])
             } catch (e) {
-              throw new Errors.NotFound(locales.confirmationIdUnknown)
+              throw new Errors.NotFound(context.app.i18n.__({ phrase: 'confirmationIdUnknown', locale: context.params.connection.language }))
             }
             if (subscriber.isVerified) {
               // Throw error if subscriber already is verified
-              throw new Errors.NotFound(locales.emailAlreadyConfirmed)
+              throw new Errors.NotFound(context.app.i18n.__({ phrase: 'emailAlreadyConfirmed', locale: context.params.connection.language }))
             } else if (subscriber && subscriber.verifyToken && subscriber.verifyToken === context.data.tmpValue) {
               // Verify
               context.data.isVerified = true
               context.data.verifyToken = null
             } else {
               // Throw id verify token is invalid
-              throw new Errors.NotFound(locales.confirmationCodeInvalid)
+              throw new Errors.NotFound(context.app.i18n.__({ phrase: 'confirmationCodeInvalid', locale: context.params.connection.language }))
             }
           } else {
             // Throw if request is invalid
-            throw new Errors.NotFound(locales.confirmationLinkInvalid)
+            throw new Errors.NotFound(context.app.i18n.__({ phrase: 'confirmationLinkInvalid', locale: context.params.connection.language }))
           }
         }
       )

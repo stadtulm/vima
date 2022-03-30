@@ -12,6 +12,8 @@ const configuration = require('@feathersjs/configuration')
 const express = require('@feathersjs/express')
 const socketio = require('@feathersjs/socketio')
 
+const { I18n } = require('i18n')
+
 const middleware = require('./middleware')
 const services = require('./services')
 const appHooks = require('./app.hooks')
@@ -24,6 +26,7 @@ const mongoose = require('./mongoose')
 const util = require('./services/util')
 
 const app = express(feathers())
+app.i18n = new I18n()
 
 // Load app configuration
 app.configure(configuration())

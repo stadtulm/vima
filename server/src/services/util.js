@@ -1,13 +1,24 @@
 const mongoose = require('mongoose')
+const path = require('path')
 
 module.exports = {
 
   createModuleVisibilities (app, settings) {
+    // Add settings
     if (Array.isArray(settings)) {
       app.customSettings = settings[0]
     } else {
       app.customSettings = settings
     }
+    // (Re)configure i18n
+    app.i18n.configure({
+      locales: app.customSettings.languages,
+      directory: path.join(__dirname, '../', '/locales'),
+      defaultLocale: app.customSettings.defaultLanguage,
+      retryInDefaultLocale: true,
+      updateFiles: false
+    })
+    // Create visibilities
     const tmpVisibilities = {}
     for (const key of Object.keys(app.customSettings.modules)) {
       tmpVisibilities[key] = this.isModuleActiveOrDependency(app.customSettings, key)

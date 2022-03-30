@@ -1,4 +1,3 @@
-const locales = require('../../locales/de.json')
 const Errors = require('@feathersjs/errors')
 
 module.exports = function (app) {
@@ -33,9 +32,9 @@ module.exports = function (app) {
       let greeting = ''
       let emailResult
       const roles = [
-        { text: locales.member, value: 'users' },
-        { text: locales.partner, value: 'partners' },
-        { text: locales.admin, value: 'admins' }
+        { text: app.i18n.__({ phrase: 'member', locale: user.language || app.customSettings.defaultLanguage }), value: 'users' },
+        { text: app.i18n.__({ phrase: 'partner', locale: user.language || app.customSettings.defaultLanguage }), value: 'partners' },
+        { text: app.i18n.__({ phrase: 'admin', locale: user.language || app.customSettings.defaultLanguage }), value: 'admins' }
       ]
       switch (type) {
         case 'verifySubscriberSignup':
@@ -43,10 +42,10 @@ module.exports = function (app) {
           email = {
             from: process.env.FROM_EMAIL,
             to: user.email,
-            subject: locales.subscribeToVimaNewsletter,
-            html: locales.confirmSubscription +
-            '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-            locales.bestRegards
+            subject: app.i18n.__({ phrase: 'subscribeToVimaNewsletter', locale: user.language || app.customSettings.defaultLanguage }),
+            html: app.i18n.__({ phrase: 'confirmSubscription', locale: user.language || app.customSettings.defaultLanguage }) +
+              '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
+              app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
           }
           emailResult = await sendEmail(email)
           return emailResult
@@ -56,11 +55,12 @@ module.exports = function (app) {
           email = {
             from: process.env.FROM_EMAIL,
             to: user.email,
-            subject: locales.vimaProfileRequested,
-            html: locales.hello + ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
-            locales.confirmRegistration +
-            '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-            locales.bestRegards
+            subject: app.i18n.__({ phrase: 'vimaProfileRequested', locale: user.language || app.customSettings.defaultLanguage }),
+            html: app.i18n.__({ phrase: 'hello', locale: user.language || app.customSettings.defaultLanguage }) +
+              ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
+              app.i18n.__({ phrase: 'confirmRegistration', locale: user.language || app.customSettings.defaultLanguage }) +
+              '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
+              app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
           }
           emailResult = await sendEmail(email)
           return emailResult
@@ -82,13 +82,17 @@ module.exports = function (app) {
           email = {
             from: process.env.FROM_EMAIL,
             to: user.email,
-            subject: locales.getAccessToVima,
-            html: locales.hello + greeting + '!<br><br>' +
-            locales.confirmInvitation1 + role + locales.confirmInvitation2 +
-            '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-            locales.privacyAcceptanceNote + '<a href="' + process.env.CLIENT_URL + '/datenschutz">' + locales.privacy + '</a>. ' +
-            locales.contactForQuestion +
-            locales.bestRegards
+            subject: app.i18n.__({ phrase: 'getAccessToVima', locale: user.language || app.customSettings.defaultLanguage }),
+            html: app.i18n.__({ phrase: 'hello', locale: user.language || app.customSettings.defaultLanguage }) +
+              greeting + '!<br><br>' +
+              app.i18n.__({ phrase: 'confirmInvitation1', locale: user.language || app.customSettings.defaultLanguage }) +
+              role + app.i18n.__({ phrase: 'confirmInvitation2', locale: user.language || app.customSettings.defaultLanguage }) +
+              '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
+              app.i18n.__({ phrase: 'privacyAcceptanceNote', locale: user.language || app.customSettings.defaultLanguage }) +
+              '<a href="' + process.env.CLIENT_URL + '/datenschutz">' +
+              app.i18n.__({ phrase: 'privacy', locale: user.language || app.customSettings.defaultLanguage }) + '</a>. ' +
+              app.i18n.__({ phrase: 'contactForQuestion', locale: user.language || app.customSettings.defaultLanguage }) +
+              app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
           }
           emailResult = await sendEmail(email)
           return emailResult
@@ -98,10 +102,11 @@ module.exports = function (app) {
             email = {
               from: process.env.FROM_EMAIL,
               to: user.email,
-              subject: locales.vimaProfileIsReady,
-              html: locales.hello + ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
-              locales.readyToLogin +
-              locales.bestRegards
+              subject: app.i18n.__({ phrase: 'vimaProfileIsReady', locale: user.language || app.customSettings.defaultLanguage }),
+              html: app.i18n.__({ phrase: 'hello', locale: user.language || app.customSettings.defaultLanguage }) +
+              ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
+              app.i18n.__({ phrase: 'readyToLogin', locale: user.language || app.customSettings.defaultLanguage }) +
+              app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
             }
             emailResult = await sendEmail(email)
             return emailResult
@@ -118,11 +123,12 @@ module.exports = function (app) {
             email = {
               from: process.env.FROM_EMAIL,
               to: user.email,
-              subject: locales.forgotVimaPassword,
-              html: locales.hello + ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
-              locales.youForgotVimaPassword +
-              '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-              locales.bestRegards
+              subject: app.i18n.__({ phrase: 'forgotVimaPassword', locale: user.language || app.customSettings.defaultLanguage }),
+              html: app.i18n.__({ phrase: 'hello', locale: user.language || app.customSettings.defaultLanguage }) +
+                ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
+                app.i18n.__({ phrase: 'youForgotVimaPassword', locale: user.language || app.customSettings.defaultLanguage }) +
+                '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
+                app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
             }
             emailResult = await sendEmail(email)
             return emailResult
@@ -135,10 +141,11 @@ module.exports = function (app) {
             email = {
               from: process.env.FROM_EMAIL,
               to: user.email,
-              subject: locales.vimaPasswordReset,
-              html: locales.hello + ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
-              locales.passwordSuccessfullyReset +
-              locales.bestRegards
+              subject: app.i18n.__({ phrase: 'vimaPasswordReset', locale: user.language || app.customSettings.defaultLanguage }),
+              html: app.i18n.__({ phrase: 'hello', locale: user.language || app.customSettings.defaultLanguage }) +
+                ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
+                app.i18n.__({ phrase: 'passwordSuccessfullyReset', locale: user.language || app.customSettings.defaultLanguage }) +
+                app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
             }
             emailResult = await sendEmail(email)
             return emailResult
