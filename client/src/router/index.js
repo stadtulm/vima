@@ -1099,7 +1099,7 @@ router.beforeEach(async (to, from, next) => {
   if (router.prevRoutes.length > 3) {
     router.prevRoutes.shift()
   }
-  if (Store.getters.showTour && to.name === 'Participate') {
+  if (!Store.getters.cancelledTour && to.name === 'Participate' && !Store.getters.isDisconnected) {
     Store.commit('SET_SHOW_TOUR', true)
   } else {
     Store.commit('SET_SHOW_TOUR', false)

@@ -8,6 +8,7 @@ const state = {
   userCount: undefined,
   firstLoad: true,
   showTour: true,
+  cancelledTour: false,
   itemsPerPageOptions: [10, 25, 50, 100, -1],
   deepSort: function (sortBy, sortDesc, arr) {
     const prop = sortBy.split('.')
@@ -163,6 +164,9 @@ const getters = {
   hasMatomo: state => {
     return state.hasMatomo
   },
+  cancelledTour: state => {
+    return state.cancelledTour
+  },
   showTour: state => {
     return state.showTour
   },
@@ -229,6 +233,9 @@ const getters = {
 }
 
 const mutations = {
+  SET_CANCELLED_TOUR: (state, msg) => {
+    state.cancelledTour = msg
+  },
   SET_SHOW_TOUR: (state, msg) => {
     state.showTour = msg
   },

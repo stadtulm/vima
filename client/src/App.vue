@@ -1896,7 +1896,8 @@ export default {
 
   methods: {
     ...mapMutations({
-      setShowTour: 'SET_SHOW_TOUR'
+      setShowTour: 'SET_SHOW_TOUR',
+      setCancelledTour: 'SET_CANCELLED_TOUR'
     }),
     ...mapActions('logging', {
       createLog: 'create'
@@ -1908,6 +1909,7 @@ export default {
       setSnackbar: 'SET_SNACKBAR'
     }),
     closeTour () {
+      this.setCancelledTour(true)
       this.setShowTour(false)
     },
     startTour () {
@@ -1989,6 +1991,7 @@ export default {
       'rules',
       'userCount',
       'showTour',
+      'cancelledTour',
       'hasMatomo'
     ]),
     ...mapGetters('auth', [
@@ -2108,7 +2111,7 @@ export default {
       return organisationStatusContainer ? organisationStatusContainer.reference : undefined
     },
     computedShowConnectionDialog () {
-      if (this.$route.path !== '/' && this.isDisconnected && !this.connectionDelay) {
+      if (window.location.pathname !== '/' && this.isDisconnected && !this.connectionDelay) {
         return true
       } else {
         return false
@@ -2416,8 +2419,20 @@ export default {
   },
 
   watch: {
+    isDisconnected () {
+      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected) {
+        this.setShowTour(true)
+      } else {
+        this.setShowTour(false)
+      }
+    },
     $route () {
       this.setStep()
+      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected) {
+        this.setShowTour(true)
+      } else {
+        this.setShowTour(false)
+      }
     },
     snackbar () {
       if (this.snackbar) {
