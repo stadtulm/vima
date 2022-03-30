@@ -323,7 +323,7 @@
                             class="pb-0 shrink right-text align-self-center"
                           >
                             <v-btn
-                              class="customCyan--text"
+                              class="customPurple--text"
                               @click="$router.push({ name: 'GroupSelection', params: { group: computedGroup._id, category: cat._id } })"
                             >
                               {{$t('viewButton')}}
