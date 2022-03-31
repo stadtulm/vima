@@ -16,7 +16,10 @@ module.exports = {
       directory: path.join(__dirname, '../', '/locales'),
       defaultLocale: app.customSettings.defaultLanguage,
       retryInDefaultLocale: true,
-      updateFiles: false
+      updateFiles: false,
+      mustacheConfig: {
+        disable: true
+      }
     })
     // Create visibilities
     const tmpVisibilities = {}

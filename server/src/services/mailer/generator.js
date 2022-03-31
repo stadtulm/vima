@@ -20,7 +20,7 @@ module.exports = {
     const tmpMailBodyType = type
     if (type === 'newTagsToAccept') {
       item.tag = {}
-      item.tag.name = item.text[0].value
+      item.tag.text = item.text[0].value
       item.tag._id = item._id
     } else if (type === 'newGroupApplicants') {
       item.group = await app.service('groups').get(item.reference)
