@@ -149,7 +149,7 @@
           <template
             v-slot:[`item.description`]="{ item }"
           >
-              {{item.description.value}}
+              {{item.description ? item.description.value : '-'}}
           </template>
         </v-data-table>
       </v-col>

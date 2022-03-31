@@ -91,7 +91,7 @@
     "checkModeratorRole2": "group</a> or your ",
     "checkModeratorRole3": "interest group area</a> auf.<br><br>",
     "newAdMessage": "A new message for your ad",
-    "checkAdMessage1": "There is a new message for your ad \"{adTitle}}\".<br>To view the message, please access your ",
+    "checkAdMessage1": "There is a new message for your ad \"{{adTitle}}\".<br>To view the message, please access your ",
     "checkAdMessage2": "Search / Offer area</a>.<br><br>",
     "newViolation": "A new violation has been reported",
     "checkNewViolation": "There is a new violation.<br>To view it, please access the ",

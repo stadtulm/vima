@@ -406,7 +406,7 @@
   "decline": "Decline",
   "invited": "Invited",
   "recipients": "Recipients",
-  "sendToMe": "Send to my ({email})",
+  "sendToMe": "Send to myself ({email})",
   "residence": "Residence",
   "genderLabel": "I am ",
   "notSpecified": "Not specified",
