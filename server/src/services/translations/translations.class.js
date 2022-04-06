@@ -87,7 +87,10 @@ async function createTranslations (app, translator, messages, data) {
   for (const key of data.fields) {
     await Promise.all(messages.map(async m => {
       if (!m[key].find(t => t.lang === data.target)) {
-        const translation = await translator.translate(m[key].find(t => t.type === 'default').value, data.target)
+        const translation = await translator.translate(
+          m[key].find(t => t.type === 'default').value,
+          googleLanguageCodesMap[data.target] || data.target
+        )
         const targetText = {
           lang: data.target,
           type: 'ai',
@@ -114,4 +117,8 @@ async function createTranslations (app, translator, messages, data) {
       }
     }))
   }
+}
+
+const googleLanguageCodesMap = {
+  ua: 'uk'
 }
