@@ -187,11 +187,7 @@ export default {
     }),
     async adapt () {
       if (this.$route.params.site) {
-        let selectedSite = this.getSite(this.$route.params.site)
-        if (!selectedSite) {
-          selectedSite = await this.requestSite([this.$route.params.site])
-        }
-        this.selectedSite = selectedSite
+        this.selectedSite = await this.requestSite([this.$route.params.site, { keepTranslations: true }])
       }
       if (this.selectedSite) {
         this.type = this.selectedSite.type
