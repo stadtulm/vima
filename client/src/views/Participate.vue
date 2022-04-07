@@ -49,7 +49,7 @@
                 max-height="200px"
                 width="100%"
                 :alt="$t(module.type + 'SectionPic')"
-                :tour-step-container="i === 0 || null"
+                :tour-step-container="i === 0 ? '3' : null"
                 :title="module.pic && module.pic.credit ? '© ' + module.pic.credit : ''"
               ></v-img>
               <v-col
