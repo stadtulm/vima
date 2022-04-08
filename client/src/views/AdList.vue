@@ -383,10 +383,29 @@
                 <template
                   v-slot:[`item.message`]="{ item }"
                 >
-                  <span
-                    v-html="$sanitize(newTab(item.text.value).replace(/<blockquote(.+?)blockquote>/g, ''))"
+                  <TranslatableText
+                    ownField="text"
+                    :allFields="['text']"
+                    type="ad-messages"
+                    :textParent="item"
                   >
-                  </span>
+                    <template
+                      v-slot:defaultLangText="{ computedText }"
+                    >
+                      <span
+                        v-html="$sanitize(newTab(computedText.value))"
+                      >
+                      </span>
+                    </template>
+                    <template
+                      v-slot:translatedLangText="{ computedText }"
+                    >
+                      <span
+                        v-html="$sanitize(newTab(computedText.value))"
+                      >
+                      </span>
+                    </template>
+                  </TranslatableText>
                 </template>
                 <template
                   v-slot:[`item.answer`]="{ item }"
@@ -402,11 +421,30 @@
                     <template
                       v-else
                     >
-                      <span
+                      <TranslatableText
                         v-if="getAdMessage(item.replies[0])"
-                        v-html="$sanitize(newTab(getAdMessage(item.replies[0]).text.value))"
+                        ownField="text"
+                        :allFields="['text']"
+                        type="ad-messages"
+                        :textParent="getAdMessage(item.replies[0])"
                       >
-                      </span>
+                        <template
+                          v-slot:defaultLangText="{ computedText }"
+                        >
+                          <span
+                            v-html="$sanitize(newTab(computedText.value))"
+                          >
+                          </span>
+                        </template>
+                        <template
+                          v-slot:translatedLangText="{ computedText }"
+                        >
+                          <span
+                            v-html="$sanitize(newTab(computedText.value))"
+                          >
+                          </span>
+                        </template>
+                      </TranslatableText>
                     </template>
                 </template>
                 <template
@@ -543,6 +581,7 @@
 import { makeFindMixin } from 'feathers-vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
+import TranslatableText from '@/components/TranslatableText.vue'
 
 export default {
   name: 'AdList',
@@ -550,7 +589,8 @@ export default {
   mixins: [makeFindMixin({ service: 'ads', watch: true })],
 
   components: {
-    TiptapVuetify
+    TiptapVuetify,
+    TranslatableText
   },
 
   data: () => ({

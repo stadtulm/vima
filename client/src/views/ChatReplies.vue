@@ -203,11 +203,16 @@
                                           class="px-4 py-1 elevation-4"
                                         >
                                         </v-sheet>
-                                        <TranslatableTextInfo
-                                          :canTranslate="true"
-                                          :canTranslateAll="chatMessages.filter(m => !isOwnMessage(m)).length > 1"
-                                          @translateText="(data) => { translateText(data) }"
-                                        ></TranslatableTextInfo>
+                                        <v-col
+                                          class="pa-0"
+                                          :class="isOwnMessage(message) ? 'text-right' : ''"
+                                        >
+                                          <TranslatableTextInfo
+                                            :canTranslate="true"
+                                            :canTranslateAll="chatMessages.filter(m => !isOwnMessage(m)).length > 1"
+                                            @translateText="(data) => { translateText(data) }"
+                                          ></TranslatableTextInfo>
+                                        </v-col>
                                       </template>
 
                                       <template

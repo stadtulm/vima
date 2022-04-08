@@ -8,7 +8,12 @@
         v-bind:computedText="computedText"
         v-bind:translateText="translateText"
       >
-        {{computedText.value}}
+        <slot
+          name="defaultLangText"
+          v-bind:computedText="computedText"
+        >
+          {{computedText.value}}
+        </slot>
         <TranslatableTextInfo
           :canTranslate="true"
           :canTranslateAll="allIds ? allIds.length > 1 : false"
@@ -29,7 +34,12 @@
         <v-sheet
           class="pa-1 px-3"
         >
-            {{computedText.value}}
+            <slot
+              name="translatedLangText"
+              v-bind:computedText="computedText"
+            >
+              {{computedText.value}}
+            </slot>
             <TranslatableTextInfo
               :canShowOriginal="true"
               :canTranslateObject="allFields.length > 1"

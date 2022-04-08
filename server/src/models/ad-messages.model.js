@@ -37,6 +37,9 @@ module.exports = function (app) {
     chat: {
       type: ObjectId,
       ref: 'chats'
+    },
+    translationSum: {
+      type: String
     }
   }, {
     timestamps: true,

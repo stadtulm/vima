@@ -1,6 +1,7 @@
 const commonHooks = require('feathers-hooks-common')
 const Errors = require('@feathersjs/errors')
 const { authenticate } = require('@feathersjs/authentication').hooks
+const JSum = require('jsum')
 
 module.exports = {
   before: {
@@ -34,7 +35,14 @@ module.exports = {
             throw new Errors.Forbidden('Not allowed to create messages for restricted ads')
           }
         }
-      )
+      ),
+      (context) => {
+        context.data.translationSum = JSum.digest(
+          ['text'].map(field => context.data[field].find(t => t.type === 'default').value),
+          'SHA256',
+          'hex'
+        )
+      }
     ],
     update: [
       commonHooks.iff(
@@ -49,6 +57,16 @@ module.exports = {
         commonHooks.isProvider('external'),
         () => {
           throw new Errors.NotImplemented()
+        }
+      ),
+      commonHooks.iff(
+        (context) => context.data?.text?.find(t => t.type === 'default'),
+        (context) => {
+          context.data.translationSum = JSum.digest(
+            ['text'].map(field => context.data[field].find(t => t.type === 'default').value),
+            'SHA256',
+            'hex'
+          )
         }
       )
     ],
