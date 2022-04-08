@@ -90,7 +90,27 @@ module.exports = {
           }
           return rec
         })
-      )
+      ),
+      // Prepare user ids for sending results to the correct channels
+      async (context) => {
+        let tmpResult
+        if (Array.isArray(context.result)) {
+          tmpResult = context.result
+        } else {
+          tmpResult = [context.result]
+        }
+        const tmpUsers = await context.app.service('status-containers').find(
+          {
+            query: {
+              reference: { $in: tmpResult.map(m => m.ad) },
+              relation: 'owner',
+              type: 'ads',
+              $select: { user: 1 }
+            }
+          }
+        )
+        context.result.tmpUsers = tmpUsers.map(obj => obj.user.toString())
+      }
     ],
     find: [
       commonHooks.iff(

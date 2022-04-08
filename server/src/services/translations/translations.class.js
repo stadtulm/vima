@@ -35,7 +35,7 @@ exports.Translations = class Translations {
     })
     // Compare messages and sent checksums
     for (const message of messages) {
-      if (message.translationSum !== data.texts.find(t => t.id.toString() === message._id.toString()).translationSum) {
+      if (message.translationSum && message.translationSum !== data.texts.find(t => t.id.toString() === message._id.toString()).translationSum) {
         throw new Errors.Forbidden('Requested unknown translation')
       }
     }
@@ -43,7 +43,7 @@ exports.Translations = class Translations {
     // Create missing translations
     await createTranslations(this.app, this.translator, messages, data)
 
-    // Update messages
+    // Find messages
     messages = await this.app.service(data.type).find({
       query: {
         _id: {
@@ -86,7 +86,7 @@ exports.Translations = class Translations {
 async function createTranslations (app, translator, messages, data) {
   for (const key of data.fields) {
     await Promise.all(messages.map(async m => {
-      if (!m[key].find(t => t.lang === data.target)) {
+      if (!m[key].find(t => t.lang === data.target) || data.force) {
         const translation = await translator.translate(
           m[key].find(t => t.type === 'default').value,
           googleLanguageCodesMap[data.target] || data.target
@@ -96,12 +96,31 @@ async function createTranslations (app, translator, messages, data) {
           type: 'ai',
           value: translation[0]
         }
-        // Push translation object
-        await app.service(data.type).patch(m._id, {
-          $push: {
-            [key]: targetText
-          }
-        })
+        //
+        const translationSum = JSum.digest(data.allFields.map(field => m[field].find(t => t.type === 'default').value), 'SHA256', 'hex')
+        if (m[key].find(t => t.lang === data.target)) {
+          // Replace translation object
+          await app.service(data.type).patch(
+            m._id,
+            {
+              [key + '.$']: targetText,
+              translationSum
+            },
+            {
+              query: {
+                [key + '.lang']: data.target
+              }
+            }
+          )
+        } else {
+          // Push translation object
+          await app.service(data.type).patch(m._id, {
+            $push: {
+              [key]: targetText
+            },
+            translationSum
+          })
+        }
         // Update default language
         await app.service(data.type).patch(
           m._id,

@@ -108,7 +108,8 @@ export default {
             texts: textsToTranslate,
             target: this.$i18n.locale,
             fields: allFields ? this.allFields : [this.ownField],
-            allFields: this.allFields
+            allFields: this.allFields,
+            force
           }
         ])
       }

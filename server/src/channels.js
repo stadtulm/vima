@@ -179,6 +179,28 @@ module.exports = function (app) {
   })
 
   /*
+  * Ad messages
+  */
+
+  app.service('ad-messages').publish((data, hook) => {
+    const tmpUsers = data.tmpUsers
+    delete data.tmpUsers
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.text)) {
+          message.text = message.text.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.text)) {
+        data.text = data.text.find(obj => obj.type === 'default')
+      }
+    }
+    return tmpUsers.map(obj => app.channel(obj))
+  })
+
+  /*
   * Chat messages
   */
 
