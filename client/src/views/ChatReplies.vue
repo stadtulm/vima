@@ -204,7 +204,6 @@
                                         >
                                         </v-sheet>
                                         <TranslatableTextInfo
-                                          v-if="!isOwnMessage(message)"
                                           :canTranslate="true"
                                           :canTranslateAll="chatMessages.filter(m => !isOwnMessage(m)).length > 1"
                                           @translateText="(data) => { translateText(data) }"
