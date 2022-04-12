@@ -45,7 +45,7 @@ module.exports = function (app) {
     prominentCategories: [
       {
         type: ObjectId,
-        ref: 'categpries'
+        ref: 'categories'
       }
     ],
     visibility: {

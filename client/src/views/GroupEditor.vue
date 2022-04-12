@@ -211,15 +211,15 @@
                   <v-select
                     dense
                     multiple
-                    color="customPurple"
-                    item-color="customPurple"
+                    :color="$settings.modules.groups.color"
+                    :item-color="$settings.modules.groups.color"
                     background-color="#fff"
                     outlined
                     v-model="prominentCategories"
-                    item-text="name"
+                    item-text="text.value"
                     item-value="_id"
                     :label="$t('prominentCategories')"
-                    :items="categories.sort((a, b) => a.name.localeCompare(b.name))"
+                    :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
                   >
                   </v-select>
                 </v-col>
@@ -469,6 +469,7 @@ export default {
           }
         ],
         categories: this.selectedCategories,
+        prominentCategories: this.prominentCategories,
         visibility: this.visibility,
         tags: this.selectedTags
       }
