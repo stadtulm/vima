@@ -5,14 +5,15 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
-        text
+        :text="!isMainSwitch || !$vuetify.breakpoint.smAndUp"
+        :small="!isMainSwitch || !$vuetify.breakpoint.smAndUp"
+        :large="isMainSwitch && $vuetify.breakpoint.mdAndUp"
         v-bind="attrs"
         v-on="on"
-        small
-        class="px-0"
+        :class="!isMainSwitch ? 'px-0' : 'pl-0 pr-1 rounded-tl-xl rounded-r-xl'"
       >
         <country-flag
-          class="my-0"
+          :class="!isMainSwitch ? 'my-0' : 'mb-1'"
           :country="currentLanguage === 'en' ? 'gb': currentLanguage"
         >
         </country-flag>
@@ -72,7 +73,8 @@ export default {
 
   props: [
     'currentLanguage',
-    'languageObjects'
+    'languageObjects',
+    'isMainSwitch'
   ],
 
   data: () => ({

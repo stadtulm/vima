@@ -52,6 +52,7 @@
         >
 
           <LanguageSelect
+            :isMainSwitch="true"
             :currentLanguage="$i18n.locale"
             @setLanguage="setLanguage"
           ></LanguageSelect>
@@ -64,7 +65,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               class="customGrey--text"
-              :class="!$vuetify.breakpoint.smAndUp ? 'ml-4': 'ml-3'"
+              :class="!$vuetify.breakpoint.smAndUp ? 'ml-2': 'ml-1'"
               :large="$vuetify.breakpoint.mdAndUp"
               :small="!$vuetify.breakpoint.smAndUp"
               :icon="!$vuetify.breakpoint.smAndUp"
