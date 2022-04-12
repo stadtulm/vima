@@ -115,7 +115,7 @@
                             class="mr-3 mb-3"
                             :to="{name: 'Participate'}"
                           >
-                            {{$t('tourButton')}}
+                            {{$t('participate')}}
                           </v-btn>
                           <v-btn
                             color="customGrey"

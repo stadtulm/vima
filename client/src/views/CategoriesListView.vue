@@ -84,6 +84,18 @@
       <v-col
         cols="12"
       >
+        <v-btn
+          block
+          dark
+          :color="computedColor"
+          :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView' }"
+        >
+          {{$t('buttonShowAllEntries')}}
+        </v-btn>
+      </v-col>
+      <v-col
+        cols="12"
+      >
         <v-data-table
           item-class="pointer"
           class="customGreyUltraLight elevation-3"

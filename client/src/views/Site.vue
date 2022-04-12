@@ -8,7 +8,7 @@
         <v-col
           class="word-wrap text-h5 font-weight-bold customGrey--text text-uppercase"
         >
-          {{$t(computedSite.type)}}
+          {{$t(computedSite.type === 'communicationrules' ? 'communicationRules' : computedSite.type)}}
         </v-col>
       </v-row>
       <v-row>
