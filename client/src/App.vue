@@ -1423,6 +1423,7 @@
           >
             <v-row
               class="mb-5"
+              v-if="computedShowHelpButton"
             >
               <v-col
                 cols="12"
@@ -1956,6 +1957,7 @@ import LanguageSelect from '@/components/LanguageSelect.vue'
 import Cookies from 'js-cookie'
 const appMode = process.env.VUE_APP_MODE
 const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
+const showHelpButton = process.env.VUE_APP_SHOW_HELP_BUTTON
 
 export default {
   name: 'App',
@@ -2157,6 +2159,9 @@ export default {
     }),
     $settings () {
       return this.settings[0]
+    },
+    computedShowHelpButton () {
+      return showHelpButton
     },
     stepColors () {
       if (this.settings && this.settings.length === 1) {

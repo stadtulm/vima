@@ -130,7 +130,7 @@
                         </v-col>
                       </v-row>
                       <v-row
-                        v-if="!isDisconnected"
+                        v-if="!isDisconnected && computedShowHelpButton"
                       >
                         <v-col
                           cols="12"
@@ -190,6 +190,8 @@
 
 import { mapGetters } from 'vuex'
 
+const showHelpButtons = process.env.VUE_APP_SHOW_HELP_BUTTON
+
 export default {
   name: 'Home',
 
@@ -232,6 +234,9 @@ export default {
     ...mapGetters([
       'isDisconnected'
     ]),
+    computedShowHelpButton () {
+      return showHelpButtons
+    },
     computedPics () {
       const picSet = this.shuffle()
       let pics = []
