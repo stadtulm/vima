@@ -1422,6 +1422,13 @@
           <template
             v-if="$route.name && $route.name !== 'Home'"
           >
+            <v-alert
+              dismissible
+              class="mt-0 mb-8"
+              color="customGreyMedium"
+            >
+              {{$t('testHint')}}
+            </v-alert>
             <v-row
               class="mb-5"
               v-if="computedShowHelpButton"
