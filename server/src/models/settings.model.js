@@ -140,6 +140,19 @@ module.exports = function (app) {
             type: String
           }
         ]
+      },
+      sponsors: {
+        isActive: { type: Boolean, required: true },
+        position: { type: Number, required: true },
+        pic: {
+          url: { type: String },
+          credit: { type: String }
+        },
+        dependents: [
+          {
+            type: String
+          }
+        ]
       }
     }
   }, {

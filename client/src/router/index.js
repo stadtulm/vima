@@ -42,6 +42,9 @@ import Organisations from '@/views/Organisations.vue'
 import Organisation from '@/components/OrganisationCard.vue'
 import OrganisationListAdmin from '@/views/OrganisationListAdmin.vue'
 import OrganisationEditor from '@/views/OrganisationEditor.vue'
+import Sponsors from '@/views/Sponsors.vue'
+import SponsorListAdmin from '@/views/SponsorListAdmin.vue'
+import SponsorEditor from '@/views/SponsorEditor.vue'
 import Participate from '@/views/Participate.vue'
 import CategoriesListView from '@/views/CategoriesListView.vue'
 import NewsEntry from '@/components/NewsCard.vue'
@@ -381,6 +384,23 @@ const routes = [
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMember
+    ])
+  },
+  {
+    path: '/sponsoren/editor/:sponsor?',
+    name: 'SponsorEditor',
+    component: SponsorEditor,
+    meta: {
+      breadCrumbTextKey: 'editSponsor',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ],
+      step: 'sponsors'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActiveOrDependency,
+      checkLoggedIn,
+      checkAdmin
     ])
   },
   {
@@ -769,6 +789,23 @@ const routes = [
     ])
   },
   {
+    path: '/admin/sponsoren/uebersicht',
+    name: 'SponsorListAdmin',
+    component: SponsorListAdmin,
+    meta: {
+      breadCrumbTextKey: 'sponsorsAdminOverview',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ],
+      step: 'sponsors'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActiveOrDependency,
+      checkLoggedIn,
+      checkAdmin
+    ])
+  },
+  {
     path: '/admin/inhaltsseiten/uebersicht',
     name: 'SiteListAdmin',
     component: SiteListAdmin,
@@ -856,6 +893,21 @@ const routes = [
         ['Participate']
       ],
       step: 'organisations'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActive
+    ])
+  },
+  {
+    path: '/sponsoren',
+    name: 'Sponsors',
+    component: Sponsors,
+    meta: {
+      breadCrumbTextKey: 'sponsorsOverview',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ],
+      step: 'sponsors'
     },
     beforeEnter: Multiguard([
       checkModuleActive

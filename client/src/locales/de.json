@@ -644,5 +644,17 @@
   "testHint": "Testphase: Wir bitten Sie um Rückmeldungen an vima@ileu.net",
   "prominentCategories": "Hervorgehobene Kategorien",
   "prominentCategoriesHint": "Diese Kategorien werden als Raster auf der Gruppen-Seite angezeigt.",
-  "interestGroupSelection": "Interessengruppe Kategorie"
+  "interestGroupSelection": "Interessengruppe Kategorie",
+  "editSponsor": "Sponsor editieren",
+  "sponsorsAdminOverview": "Sponsoren Admin-Überblick",
+  "sponsorsOverview": "Sponsoren",
+  "sponsorsTitle": "Spon<wbr>so<wbr>ren",
+  "sponsorsBody": "tbd",
+  "manageSponsorsButton": "Sponsoren",
+  "sponsor": "Sponsor",
+  "sponsors": "Sponsoren",
+  "newSponsorButton": "Neuer Sponsor",
+  "sponsorsSectionPic": "Sponsoren-Bereichsbild",
+  "filterBySponsorNameLabel": "Suche nach Name des Sponsors ...",
+  "noSponsorsYet": "Noch keine Sponsoren vorhanden"
 }

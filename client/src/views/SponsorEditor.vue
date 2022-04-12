@@ -1,0 +1,240 @@
+<template>
+  <v-row
+    v-if="selectedSponsor || !$route.params.sponsor"
+  >
+    <v-col
+      cols="12"
+    >
+      <v-card
+        color="customGreyUltraLight"
+        tile
+      >
+        <v-card-text>
+          <v-row
+            class="mb-3"
+          >
+            <v-col
+              class="text-h5 font-weight-bold"
+            >
+              {{$t('sponsor')}} {{ selectedSponsor ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+            </v-col>
+          </v-row>
+          <v-form
+            v-model="isValid"
+            ref="sponsorsEditorForm"
+          >
+            <v-row
+              dense
+            >
+              <v-col
+                cols="12"
+              >
+                <v-text-field
+                  ref="tabStart"
+                  dense
+                  outlined
+                  color="customGrey"
+                  :label="$t('name')"
+                  background-color="#fff"
+                  v-model="name"
+                  :rules="[rules.required]"
+                >
+                </v-text-field>
+              </v-col>
+            </v-row>
+            <v-row
+              dense
+            >
+              <v-col
+                cols="12"
+              >
+                <v-text-field
+                  dense
+                  outlined
+                  color="customGrey"
+                  v-model="link"
+                  background-color="#fff"
+                  :label="$t('website') + ' ' + $t('optionalLabelExtension')"
+                  :rules="[rules.shortText, rules.webLink]"
+                >
+                </v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="12"
+              >
+                <v-card
+                  flat
+                  color="customGreyUltraLight"
+                >
+                  <v-row>
+                    <v-col
+                      class="subtitle-1"
+                      cols="12"
+                    >
+                      {{$t('pic')}} {{$t('optionalLabelExtension')}}
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    dense
+                  >
+                    <v-col
+                      cols="12"
+                      tabIndex="0"
+                      @keypress="$refs.sponsorUpload.fakeClick()"
+                    >
+                      <FileUpload
+                        ref="sponsorUpload"
+                        v-model="pic"
+                        @fileRemove="patchFileRemove"
+                        @fileAdd="$nextTick(() => { $refs.sponsorsEditorForm.validate() })"
+                        :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg', 'image/svg+xml']"
+                        :maxFileSize="0.5"
+                        :maxFiles="1"
+                        bgColor="white"
+                        :scaleToFit="[400, 400]"
+                        :resizeQuality="75"
+                      ></FileUpload>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-form>
+          <v-card-actions
+            class="px-0"
+          >
+            <v-btn
+              block
+              large
+              :dark="isValid"
+              color="customGrey"
+              :loading="isLoading"
+              :disabled="!isValid"
+              @click="saveSponsor()"
+            >
+              {{$t('saveDataButton')}}
+            </v-btn>
+          </v-card-actions>
+        </v-card-text>
+      </v-card>
+    </v-col>
+  </v-row>
+</template>
+
+<script>
+
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import FileUpload from '@/components/FileUpload.vue'
+
+export default {
+  name: 'SponsorEditor',
+
+  components: {
+    FileUpload
+  },
+
+  data: () => ({
+    selectedSponsor: undefined,
+    isLoading: false,
+    isValid: false,
+    name: undefined,
+    pic: undefined,
+    link: undefined
+  }),
+
+  async mounted () {
+    await this.adapt()
+    this.$refs.tabStart.focus()
+  },
+
+  methods: {
+    ...mapMutations({
+      setSnackbar: 'SET_SNACKBAR'
+    }),
+    ...mapActions('sponsors', {
+      patchSponsor: 'patch',
+      createSponsor: 'create',
+      requestSponsor: 'get'
+    }),
+    ...mapActions('uploads', {
+      removeUpload: 'remove'
+    }),
+    async patchFileRemove () {
+      this.isLoading = true
+      try {
+        await this.patchSponsor([
+          this.selectedSponsor._id,
+          {
+            pic: null
+          }
+        ])
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.adapt()
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.adapt()
+      }
+    },
+    async adapt () {
+      if (this.$route.params.sponsor) {
+        let selectedSponsor = this.getSponsor(this.$route.params.sponsor)
+        if (!selectedSponsor) {
+          selectedSponsor = await this.requestSponsor([this.$route.params.sponsor])
+        }
+        this.selectedSponsor = selectedSponsor
+      }
+      if (this.selectedSponsor) {
+        this.pic = this.selectedSponsor.pic
+        this.name = this.selectedSponsor.name
+        this.link = this.selectedSponsor.link
+      }
+    },
+    async saveSponsor () {
+      this.isLoading = true
+      // Do uploads
+      try {
+        await this.$refs.sponsorUpload.upload()
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
+      }
+      const map = {
+        name: this.name,
+        link: this.link,
+        pic: this.pic
+      }
+      try {
+        if (this.selectedSponsor) {
+          await this.patchSponsor([this.selectedSponsor._id, map, {}])
+        } else {
+          await this.createSponsor([map, {}])
+        }
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.$router.go(-1)
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+      }
+    }
+  },
+
+  computed: {
+    ...mapGetters([
+      'rules',
+      's3'
+    ]),
+    ...mapGetters('auth', [
+      'user'
+    ]),
+    ...mapGetters('sponsors', {
+      getSponsor: 'get'
+    })
+  }
+}
+</script>

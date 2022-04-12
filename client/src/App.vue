@@ -261,6 +261,16 @@
               >
               </v-list-item-title>
             </v-list-item>
+            <v-list-item
+              v-if="$settings.modules.sponsors.isActive"
+              color="customGrey"
+              :to="{ name: 'Sponsors' }"
+            >
+              <v-list-item-title
+                v-html="$t('sponsorsTitle')"
+              >
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
 
@@ -1109,6 +1119,16 @@
                 class="font-weight-bold customGrey--text"
               >
                 {{$t('manageOrganisationsButton')}}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              v-if="moduleVisibilities.sponsors"
+              :to="{ name: 'SponsorListAdmin' }"
+            >
+              <v-list-item-title
+                class="font-weight-bold customGrey--text"
+              >
+                {{$t('manageSponsorsButton')}}
               </v-list-item-title>
             </v-list-item>
             <v-list-item
