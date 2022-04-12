@@ -641,5 +641,6 @@
   "uploadDone": "Файл завантажено",
   "uploadError": "Помилка – файл не завантажується",
   "audienceCheckbox": "Мені більше 18 років.",
-  "dependentsOfThisModule": "Залежить від цього модуля"
+  "dependentsOfThisModule": "Залежить від цього модуля",
+  "testHint": "Етап тестування: ми можемо направити вас на vima@ileu.net"
 }
