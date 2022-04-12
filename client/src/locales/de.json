@@ -641,5 +641,8 @@
   "uploadError": "Fehler - Datei wird nicht hochgeladen",
   "audienceCheckbox": "Ich bin über 18 Jahre alt.",
   "dependentsOfThisModule": "Von diesem Modul abhängig",
-  "testHint": "Testphase: Wir bitten Sie um Rückmeldungen an vima@ileu.net"
+  "testHint": "Testphase: Wir bitten Sie um Rückmeldungen an vima@ileu.net",
+  "prominentCategories": "Hervorgehobene Kategorien",
+  "prominentCategoriesHint": "Diese Kategorien werden als Raster auf der Gruppen-Seite angezeigt.",
+  "interestGroupSelection": "Interessengruppe Kategorie"
 }

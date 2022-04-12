@@ -9,6 +9,8 @@ const state = {
   firstLoad: true,
   showTour: true,
   moduleVisibilities: {},
+  cancelledTour: false,
+  itemsPerPageOptions: [10, 25, 50, 100, -1],
   isModuleActiveOrDependency (moduleKey) {
     if (!Vue.prototype.$settings) {
       return false
@@ -227,8 +229,14 @@ const getters = {
   isModuleActiveOrDependency: state => {
     return state.isModuleActiveOrDependency
   },
+  itemsPerPageOptions: state => {
+    return state.itemsPerPageOptions
+  },
   hasMatomo: state => {
     return state.hasMatomo
+  },
+  cancelledTour: state => {
+    return state.cancelledTour
   },
   showTour: state => {
     return state.showTour
@@ -307,6 +315,9 @@ const getters = {
 const mutations = {
   SET_MODULE_VISIBILITIES: (state, msg) => {
     state.moduleVisibilities = msg
+  },
+  SET_CANCELLED_TOUR: (state, msg) => {
+    state.cancelledTour = msg
   },
   SET_SHOW_TOUR: (state, msg) => {
     state.showTour = msg

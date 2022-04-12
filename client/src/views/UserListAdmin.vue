@@ -77,7 +77,10 @@
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
           mobile-breakpoint="0"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:[`item.pic.url`]="{ item }"
@@ -319,7 +322,7 @@ export default {
     loaders: {},
     page: 1,
     loading: true,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['userName'],
     sortDesc: [true],
     triggerReload: 1
@@ -529,7 +532,8 @@ export default {
     ...mapGetters([
       'roleItems',
       'statusItems',
-      's3'
+      's3',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'

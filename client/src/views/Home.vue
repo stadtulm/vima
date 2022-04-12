@@ -88,12 +88,27 @@
                           </p>
                         </v-col>
                       </v-row>
+                      <v-alert
+                        v-if="isDisconnected"
+                        color="customGreyUltraLight"
+                      >
+                        <template v-slot:prepend>
+                          <v-progress-circular
+                            size="18"
+                            width="2"
+                            indeterminate
+                            class="mr-4"
+                          ></v-progress-circular>
+                        </template>
+                        {{$t('connectingToServer')}}
+                      </v-alert>
                       <v-row>
                         <v-col
                           cols="12"
                           md="6"
                         >
                           <v-btn
+                            v-if="!isDisconnected"
                             color="customGrey"
                             dark
                             large
@@ -112,6 +127,29 @@
                           >
                             {{$t('introductionVideo')}}
                           </v-btn>
+                        </v-col>
+                      </v-row>
+                      <v-row
+                        v-if="!isDisconnected"
+                      >
+                        <v-col
+                          cols="12"
+                        >
+                          <v-sheet
+                            color="yellow"
+                            class="pa-5"
+                          >
+                            <v-btn
+                              color="blue"
+                              dark
+                              x-large
+                              block
+                              class="mr-3"
+                              :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
+                            >
+                              Hilfe für Ukraine
+                            </v-btn>
+                          </v-sheet>
                         </v-col>
                       </v-row>
                       <v-row>
@@ -149,6 +187,8 @@
 </template>
 
 <script>
+
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
@@ -189,6 +229,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters([
+      'isDisconnected'
+    ]),
     computedPics () {
       const picSet = this.shuffle()
       let pics = []

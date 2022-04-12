@@ -98,7 +98,10 @@
           :items-per-page.sync="itemsPerPage"
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:[`item.pic`]="{ item }"
@@ -141,7 +144,7 @@
               v-for="tag in getTags(item)"
               :key="tag._id"
               class="ma-1"
-              :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id, t: tag._id }}"
+              :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id, t: tag._id } }"
             >
               {{tag.text.value}}
             </v-chip>
@@ -337,6 +340,9 @@ export default {
   computed: {
     ...mapGetters([
       's3',
+      'itemsPerPageOptions'
+    ]),
+    ...mapGetters([
       'typeItems'
     ]),
     ...mapGetters('tags', {

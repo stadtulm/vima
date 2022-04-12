@@ -268,7 +268,7 @@ export default {
     tagsListDefault: [],
     searchDefault: '',
     total: 0,
-    itemsPerPage: 12,
+    itemsPerPage: 25,
     combinedSort: [['createdAt'], -1],
     sortBy: ['createdAt'],
     sortDesc: -1

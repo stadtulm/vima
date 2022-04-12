@@ -308,8 +308,8 @@
                 <v-btn
                   v-if="selectedUser"
                   large
-                  :dark="isValid && !isLoading"
                   color="error"
+                  :dark="isValid && !isLoading"
                   :loading="isDeleting"
                   :disabled="isLoading"
                   @click="showDeleteDialog = true"

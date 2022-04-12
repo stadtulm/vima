@@ -85,9 +85,14 @@ const routes = [
       breadCrumbPredecessors: []
     },
     beforeEnter: Multiguard([
-      (to, from, next) => {
-        if (!from.name && localStorage.getItem('skipWelcome')) {
-          next({ name: 'Participate' })
+      async (to, from, next) => {
+        if (!from.name && localStorage.getItem('skipWelcome') && Store.getters.isDisconnected) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+          if (!from.name && localStorage.getItem('skipWelcome') && !Store.getters.isDisconnected) {
+            next({ name: 'Participate' })
+          } else {
+            next()
+          }
         } else {
           localStorage.setItem('skipWelcome', true)
           next()
@@ -985,6 +990,20 @@ const routes = [
     ])
   },
   {
+    path: '/interessengruppen/:group/kategorie/:category',
+    name: 'GroupSelection',
+    component: Group,
+    meta: {
+      breadCrumbTextKey: 'interestGroupSelection',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['Groups', 'GroupList', 'GroupListAdmin'],
+        ['Group']
+      ],
+      step: 'groups'
+    }
+  },
+  {
     path: '/interessengruppen/:group',
     name: 'Group',
     component: Group,
@@ -1219,11 +1238,17 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes,
   scrollBehavior (to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition
-    } else {
-      return { x: 0, y: 0 }
-    }
+    return new Promise((resolve, reject) => {
+      Vue.nextTick(() => {
+        setTimeout(() => {
+          if (savedPosition) {
+            resolve(savedPosition)
+          } else {
+            resolve({ x: 0, y: 0 })
+          }
+        }, 500)
+      })
+    })
   }
 })
 
@@ -1238,12 +1263,17 @@ router.beforeEach(async (to, from, next) => {
   if (router.prevRoutes.length > 3) {
     router.prevRoutes.shift()
   }
-  if (Store.getters.showTour && to.name === 'Participate') {
+  if (!Store.getters.cancelledTour && to.name === 'Participate' && !Store.getters.isDisconnected) {
     Store.commit('SET_SHOW_TOUR', true)
   } else {
     Store.commit('SET_SHOW_TOUR', false)
   }
-  await init(to, from, next)
+  if (to.path !== '/') {
+    await init(to, from, next)
+  } else {
+    init(to, from, next)
+    next()
+  }
 })
 
 async function init (to, from, next) {
