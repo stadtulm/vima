@@ -153,24 +153,42 @@
                       v-slot:label
                     >
                       <div
-                        v-html="$t('privacyCheckbox')"
+                        v-html="$t('audienceCheckbox') + ' ' + $t('privacyCheckbox')"
                       >
                       </div>
                     </template>
                   </v-checkbox>
                 </v-col>
               </v-row>
-              <v-row
-                dense
-              >
+              <v-row dense>
                 <v-col>
-                  <v-checkbox
+                  <v-tooltip
                     color="customGrey"
-                    v-model="isAudienceAgreed"
-                    :rules="[v => v === true || $t('acceptPrivacyRule')]"
-                    :label="$t('audienceCheckbox')"
+                    right
+                    :max-width="400"
                   >
-                  </v-checkbox>
+                    <template v-slot:activator="{ on, attrs }">
+                      <span
+                        class="pointer"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                      <v-icon
+                        class="mr-1"
+                      >
+                        fa fa-question-circle
+                      </v-icon>
+                      <span class="body-1">
+                      {{$t('audienceCheckBox')}}
+                      </span>
+                      </span>
+                    </template>
+                    <div
+                      v-html="$t('audienceCheckBoxTooltip')"
+                      class="pa-3"
+                    >
+                    </div>
+                  </v-tooltip>
                 </v-col>
               </v-row>
               <v-row
@@ -226,7 +244,6 @@ export default {
     loginError: undefined,
     isValid: false,
     isPrivacyAgreed: false,
-    isAudienceAgreed: false,
     firstName: undefined,
     lastName: undefined,
     userName: undefined,

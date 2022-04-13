@@ -639,7 +639,6 @@
   "uploadPending": "Datei wird beim Speichern hochgeladen",
   "uploadDone": "Datei ist hochgeladen",
   "uploadError": "Fehler - Datei wird nicht hochgeladen",
-  "audienceCheckbox": "Ich bin über 18 Jahre alt.",
   "dependentsOfThisModule": "Von diesem Modul abhängig",
   "testHint": "Testphase: Wir bitten Sie um Rückmeldungen an vima@ileu.net",
   "prominentCategories": "Hervorgehobene Kategorien",
@@ -656,5 +655,8 @@
   "newSponsorButton": "Neuer Sponsor",
   "sponsorsSectionPic": "Sponsoren-Bereichsbild",
   "filterBySponsorNameLabel": "Suche nach Name des Sponsors ...",
-  "noSponsorsYet": "Noch keine Sponsoren vorhanden"
+  "noSponsorsYet": "Noch keine Sponsoren vorhanden",
+  "audienceCheckbox": "Ich bin über 16 Jahre alt.",
+  "audienceCheckBoxTooltip": "Wenn du in einem Land oder Gebiet in der Europäischen Region lebst, musst du mindestens 16 Jahre alt sein, um den Datenschutzbestimmungen selbst zustimmen und unsere online Plattform eigenständig nutzen zu dürfen.<br><br>Wenn du nicht alt genug bist, unseren Datenschutzbestimmungen zuzustimmen, muss eines deiner Elternteile oder ein Erziehungsberechtigter in deinem Namen unseren Datenschutzbestimmungen zustimmen, damit du ViMA nutzen darfst.",
+  "audienceCheckBox": "Ich bin unter 16 Jahre alt."
 }

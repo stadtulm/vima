@@ -584,5 +584,8 @@
   "replayToMyAd": "Ce se întâmplă dacă cineva răspunde la unul dintre anunțurile mele?",
   "chatAfterReplyToMyAd": "Puteți găsi răspunsurile la un anunț la\"Profilul meu ViMA\" -> \"Caut-Ofer\" -> \"Persoane interesate\". De îndată ce răspundeți la un anunț de acolo, persoana interesată va fi anunțată și puteți continua conversația în chatul Dvs. privat.",
   "ua": "Ucrainean",
-  "testHint": "Faza de testare: Vă cerem feedback la vima@ileu.net"
+  "testHint": "Faza de testare: Vă cerem feedback la vima@ileu.net",
+  "audienceCheckbox": "Am peste 16 ani.",
+  "audienceCheckBoxTooltip": "Dacă locuiți într-o țară sau teritoriu din Regiunea Europeană, trebuie să aveți cel puțin 16 ani pentru a fi de acord cu politica de confidențialitate și pentru a utiliza platforma noastră online pe cont propriu. Dacă nu sunteți suficient de mare pentru a fi de acord cu politica noastră de confidențialitate, unul dintre părinți sau tutorele dvs. trebuie să fie de acord cu Politica noastră de confidențialitate în numele dvs, pentru a putea utiliza ViMA.",
+  "audienceCheckBox": "Am sub 16 ani."
 }
