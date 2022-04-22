@@ -2,7 +2,7 @@
   <v-card
     color="customGreyUltraLight"
     v-if="computedEvent"
-    :to="eventProp ? { name: 'Event', params: { event: computedEvent._id }} : ''"
+    :to="eventProp ? { name: 'Event', params: { event: computedEvent._id } } : ''"
   >
     <v-row>
       <v-col

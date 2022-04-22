@@ -127,37 +127,37 @@ module.exports = {
             if (!context.result.isActive) {
               throw new Errors.Forbidden('Only logged in users can request inactive news')
             }
-          },
-          commonHooks.iff(
-            (context) => !context.params.keepTranslations,
-            commonHooks.alterItems((rec, context) => {
-              if (Array.isArray(rec.title)) {
-                const langText = rec.title.find(t => t.lang === context.params.connection.language)
-                if (langText) {
-                  rec.title = langText
-                } else {
-                  rec.title = rec.title.find(t => t.type === 'default')
-                }
+          }
+        ),
+        commonHooks.iff(
+          (context) => !context.params.keepTranslations,
+          commonHooks.alterItems((rec, context) => {
+            if (Array.isArray(rec.title)) {
+              const langText = rec.title.find(t => t.lang === context.params.connection.language)
+              if (langText) {
+                rec.title = langText
+              } else {
+                rec.title = rec.title.find(t => t.type === 'default')
               }
-              if (Array.isArray(rec.subTitle)) {
-                const langText = rec.subTitle.find(t => t.lang === context.params.connection.language)
-                if (langText) {
-                  rec.subTitle = langText
-                } else {
-                  rec.subTitle = rec.subTitle.find(t => t.type === 'default')
-                }
+            }
+            if (Array.isArray(rec.subTitle)) {
+              const langText = rec.subTitle.find(t => t.lang === context.params.connection.language)
+              if (langText) {
+                rec.subTitle = langText
+              } else {
+                rec.subTitle = rec.subTitle.find(t => t.type === 'default')
               }
-              if (Array.isArray(rec.text)) {
-                const langText = rec.text.find(t => t.lang === context.params.connection.language)
-                if (langText) {
-                  rec.text = langText
-                } else {
-                  rec.text = rec.text.find(t => t.type === 'default')
-                }
+            }
+            if (Array.isArray(rec.text)) {
+              const langText = rec.text.find(t => t.lang === context.params.connection.language)
+              if (langText) {
+                rec.text = langText
+              } else {
+                rec.text = rec.text.find(t => t.type === 'default')
               }
-              return rec
-            })
-          )
+            }
+            return rec
+          })
         )
       )
     ],

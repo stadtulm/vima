@@ -180,29 +180,29 @@ module.exports = {
                 throw new Errors.Forbidden('Only administrators and organisation members can request an inactive event')
               }
             }
-          },
-          commonHooks.iff(
-            (context) => !context.params.keepTranslations,
-            commonHooks.alterItems((rec, context) => {
-              if (Array.isArray(rec.title)) {
-                const langText = rec.title.find(t => t.lang === context.params.connection.language)
-                if (langText) {
-                  rec.title = langText
-                } else {
-                  rec.title = rec.title.find(t => t.type === 'default')
-                }
+          }
+        ),
+        commonHooks.iff(
+          (context) => !context.params.keepTranslations,
+          commonHooks.alterItems((rec, context) => {
+            if (Array.isArray(rec.title)) {
+              const langText = rec.title.find(t => t.lang === context.params.connection.language)
+              if (langText) {
+                rec.title = langText
+              } else {
+                rec.title = rec.title.find(t => t.type === 'default')
               }
-              if (Array.isArray(rec.text)) {
-                const langText = rec.text.find(t => t.lang === context.params.connection.language)
-                if (langText) {
-                  rec.text = langText
-                } else {
-                  rec.text = rec.text.find(t => t.type === 'default')
-                }
+            }
+            if (Array.isArray(rec.text)) {
+              const langText = rec.text.find(t => t.lang === context.params.connection.language)
+              if (langText) {
+                rec.text = langText
+              } else {
+                rec.text = rec.text.find(t => t.type === 'default')
               }
-              return rec
-            })
-          )
+            }
+            return rec
+          })
         )
       )
     ],
