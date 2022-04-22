@@ -143,150 +143,142 @@ app.logger = logger
 
 module.exports = app
 
+/*
+
 // Migration
+const JSum = require('jsum')
 
-/*
+app.service('users').find({ paginate: false }).then(users => {
+  for (const user of users) {
+    user.language = 'de'
+    app.service('users').update(user._id, user).catch(e => {
+      console.log(e)
+    })
+  }
+})
 
-// Add language attribute to each user
+// ad-messages
+app.service('ad-messages').find({ paginate: false }).then(adMessages => {
+  for (const adMessage of adMessages.slice(0, 1)) {
+    adMessage.text = [{
+      type: 'default',
+      value: adMessage.text
+    }]
+    adMessage.translationSum = JSum.digest(JSON.parse(JSON.stringify(adMessage.text)), 'SHA256', 'hex')
+    app.service('ad-messages').update(adMessage._id, adMessage).catch(e => {
+      console.log(e)
+    })
+  }
+})
 
-*/
-
-/*
-  .aggregate(
-    {
-      $filter: {
-        input: '$' + property + '',
-        as: property,
-        cond: {
-          $or: [
-            {
-              $eq: [
-                '$$' + property + '.type',
-                'default'
-              ]
-            },
-            {
-              $eq: [
-                '$$' + property + '.lang',
-                'de'
-              ]
-            }
-          ]
-        }
-      }
-    }
-  )
-  /*
-  /*
-  .exec(res => {
-    console.log(res)
-  })
-  */
-
-/*
+// ads
 app.service('ads').find({ paginate: false }).then(ads => {
   for (const ad of ads) {
     ad.text = [{
       type: 'default',
-      value: ad.text,
-      lang: 'de'
+      value: ad.text
     }]
     ad.title = [{
       type: 'default',
-      value: ad.title,
-      lang: 'de'
+      value: ad.title
     }]
-    app.service('ads').update(ad._id, ad).then(res => {
-      console.log(res)
+    ad.translationSum = JSum.digest([JSON.parse(JSON.stringify(ad.title)), JSON.parse(JSON.stringify(ad.text))], 'SHA256', 'hex')
+    app.service('ads').update(ad._id, ad).catch(e => {
+      console.log(e)
     })
   }
 })
-*/
 
-/*
-app.service('groups').find({ paginate: false }).then(groups => {
-  for (const group of groups) {
-    group.description = [{
+// blog
+app.service('blog').find({ paginate: false }).then(blog => {
+  for (const blogEntry of blog) {
+    blogEntry.title = [{
       type: 'default',
-      value: group.description,
-      lang: 'de'
+      lang: 'de',
+      value: blogEntry.text
     }]
-    group.title = [{
+    blogEntry.subTitle = [{
       type: 'default',
-      value: group.title,
-      lang: 'de'
+      lang: 'de',
+      value: blogEntry.title
     }]
-    app.service('groups').update(group._id, group).then(res => {
-      console.log(res)
+    blogEntry.text = [{
+      type: 'default',
+      lang: 'de',
+      value: blogEntry.text
+    }]
+    app.service('blog').update(blogEntry._id, blogEntry).catch(e => {
+      console.log(e)
     })
   }
 })
-*/
 
-/*
+// categories
+app.service('categories').find({ paginate: false }).then(categories => {
+  for (const category of categories) {
+    category.text = [{
+      type: 'default',
+      lang: 'de',
+      value: category.name // name is old property name
+    }]
+    category.description = [{
+      type: 'default',
+      lang: 'de',
+      value: category.description
+    }]
+    app.service('categories').update(category._id, category).catch(e => {
+      console.log(e)
+    })
+  }
+})
+
+// chat-messages
+app.service('chat-messages').find({ paginate: false }).then(chatMessages => {
+  for (const chatMessage of chatMessages) {
+    chatMessage.text = [{
+      type: 'default',
+      value: chatMessage.text
+    }]
+    chatMessage.translationSum = JSum.digest(JSON.parse(JSON.stringify(chatMessage.text)), 'SHA256', 'hex')
+    app.service('chat-messages').update(chatMessage._id, chatMessage).catch(e => {
+      console.log(e)
+    })
+  }
+})
+
+// discussion-messages
+app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
+  for (const discussionMessage of discussionMessages) {
+    discussionMessage.text = [{
+      type: 'default',
+      value: discussionMessage.text
+    }]
+    discussionMessage.translationSum = JSum.digest(JSON.parse(JSON.stringify(discussionMessage.text)), 'SHA256', 'hex')
+    app.service('discussion-messages').update(discussionMessage._id, discussionMessage).catch(e => {
+      console.log(e)
+    })
+  }
+})
+
+// discussions
 app.service('discussions').find({ paginate: false }).then(discussions => {
   for (const discussion of discussions) {
     discussion.description = [{
       type: 'default',
-      value: discussion.description,
-      lang: 'de'
+      value: discussion.description
     }]
     discussion.title = [{
       type: 'default',
-      value: discussion.title,
-      lang: 'de'
+      value: discussion.title
     }]
-    app.service('discussions').update(discussion._id, discussion).then(res => {
-      console.log(res)
+    discussion.translationSum = JSum.digest([JSON.parse(JSON.stringify(discussion.title)), JSON.parse(JSON.stringify(discussion.description))], 'SHA256', 'hex')
+    app.service('discussions').update(discussion._id, discussion).catch(e => {
+      console.log(e)
     })
   }
 })
-*/
 
-// New text format news
-/*
-app.service('news').find({ paginate: false }).then(news => {
-  for (const newsEntry of news) {
-    newsEntry.text = [{
-      type: 'default',
-      value: newsEntry.text,
-      lang: 'de
-    }]
-    newsEntry.title = [{
-      type: 'default',
-      value: newsEntry.title,
-      lang: 'de'
-    }]
-    newsEntry.subTitle = [{
-      type: 'default',
-      value: newsEntry.subTitle,
-      lang: 'de'
-    }]
-    app.service('news').update(newsEntry._id, newsEntry).then(res => {
-      console.log(res)
-    })
-  }
-})
-*/
-
-/*
-app.service('sites').find({ paginate: false }).then(sites => {
-  for (const site of sites) {
-    site.text = [{
-      type: 'default',
-      value: site.text,
-      lang: 'de'
-    }]
-    app.service('sites').update(site._id, site).then(res => {
-      console.log(res)
-    })
-  }
-})
-*/
-
-// New text format events
-
-/*
+// events
 app.service('events').find({ paginate: false }).then(events => {
   for (const event of events) {
     event.text = [{
@@ -299,82 +291,69 @@ app.service('events').find({ paginate: false }).then(events => {
       value: event.title,
       lang: 'de'
     }]
-    app.service('events').update(event._id, event).then(res => {
-      console.log(res)
+    app.service('events').update(event._id, event).catch(e => {
+      console.log(e)
     })
   }
 })
-*/
 
-/*
-// New text format
-app.service('chat-messages').find({ paginate: false }).then(chatMessages => {
-  for (const chatMessage of chatMessages) {
-    chatMessage.text = [{
+// groups
+app.service('groups').find({ paginate: false }).then(groups => {
+  for (const group of groups) {
+    group.description = [{
       type: 'default',
-      value: chatMessage.text
+      value: group.description
     }]
-    app.service('chat-messages').update(chatMessage._id, chatMessage).then(res => {
-      console.log(res)
-    })
-  }
-})
-*/
-
-/*
-// New text format
-app.service('ad-messages').find({ paginate: false }).then(adMessages => {
-  for (const adMessage of adMessages) {
-    adMessage.text = [{
+    group.title = [{
       type: 'default',
-      value: adMessage.text
+      value: group.title
     }]
-    app.service('ad-messages').update(adMessage._id, adMessage).then(res => {
-      console.log(res)
-    })
-  }
-})
-*/
-
-/*
-// New text format
-app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
-  for (const discussionMessage of discussionMessages) {
-    discussionMessage.text = [{
-      type: 'default',
-      value: discussionMessage.text
-    }]
-    app.service('discussion-messages').update(discussionMessage._id, discussionMessage).then(res => {
-      console.log(res)
+    group.translationSum = JSum.digest([JSON.parse(JSON.stringify(group.title)), JSON.parse(JSON.stringify(group.description))], 'SHA256', 'hex')
+    app.service('groups').update(group._id, group).catch(e => {
+      console.log(e)
     })
   }
 })
 
-*/
-
-/*
-// New text format
-app.service('categories').find({ paginate: false }).then(els => {
-  for (const el of els) {
-    el.text = [{
+// news
+app.service('news').find({ paginate: false }).then(news => {
+  for (const newsEntry of news) {
+    newsEntry.text = [{
       type: 'default',
       lang: 'de',
-      value: el.name
+      value: newsEntry.text
     }]
-    el.description = [{
+    newsEntry.title = [{
       type: 'default',
       lang: 'de',
-      value: el.description
+      value: newsEntry.title
     }]
-    app.service('categories').update(el._id, el).then(res => {
-      console.log(res)
+    newsEntry.subTitle = [{
+      type: 'default',
+      lang: 'de',
+      value: newsEntry.subTitle
+    }]
+    app.service('news').update(newsEntry._id, newsEntry).catch(e => {
+      console.log(e)
     })
   }
 })
-*/
 
-/*
-// New text format
+// sites
+app.service('sites').find({ paginate: false }).then(sites => {
+  for (const site of sites) {
+    site.text = [{
+      type: 'default',
+      lang: 'de',
+      value: site.text
+    }]
+    app.service('sites').update(site._id, site).catch(e => {
+      console.log(e)
+    })
+  }
+})
+
+// tags
 app.service('tags').find({ paginate: false }).then(els => {
   for (const el of els) {
     el.text = [{
@@ -382,35 +361,10 @@ app.service('tags').find({ paginate: false }).then(els => {
       lang: 'de',
       value: el.name
     }]
-    app.service('tags').update(el._id, el).then(res => {
-      console.log(res)
+    app.service('tags').update(el._id, el).catch(e => {
+      console.log(e)
     })
   }
 })
-*/
 
-/*
-// Checksum
-app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
-  const JSum = require('jsum')
-  for (const discussionMessage of discussionMessages) {
-    discussionMessage.translationSum = JSum.digest(discussionMessage.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
-    app.service('discussion-messages').update(discussionMessage._id, discussionMessage).then(res => {
-      console.log(res)
-    })
-  }
-})
-*/
-
-/*
-// Checksum
-app.service('chat-messages').find({ paginate: false }).then(chatMessages => {
-  const JSum = require('jsum')
-  for (const chatMessage of chatMessages) {
-    chatMessage.translationSum = JSum.digest(chatMessage.text.find(t => t.type === 'default').value, 'SHA256', 'hex')
-    app.service('chat-messages').update(chatMessage._id, chatMessage).then(res => {
-      console.log(res)
-    })
-  }
-})
 */
