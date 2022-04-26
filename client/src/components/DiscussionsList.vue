@@ -68,6 +68,7 @@
           color="transparent"
         >
           <v-data-table
+            class="discussionTable"
             item-key="_id"
             :headers="headers"
             :items="computedDiscussions"
@@ -102,7 +103,19 @@
                 class="pointer font-weight-bold"
                 @click="$router.push(group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } })"
               >
-                {{item.title.value}}
+                <TranslatableText
+                  ownField="title"
+                  :allFields="['title']"
+                  type="discussions"
+                  :allIds="computedDiscussions.map(
+                    obj => ({
+                      id: obj._id,
+                      translationSum: obj.translationSum
+                    })
+                  )"
+                  :textParent="item"
+                >
+                </TranslatableText>
               </div>
             </template>
             <template
@@ -265,11 +278,13 @@
 <script>
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import TranslatableText from '@/components/TranslatableText.vue'
 
 export default {
   name: 'DiscussionList',
 
   components: {
+    TranslatableText
   },
 
   props: [
@@ -538,7 +553,7 @@ export default {
           { text: this.$t('created'), value: 'createdAt' },
           { text: this.$t('latestPost'), value: 'latestMessage' },
           { text: this.$t('tags'), value: 'tags', sortable: false },
-          { text: this.$t('posts'), value: 'messagesCount', sortable: false },
+          { text: this.$t('posts'), value: 'messagesCount', width: '80px', sortable: false },
           { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
         ]
         if (!this.category) {
@@ -726,3 +741,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.discussionTable table {
+  table-layout: fixed;
+}
+</style>

@@ -62,7 +62,7 @@
                 v-if="computedCategory"
                 class="pt-0 pb-8"
               >
-                {{computedCategory.name}}
+                {{computedCategory.text}}
               </v-card-title>
               <!-- Subtitle -->
               <v-card-subtitle
@@ -236,7 +236,7 @@
                   <v-col
                     class="body-1"
                   >
-                    {{computedCategory.description}}
+                    {{computedCategory.description.value}}
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -371,7 +371,7 @@
                             <v-card-title
                               class="word-wrap"
                             >
-                              {{cat.name}}
+                              {{cat.text.value}}
                             </v-card-title>
                           </v-col>
                           <v-col
@@ -391,10 +391,11 @@
                             </v-btn>
                           </v-col>
                           <v-col
+                            v-if="cat.description && cat.description.value"
                             cols="12"
                             class="pb-4 px-4 body-1 black--text"
                           >
-                            {{cat.description}}
+                            {{cat.description.value}}
                           </v-col>
                         </v-row>
                       </v-container>
