@@ -62,7 +62,7 @@
                 v-if="computedCategory"
                 class="pt-0 pb-8"
               >
-                {{computedCategory.text}}
+                {{computedCategory.text.value}}
               </v-card-title>
               <!-- Subtitle -->
               <v-card-subtitle
@@ -231,7 +231,7 @@
                   </TranslatableText>
                 </v-row>
                 <v-row
-                  v-else
+                  v-else-if="computedCategory.description && computedCategory.description.value"
                 >
                   <v-col
                     class="body-1"

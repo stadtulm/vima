@@ -66,7 +66,9 @@
     >
       {{computedNewsEntry.title.value}}
     </v-card-title>
-    <v-card-subtitle>
+    <v-card-subtitle
+      v-if="computedNewsEntry.subTitle"
+    >
       {{computedNewsEntry.subTitle.value}}
     </v-card-subtitle>
       <v-card-text>
