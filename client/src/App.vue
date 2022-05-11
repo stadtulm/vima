@@ -1464,7 +1464,7 @@
                     <v-col
                       class="text-h5 font-weight-bold blue--text text-center"
                     >
-                      HILFE FÜR UKRAINE
+                      {{$t("help_title")}}
                     </v-col>
                   </v-row>
                   <v-row>
@@ -1481,7 +1481,7 @@
                         class="py-6"
                         :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
                       >
-                        - ViMA -<br>Interessengruppe
+                        - {{$t("help_vima_title")}} -<br>{{$t("help_vima_subtitle")}}
                       </v-btn>
                     </v-col>
                     <v-col
@@ -1498,7 +1498,7 @@
                         target="_blank"
                         href="https://www.engagiert-in-ulm.de"
                       >
-                        - Engagiert in Ulm e.V. -<br>Helfer werden
+                        - {{$t("help_eiu_title")}} -<br>{{$t("help_eiu_subtitle")}}
                       </v-btn>
                     </v-col>
                     <v-col
@@ -1515,7 +1515,7 @@
                         target="_blank"
                         href="https://www.ulm.de/leben-in-ulm/ukraine"
                       >
-                        - Stadt Ulm -<br>Offizielle Stellen für Flüchtlinge
+                        - {{$t("help_ulm_title")}} -<br>{{$t("help_ulm_subtitle")}}
                       </v-btn>
                     </v-col>
                   </v-row>

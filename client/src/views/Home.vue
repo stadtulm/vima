@@ -147,7 +147,7 @@
                               class="mr-3"
                               :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
                             >
-                              Hilfe für Ukraine
+                              {{$t("help_title")}}
                             </v-btn>
                           </v-sheet>
                         </v-col>

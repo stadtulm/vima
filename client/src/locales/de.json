@@ -660,5 +660,12 @@
   "audienceCheckBoxTooltip": "Wenn du in einem Land oder Gebiet in der Europäischen Region lebst, musst du mindestens 16 Jahre alt sein, um den Datenschutzbestimmungen selbst zustimmen und unsere online Plattform eigenständig nutzen zu dürfen.<br><br>Wenn du nicht alt genug bist, unseren Datenschutzbestimmungen zuzustimmen, muss eines deiner Elternteile oder ein Erziehungsberechtigter in deinem Namen unseren Datenschutzbestimmungen zustimmen, damit du ViMA nutzen darfst.",
   "audienceCheckBox": "Ich bin unter 16 Jahre alt.",
   "rs": "Serbisch",
-  "bg": "Bulgarisch"
+  "bg": "Bulgarisch",
+  "help_title": "Hilfe für Ukraine",
+  "help_vima_title": "ViMA",
+  "help_vima_subtitle": "Interessengruppe",
+  "help_eiu_title": "Engagiert in Ulm e.V.",
+  "help_eiu_subtitle": "Helfer werden",
+  "help_ulm_title": "Stadt Ulm",
+  "help_ulm_subtitle": "Offizielle Stellen für Flüchtlinge"
 }
