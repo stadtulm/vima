@@ -1467,8 +1467,284 @@ export default {
             }
           ]
         }
+      ],
+      rs: [
+        {
+          title: 'Profil',
+          content: [
+            {
+              title: 'Zašto moram da napravim profil?',
+              text: 'Iz administrativnih razloga, svako ko želi da bude aktivan na ViMA portalu mora da napravi profil. E-mejl adresa je dostupna samo administratoru. Korisničko ime, fotografija i ‘’podaci o meni’’ su opcioni i vidljivi su svim registrovanim korisnicima. Starost, pol i mesto stanovanja su obavezni za statističke svrhe.'
+            },
+            {
+              title: 'Šta mogu da uradim kada napravim profil?',
+              text: 'Da biste aktivno učestvovali na ViMA platformi, potreban vam je profil. Profil Vam omogućava da kreirate oglase za pretragu/ponude ili da odgovorite na već postojeće oglase. Možete se pridružiti i kreirati interesne grupe i možete učestvovati u forumima za diskusiju.'
+            },
+            {
+              title: 'Ko može da poseti moj profil?',
+              text: 'Samo registrovani korisnici mogu da posete i pogledaju vaš profil. Takođe možete da odredite da li Vaše godine, pol i mesto stanovanja mogu biti  vidljivi drugim registrovanim korisnicima ili samo administratorima na <b> Otvori Moj ViMA  -> Moja podešavanja</b>.'
+            },
+            {
+              title: 'Šta je korisničko ime?',
+              text: 'Kada kreirate svoj profil, morate odabrati korisničko ime. Možete odlučiti koje ime želite da koristite da bude vidljivo drugima. To može biti Vaše ime ili nadimak po Vašem izboru. Vaše korisničko ime će biti vidljivo posetiocima veb stranice i registrovanim korisnicima. Vaše objave u forumu za diskusiju kao i u interesnim grupama biće dodeljene Vašem korisničkom imenu. Takođe ćete se pojaviti u pretrazi članova sa svojim korisničkim imenom. Vaši oglasi za pretragu/ponude se postavljaju anonimno.'
+            },
+            {
+              title: 'Koji detalji mog profila će biti vidljivi drugima',
+              text: 'Vaše korisničko ime, vaša slika i odeljak O meni biće vidljivi. Tražimo detalje kao što su vaše godine, pol i mesto stanovanja samo iz statističkih razloga. U potpunosti zavisi od vas za koga su  Vaše godine, pol i mesto stanovanja vidljivi: samo za administratore ili i za registrovane korisnike.'
+            },
+            {
+              title: 'Kako da promenim podatke na svom profilu',
+              text: 'Da biste promenili podatke svog profila, morate biti prijavljeni. Kliknite na <b>Otvori moj ViMA</b>, tamo možete promeniti podatke svog profila na <b>Podaci mog profila</b>. Zatim morate da sačuvate promene klikom na <b>sačuvaj podatke</b> - na samom dnu stranice.'
+            },
+            {
+              title: 'Kako da izbrišem svoj profil',
+              text: 'Možete da izbrišete svoj profil u bilo kom trenutku. Kada ste prijavljeni, idite na <b>Otvori moj ViMA-> Moji podaci o profilu</b> i na dnu stranice kliknite na <b>Trajno izbriši profil</b>.'
+            },
+            {
+              title: 'Šta se dešava sa mojim objavama kada obrišem profil',
+              text: 'Ukoliko izbrišete svoj profil, Vaši oglasi u <b>Pretraži/Ponudi</b> će takođe biti izbrisani. Vaši postovi u interesnim grupama i forumima za diskusiju ostaju, ali anonimni, odnosno bez linka koji vodi do Vašeg  korisničkog imena. Ako želite da izbrišete i svoje postove, uklonite ih pre nego što izbrišete Vaš profil.'
+            },
+            {
+              title: 'Moželi neko drugi da obriše moj profil?',
+              text: 'Vaš profil možete izbrisati isključivo ili administratori.'
+            },
+            {
+              title: 'Ne živim u Ulmu, mogu li se ipak prijaviti?',
+              text: 'Naravno! Svako ko podržava ViMA koncept može se aktivno uključiti. ViMA nudi mogućnost virtuelnog umrežavanja i razmene ideja o temama od zajedničkog interesa.'
+            },
+            {
+              title: 'Koje informacije treba navesti u sekciji O meni?',
+              text: 'Ovo zavisi od Vas. Delite koliko god želite o svojim interesovanjima ili prošlosti, ali imajte na umu da će sve što napišete o sebi biti vidljivo svim registrovanim korisnicima.'
+            },
+            {
+              title: 'Da li treba da postavim sliku na svoj profil',
+              text: 'Na Vama je da li ćete postaviti sliku na Vaš profil, ali slika olakšava korisnicima da vas prepoznaju. Možete koristiti svoju sliku ili bilo koju sliku koja vas identifikuje. Imajte na umu da treba da koristite samo slike za koje posedujete autorska prava.'
+            },
+            {
+              title: 'Šta znače autorska prava kada okačim sliku',
+              text: "Na svom profilu i objavama treba da koristite samo slike za koje posedujete autorska prava. Dakle, u ovo polje unesite svoje ime ako ste vlasnik autorskih prava na sliku ili navedite osobu uz čiju saglasnost koristite sliku. Imajte na umu da se ovo odnosi na Vašu sliku profila kao i na slike u oglasima 'Traži / Ponudi' ili interesnim grupama."
+            }
+          ]
+        },
+        {
+          title: 'Moj ViMa profil',
+          content: [
+            {
+              title: 'Šta je otvori Moj ViMA profil?',
+              text: 'Ukoliko ste prijavljeni, imate pristup svojoj ličnoj ViMA oblasti <b>Otvori moj ViMA profil</b>: Ovde možete pronaći podatke o Vašem profilu i pristup Vašim oglasima, kao i postove u Vašim interesnim grupama i forumima za diskusiju. Na <b>Pronađi članove</b>, možete pronaći druge članove tražeći njihova korisnička imena, a možete im pisati i putem funkcije ćaskanja. U <b>Mojim podešavanjima</b> možete da odlučite kada želite da primate obaveštenja o svojim aktivnostima e-poštom i koji detalji treba da budu vidljivi kome. U <b>Moji podaci o profilu -> Izmeni profil</b> možete promeniti podatke svog profila. Ukoliko želite da izbrišete svoj profil, kliknite na <b>Trajno izbriši profil</b> u donjem levom uglu ove stranice. Ne zaboravite da kliknete na <b>Sačuvaj podatke</b> nakon svake promene.'
+            },
+            {
+              title: 'Gde mogu da vidim svoj oglas za pretragu/ponudu',
+              text: 'Ukoliko ste prijavljeni, svoje oglase možete pronaći na <b>Moj ViMA</b> klikom na <b>Moja pretraga / Ponuda</b>. U ovom pregledu takođe možete da izmenite ili izbrišete svoj oglas. Na <b>Zainteresovane strane</b> možete videti ko je odgovorio na Vaš oglas. Ovde možete pogledati i sve oglase na koje ste odgovorili. Možete ih videti kada se prikaže kolona <b>Relacija zainteresovana strana</b>. Za svoju reklamu možete pronaći sledeće na <b>Pokretač odnosa</b>.'
+            },
+            {
+              title: 'Kada ću dobiti mejlove koje mi šalje ViMA?',
+              text: 'Ukoliko ste prijavljeni, možete da konfigurišete da li i kada želite da primate obaveštenja putem e-pošte, npr. kada dobijete nove odgovore na vaš oglas <b>Pretraga/Ponuda</b>, ili kada imate novu poruku u ćaskanju, na <b>Otvori moj ViMA -> Moja podešavanja</b>. Ako to ne želite, možete podesiti da ne budete obavešteni u bilo kom trenutku. U tom slučaju Vas molimo da se redovno prijavljujete kako biste proveravali da li ste primili poruke kako ne bi ostale bez odgovora.'
+            },
+            {
+              title: 'Da li treba da se odjavim svaki put, a zatim da se ponovo prijavim?',
+              text: 'Ovo zavisi od Vas. Ukoliko uređaj koji koristite za prijavljivanje koriste i drugi, preporučujemo da se svaki put odjavite kako niko drugi ne bi imao nenameran pristup vašem profilu. Inače, naravno, veoma je zgodno ostati prijavljen jer tada možete odmah pristupiti svom <b>Otvori moj ViMA</b>.'
+            },
+            {
+              title: 'Kako mogu da vidim imam li noovu poruku?',
+              text: 'Ukoliko ima vesti za Vas, uzvičnik će se pojaviti pored <b>Otvori moj ViMA</b>. Ako sada otvorite padajući meni, videćete još jedan znak uzvika pored oblasti u kojoj se nalaze vesti za vas. Takođe možete primati obaveštenja putem e-pošte ako želite. Da biste to uradili, morate se prijaviti i otići na <b>Otvori moj ViMA -> Moja podešavanja</b> da biste definisali kada i da li želite da primate obaveštenja putem e-pošte, npr. ako ste primili nove odgovore na vaš oglas <b>Traži / Ponudi</b>, ili ako postoji nova poruka u ćaskanju. Takođe možete promeniti ovu funkciju u bilo kom trenutku ako više ne želite da primate e-poruke.'
+            },
+            {
+              title: 'Zaboravio/la sam lozimku, šta mogu da uradim?',
+              text: 'Na <b>Prijavite se</b> možete pronaći opciju za kreiranje nove lozinke. Kliknite na strelicu pored <b>Zaboravili ste lozinku?</b>. Zatim unesite adresu e-pošte koju ste koristili za registraciju i biće vam poslat link za kreiranje nove lozinke.'
+            },
+            {
+              title: 'Kako funkcioniše odeljak Moja ćaskanja?',
+              text: 'Ćaskanje ima dve funkcije: prvo, koristi se za komunikaciju sa oglasima za pretragu / ponudu. Čim obe strane – osoba koja je kreirala oglas i zainteresovana strana – počnu da komuniciraju, poruke će biti premeštene u ćaskanje. Sve dok je samo jedna strana poslala poruku, možete je pogledati u Pretraga / Ponuda. Takođe možete koristiti funkciju ćaskanja na profilu registrovanih korisnika i pisati, na primer, direktno korisnicima koje ste upoznali u interesnim grupama. <b>Imajte na umu da ViMA platforma nije sajt za upoznavanje!'
+            }
+          ]
+        },
+        {
+          title: 'Pretraga / ponuda',
+          content: [
+            {
+              title: 'Kako da napravim oglas za pretragu/ponudu?',
+              text: 'Kada ste prijavljeni, idite na stranicu <b>Pretraga / Ponuda</b>, npr. preko padajućeg menija <b>Pridruži se</b>. Zatim možete da vidite dugme <b>Novi oglasi +</b> u gornjem desnom uglu.'
+            },
+            {
+              title: 'Kako da formulišem svoj oglas za pretragu/ponudu?',
+              text: 'Kada pišete svoje oglase <b>Pretraga/Ponuda</b>, budite što je moguće precizniji. Zamislite kakva želite da izgleda osoba koja bi trebalo da vas kontaktira. Što ste konkretniji, veća je verovatnoća da će vas kontaktirati odgovarajuća zainteresovana osoba. Imajte na umu da će Vaš oglas biti objavljen anonimno. To znači da će drugi korisnici ViMA moći samo da pročitaju ono što napišete o sebi u oglasu, ali ne i da saznaju vaše korisničko ime.'
+            },
+            {
+              title: 'Zašto moj oglas za pretragu/ponuda nije na veb sajtu?',
+              text: 'Svaki oglas <b>Pretraga/Ponuda</b> mora biti odobren od strane administratora ViMA sajta i potom objavljen. Ovo će osigurati da oglasi budu u skladu sa našim smernicama za platformu. Trudimo se da reagujemo u roku od 24 sata ako je moguće.'
+            },
+            {
+              title: 'Koliko će vremena biti potrebno da moj oglas bude odobren?',
+              text: 'Naši administratori pokušavaju da reaguju u roku od 24 sata. Molimo za razumevanje ako bi to trebalo da traje duže, posebno vikendom. Dobićete poruku čim vaš oglas bude objavljen.'
+            },
+            {
+              title: 'Našao/ls sam zanimljiv oglas, šta da radim sada?',
+              text: 'Ispod oglasa možete pronaći "tekstualni" okvir za svoju poruku. Opet, budite što konkretniji: npr. zašto ste zainteresovani za ovu ponudu, ko ste, šta Vas je privuklo, imate li predlog? Imajte na umu da će osoba kojoj pišete imati pristup svim informacijama koje ste podelili sa registrovanim korisnicima na svom profilu.'
+            },
+            {
+              title: 'Šta se dešava kada odgovorim na oglas?',
+              text: 'Osoba koja je postavila oglas biće obaveštena i može da pročita Vašu poruku. Čim odgovore, znate ko su i možete da nastavite razgovor sa njima u privatnom ćaskanju. Druga osoba takođe ima pristup vašem profilu. Pretpostavljamo da zainteresovana strana obično pročita vašu poruku i odgovori Vam u razumnom roku. Ako to ne urade, žao nam je zbog toga, ali to nije u našoj nadležnosti.'
+            },
+            {
+              title: 'Šta se dešava kada neko odgovori na jedan od mojih oglasa?',
+              text: 'Odgovore na oglas možete pogledati na <b>Moja ViMA -> Pretraga / Ponuda -> Zainteresovane strane</b>. Čim tamo odgovorite na zahtev, zainteresovana osoba će biti obaveštena i možete nastaviti razgovor u svom privatnom ćaskanju.'
+            }
+          ]
+        },
+        {
+          title: 'Kreirajnje postova',
+          content: [
+            {
+              title: 'Nijedna kategorija ne odgovara mom postu - šta da radim?',
+              text: 'Za oglase <b>Pretraga/Ponuda</b> kao i za <b>Interesne grupe</b>, obavezno je da izaberete najmanje jednu kategoriju. Bez ovog detalja nećete moći da objavite svoj post. Izaberite kategoriju koja je najbliža vašoj temi.'
+            },
+            {
+              title: 'Šta su ključne reči?',
+              text: 'Ključne reči definišu sadržaj Vašeg posta izvan izabrane kategorije. Oni će olakšati drugim korisnicima da pronađu Vašu objavu. Preporučujemo da koristite ne više od tri ključne reči, u suprotnom može doći do zbunjivanja.'
+            },
+            {
+              title: 'Šta se dešava kada predložim ključnu reč?',
+              text: 'Ako još uvek ne postoji odgovarajuća ključna reč za Vašu temu na listi za izbor, možete predložiti nove ključne reči. Vaše predloge će administratori proveriti i odobriti ako su prikladni. Ako je odobreno, možete dodati ključnu reč izmenom odgovarajuće objave. Preporučujemo da koristite ne više od tri ključne reči za svoje postove, u suprotnom može postati zbunjujuće.'
+            }
+          ]
+        },
+        {
+          title: 'Interesne grupe',
+          content: [
+            {
+              title: 'Kako mogu da filtriram Interesne grupe prema svojim interesovanjima?',
+              text: 'Ako odete na pregled Interesnih grupapreko <b>Pridruži se-> Interesnoj grupi</b>, možete videti dugme <b>Prikaži filter</b> iznad pločica sa desne strane. Kliknite na njega i pojaviće se različite opcije filtera. Ovo vam olakšava pronalaženje interesnih grupa koje vas zanimaju.'
+            },
+            {
+              title: 'Kako mogu da se pridružim interesnoj grupi?',
+              text: 'Kada ste prijavljeni, idite na stranicu interesne grupe. Dugme <b>Prijavi se za članstvo</b> će se pojaviti ispod naziva interesne grupe. Kada kliknete na njega, pojaviće se okvir "tekst". Molimo vas da se ukratko predstavite i objasnite zašto biste želeli da se pridružite ovoj grupi. Vaš odgovor će biti prosleđen pokretaču interesne grupe, koji onda može prihvatiti ili odbiti vaš zahtev.'
+            },
+            {
+              title: 'Želim da se pridružim interesnoj grupi, ali ne postoji dugme Zahtevaj članstvo.',
+              text: 'To znači da ste ili već zatražili članstvo za ovu interesnu grupu. Zatim će se pojaviti oblačić pored naziva interesne grupe. Kada pređete mišem preko njega, pojaviće se <b>Zainteresovani</b>. Ili, vaš zahtev je već prihvaćen i već ste član. U ovom slučaju, simbol <b>osobe</b> će se pojaviti pored imena interesne grupe. Ako pređete mišem preko njega, pojaviće se <b>Član</b>. '
+            },
+            {
+              title: 'Koliko će vremena proći da se odgovori na moj zahtev za članstvo u interesnoj grupi?',
+              text: 'Ovo zavisi od toga koliko brzo inicijator <b>interesne grupe</b> može da reaguje i stoga varira od grupe do grupe. Pokretači grupe obično pokušavaju da reaguju što je brže moguće.'
+            },
+            {
+              title: 'Kako da formiram interesnu grupu?',
+              text: 'Ako ste prijavljeni, možete pristupiti stranici sa pregledom na <b>Pridruži se -> Interesne grupe</b>. U gornjem desnom uglu vidite dugme Nova interesna grupa. Molimo odaberite opisno ime za svoju grupu i objasnite u odeljku <b>Opis</b> ispod šta Vas zanima i koju vrstu članova tražite. Imajte na umu da svaku <b>interesnu grupu</b> prvo mora odobriti administrator. Čim grupa koju ste tražili bude odobrena, dobićete obaveštenje da je vaša grupa sada aktivna. Kao inicijator <b>interesne grupe</b>, morate osigurati da se članovi pridržavaju naših pravila. Možete imenovati druge članove kao moderatore koji će vas podržavati.'
+            },
+            {
+              title: 'Zašto ne mogu da vidim svoju interesnu grupu odmah nakon što je kreiram?',
+              text: 'Svaku interesnu grupu prvo mora odobriti administrator.'
+            },
+            {
+              title: 'Koliko će vremena proći da moja interesna grupa bude odobrena?',
+              text: 'Trudimo se da odobrimo vaš zahtev što je pre moguće, to obično treba da se uradi u roku od 24 sata. Molimo za razumevanje ukoliko potrje duže, posebno vikendom.'
+            },
+            {
+              title: 'Kako mogu da pozovem ljude u svoju grupu?',
+              text: 'Kada ste prijavljeni, možete videti svoje grupe na <b>Otvori moj ViMA -> Moje interesne grupe</b>. Ako ste inicijator ili moderator grupe, možete pozvati druge registrovane korisnike u svoju grupu klikom na dugme u koloni <b>Članovi</b>. Takođe možete videti ko je trenutno član vaše grupe, koga ste već pozvali i da li ima otvorenih zahteva za članstvo.'
+            },
+            {
+              title: 'Kako mogu da promenim ili izbrišem postojeći post?',
+              text: 'Prijavite se. Na <b>Otvori moj ViMA -> Moje teme za diskusiju</b> možete videti svoje postove i uređivati ih putem Edit ili Delete. Ovo se odnosi na sve unose koje ste postavili na <b>forum za diskusiju</b> ili u <b>interesnu grupu</b>. Ako ste inicijator interesne grupe, možete da promenite "tekst" svoje interesne grupe tako što ćete pristupiti <b>Otvori moj ViMA -> Moje interesne grupe</b> i kliknuti na <b>Izmeni</b> >. Imajte na umu da sve promene u ovoj oblasti moraju prvo da budu odobrene od strane administratora.'
+            },
+            {
+              title: 'Koja je uloga moderatora u interesnim grupama?',
+              text: 'Kao moderator podržavate pokretača grupe. Takođe možete pozvati članove u grupu. Možete podstaći druge članove da aktivno učestvuju. Važno nam je da sva komunikacija na platformi bude prikladna i sa poštovanjem. Kao moderator, moraćete da pazite na to i obavestite nas ako korisnici prekrše pravila. Naša pravila možete pronaći na <b>Pravila komunikacije</b>.'
+            },
+            {
+              title: 'Kako da imenujem moderatora za svoju interesnu grupu?',
+              text: 'Ako ste prijavljeni, svoje grupe možete videti na <b>Otvori moj ViMA -> Moje interesne grupe</b>. Ako ste inicijator grupe, sada možete imenovati člana grupe za moderatora klikom na dugme u koloni <b>Moderatori</b>.'
+            },
+            {
+              title: 'Kako da postanem moderator interesne grupe?',
+              text: 'Samo inicijator grupe može da vas imenuje za moderatora. Ako ste zainteresovani da budete moderator, obratite se direktno inicijatoru, npr. preko ćaskanja.'
+            }
+          ]
+        },
+        {
+          title: 'Forum za diskusiju',
+          content: [
+            {
+              title: 'Zašto ne mogu da započnem diskusiju u forumu za diskusiju?',
+              text: 'Forum za diskusiju je trenutno još uvek u fazi testiranja. Zbog toga korisnici još ne mogu da kreiraju diskusije. Međutim, možete se pridružiti postojećim diskusijama ako ste registrovani.'
+            },
+            {
+              title: 'Kako mogu da promenim ili izbrišem postojeći post?',
+              text: 'Morate prijaviti. Na <b>Otvori moj ViMA -> Moje teme za diskusiju</b> možete pogledati svoje postove i urediti ih pomoću dugmeta <b>Izmeni</b> ili <b>Izbriši</b>. Ovo se odnosi na unose koje ste objavili na forumu za diskusiju ili u interesnoj grupi.'
+            },
+            {
+              title: 'Šta znači zvezdica pored naslova diskusija?',
+              text: 'Ako kliknete na zvezdicu, pretplatite se na ovu diskusiju i bićete obavešteni čim se novi oglasi postave. Ovo važi za forume za diskusiju unutar interesne grupe, kao i za diskusione forume. Morate biti prijavljeni da biste koristili ovu opciju.'
+            }
+          ]
+        },
+        {
+          title: 'Događaji',
+          content: [
+            {
+              title: 'Koje vrste događaja će biti objavljene?',
+              text: 'Uglavnom objavljujemo važne događaje u Ulmu i okolini. Ubuduće će naši saradnici takođe moći da objavljuju svoje događaje ovde.'
+            },
+            {
+              title: 'Mogu li da zamolim administratore da uključe događaj?',
+              text: 'Biće nam drago da dobijemo predloge za važne događaje u Ulmu i okolini. Ako ste deo organizacije koja je domaćin događaja, kontaktirajte nas na vima@ileu.net.'
+            },
+            {
+              title: 'Mogu li sam/a da objavim događaj?',
+              text: 'Danas samo mi možemo da uđemo u događaje za partnere za saradnju. Molimo da nas kontaktirate na vima@ileu.net da biste dobili više informacija o saradnji. Biće nam drago da dobijemo predloge za važne događaje u Ulmu i okolini.'
+            }
+          ]
+        },
+        {
+          title: 'Partneri za saradnju',
+          content: [
+            {
+              title: 'Ovo područje je trenutno još u izgradnji',
+              text: ''
+            }
+          ]
+        },
+        {
+          title: 'Bilten',
+          content: [
+            {
+              title: 'Kako se mogu prijaviti na bilten?',
+              text: 'Kliknite Pretplatite se na bilten na dnu veb stranice. Kao registrovani korisnik, možete upravljati svojom pretplatom na bilten na <b>Otvori moj ViMA -> Moja podešavanja</b>.'
+            },
+            {
+              title: 'Ko je odgovoran za ViMA platformu?',
+              text: 'ViMA (Virtuelno. Učestvujte. Aktivno! u Ulmu) vodi ILEU e.V. (Institut za virtuelno i  učenje lice u lice  u obrazovanju odraslih na Univerzitetu u Ulmu e.V.) i finansiran kao deo projekta „Ulm4CleverCiti - Smart Citi Model Citi“ od strane Kancelarije za digitalnu agendu grada Ulma.'
+            }
+          ]
+        },
+        {
+          title: 'Prijavljivanje korisnika/objava',
+          content: [
+            {
+              title: 'Šta se dešava kada blokiram korisnika?',
+              text: 'Možete blokirati i deblokirati korisnike u ćaskanju (<b>Otvori Mi ViMA -> Mi Chats</b>). Blokirani korisnici više ne mogu da koriste ćaskanje za slanje poruka. Ovde takođe možete videti kada vas je drugi korisnik blokirao. Ako želite da prijavite korisnika, koristite funkciju izveštaja (tri tačke) ispod poruke/poruke za ćaskanje tog korisnika.'
+            },
+            {
+              title: 'Kako mogu da prijavim korisnika osobama odgovornim za ViMA platformu?',
+              text: 'Možete prijaviti postove korisnika koristeći tri tačke ispod te objave. Molimo navedite razlog za svoj izveštaj u okviru koji se pojavljuje kada kliknete na <b>Prijavi</b>. Vaša poruka će biti prosleđena našim administratorima koji će odgovoriti u najkraćem mogućem roku. Prijave o prekršajima unutar interesnih grupa biće prosleđene inicijatorima i moderatorima te interesne grupe.'
+            },
+            {
+              title: 'Kako mogu da prijavim objavu?',
+              text: 'Možete da prijavite postove koji krše naše smernice za komunikaciju pomoću dugmeta sa tri tačke koje se pojavljuje ispod svake objave. Kada kliknete na <b>Izveštaj</b>, pojavljuje se <b>tekstualni</b> okvir. Navedite kratko objašnjenje zašto prijavljujete post. Izveštaj se šalje direktno našim administratorima, koji će odgovoriti u najkraćem mogućem roku. Prijave o prekršajima unutar interesnih grupa biće prosleđene inicijatorima i moderatorima te interesne grupe.'
+            }
+          ]
+        },
+        {
+          title: 'Ostalo',
+          content: [
+            {
+              title: 'Uopšteno',
+              text: 'Ako naiđete na probleme pri učitavanju veb stranice ili pri prikazivanju novih postova, preporučujemo da ponovo učitate veb stranicu nekoliko puta (Osveži ili kombinacija tastera <Ctrl> + <R>).'
+            }
+          ]
+        }
       ]
-
     }
   }),
 
