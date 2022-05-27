@@ -756,7 +756,6 @@ export default {
         modules: tmpModules,
         headerLogo: this.headerLogo
       }
-      console.log(this.otherVimaLinks)
       try {
         await this.patchSettings([this.$settings._id, map, {}])
         this.isLoading = false
