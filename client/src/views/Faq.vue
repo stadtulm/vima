@@ -14,6 +14,41 @@
         <v-col
           class="title customGrey--text"
         >
+          How to change the language on ViMA
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          cols="12"
+          class="customGrey--text"
+        >
+          <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_DE.pdf" target="_blank">
+            <v-icon
+              class="mr-2 mb-1"
+            >
+              fas fa-file-pdf
+            </v-icon>
+            DE
+          </a>
+        </v-col>
+        <v-col
+          cols="12"
+          class="customGrey--text"
+        >
+          <a href="/downloads/ViMA-Danube_How to translate_Tekste_UKR.pdf" target="_blank">
+            <v-icon
+              class="mr-2 mb-1"
+            >
+              fas fa-file-pdf
+            </v-icon>
+            UKR
+          </a>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          class="title customGrey--text"
+        >
           {{$t('manualTitle')}}
         </v-col>
       </v-row>

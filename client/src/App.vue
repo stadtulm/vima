@@ -1444,10 +1444,26 @@
           >
             <v-alert
               dismissible
-              class="mt-0 mb-8"
+              class="mt-0 mb-5"
               color="customGreyMedium"
             >
-              {{$t('testHint')}}
+              {{$t('testHint')}}<br>
+            </v-alert>
+            <v-alert
+              dismissible
+              class="mt-0 mb-5"
+              color="customGreyMedium"
+            >
+            <span
+              class="pointer"
+              @click="$router.push({name: 'Faq'})"
+            >
+              How to change the language on ViMA
+              <v-icon
+                size="18"
+                class="ml-2 mb-1"
+              >fas fa-arrow-right</v-icon>
+            </span>
             </v-alert>
             <v-row
               class="mb-5"
@@ -1660,148 +1676,173 @@
         <v-container
           fluid
         >
-        <v-row>
-          <v-col
-            v-if="$settings.socialMediaUrls"
-            class="text-center"
-            cols="12"
-          >
-            <v-btn
-              class="mx-4"
-              icon
-              target="_blank"
-              v-if="$settings.socialMediaUrls.fb"
-              :href="$settings.socialMediaUrls.fb"
+          <v-row>
+            <v-col
+              v-if="$settings.socialMediaUrls"
+              class="text-center"
+              cols="12"
             >
-              <v-icon>
-                fab fa-facebook
-              </v-icon>
-            </v-btn>
-            <v-btn
-              class="mx-4"
-              icon
-              target="_blank"
-              v-if="$settings.socialMediaUrls.instagram"
-              :href="$settings.socialMediaUrls.instagram"
-            >
-              <v-icon>
-                fab fa-instagram
-              </v-icon>
-            </v-btn>
-            <v-btn
-              class="mx-4"
-              icon
-              target="_blank"
-              v-if="$settings.socialMediaUrls.twitter"
-              :href="$settings.socialMediaUrls.twitter"
-            >
-              <v-icon>
-                fab fa-twitter
-              </v-icon>
-            </v-btn>
-          </v-col>
-          <v-col
-            cols="12"
-            md="4"
-          >
-            <v-sheet
-              class="pa-3"
-              color="rgba(0,0,0,0.2)"
-            >
-              <v-row
-                dense
-                v-if="user"
+              <v-btn
+                class="mx-4"
+                icon
+                target="_blank"
+                v-if="$settings.socialMediaUrls.fb"
+                :href="$settings.socialMediaUrls.fb"
               >
-                <v-col>
-                  {{userCount}} {{userCount === 1 ? $t('member') : $t('manageMembersButton')}} {{$t('onlineLowercase')}}
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-col>
-          <v-col
-            cols="12"
-            md="4"
-            tour-step-container="4"
-          >
-            <v-sheet
-              class="pa-3"
-              color="rgba(0,0,0,0.2)"
-            >
-              <v-row
-                dense
+                <v-icon>
+                  fab fa-facebook
+                </v-icon>
+              </v-btn>
+              <v-btn
+                class="mx-4"
+                icon
+                target="_blank"
+                v-if="$settings.socialMediaUrls.instagram"
+                :href="$settings.socialMediaUrls.instagram"
               >
-                <v-col>
-                  <v-btn
-                    tour-step="4"
-                    text
-                    @click="showNewsletterDialog = true"
+                <v-icon>
+                  fab fa-instagram
+                </v-icon>
+              </v-btn>
+              <v-btn
+                class="mx-4"
+                icon
+                target="_blank"
+                v-if="$settings.socialMediaUrls.twitter"
+                :href="$settings.socialMediaUrls.twitter"
+              >
+                <v-icon>
+                  fab fa-twitter
+                </v-icon>
+              </v-btn>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+            >
+              <v-sheet
+                class="pa-3"
+                color="rgba(0,0,0,0.2)"
+              >
+                <v-row
+                  dense
+                  v-if="user"
+                >
+                  <v-col>
+                    {{userCount}} {{userCount === 1 ? $t('member') : $t('manageMembersButton')}} {{$t('onlineLowercase')}}
+                  </v-col>
+                </v-row>
+                <template
+                  v-if="$settings && $settings.otherVimaLinks"
+                >
+                  <v-row
+                    v-for="(link, i) in $settings.otherVimaLinks"
+                    :key="i"
                   >
-                    {{$t('receiveNewsletterLabel')}}
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row
-                dense
-              >
-                <v-col>
-                  <v-btn
-                    text
-                    @click="showMatomoConsent = true"
-                  >
-                    {{$t('manageCookies')}}
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-col>
-          <v-col
-            cols="12"
-            md="4"
-          >
-            <v-sheet
-              class="pa-3"
-              color="rgba(0,0,0,0.2)"
+                    <v-col>
+                      <a
+                        :href="link.url"
+                        target="_blank"
+                        class="white--text"
+                        style="text-decoration: none"
+                      >
+                        <v-icon
+                          size="18"
+                          class="mr-2 mb-1"
+                        >
+                          fas fa-external-link-alt
+                        </v-icon>
+                        {{link.name}}
+                      </a>
+                    </v-col>
+                  </v-row>
+                </template>
+              </v-sheet>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+              tour-step-container="4"
             >
-              <v-row
-                dense
+              <v-sheet
+                class="pa-3"
+                color="rgba(0,0,0,0.2)"
               >
-                <v-col>
-                  <v-btn
-                    :to="{ name: 'Imprint' }"
-                    text
-                  >
-                    {{$t('imprint')}}
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row
-                dense
+                <v-row
+                  dense
+                >
+                  <v-col>
+                    <v-btn
+                      tour-step="4"
+                      text
+                      @click="showNewsletterDialog = true"
+                    >
+                      {{$t('receiveNewsletterLabel')}}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row
+                  dense
+                >
+                  <v-col>
+                    <v-btn
+                      text
+                      @click="showMatomoConsent = true"
+                    >
+                      {{$t('manageCookies')}}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-sheet>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+            >
+              <v-sheet
+                class="pa-3"
+                color="rgba(0,0,0,0.2)"
               >
-                <v-col>
-                  <v-btn
-                    :to="{ name: 'Privacy' }"
-                    text
-                  >
-                    {{$t('privacy')}}
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row
-                dense
-              >
-                <v-col>
-                  <v-btn
-                    :to="{ name: 'Contact' }"
-                    text
-                    tour-step="8"
-                  >
-                    {{$t('contact')}}
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-col>
-        </v-row>
+                <v-row
+                  dense
+                >
+                  <v-col>
+                    <v-btn
+                      :to="{ name: 'Imprint' }"
+                      text
+                    >
+                      {{$t('imprint')}}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row
+                  dense
+                >
+                  <v-col>
+                    <v-btn
+                      :to="{ name: 'Privacy' }"
+                      text
+                    >
+                      {{$t('privacy')}}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <v-row
+                  dense
+                >
+                  <v-col>
+                    <v-btn
+                      :to="{ name: 'Contact' }"
+                      text
+                      tour-step="8"
+                    >
+                      {{$t('contact')}}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-sheet>
+            </v-col>
+          </v-row>
         </v-container>
       </v-footer>
       <v-snackbar
@@ -1982,9 +2023,6 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { Tween } from '@createjs/tweenjs'
 import NewsletterDialog from '@/components/NewsletterDialog.vue'
 import LanguageSelect from '@/components/LanguageSelect.vue'
-import Cookies from 'js-cookie'
-const appMode = process.env.VUE_APP_MODE
-const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
 const showHelpButton = process.env.VUE_APP_SHOW_HELP_BUTTON
 
 export default {
@@ -2064,27 +2102,6 @@ export default {
     ...mapActions('language', {
       switchLanguage: 'create'
     }),
-    async setLanguage (languageCode) {
-      // Update cookie
-      document.cookie = Cookies.set('clientLanguage', languageCode, {
-        domain: serverDomain,
-        path: '/',
-        sameSite: appMode === 'production' ? 'None' : 'Lax',
-        secure: appMode === 'production',
-        expires: 365 * 100
-      })
-      // Update user language
-      if (this.user && this.user._id) {
-        await this.patchUser([
-          this.user._id,
-          {
-            language: languageCode
-          }
-        ])
-      }
-      // Refresh page
-      document.location.reload(true)
-    },
     closeTour () {
       this.setCancelledTour(true)
       this.setShowTour(false)
@@ -2170,7 +2187,8 @@ export default {
       'userCount',
       'showTour',
       'cancelledTour',
-      'hasMatomo'
+      'hasMatomo',
+      'setLanguage'
     ]),
     ...mapGetters('auth', [
       'isAuthenticated',

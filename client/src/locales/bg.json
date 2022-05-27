@@ -660,5 +660,7 @@
   "uploadDone": "Файлът е качен",
   "uploadError": "Грешка - файлът не е качен",
   "audienceCheckbox": "Имам навършени 18 години.",
-  "dependentsOfThisModule": "Зависи от този модул." 
+  "dependentsOfThisModule": "Зависи от този модул.",
+  "url": "URL",
+  "links": "Links"
 }

@@ -50,11 +50,49 @@
                       <v-row>
                         <v-col
                           cols="12"
+                        >
+                          <LanguageSelect
+                            :isMainSwitch="true"
+                            :currentLanguage="$i18n.locale"
+                            @setLanguage="setLanguageAtHome"
+                          ></LanguageSelect>
+                        </v-col>
+                      </v-row>
+                      <v-alert
+                        dismissible
+                        class="my-3"
+                        color="customGreyMedium"
+                      >
+                      <span>
+                        How to change the language on ViMA
+                        <br><br>
+                        <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_DE.pdf" target="_blank">
+                          <v-icon
+                            class="mr-2 mb-1"
+                          >
+                            fas fa-file-pdf
+                          </v-icon>
+                          DE
+                        </a>
+                        <br>
+                        <a href="/downloads/ViMA-Danube_How to translate_Tekste_UKR.pdf" target="_blank">
+                          <v-icon
+                            class="mr-2 mb-1"
+                          >
+                            fas fa-file-pdf
+                          </v-icon>
+                          UKR
+                        </a>
+                      </span>
+                      </v-alert>
+                      <v-row>
+                        <v-col
+                          cols="12"
                           class="text-h4 font-weight-bold mt-4 customGrey--text"
                         >
                           {{$t('welcomeHeadline')}}
                           <img
-                            src="/pics/logo.svg"
+                            :src="$settings && $settings.headerLogo ? s3 + $settings.headerLogo.url : '/pics/vima.svg'"
                             height="35px"
                             style="margin-bottom: -1px"
                             alt="Vima Logo"
@@ -189,6 +227,7 @@
 <script>
 
 import { mapGetters } from 'vuex'
+import LanguageSelect from '@/components/LanguageSelect.vue'
 
 const showHelpButtons = process.env.VUE_APP_SHOW_HELP_BUTTON
 
@@ -196,6 +235,7 @@ export default {
   name: 'Home',
 
   components: {
+    LanguageSelect
   },
 
   data: () => ({
@@ -205,6 +245,10 @@ export default {
   },
 
   methods: {
+    setLanguageAtHome (languageKey) {
+      localStorage.removeItem('skipWelcome')
+      this.setLanguage(languageKey)
+    },
     shuffle () {
       const array = []
       for (let i = 0; i < 10; ++i) {
@@ -232,7 +276,9 @@ export default {
 
   computed: {
     ...mapGetters([
-      'isDisconnected'
+      'isDisconnected',
+      's3',
+      'setLanguage'
     ]),
     computedShowHelpButton () {
       return showHelpButtons

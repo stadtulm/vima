@@ -645,5 +645,7 @@
   "audienceCheckBoxTooltip": "If you live in a country or territory in the European Region, you must be at least 16 years old to agree to the privacy policy and to use our online platform independently. If you are not old enough to agree to our Privacy Policy, one of your parents or a legal guardian must agree to our Privacy Policy on your behalf, in order for you to use ViMA.",
   "audienceCheckBox": "I am under 16 years old.",
   "rs": "Serbian",
-  "bg": "Bulgarian"
+  "bg": "Bulgarian",
+  "url": "URL",
+  "links": "Links"
 }

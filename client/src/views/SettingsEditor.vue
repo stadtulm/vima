@@ -147,6 +147,171 @@
             </v-row>
             <v-row>
               <v-col
+                cols="12"
+              >
+                <v-card
+                  flat
+                  color="customGreyUltraLight"
+                >
+                  <v-row>
+                    <v-col
+                      cols="12"
+                      class="subtitle-1"
+                    >
+                      {{$t('links')}} {{$t('optionalLabelExtension')}}
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    dense
+                    v-for="(link, i) in otherVimaLinks"
+                    :key="i"
+                  >
+                    <v-col
+                      cols="5"
+                    >
+                      <v-text-field
+                        dense
+                        color="customGrey"
+                        v-model="link.name"
+                        outlined
+                        :label="$t('name')"
+                        :rules="[rules.required]"
+                        background-color="#fff"
+                      >
+                      </v-text-field>
+                    </v-col>
+                    <v-col
+                      cols="5"
+                    >
+                      <v-text-field
+                        dense
+                        color="customGrey"
+                        v-model="link.url"
+                        outlined
+                        :label="$t('url')"
+                        :rules="[rules.required]"
+                        background-color="#fff"
+                      >
+                      </v-text-field>
+                    </v-col>
+                    <v-col
+                      cols="2"
+                      align-self="center"
+                      class="text-right"
+                    >
+                      <v-btn
+                        icon
+                        @click="otherVimaLinks.splice(i, 1)"
+                        class="mb-6"
+                      >
+                        <v-icon>
+                          fas fa-times
+                        </v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    dense
+                    v-for="(link, j) in tmpOtherVimaLinks"
+                    :key="j + '_tmp'"
+                  >
+                    <v-col
+                      cols="5"
+                    >
+                      <v-text-field
+                        dense
+                        color="customGrey"
+                        v-model="link.name"
+                        outlined
+                        :label="$t('name')"
+                        :rules="[rules.required]"
+                        background-color="#fff"
+                      >
+                      </v-text-field>
+                    </v-col>
+                    <v-col
+                      cols="5"
+                    >
+                      <v-text-field
+                        dense
+                        color="customGrey"
+                        v-model="link.url"
+                        outlined
+                        :label="$t('url')"
+                        :rules="[rules.required]"
+                        background-color="#fff"
+                      >
+                      </v-text-field>
+                    </v-col>
+                    <v-col
+                      cols="2"
+                      align-self="center"
+                      class="text-right"
+                    >
+                      <v-btn
+                        icon
+                        @click="tmpOtherVimaLinks.splice(j, 1)"
+                        class="mb-6"
+                      >
+                        <v-icon>
+                          fas fa-times
+                        </v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    dense
+                  >
+                    <v-col
+                      cols="5"
+                    >
+                      <v-text-field
+                        dense
+                        color="customGrey"
+                        v-model="linkName"
+                        outlined
+                        :label="$t('name')"
+                        background-color="#fff"
+                        :rules="linkName || linkUrl ? [rules.required] : []"
+                      >
+                      </v-text-field>
+                    </v-col>
+                    <v-col
+                      cols="5"
+                    >
+                      <v-text-field
+                        dense
+                        color="customGrey"
+                        v-model="linkUrl"
+                        outlined
+                        :label="$t('url')"
+                        background-color="#fff"
+                        :rules="linkName || linkUrl ? [rules.required] : []"
+                      >
+                      </v-text-field>
+                    </v-col>
+                    <v-col
+                      cols="2"
+                      align-self="center"
+                      class="text-right"
+                    >
+                      <v-btn
+                        icon
+                        :disabled="!linkName || !linkUrl"
+                        @click="addTmpOtherVimaLink()"
+                        class="mb-6"
+                      >
+                        <v-icon>
+                          fas fa-plus
+                        </v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
                 class="title"
               >
                 {{$t('colors')}}
@@ -459,7 +624,11 @@ export default {
     instagram: undefined,
     twitter: undefined,
     languages: [],
-    defaultLanguage: undefined
+    defaultLanguage: undefined,
+    otherVimaLinks: [],
+    tmpOtherVimaLinks: [],
+    linkName: undefined,
+    linkUrl: undefined
   }),
 
   async mounted () {
@@ -490,6 +659,9 @@ export default {
           this.instagram = tmpSettings.socialMediaUrls.instagram
           this.twitter = tmpSettings.socialMediaUrls.twitter
         }
+        if (tmpSettings.otherVimaLinks) {
+          this.otherVimaLinks = tmpSettings.otherVimaLinks
+        }
         for (const key of Object.keys(tmpSettings.modules)) {
           if (tmpSettings.modules[key].color) {
             tmpSettings.modules[key].color = this.parseRgbString(tmpSettings.modules[key].color)
@@ -503,6 +675,11 @@ export default {
           this.$refs.settingsForm.validate()
         })
       }
+    },
+    addTmpOtherVimaLink () {
+      this.tmpOtherVimaLinks.push({ name: this.linkName, url: this.linkUrl })
+      this.linkName = undefined
+      this.linkUrl = undefined
     },
     async patchFileRemove (file, path, multiple) {
       this.isLoading = true
@@ -560,6 +737,10 @@ export default {
       }
       // Sort default language to start
       this.languages.unshift(this.languages.splice(this.languages.indexOf(this.defaultLanguage), 1)[0])
+      // Prepare links
+      if (this.linkName && this.linkUrl) {
+        this.addTmpOtherVimaLink()
+      }
       // Prepare map
       const map = {
         name: appName,
@@ -571,9 +752,11 @@ export default {
           instagram: this.instagram,
           twitter: this.twitter
         },
+        otherVimaLinks: this.otherVimaLinks.concat(this.tmpOtherVimaLinks),
         modules: tmpModules,
         headerLogo: this.headerLogo
       }
+      console.log(this.otherVimaLinks)
       try {
         await this.patchSettings([this.$settings._id, map, {}])
         this.isLoading = false

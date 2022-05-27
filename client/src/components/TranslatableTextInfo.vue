@@ -11,10 +11,10 @@
           class="ml-3"
         >
           <v-icon
-            size="26"
+            size="24"
             color="customGrey"
           >
-            {{needsUpdate ? 'fas fa-exclamation-triangle': 'fas fa-language'}}
+            {{needsUpdate ? 'fas fa-exclamation-triangle': 'fas fa-globe'}}
           </v-icon>
         </v-btn>
       </template>

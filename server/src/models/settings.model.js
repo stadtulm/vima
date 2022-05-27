@@ -28,6 +28,12 @@ module.exports = function (app) {
       instagram: { type: String },
       twitter: { type: String }
     },
+    otherVimaLinks: [
+      {
+        name: { type: String },
+        url: { type: String }
+      }
+    ],
     modules: {
       ads: {
         isActive: { type: Boolean, required: true },

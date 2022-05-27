@@ -1,6 +1,9 @@
 import i18n from '@/i18n.js'
 import Store from '@/store'
 import Vue from 'vue'
+import Cookies from 'js-cookie'
+const appMode = process.env.VUE_APP_MODE
+const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
 
 const state = {
   hasMatomo: false,
@@ -26,6 +29,28 @@ const state = {
     } else {
       return false
     }
+  },
+  async setLanguage (languageCode) {
+    // Update cookie
+    document.cookie = Cookies.set('clientLanguage', languageCode, {
+      domain: serverDomain,
+      path: '/',
+      sameSite: appMode === 'production' ? 'None' : 'Lax',
+      secure: appMode === 'production',
+      expires: 365 * 100
+    })
+    // Update user language
+    const user = Store.getters['auth/user']
+    if (user && user._id) {
+      Store.dispatch('users/patch', [
+        user._id,
+        {
+          language: languageCode
+        }
+      ])
+    }
+    // Refresh page
+    document.location.reload(true)
   },
   parseRgbString (str) {
     const vals = str.substring(str.indexOf('(') + 1, str.length - 1).split(', ')
@@ -223,6 +248,9 @@ const state = {
 }
 
 const getters = {
+  setLanguage: state => {
+    return state.setLanguage
+  },
   moduleVisibilities: state => {
     return state.moduleVisibilities
   },
