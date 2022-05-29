@@ -139,3 +139,7 @@ server/src/ecosystem.config.js
 */.env*
 server/initialSettings.json
 server/vima-*.json
+client/public/pics/people/*
+!client/public/pics/people/.gitkeep
+client/src/locales/*
+!client/src/locales/.gitkeep

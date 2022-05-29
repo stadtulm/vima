@@ -1447,97 +1447,84 @@
               class="mt-0 mb-5"
               color="customGreyMedium"
             >
-              {{$t('testHint')}}<br>
+              {{$t('testHint')}};
+              <span
+                class="pointer"
+                @click="$router.push({name: 'Faq'})"
+              >
+                How to change the language on ViMA
+                <v-icon
+                  size="18"
+                  class="ml-2 mb-1"
+                >fas fa-arrow-right</v-icon>
+              </span>
             </v-alert>
             <v-alert
+              color="yellow"
               dismissible
-              class="mt-0 mb-5"
-              color="customGreyMedium"
-            >
-            <span
-              class="pointer"
-              @click="$router.push({name: 'Faq'})"
-            >
-              How to change the language on ViMA
-              <v-icon
-                size="18"
-                class="ml-2 mb-1"
-              >fas fa-arrow-right</v-icon>
-            </span>
-            </v-alert>
-            <v-row
               class="mb-5"
               v-if="computedShowHelpButton"
             >
-              <v-col
-                cols="12"
-              >
-                <v-sheet
-                  class="pa-5"
-                  color="yellow"
+              <v-row>
+                <v-col
+                  class="py-1 text-h5 font-weight-bold blue--text text-center"
                 >
-                  <v-row>
-                    <v-col
-                      class="text-h5 font-weight-bold blue--text text-center"
+                  {{$t("help_title")}}
+                </v-col>
+              </v-row>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    md="4"
+                    class="text-center"
+                  >
+                    <v-btn
+                      color="blue"
+                      dark
+                      large
+                      block
+                      class="py-6"
+                      :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
                     >
-                      {{$t("help_title")}}
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col
-                      cols="12"
-                      md="4"
-                      class="text-center"
+                      - {{$t("help_vima_title")}} -<br>{{$t("help_vima_subtitle")}}
+                    </v-btn>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="4"
+                    class="text-center"
+                  >
+                    <v-btn
+                      color="blue"
+                      dark
+                      large
+                      block
+                      class="py-6"
+                      target="_blank"
+                      href="https://www.engagiert-in-ulm.de"
                     >
-                      <v-btn
-                        color="blue"
-                        dark
-                        large
-                        block
-                        class="py-6"
-                        :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
-                      >
-                        - {{$t("help_vima_title")}} -<br>{{$t("help_vima_subtitle")}}
-                      </v-btn>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      md="4"
-                      class="text-center"
+                      - {{$t("help_eiu_title")}} -<br>{{$t("help_eiu_subtitle")}}
+                    </v-btn>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="4"
+                    class="text-center"
+                  >
+                    <v-btn
+                      color="blue"
+                      dark
+                      large
+                      block
+                      class="py-6"
+                      target="_blank"
+                      href="https://www.ulm.de/leben-in-ulm/ukraine"
                     >
-                      <v-btn
-                        color="blue"
-                        dark
-                        large
-                        block
-                        class="py-6"
-                        target="_blank"
-                        href="https://www.engagiert-in-ulm.de"
-                      >
-                        - {{$t("help_eiu_title")}} -<br>{{$t("help_eiu_subtitle")}}
-                      </v-btn>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      md="4"
-                      class="text-center"
-                    >
-                      <v-btn
-                        color="blue"
-                        dark
-                        large
-                        block
-                        class="py-6"
-                        target="_blank"
-                        href="https://www.ulm.de/leben-in-ulm/ukraine"
-                      >
-                        - {{$t("help_ulm_title")}} -<br>{{$t("help_ulm_subtitle")}}
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-sheet>
-              </v-col>
-            </v-row>
+                      - {{$t("help_ulm_title")}} -<br>{{$t("help_ulm_subtitle")}}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+            </v-alert>
             <v-row>
               <v-col>
                 <v-card
