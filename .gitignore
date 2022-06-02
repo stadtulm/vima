@@ -143,3 +143,5 @@ client/public/pics/people/*
 !client/public/pics/people/.gitkeep
 client/src/locales/*
 !client/src/locales/.gitkeep
+server/src/locales/*
+!server/src/locales/.gitkeep

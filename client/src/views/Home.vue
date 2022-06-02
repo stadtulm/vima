@@ -116,13 +116,21 @@
                           class="subtitle-1 customGrey--text"
                         >
                           <p>
-                            <span class="pointer font-weight-bold" @click="$router.push({ name: 'Vima' })">{{$t('vima')}}</span>{{$t('homeWelcome1')}}
+                            <span
+                              class="pointer font-weight-bold"
+                              @click="$router.push({ name: 'Vima' })"
+                            >
+                              {{$t('vima')}}
+                            </span>
+                            <span v-html="$t('homeWelcomeAbout')"></span>
                           </p>
-                          <p>
-                            {{$t('homeWelcome2')}}<span class="pointer font-weight-bold" @click="$router.push({ name: 'Ileu' })">{{$t('ileu')}}</span>{{$t('homeWelcome3')}}<span class="pointer font-weight-bold" @click="$router.push({ name: 'Vives' })">{{$t('vives')}}</span>.
+                          <p
+                            v-html="$t('homeWelcomePartners')"
+                          >
                           </p>
-                          <p>
-                            {{$t('homeWelcome4')}}
+                          <p
+                            v-html="$t('homeWelcomeBeta')"
+                          >
                           </p>
                         </v-col>
                       </v-row>
@@ -245,13 +253,21 @@ export default {
   },
 
   methods: {
+    getImageSrc (src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.src = src
+      })
+    },
     setLanguageAtHome (languageKey) {
       localStorage.removeItem('skipWelcome')
       this.setLanguage(languageKey)
     },
     shuffle () {
       const array = []
-      for (let i = 0; i < 10; ++i) {
+      for (let i = 0; i < this.computedPicLength; ++i) {
         array[i] = i + 1
       }
       let tmp
@@ -286,10 +302,29 @@ export default {
     computedPics () {
       const picSet = this.shuffle()
       let pics = []
-      for (let i = 0; i < 10; ++i) {
+      for (let i = 0; i < this.computedPicLength; ++i) {
         pics = pics.concat(picSet)
       }
       return pics
+    },
+    computedPicLength () {
+      return this.asyncComputedPicLength || 0
+    }
+  },
+  asyncComputed: {
+    async asyncComputedPicLength () {
+      let i = 0
+      await (async () => {
+        while (i < 100) {
+          i++
+          try {
+            await this.getImageSrc('/pics/people/' + i + '.jpeg')
+          } catch (e) {
+            break
+          }
+        }
+      })()
+      return i - 1
     }
   }
 }
