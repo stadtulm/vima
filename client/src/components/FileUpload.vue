@@ -53,7 +53,7 @@
             :key="i"
             cols="12"
             sm="4"
-                          style="cursor: auto !important"
+            style="cursor: auto !important"
 
           >
             <v-card
@@ -256,7 +256,7 @@ export default {
             this.files = this.value.map(file => ({
               ...file,
               state: file.state || 'uploaded',
-              errors: this.value.errors || []
+              errors: file.errors || []
             }))
           } else {
             throw new Error('Max files ist set to 1 or below. Array ist not allowed as value.')
