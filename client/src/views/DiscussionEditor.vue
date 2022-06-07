@@ -72,7 +72,7 @@
                     item-text="title"
                     item-value="_id"
                     :label="$t('group')"
-                    :items="[{ title: $t('none'), _id: null}].concat(computedGroups)"
+                    :items="[{ title: $t('none'), _id: null}].concat(computedGroups.map(group => ({ _id: group._id, title: group.title.value })))"
                     :disabled="user.role !== 'admins'"
                   >
                   </v-select>
@@ -427,28 +427,6 @@ export default {
         }
       }
     },
-    async getAllGroups (existingGroups, skip) {
-      const tmpGroups = await this.findGroups(
-        {
-          query: {
-            _id: {
-              $in: [...new Set(this.statusContainers.filter(
-                obj => obj.type === 'groups' &&
-                  obj.user === this.user._id &&
-                  (
-                    obj.relation === 'owner' ||
-                    obj.relation === 'member'
-                  )
-              ).map(obj => obj.reference))]
-            }
-          },
-          $paginate: false
-        }
-      )
-      for (const group of tmpGroups) {
-        this.updateGroupItem(this.reduceTranslations(group, this.$i18n.locale, ['title', 'description']))
-      }
-    },
     prepareSaveDiscussion () {
       this.showAcceptDialog = false
       this.saveDiscussion()
@@ -562,7 +540,23 @@ export default {
 
   asyncComputed: {
     async requestedGroups () {
-      return await this.getAllGroups([], 0)
+      return await this.findGroups(
+        {
+          query: {
+            _id: {
+              $in: [...new Set(this.statusContainers.filter(
+                obj => obj.type === 'groups' &&
+                  obj.user === this.user._id &&
+                  (
+                    obj.relation === 'owner' ||
+                    obj.relation === 'member'
+                  )
+              ).map(obj => obj.reference))]
+            }
+          },
+          $paginate: false
+        }
+      )
     }
   },
 

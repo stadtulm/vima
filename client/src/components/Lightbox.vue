@@ -19,6 +19,7 @@
       @click="showLightbox = false"
       contain
       max-height="95vh"
+      max-width="95vw"
       :src="s3 + pic.url"
     ></v-img>
   </v-overlay>

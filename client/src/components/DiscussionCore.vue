@@ -320,11 +320,8 @@
                               @checkVisibleMessages="checkVisibleMessages"
                               @report="openReportDialog"
                               @translateText="translateText"
-                              @dropzonesChanged="($event) => dropzones = $event"
                               :computedOwnSubscriberStatusContainer="computedOwnSubscriberStatusContainer"
                               :computedGroupStatus="computedGroupStatus"
-                              :dropzones="dropzones"
-                              :uploadGetAllPics="uploadGetAllPics"
                             ></DiscussionReplies>
                           </v-col>
                         </v-row>
@@ -567,17 +564,17 @@
                 small
                 outlined
                 class="ml-2"
-                @click="uploadResetInput"
+                @click="resetInput"
               >
                 {{$t('cancelButton')}}
               </v-btn>
             </v-col>
           </v-row>
           <v-row
-            class="align-end"
+            class="align-start"
           >
             <v-col
-              class="grow pr-1"
+              cols="11"
             >
               <tiptap-vuetify
                 :editor-properties="{
@@ -593,14 +590,38 @@
                 id="messageInput"
               >
               </tiptap-vuetify>
+              <v-row class="mt-3">
+                <v-col
+                  cols="12"
+                  class="pt-0"
+                  tabIndex="0"
+                  @keypress="$refs.messageUpload.fakeClick()"
+                >
+                  <FileUpload
+                    ref="messageUpload"
+                    v-model="pics"
+                    @fileRemove="patchFileRemove"
+                    @fileAdd="$nextTick(() => { $refs.messagesForm.validate() })"
+                    :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                    :maxFileSize="2"
+                    :maxFiles="10"
+                    bgColor="transparent"
+                    :scaleToFit="[1080, 1080]"
+                    :resizeQuality="50"
+                  ></FileUpload>
+                </v-col>
+              </v-row>
             </v-col>
             <v-col
-              class="shrink px-3"
+              cols="1"
+              class="px-0 text-center"
+              :class="$vuetify.breakpoint.smAndUp ? 'mt-11': 'mt-12'"
             >
               <v-btn
                 fab
+                :small="!$vuetify.breakpoint.smAndUp"
                 :loading="isSending"
-                :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
+                :disabled="!isValid || !message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                 @click="sendMessage()"
                 :color="$settings.modules.discussions.color"
                 :title="$t('sendButton')"
@@ -624,61 +645,9 @@
               </v-btn>
             </v-col>
           </v-row>
-          <v-row
-            v-if="dropzones.discussionMessageUpload && dropzones.discussionMessageUpload.pics.length > 0"
-          >
-            <v-col
-              v-for="(pic, i) of dropzones.discussionMessageUpload.pics"
-              :key="i"
-              cols="2"
-            >
-              <v-img
-                :src="pic.url ? s3 + pic.url : pic.dataURL"
-                @click="uploadShowDialog()"
-                class="pointer"
-                :class="pic.dataURL ? 'progress': ''"
-                aspect-ratio="1"
-                cover
-              >
-              </v-img>
-            </v-col>
-          </v-row>
         </v-form>
       </v-col>
     </v-row>
-    <v-dialog
-      eager
-      persistent
-      v-model="isUploadVisible"
-    >
-      <v-card>
-        <v-container>
-          <v-row>
-            <v-col>
-              <Upload
-                ref="discussionMessageUpload"
-                :pics="isEditMessage && isEditMessage.pics ? isEditMessage.pics : []"
-                :key="dropzones.discussionMessageUpload.key"
-                :optional="false"
-                :label="$t('pics')"
-                :maxFilesize="2"
-                :maxFiles="5"
-                resolutionString="1400x400"
-                :resizeWidth="1080"
-                resizeMethod="contain"
-                :resizeQuality="0.5"
-                :patchParentMethod="patchMessage"
-                titleType="title"
-                bgColor="white"
-                :isDialog="true"
-                @uploadHideDialog="(queuedPics) => { uploadHideDialog('discussionMessageUpload', queuedPics) }"
-                @uploadRemovePic="(removedPic) => { uploadRemovePic('discussionMessageUpload', removedPic) }"
-              ></Upload>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-dialog>
     <ViolationDialog
       :type="discussion.group ? 'groups': 'discussions'"
       :discussion="discussion"
@@ -698,10 +667,8 @@ import ViolationDialog from '@/components/ViolationDialog.vue'
 import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
-import Upload from '@/components/Upload.vue'
-import Vue from 'vue'
-import UploadButton from '@/components/UploadButton.vue'
 import Lightbox from '@/components/Lightbox.vue'
+import FileUpload from '@/components/FileUpload.vue'
 
 export default {
   name: 'DiscussionCore',
@@ -712,25 +679,14 @@ export default {
     ViolationDialog,
     TranslatableText,
     TranslatableTextInfo,
-    Upload,
-    Lightbox
+    Lightbox,
+    FileUpload
   },
 
   props: ['discussion'],
 
   data: () => ({
-    dropzoneKey: 1,
-    dropzones: {
-      discussionMessageUpload: {
-        key: 1,
-        pics: []
-      },
-      discussionReplyUpload: {
-        key: 1,
-        pics: []
-      }
-    },
-    isUploadVisible: false,
+    pics: [],
     itemToReport: undefined,
     showViolationDialog: false,
     checkForNewPage: false,
@@ -767,16 +723,6 @@ export default {
   }),
 
   async mounted () {
-    this.$nextTick(() => {
-      const el = document.querySelector('.tiptap-vuetify-editor__toolbar .v-toolbar__content div')
-      if (el) {
-        const ComponentClass = Vue.extend(UploadButton)
-        const instance = new ComponentClass()
-        instance.$mount()
-        el.appendChild(instance.$el)
-        instance.$el.addEventListener('click', this.uploadShowDialog)
-      }
-    })
     if (this.init) {
       // Init listeners
       this.$nextTick(() => {
@@ -817,54 +763,33 @@ export default {
     ...mapActions('status-container-helper', {
       patchDiscussionMessageNotifications: 'patch'
     }),
-    uploadRemovePic (name, pic) {
-      this.patchMessage([
-        this.isEditMessage._id,
-        {
-          $pull: {
-            pics: {
-              _id: pic._id
+    async patchFileRemove (file) {
+      this.isLoading = true
+      try {
+        await this.patchMessage([
+          this.isEditMessage._id,
+          {
+            $pull: {
+              pics: {
+                _id: file._id
+              }
             }
           }
-        }
-      ])
-    },
-    uploadResetInput () {
-      this.isEditMessage = undefined
-      this.dropzones.discussionMessageUpload = {
-        pics: [],
-        key: Date.now()
+        ])
+        this.pics = this.isEditMessage.pics
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+      } catch (e) {
+        console.log(e)
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
+    },
+    resetInput () {
+      this.isEditMessage = undefined
       this.$refs.messagesForm.reset()
       this.message = undefined
-    },
-    uploadShowDialog () {
-      this.isUploadVisible = true
-    },
-    uploadHideDialog (name, queuedPics) {
-      this.isUploadVisible = undefined
-      if (!queuedPics) {
-        this.dropzones[name] = {
-          key: Date.now(),
-          pics: []
-        }
-      } else {
-        this.dropzones[name].pics = this.uploadGetAllPics(
-          [
-            this.isEditMessage ? this.isEditMessage.pics : [],
-            queuedPics
-          ]
-        )
-      }
-    },
-    uploadGetAllPics (picArrays) {
-      let result = []
-      for (const picArray of picArrays) {
-        if (picArray && Array.isArray(picArray)) {
-          result = result.concat(picArray)
-        }
-      }
-      return result
+      this.pics = []
     },
     async translateText ({ texts, force }) {
       let textsToTranslate
@@ -945,22 +870,21 @@ export default {
     async editMessage (message) {
       this.isEditMessage = message
       this.message = message.text.value
-      this.dropzones.discussionMessageUpload = {
-        pics: this.uploadGetAllPics(
-          [
-            this.isEditMessage ? this.isEditMessage.pics : []
-          ]
-        ),
-        key: Date.now()
-      }
+      this.pics = message.pics
       document.querySelector('#messageInput').scrollIntoView({ block: 'start', behavior: 'smooth' })
     },
     async sendMessage () {
       this.isSending = true
+      try {
+        await this.$refs.messageUpload.upload()
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
+      }
       if (!this.isEditMessage) {
         this.manualLoad = 'create'
         try {
-          const pics = await this.$refs.discussionMessageUpload.processQueue()
           await this.createMessage(
             [
               {
@@ -973,12 +897,12 @@ export default {
                     type: 'default'
                   }
                 ],
-                pics
+                pics: this.pics
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
-          this.uploadResetInput()
+          this.resetInput()
           this.$nextTick(() => {
             this.$nextTick(() => {
               document.querySelector('#messageContainer').scrollTop = document.querySelector('#messageContainer').scrollHeight
@@ -993,7 +917,6 @@ export default {
       } else {
         this.manualLoad = 'patch'
         try {
-          const pics = await this.$refs.discussionMessageUpload.processQueue()
           await this.patchMessage(
             [
               this.isEditMessage._id,
@@ -1005,18 +928,13 @@ export default {
                     type: 'default'
                   }
                 ],
-                pics: this.uploadGetAllPics(
-                  [
-                    this.isEditMessage.pics,
-                    pics
-                  ]
-                ),
+                pics: this.pics,
                 editedAt: new Date()
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
-          this.uploadResetInput()
+          this.resetInput()
           this.triggerNewMessage = Date.now()
         } catch (e) {
           console.log(e)
