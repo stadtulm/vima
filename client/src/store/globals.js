@@ -14,6 +14,10 @@ const state = {
   moduleVisibilities: {},
   cancelledTour: false,
   itemsPerPageOptions: [10, 25, 50, 100, -1],
+  i18nMap: {
+    rs: 'sr',
+    ua: 'uk'
+  },
   isModuleActiveOrDependency (moduleKey) {
     if (!Vue.prototype.$settings) {
       return false
@@ -248,6 +252,9 @@ const state = {
 }
 
 const getters = {
+  i18nMap: state => {
+    return state.i18nMap
+  },
   setLanguage: state => {
     return state.setLanguage
   },

@@ -4,6 +4,7 @@ import Store from '@/store'
 import i18n from '@/i18n'
 import Multiguard from 'vue-router-multiguard'
 import Cookies from 'js-cookie'
+import Vuetify from '@/plugins/vuetify'
 
 import Home from '@/views/Home.vue'
 import Site from '@/views/Site.vue'
@@ -1379,6 +1380,7 @@ async function init (to, from, next) {
       secure: appMode === 'production',
       expires: 365 * 100
     })
+    Vuetify.framework.lang.current = Store.getters.i18nMap[i18n.locale] || i18n.locale
     // Load stuff
     const settings = await Store.dispatch('settings/find')
     if (settings.length === 1) {
