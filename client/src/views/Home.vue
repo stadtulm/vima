@@ -102,7 +102,7 @@
                           cols="12"
                           class="title customGrey--text font-weight-bold"
                         >
-                          {{$t('sloganUlm')}}
+                          {{$t('sloganHome')}}
                         </v-col>
                       </v-row>
                     </v-col>
