@@ -83,23 +83,30 @@
           md="4"
         >
           <v-card
-            class="pointer"
+            class="pointer pa-4"
             :href="sponsor.link"
             target="_blank"
+            height="100%"
           >
-          <v-img
-            v-if="sponsor.pic && sponsor.pic.url"
-            max-height="250px"
-            width="100%"
-            contain
-            :title="sponsor.pic && sponsor.pic.credit ? '© ' + sponsor.pic.credit : ''"
-            :src="s3 + sponsor.pic.url"
-          ></v-img>
-          <v-card-text>
-            <v-card-title>
-              {{sponsor.name}}
-            </v-card-title>
-          </v-card-text>
+            <v-img
+              v-if="sponsor.pic && sponsor.pic.url"
+              height="250px"
+              contain
+              :title="sponsor.pic && sponsor.pic.credit ? '© ' + sponsor.pic.credit : ''"
+              :src="s3 + sponsor.pic.url"
+            ></v-img>
+            <v-divider
+              class="mt-7 mb-0"
+            ></v-divider>
+            <v-card-text
+              class="pa-0"
+            >
+              <v-card-title
+                class="px-0 pb-0"
+              >
+                {{sponsor.name}}
+              </v-card-title>
+            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
