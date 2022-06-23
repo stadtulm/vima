@@ -124,6 +124,20 @@
                               RO
                             </a>
                           </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            md="3"
+                          >
+                            <a href="/downloads/ViMA-Danube_Translation Manual_BG.pdf" target="_blank">
+                              <v-icon
+                                class="mr-2 mb-1"
+                              >
+                                fas fa-file-pdf
+                              </v-icon>
+                              BG
+                            </a>
+                          </v-col>
                         </v-row>
                       </span>
                       </v-alert>
