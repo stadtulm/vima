@@ -141,6 +141,8 @@ server/initialSettings.json
 server/vima-*.json
 client/public/pics/people/*
 !client/public/pics/people/.gitkeep
+client/public/downloads/*
+!client/public/downloads/.gitkeep
 client/src/locales/*
 !client/src/locales/.gitkeep
 server/src/locales/*
