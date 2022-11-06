@@ -86,7 +86,7 @@ exports.sendNewsletter = async function sendNewsletter (app, allRecipients, refe
             subject: tmpTitle.value,
             html:
               '<h1>' + tmpTitle.value + '</h1>' +
-              (tmpSubTitle.value ? '<h2>' + tmpSubTitle.value + '</h2>' : '') +
+              (tmpSubTitle?.value ? '<h2>' + tmpSubTitle.value + '</h2>' : '') +
               '<div>' + newsText.value + '</div>' +
               app.i18n.__({ phrase: 'unsubscribeNewsletterNote1', locale: languageKey }) +
               '<a href="' + process.env.CLIENT_URL + 'austragen/' + recipient.id + '">' +
