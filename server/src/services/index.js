@@ -25,6 +25,10 @@ const subscribers = require('./subscribers/subscribers.service.js')
 const newsletter = require('./newsletter/newsletter.service.js')
 const adMessages = require('./ad-messages/ad-messages.service.js')
 const statusContainerHelper = require('./status-container-helper/status-container-helper.service.js')
+const translations = require('./translations/translations.service.js')
+const blog = require('./blog/blog.service.js')
+const settings = require('./settings/settings.service.js')
+const sponsors = require('./sponsors/sponsors.service.js')
 
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
@@ -55,4 +59,8 @@ module.exports = function (app) {
   app.configure(newsletter)
   app.configure(adMessages)
   app.configure(statusContainerHelper)
+  app.configure(translations)
+  app.configure(settings)
+  app.configure(blog)
+  app.configure(sponsors)
 }

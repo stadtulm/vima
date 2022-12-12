@@ -1,3 +1,4 @@
+const Translation = require('./translations.model')
 // discussion-messages-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -16,10 +17,18 @@ module.exports = function (app) {
       type: ObjectId,
       ref: 'users'
     },
-    text: {
-      type: String,
-      required: true
-    },
+    text: [
+      {
+        type: Translation,
+        required: true
+      }
+    ],
+    pics: [
+      {
+        url: { type: String },
+        credit: { type: String }
+      }
+    ],
     repliesTo: {
       type: ObjectId,
       ref: 'discussionMessages'
@@ -30,9 +39,13 @@ module.exports = function (app) {
         ref: 'discussionMessages'
       }
     ],
+    translationSum: {
+      type: String
+    },
     editedAt: { type: Date }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   schema.virtual('latestAnswers', {

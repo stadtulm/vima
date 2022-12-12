@@ -8,10 +8,12 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const schema = new Schema({
     email: { type: String, required: true, unique: true },
+    language: { type: String, required: true },
     isVerified: { type: Boolean },
     verifyToken: { type: String }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

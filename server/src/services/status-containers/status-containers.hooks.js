@@ -123,7 +123,7 @@ module.exports = {
       // Ads: Notify ad owner
       async (context) => {
         if (context.result.type === 'ads' && context.result.relation === 'applicant') {
-          const adAuthor = await context.app.service('status-containers').patch(
+          const adAuthorStatusContainers = await context.app.service('status-containers').patch(
             null,
             {
               $push: {
@@ -138,7 +138,7 @@ module.exports = {
               }
             }
           )
-          await notifyUsers(context.app, 'newAdApplicants', 'create', context.result, adAuthor)
+          await notifyUsers(context.app, 'newAdApplicants', 'create', context.result, adAuthorStatusContainers.map(obj => obj.user))
         }
       },
       // Groups: Notify owner and moderators about new applicant

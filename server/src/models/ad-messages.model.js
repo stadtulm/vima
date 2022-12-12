@@ -1,3 +1,5 @@
+const Translation = require('./translations.model')
+
 // ad-messages-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -18,10 +20,10 @@ module.exports = function (app) {
       type: ObjectId,
       ref: 'users'
     },
-    text: {
-      type: String,
+    text: [{
+      type: Translation,
       required: true
-    },
+    }],
     repliesTo: {
       type: ObjectId,
       ref: 'chatMessages'
@@ -35,9 +37,13 @@ module.exports = function (app) {
     chat: {
       type: ObjectId,
       ref: 'chats'
+    },
+    translationSum: {
+      type: String
     }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

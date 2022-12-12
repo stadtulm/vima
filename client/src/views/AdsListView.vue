@@ -16,7 +16,7 @@
             <v-btn
               v-if="computedFiltersDirty"
               text
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               @click="resetFilters()"
             >
               {{$t('resetFilters')}}
@@ -27,12 +27,12 @@
           >
             <v-badge
               :value="computedFiltersDirty"
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               overlap
             >
               <v-btn
                 outlined
-                color="customCyan"
+                :color="$settings.modules.ads.color"
                 @click="showFilters = !showFilters"
               >
                 {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
@@ -52,7 +52,7 @@
             <v-btn
               dark
               :to="{ name: 'AdEditor' }"
-              color="customCyan"
+              :color="$settings.modules.ads.color"
             >
               {{$t('newAdButton')}}
               <v-icon
@@ -94,7 +94,7 @@
           <v-select
             v-model="type"
             color="black"
-            item-color="customCyan"
+            :item-color="$settings.modules.ads.color"
             :label="$t('type')"
             outlined
             dense
@@ -114,7 +114,7 @@
           <v-select
             v-model="combinedSort"
             color="black"
-            item-color="customCyan"
+            :item-color="$settings.modules.ads.color"
             :label="$t('sortByLabel')"
             outlined
             dense
@@ -122,8 +122,8 @@
             :items="[
               { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
               { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
-              { text: $t('sortTitleAsc'), value: [['title'], 1] },
-              { text: $t('sortTitleDesc'), value: [['title'], -1] }
+              { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
+              { text: $t('sortTitleDesc'), value: [['title.value'], -1] }
             ]"
           ></v-select>
         </v-col>
@@ -135,15 +135,15 @@
           <v-autocomplete
             v-model="categoriesList"
             color="black"
-            item-color="customCyan"
+            :item-color="$settings.modules.ads.color"
             :label="$t('filterByCategoriesLabel')"
             multiple
             outlined
             auto-select-first
             dense
             hide-details
-            :items="categories.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -155,7 +155,7 @@
           <v-autocomplete
             v-model="tagsList"
             color="black"
-            item-color="customCyan"
+            :item-color="$settings.modules.ads.color"
             :label="$t('filterByTagsLabel')"
             multiple
             outlined
@@ -164,8 +164,8 @@
             deletable-chips
             dense
             hide-details
-            :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -183,6 +183,12 @@
         >
           <AdCard
             :adProp="ad"
+            :allAdIds="computedAds.map(
+                obj => ({
+                  id: obj._id,
+                  translationSum: obj.translationSum
+                })
+              )"
             @selectCategory="selectCategory"
             @selectTag="selectTag"
           ></AdCard>
@@ -191,7 +197,7 @@
       <v-row>
         <v-col>
           <v-pagination
-            color="customCyan"
+            :color="$settings.modules.ads.color"
             v-model="page"
             :length="Math.ceil(total / itemsPerPage)"
             :total-visible="6"
@@ -223,7 +229,7 @@
           class="text-center"
         >
           <v-progress-circular
-            color="customCyan"
+            :color="$settings.modules.ads.color"
             indeterminate
             size="160"
             width="6"
@@ -262,7 +268,7 @@ export default {
     tagsListDefault: [],
     searchDefault: '',
     total: 0,
-    itemsPerPage: 12,
+    itemsPerPage: 25,
     combinedSort: [['createdAt'], -1],
     sortBy: ['createdAt'],
     sortDesc: -1
@@ -354,7 +360,8 @@ export default {
       }
     },
     computedTags () {
-      return this.tags.filter(obj => obj.isActive && obj.isAccepted)
+      return this.tags
+        .filter(obj => obj.isActive && obj.isAccepted)
     },
     computedAds () {
       if (this.computedAdsData && this.computedAdsData.data) {
@@ -376,7 +383,14 @@ export default {
         $sort: { [this.sortBy]: this.sortDesc }
       }
       if (this.search && this.search !== '') {
-        query.title = { $regex: this.search, $options: 'i' }
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       if (this.categoriesList.length > 0) {
         query.categories = { $in: this.categoriesList }

@@ -44,6 +44,9 @@ For more information on all the things you can do with Feathers visit [docs.feat
 * FEATHERS_SYNC - if feather sync should be enabled (1) (currently not supported) or not (0)
 * REDIS_PW - password for your redis db (for feathers sync) (currently not supported)
 * REDIS_URL - url to your redis db (for feathers sync) (currently not supported)
+* DEEPL_AUTH_KEY - the deepl auth key
+* GOOGLE_APPLICATION_CREDENTIALS - path to the google application credentials needed for translation
+GOOGLE_APPLICATION_CREDENTIALS=./vima-345111-8f6ad0c72d9b.json
 
 Example:
 ```
@@ -61,6 +64,8 @@ LOG_LEVEL=debug
 FEATHERS_SYNC=0
 REDIS_PW=tba
 REDIS_URL=redis-12345.12345.eu-central-1-1.ec2.cloud.redislabs.com:19383/0
+DEEPL_AUTH_KEY=123456789
+GOOGLE_APPLICATION_CREDENTIALS=./path-to-your/credentials.json
 ```
 
 ## The server expects a feathers configuration file within the config folder

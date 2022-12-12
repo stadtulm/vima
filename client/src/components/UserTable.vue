@@ -27,7 +27,8 @@
           :sort-desc.sync="sortDesc"
           mobile-breakpoint="0"
           :footer-props="{
-            itemsPerPageText: ''
+            itemsPerPageText: '',
+            itemsPerPageOptions
           }"
         >
           <template
@@ -147,7 +148,7 @@ export default {
     search: '',
     page: 1,
     loading: true,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['userName'],
     sortDesc: [true]
   }),
@@ -159,9 +160,6 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
-    ...mapActions('chats', {
-      removeChat: 'remove'
-    }),
     ...mapActions('users', {
       findUsers: 'find'
     }),
@@ -172,7 +170,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'

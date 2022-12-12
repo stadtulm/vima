@@ -1,3 +1,5 @@
+const Translation = require('./translations.model')
+
 // sites-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -7,14 +9,15 @@ module.exports = function (app) {
   const mongooseClient = app.get('mongooseClient')
   const { Schema } = mongooseClient
   const schema = new Schema({
-    text: { type: String },
+    text: [{ type: Translation, required: true }],
     type: {
       type: String,
       enum: ['imprint', 'privacy', 'contact', 'vima', 'ileu', 'communicationrules', 'vives'],
       unique: true
     }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

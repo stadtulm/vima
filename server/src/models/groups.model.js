@@ -1,3 +1,5 @@
+const Translation = require('./translations.model')
+
 // groups-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -8,8 +10,14 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const ObjectId = Schema.ObjectId
   const schema = new Schema({
-    title: { type: String, required: true },
-    description: { type: String },
+    title: [{
+      type: Translation,
+      required: true
+    }],
+    description: [{
+      type: Translation,
+      required: true
+    }],
     pics: [
       {
         url: { type: String },
@@ -34,6 +42,12 @@ module.exports = function (app) {
         ref: 'tags'
       }
     ],
+    prominentCategories: [
+      {
+        type: ObjectId,
+        ref: 'categories'
+      }
+    ],
     visibility: {
       type: String,
       enum: ['public', 'private', 'hidden']
@@ -49,9 +63,13 @@ module.exports = function (app) {
     isActive: {
       type: Boolean,
       default: true
+    },
+    translationSum: {
+      type: String
     }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   schema.virtual('owner', {

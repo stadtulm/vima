@@ -11,7 +11,7 @@
           sm="4"
         >
           <v-text-field
-            v-model="searchOwn"
+            v-model="search"
             :label="$t('filterByTitleLabel')"
             outlined
             dense
@@ -26,15 +26,15 @@
           <v-autocomplete
             v-model="categoriesList"
             color="black"
-            item-color="customTeal"
+            :item-color="$settings.modules.discussions.color"
             :label="$t('filterByCategoriesLabel')"
             multiple
             outlined
             auto-select-first
             dense
             hide-details
-            :items="categories.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -45,7 +45,7 @@
           <v-autocomplete
             v-model="tagsList"
             color="black"
-            item-color="customTeal"
+            :item-color="$settings.modules.discussions.color"
             :label="$t('filterByTagsLabel')"
             multiple
             outlined
@@ -54,8 +54,8 @@
             deletable-chips
             dense
             hide-details
-            :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -68,6 +68,7 @@
           color="transparent"
         >
           <v-data-table
+            class="discussionTable"
             item-key="_id"
             :headers="headers"
             :items="computedDiscussions"
@@ -83,7 +84,8 @@
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :footer-props="{
-              itemsPerPageText: ''
+              itemsPerPageText: '',
+              itemsPerPageOptions
             }"
           >
             <template
@@ -95,13 +97,25 @@
               ></v-progress-linear>
             </template>
             <template
-              v-slot:[`item.title`]="{ item }"
+              v-slot:[`item.title.value`]="{ item }"
             >
               <div
                 class="pointer font-weight-bold"
                 @click="$router.push(group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } })"
               >
-                {{item.title}}
+                <TranslatableText
+                  ownField="title"
+                  :allFields="['title']"
+                  type="discussions"
+                  :allIds="computedDiscussions.map(
+                    obj => ({
+                      id: obj._id,
+                      translationSum: obj.translationSum
+                    })
+                  )"
+                  :textParent="item"
+                >
+                </TranslatableText>
               </div>
             </template>
             <template
@@ -134,7 +148,7 @@
                 class="mr-1"
                 @click="selectCategory(category._id)"
               >
-              {{category.name}}
+              {{category.text.value}}
               </v-chip>
             </template>
             <template
@@ -146,7 +160,7 @@
                 class="mr-1"
                 @click="selectTag(tag._id)"
               >
-              {{tag.name}}
+              {{tag.text.value}}
               </v-chip>
             </template>
             <template
@@ -243,7 +257,7 @@
                 fab
                 small
                 class="my-3"
-                :color="'custom' + computedColor"
+                :color="computedColor"
                 :to="group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } }"
               >
                 <v-icon
@@ -264,18 +278,21 @@
 <script>
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import TranslatableText from '@/components/TranslatableText.vue'
 
 export default {
   name: 'DiscussionList',
 
   components: {
+    TranslatableText
   },
 
   props: [
     'group',
     'showFilters',
     'resetFilterTrigger',
-    'isAcceptList'
+    'isAcceptList',
+    'category'
   ],
 
   data: () => ({
@@ -283,14 +300,14 @@ export default {
     loaders: {},
     categoriesList: [],
     tagsList: [],
-    searchOwn: '',
+    search: '',
     sortBy: ['latestMessage'],
     sortDesc: [true],
     categoriesListDefault: [],
     tagsListDefault: [],
-    searchOwnDefault: '',
+    searchDefault: '',
     page: 1,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     loading: true
   }),
 
@@ -487,7 +504,8 @@ export default {
     ...mapGetters([
       'deepSort',
       'getTags',
-      'getCategories'
+      'getCategories',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -508,7 +526,7 @@ export default {
       if (
         !this.areArraysEqual(this.categoriesList, this.categoriesListDefault) ||
         !this.areArraysEqual(this.tagsList, this.tagsListDefault) ||
-        this.searchOwn !== this.searchOwnDefault
+        this.search !== this.searchDefault
       ) {
         return true
       } else {
@@ -516,12 +534,13 @@ export default {
       }
     },
     computedTags () {
-      return this.tags.filter(obj => obj.isActive && obj.isAccepted)
+      return this.tags
+        .filter(obj => obj.isActive && obj.isAccepted)
     },
     headers () {
       if (this.isAcceptList) {
         return [
-          { text: this.$t('title'), value: 'title' },
+          { text: this.$t('title'), value: 'title.value' },
           { text: this.$t('author'), value: 'author' },
           { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
           { text: this.$t('active'), value: 'isActive', align: 'center' },
@@ -529,22 +548,25 @@ export default {
           { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
         ]
       } else {
-        return [
-          { text: this.$t('title'), value: 'title' },
+        const tmpHeaders = [
+          { text: this.$t('title'), value: 'title.value' },
           { text: this.$t('created'), value: 'createdAt' },
           { text: this.$t('latestPost'), value: 'latestMessage' },
-          { text: this.$t('categories'), value: 'categories', sortable: false },
           { text: this.$t('tags'), value: 'tags', sortable: false },
-          { text: this.$t('posts'), value: 'messagesCount', sortable: false },
+          { text: this.$t('posts'), value: 'messagesCount', width: '80px', sortable: false },
           { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
         ]
+        if (!this.category) {
+          tmpHeaders.splice(3, 0, { text: this.$t('categories'), value: 'categories', sortable: false })
+        }
+        return tmpHeaders
       }
     },
     computedColor () {
       if (this.group) {
-        return 'Purple'
+        return this.$settings.modules.groups.color
       } else {
-        return 'Teal'
+        return this.$settings.modules.discussions.color
       }
     },
     discussionsQueryWhen () {
@@ -571,8 +593,15 @@ export default {
       } else {
         query.group = null
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       return query
     },
@@ -629,6 +658,13 @@ export default {
   },
 
   watch: {
+    category (newValue, oldValue) {
+      if (newValue && !this.categoriesList.includes(newValue._id)) {
+        this.categoriesList.push(newValue._id)
+      } else if (!newValue && oldValue) {
+        this.categoriesList = this.categoriesList.filter(category => category !== oldValue._id)
+      }
+    },
     discussions () {
       this.findDiscussionsTrigger = Date.now()
     },
@@ -636,7 +672,7 @@ export default {
       if (this.resetFilterTrigger) {
         this.categoriesList = this.categoriesListDefault
         this.tagsList = this.tagsListDefault
-        this.searchOwn = this.searchOwnDefault
+        this.search = this.searchDefault
       }
     },
     computedFiltersDirty () {
@@ -705,3 +741,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.discussionTable table {
+  table-layout: fixed;
+}
+</style>

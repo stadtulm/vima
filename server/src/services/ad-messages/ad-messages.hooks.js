@@ -1,7 +1,7 @@
-const locales = require('../../locales/de.json')
 const commonHooks = require('feathers-hooks-common')
 const Errors = require('@feathersjs/errors')
 const { authenticate } = require('@feathersjs/authentication').hooks
+const JSum = require('jsum')
 
 module.exports = {
   before: {
@@ -35,7 +35,14 @@ module.exports = {
             throw new Errors.Forbidden('Not allowed to create messages for restricted ads')
           }
         }
-      )
+      ),
+      (context) => {
+        context.data.translationSum = JSum.digest(
+          ['text'].map(field => context.data[field].find(t => t.type === 'default').value),
+          'SHA256',
+          'hex'
+        )
+      }
     ],
     update: [
       commonHooks.iff(
@@ -51,6 +58,16 @@ module.exports = {
         () => {
           throw new Errors.NotImplemented()
         }
+      ),
+      commonHooks.iff(
+        (context) => context.data?.text?.find(t => t.type === 'default'),
+        (context) => {
+          context.data.translationSum = JSum.digest(
+            ['text'].map(field => context.data[field].find(t => t.type === 'default').value),
+            'SHA256',
+            'hex'
+          )
+        }
       )
     ],
     remove: [
@@ -64,7 +81,37 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.alterItems(rec => {
+          if (Array.isArray(rec.text)) {
+            rec.text = rec.text.filter(t => t.type === 'default')[0]
+          }
+          return rec
+        })
+      ),
+      // Prepare user ids for sending results to the correct channels
+      async (context) => {
+        let tmpResult
+        if (Array.isArray(context.result)) {
+          tmpResult = context.result
+        } else {
+          tmpResult = [context.result]
+        }
+        const tmpUsers = await context.app.service('status-containers').find(
+          {
+            query: {
+              reference: { $in: tmpResult.map(m => m.ad) },
+              relation: 'owner',
+              type: 'ads',
+              $select: { user: 1 }
+            }
+          }
+        )
+        context.result.tmpUsers = tmpUsers.map(obj => obj.user.toString())
+      }
+    ],
     find: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
@@ -244,9 +291,12 @@ module.exports = {
             const applicantChatMessage = await context.app.service('chat-messages').create(
               {
                 chat: chatId,
-                text:
-                  '<blockquote class="blockquote"><p>' + locales.subject + ': ' + locales.ad + ' "' + ad.title + '"</blockquote>' +
-                  '<p>' + context.params.tmpApplicantAdMessage.text + '</p>',
+                text: [{
+                  value: '<blockquote class="blockquote"><p>' +
+                    '⮌ "' + ad.title.find(obj => obj.type === 'default').value + '"</blockquote>' +
+                  '<p>' + context.params.tmpApplicantAdMessage.text.find(obj => obj.type === 'default').value + '</p>',
+                  type: 'default'
+                }],
                 author: context.params.tmpApplicantAdMessage.author,
                 replies: [] // Has to be pushed later
               }
@@ -255,7 +305,10 @@ module.exports = {
             const ownerChatMessage = await context.app.service('chat-messages').create(
               {
                 chat: chatId,
-                text: context.data.text,
+                text: [{
+                  value: context.data.text.find(obj => obj.type === 'default').value,
+                  type: 'default'
+                }],
                 author: context.params.user._id,
                 repliesTo: applicantChatMessage._id
               }

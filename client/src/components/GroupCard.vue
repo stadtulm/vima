@@ -1,9 +1,9 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedGroup"
     height="100%"
-    :to="groupProp ? { name: 'Group', params: { group: computedGroup._id }} : ''"
+    :to="groupProp ? { name: 'Group', params: { group: computedGroup._id } } : ''"
   >
     <v-container
       fluid
@@ -25,9 +25,16 @@
             >
               <!-- Title -->
               <v-card-title
-                class="word-wrap"
+                class="word-wrap mb-3"
               >
-                {{computedGroup.title}}
+                <TranslatableText
+                  ownField="title"
+                  :allFields="['title', 'description']"
+                  type="groups"
+                  :allIds="allGroupIds"
+                  :textParent="computedGroup"
+                >
+                </TranslatableText>
                 <!-- Membership buttons / icon -->
                 <v-tooltip
                   right
@@ -51,8 +58,16 @@
                   </span>
                 </v-tooltip>
               </v-card-title>
+              <v-card-title
+                v-if="computedCategory"
+                class="pt-0 pb-8"
+              >
+                {{computedCategory.text.value}}
+              </v-card-title>
               <!-- Subtitle -->
-              <v-card-subtitle>
+              <v-card-subtitle
+                v-if="!computedCategory"
+              >
                 {{$t('createdAt')}} {{$moment(computedGroup.createdAt).format('DD.MM.YYYY')}} {{$t('by')}}
                 <span
                   class="font-weight-bold"
@@ -64,7 +79,9 @@
               </v-card-subtitle>
               <v-card-text>
                 <!-- Visibility -->
-                <v-row>
+                <v-row
+                  v-if="!computedCategory"
+                >
                   <v-col>
                     <v-tooltip
                       right
@@ -93,12 +110,17 @@
                 </v-row>
                 <!-- Interaction -->
                 <v-row
-                  v-if="!computedGroupStatus && !groupProp && user"
+                  v-if="
+                    !computedGroupStatus &&
+                    !groupProp &&
+                    user &&
+                    !computedCategory
+                  "
                 >
                   <v-col>
                     <v-btn
                       dark
-                      color="customPurple"
+                      :color="$settings.modules.groups.color"
                       :loading="isLoading"
                       @click="showApplyDialog = true"
                     >
@@ -114,7 +136,11 @@
                 </v-row>
                 <!-- Categories -->
                 <v-row
-                  v-if="computedGroup.categories && computedGroup.categories.length > 0"
+                  v-if="
+                    !computedCategory &&
+                    computedGroup.categories &&
+                    computedGroup.categories.length > 0
+                  "
                 >
                   <v-col>
                     <v-chip
@@ -122,38 +148,102 @@
                       v-for="category in getCategories(computedGroup.categories)"
                       :key="category._id"
                       class="mr-1"
-                      @click="$emit('selectCategory', category._id)"
+                      :disabled="!groupProp"
+                      @click.prevent="$emit('selectCategory', category._id)"
                     >
-                    {{category.name}}
+                    {{category.text.value}}
                     </v-chip>
                   </v-col>
                 </v-row>
                 <!-- Tags -->
                 <v-row
-                  v-if="computedGroup.tags && computedGroup.tags.length > 0"
+                  v-if="
+                    !computedCategory &&
+                    computedGroup.tags &&
+                    computedGroup.tags.length > 0
+                  "
                 >
                   <v-col>
                     <v-chip
                       v-for="tag in getTags(computedGroup.tags)"
                       :key="tag._id"
                       class="mr-1"
-                      @click="$emit('selectTag', tag._id)"
+                      :disabled="!groupProp"
+                      @click.prevent="$emit('selectTag', tag._id)"
                     >
-                    {{tag.name}}
+                    {{tag.text.value}}
                     </v-chip>
                   </v-col>
                 </v-row>
                 <!-- Description -->
-                <v-row>
+                <v-row
+                  v-if="!computedCategory"
+                >
+                  <TranslatableText
+                    ownField="description"
+                    :allFields="['title', 'description']"
+                    type="groups"
+                    :allIds="allGroupIds"
+                    :textParent="computedGroup"
+                  >
+                    <template
+                      v-slot:defaultLang="{ computedText, translateText }"
+                    >
+                      <v-col
+                        class="body-1 mx-4"
+                      >
+                        <span
+                          v-html="groupProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
+                        ></span>
+                        <TranslatableTextInfo
+                          :canTranslate="true"
+                          :canShowOriginal="false"
+                          @translateText="(data) => { translateText(data) }"
+                        ></TranslatableTextInfo>
+                      </v-col>
+                    </template>
+                    <template
+                      v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+                    >
+                      <v-col
+                        class="pb-0"
+                      >
+                        <v-sheet
+                          class="pa-1 px-3"
+                        >
+                          <TranslatableTextInfo
+                            :canTranslate="false"
+                            :canShowOriginal="true"
+                            :needsUpdate="computedGroup.translationSum !== computedText.translationSum"
+                            @showOriginal="(data) => { showOriginal(data) }"
+                            @translateText="(data) => { translateText(data) }"
+                          ></TranslatableTextInfo>
+                          <span
+                            class="body-1"
+                            v-html="groupProp ?
+                              truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
+                              $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
+                            "
+                          ></span>
+                        </v-sheet>
+                      </v-col>
+                    </template>
+                  </TranslatableText>
+                </v-row>
+                <v-row
+                  v-else-if="computedCategory.description && computedCategory.description.value"
+                >
                   <v-col
                     class="body-1"
-                    v-html="groupProp ? truncatedDescription(newTab(computedGroup.description)) : $sanitize(newTab(computedGroup.description))"
-                  ></v-col>
+                  >
+                    {{computedCategory.description.value}}
+                  </v-col>
                 </v-row>
               </v-card-text>
             </v-col>
             <!-- Carousel -->
             <v-col
+              v-if="!computedCategory"
               cols="12"
               sm="12"
               :md="groupProp ? 12 : 6"
@@ -205,12 +295,21 @@
                     :key="pic.url"
                   >
                     <v-img
-                      :height="groupProp ? 300 : 500"
-                      :src="s3 + pic.url"
+                      :height="groupProp ? 300 : 350"
+                      :src="pic.url && pic.url !== 'nopic' ? s3 + pic.url : ''"
                       :contain="groupProp ? false : true"
                       :alt="$t('groupTitlePic')"
                       :title="pic.credit ? '© ' + pic.credit : ''"
-                    ></v-img>
+                    >
+                      <v-icon
+                        v-if="pic.url === 'nopic'"
+                        class="d-flex fill-height pa-6"
+                        size="200"
+                        color="customGreyUltraLight"
+                      >
+                        fas fa-image
+                      </v-icon>
+                    </v-img>
                   </v-carousel-item>
                 </v-carousel>
               </v-card-text>
@@ -233,12 +332,108 @@
             <template
               v-if="!groupProp"
             >
-              <v-divider
-                class="mx-4 mt-8 mb-10"
-              ></v-divider>
+              <!-- Group discussions grid -->
+              <template
+                v-if="
+                  !computedCategory &&
+                  computedGroup.prominentCategories &&
+                  computedGroup.prominentCategories.length > 0
+                "
+              >
+                <v-divider
+                  class="mx-4 mt-8 mb-10"
+                ></v-divider>
+                <v-row>
+                  <v-col
+                    class="mx-6 title"
+                  >
+                    {{$t('prominentCategories')}}
+                  </v-col>
+                </v-row>
+                <v-row
+                  class="mx-1"
+                >
+                  <v-col
+                    v-for="(cat, i) in getCategories(computedGroup.prominentCategories)"
+                    :key="i"
+                  >
+                    <v-card
+                      height="100%"
+                      @click="$router.push({ name: 'GroupSelection', params: { group: computedGroup._id, category: cat._id } })"
+                    >
+                      <v-container
+                        fluid
+                        class="fill-height"
+                      >
+                        <v-row
+                          class="align-self-start"
+                        >
+                          <v-img
+                            :src="cat.pic ? s3 + cat.pic.url: ''"
+                            height="200px"
+                            width="100%"
+                            :title="cat.pic ? cat.pic.credit : ''"
+                          ></v-img>
+                          <v-col
+                            class="px-0 pb-0"
+                          >
+                            <v-card-title
+                              class="word-wrap"
+                            >
+                              {{cat.text.value}}
+                            </v-card-title>
+                          </v-col>
+                          <v-col
+                            class="pb-0 shrink right-text align-self-center"
+                          >
+                            <v-btn
+                              class="customPurple--text"
+                              @click="$router.push({ name: 'GroupSelection', params: { group: computedGroup._id, category: cat._id } })"
+                            >
+                              {{$t('viewButton')}}
+                              <v-icon
+                                class="ml-3"
+                                size="18"
+                              >
+                                fas fa-arrow-right
+                              </v-icon>
+                            </v-btn>
+                          </v-col>
+                          <v-col
+                            v-if="cat.description && cat.description.value"
+                            cols="12"
+                            class="pb-4 px-4 body-1 black--text"
+                          >
+                            {{cat.description.value}}
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </template>
+              <template
+                v-if="!computedCategory"
+              >
+                <v-divider
+                  class="mb-9 mt-10 mx-6"
+                ></v-divider>
+                <v-row>
+                  <v-col
+                    class="mx-6 title"
+                  >
+                    {{$t('allDiscussions')}}
+                  </v-col>
+                </v-row>
+              </template>
               <!-- New discussion button -->
               <v-row
-                v-if="user && computedGroupStatus && computedGroupStatus.isMember"
+                v-if="
+                  !computedCategory &&
+                  user &&
+                  computedGroupStatus &&
+                  computedGroupStatus.isMember
+                "
                 class="mx-1"
               >
                 <v-col
@@ -247,7 +442,7 @@
                     <v-btn
                       dark
                       :to="{ name: 'GroupDiscussionEditor', params: { group: computedGroup._id } }"
-                      color="customPurple"
+                      :color="$settings.modules.groups.color"
                     >
                       {{$t('newDiscussion')}}
                       <v-icon
@@ -259,13 +454,14 @@
                     </v-btn>
                 </v-col>
               </v-row>
-              <!-- Group discussions -->
+              <!-- Group discussions list -->
               <v-row
                 class="mx-1"
               >
                 <v-col>
                   <DiscussionsList
                     :group="computedGroup"
+                    :category="computedCategory"
                   ></DiscussionsList>
                 </v-col>
               </v-row>
@@ -299,7 +495,7 @@
                 <v-alert
                   dark
                   icon="fas fa-info-circle"
-                  color="customPurple"
+                  :color="$settings.modules.groups.color"
                 >
                   <v-row>
                     <v-col>
@@ -318,20 +514,20 @@
       >
         <v-col>
           <v-card-actions
-            class="mx-2 pb-4 grow"
+            class="pb-4 grow"
             v-if="groupProp"
           >
             <v-btn
               large
               block
-              class="customPurple--text"
+              :style="'color:' + $settings.modules.groups.color"
               :to="{ name: 'Group', params: { group: computedGroup._id }}"
             >
               {{$t('viewButton')}}
               <v-icon
                 class="ml-3"
                 size="18"
-                color="customPurple"
+                :color="$settings.modules.groups.color"
               >
                 fas fa-arrow-right
               </v-icon>
@@ -346,7 +542,7 @@
       max-width="600"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -397,7 +593,7 @@
               <v-btn
                 @click="applyForGroupMembership()"
                 :dark="message ? true : false"
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 :loading="isLoading"
                 :disabled="!message"
               >
@@ -429,7 +625,7 @@
               <v-btn
                 @click="showApplyDialog = false"
                 dark
-                color="customPurple"
+                :color="$settings.modules.groups.color"
               >
                 {{$t('understoodButton')}}
               </v-btn>
@@ -445,6 +641,8 @@
 
 import DiscussionsList from '@/components/DiscussionsList.vue'
 import FileDownloadList from '@/components/FileDownloadList.vue'
+import TranslatableText from '@/components/TranslatableText.vue'
+import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
@@ -452,11 +650,14 @@ export default {
 
   components: {
     DiscussionsList,
-    FileDownloadList
+    FileDownloadList,
+    TranslatableText,
+    TranslatableTextInfo
   },
 
   props: [
-    'groupProp'
+    'groupProp',
+    'allGroupIds'
   ],
 
   data: () => ({
@@ -485,7 +686,7 @@ export default {
       text = this.$sanitize(text)
       text = text.replaceAll('<p>', '')
       text = text.replaceAll('</p>', '&nbsp;')
-      var div = document.createElement('div')
+      const div = document.createElement('div')
       div.innerHTML = text
       let tmpStr = div.innerText
       if (tmpStr && tmpStr.length > len) {
@@ -538,6 +739,13 @@ export default {
     ...mapGetters('categories', {
       categories: 'list'
     }),
+    computedCategory () {
+      if (this.$route.params.category) {
+        return this.getCategories([this.$route.params.category])[0]
+      } else {
+        return undefined
+      }
+    },
     computedGroupStatus () {
       if (this.computedStatusContainers) {
         if (this.computedStatusContainers.find(obj => obj.relation === 'owner')) {
@@ -565,7 +773,7 @@ export default {
         if (this.computedGroup.pics && this.computedGroup.pics.length > 0) {
           return this.computedGroup.pics
         } else if (this.computedGroup.categories) {
-          return this.categories.filter(obj => this.computedGroup.categories.includes(obj._id) && obj.pic && obj.pic.url).map(obj => obj.pic)
+          return [{ url: 'nopic' }]
         } else {
           return []
         }
@@ -580,7 +788,14 @@ export default {
       if (this.groupProp) {
         return this.groupProp
       } else {
-        if (this.$route.name === 'Group' && this.$route.params.group && !this.groupProp) {
+        if (
+          (
+            this.$route.name === 'Group' ||
+            this.$route.name === 'GroupSelection'
+          ) &&
+          this.$route.params.group &&
+          !this.groupProp
+        ) {
           let selectedGroup = this.getGroup(this.$route.params.group)
           if (!selectedGroup) {
             selectedGroup = await this.requestGroup(

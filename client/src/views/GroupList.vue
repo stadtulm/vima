@@ -14,7 +14,7 @@
         <v-btn
           dark
           :to="{ name: 'GroupEditor' }"
-          color="customPurple"
+          :color="$settings.modules.groups.color"
         >
           {{$t('newGroupButton')}}
           <v-icon
@@ -29,7 +29,7 @@
     <v-row>
       <v-col>
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -46,7 +46,7 @@
           single-expand
           :expanded.sync="expanded"
           show-expand
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedGroups"
           :loading="loading"
@@ -60,14 +60,17 @@
           :items-per-page.sync="itemsPerPage"
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
           >
             <v-progress-linear
               indeterminate
-              color="customPurple"
+              :color="$settings.modules.groups.color"
             ></v-progress-linear>
           </template>
           <template
@@ -76,7 +79,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               @click="expand(!isExpanded)"
               :disabled="!isOwnGroup(item._id) || !item.accepted || !item.accepted.isAccepted"
             >
@@ -93,7 +96,7 @@
           >
             <v-badge
               overlap
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               :value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
@@ -135,7 +138,7 @@
               <v-btn
                 fab
                 small
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 @click="membersDialogItem = item"
                 :disabled="
                   (
@@ -160,7 +163,7 @@
           >
             <v-badge
               overlap
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               :value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
@@ -202,7 +205,7 @@
               <v-btn
                 fab
                 small
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 @click="discussionsDialogItem = item"
                 :disabled="
                   (
@@ -228,7 +231,7 @@
           >
             <v-badge
               overlap
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               :value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
@@ -274,7 +277,7 @@
               <v-btn
                 fab
                 small
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 @click="violationsDialogItem = item"
                 :disabled="
                   (
@@ -300,7 +303,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               @click="filesDialogItem = item"
               :disabled="
                 (
@@ -320,12 +323,12 @@
             </v-btn>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <span
               class="font-weight-bold"
             >
-              {{item.title}}
+              {{item.title.value}}
             </span>
           </template>
           <template
@@ -392,8 +395,8 @@
               v-else
             >
               <v-select
-                color="customPurple"
-                item-color="customPurple"
+                :color="$settings.modules.groups.color"
+                :item-color="$settings.modules.groups.color"
                 multiple
                 chips
                 deletable-chips
@@ -414,7 +417,7 @@
           >
             <v-btn
               icon
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               :loading="loaders[item._id + 'isActive'] === true"
               :disabled="!isOwnGroup(item._id)"
               @click="changeGroupProperty(
@@ -442,7 +445,7 @@
           >
             <v-btn
               icon
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               disabled
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeGroupProperty(
@@ -475,7 +478,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               class="my-4"
               :to="{name: 'GroupEditor', params: { id: item._id } }"
               :disabled="!isOwnGroup(item._id)"
@@ -494,7 +497,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               class="my-4"
               :loading="loaders[item._id + 'delete'] === true"
               :disabled="!isOwnGroup(item._id)"
@@ -523,7 +526,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               :disabled="
                 !item.isActive ||
                 !item.accepted ||
@@ -553,8 +556,8 @@
                             :items="computedPossibleModerators"
                             :value="computedExpandedModerators"
                             @change="changeExpandedModerators"
-                            color="customPurple"
-                            item-color="customPurple"
+                            :color="$settings.modules.groups.color"
+                            :item-color="$settings.modules.groups.color"
                             multiple
                             :label="$t('possibleGroupModeratorsHint')"
                             chips
@@ -578,7 +581,7 @@
       max-width="1200"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -594,11 +597,11 @@
           <v-row>
             <v-col>
               <v-toolbar
-                color="customGreyBg"
+                color="customGreyUltraLight"
                 flat
               >
               <v-tabs
-                color="customPurple"
+                :color="$settings.modules.groups.color"
                 v-model="membersTab"
               >
                 <v-tab>{{$t('currentGroupMembers')}}</v-tab>
@@ -672,7 +675,7 @@
                               fab
                               small
                               dark
-                              color="customPurple"
+                              :color="$settings.modules.groups.color"
                             >
                               <v-icon
                                 size="18"
@@ -695,7 +698,7 @@
                       <UserTable
                         :customActionText="$t('invite')"
                         customActionIcon="fas fa-plus"
-                        customColor="customPurple"
+                        :customColor="$settings.modules.groups.color"
                         :customQuery="
                           computedCustomQuery
                         "
@@ -714,7 +717,7 @@
                       <UserTable
                         :customActionText="$t('remove')"
                         customActionIcon="fas fa-times"
-                        customColor="customPurple"
+                        :customColor="$settings.modules.groups.color"
                         :customQuery="
                           {
                             _id: { $in: computedMemberStatusContainers.filter(obj => obj.relation === 'invitation').map(obj => obj.user) }
@@ -769,7 +772,7 @@
                               fab
                               small
                               dark
-                              color="customPurple"
+                              :color="$settings.modules.groups.color"
                             >
                               <v-icon
                                 size="18"
@@ -784,7 +787,7 @@
                               fab
                               small
                               dark
-                              color="customPurple"
+                              :color="$settings.modules.groups.color"
                             >
                               <v-icon
                                 size="18"
@@ -810,7 +813,7 @@
       max-width="800"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -840,7 +843,7 @@
       max-width="800"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -870,7 +873,7 @@
       max-width="1200"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -932,10 +935,10 @@ export default {
     isSending: false,
     expanded: [],
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['createdAt'],
     sortDesc: [true]
   }),
@@ -1355,7 +1358,8 @@ export default {
     ...mapGetters([
       's3',
       'relationItems',
-      'deepSort'
+      'deepSort',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -1376,7 +1380,7 @@ export default {
     },
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
@@ -1448,8 +1452,15 @@ export default {
         $skip: (this.page - 1) * this.computedSkip,
         $sort: { [this.sortBy]: this.computedSortDesc }
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       return query
     },

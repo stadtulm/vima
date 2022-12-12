@@ -156,9 +156,6 @@
                   </v-text-field>
                 </v-col>
               </v-row>
-              <v-divider
-                class="mb-9 mt-3"
-              ></v-divider>
               <v-row
                 v-if="selectedUser"
               >
@@ -249,11 +246,10 @@
                   </v-text-field>
                 </v-col>
               </v-row>
-            </v-form>
-            <v-divider
-              class="mb-9 mt-3"
-            ></v-divider>
-            <v-row>
+              <v-divider
+                class="mb-9 mt-3"
+              ></v-divider>
+              <v-row>
                 <v-col
                   cols="12"
                 >
@@ -275,85 +271,25 @@
                       <v-col
                         cols="12"
                         tabIndex="0"
-                        @keypress="$refs.vueDropzone.$el.click()"
+                        @keypress="$refs.userPicUpload.fakeClick()"
                       >
-                        <vue-dropzone
-                          ref="vueDropzone"
-                          id="vueDropzone"
-                          :options="dropzoneOptions"
-                          :headers="dropzoneOptions.headers"
-                          @vdropzone-success="uploadSuccess"
-                          @vdropzone-removed-file="removeFile"
-                          @vdropzone-mounted="dropzoneMounted"
-                          @vdropzone-files-added="updateQueuedFiles"
-                          @vdropzone-sending="addUuid"
-                          @vdropzone-queue-complete="queueComplete"
-                          :destroyDropzone="false"
-                        >
-                        </vue-dropzone>
+                        <FileUpload
+                          ref="userPicUpload"
+                          v-model="pic"
+                          @fileRemove="patchFileRemove()"
+                          @fileAdd="$nextTick(() => { $refs.userEditorForm.validate() })"
+                          :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                          :maxFileSize="0.5"
+                          :maxFiles="1"
+                          bgColor="customGreyUltraLight"
+                          :scaleToFit="[400, 400]"
+                          :resizeQuality="75"
+                        ></FileUpload>
                       </v-col>
                     </v-row>
                   </v-card>
                 </v-col>
               </v-row>
-              <v-row
-                v-if="pic"
-              >
-                <v-col
-                  cols="12"
-                >
-                  <v-card
-                    flat
-                    color="customGreyBg"
-                  >
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        class="subtitle-1"
-                      >
-                        {{$t('copyrightOwner')}}
-                      </v-col>
-                    </v-row>
-                    <v-row
-                      dense
-                    >
-                      <v-col>
-                        <v-alert
-                          icon="fas fa-info-circle"
-                          color="customGrey"
-                          dark
-                          outlined
-                        >
-                          {{$t('publicHint')}}
-                        </v-alert>
-                      </v-col>
-                    </v-row>
-                    <v-row
-                      dense
-                      class="align-center"
-                    >
-                      <v-col
-                        cols="12"
-                      >
-                        <v-text-field
-                          dense
-                          color="customGrey"
-                          item-color="customGrey"
-                          v-model="pic.credit"
-                          :label="$t('copyrightOwner') + ' ' + $t('pic') + ' ' + ' 1'"
-                          outlined
-                          :rules="[rules.required]"
-                          background-color="#fff"
-                        >
-                        </v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-card>
-                </v-col>
-              </v-row>
-              <v-divider
-                :class="pic ? 'mb-9 mt-3' : 'my-9'"
-              ></v-divider>
               <v-row
                 v-if="!selectedUser"
               >
@@ -366,31 +302,33 @@
                   </v-alert>
                 </v-col>
               </v-row>
-            <v-card-actions
-              class="px-0"
-            >
-              <v-btn
-                v-if="selectedUser"
-                large
-                :dark="isValid"
-                color="error"
-                :loading="isLoading"
-                @click="showDeleteDialog = true"
+              <v-card-actions
+                class="px-0"
               >
-                {{$t('deleteAccountButton')}}
-              </v-btn>
-              <v-spacer></v-spacer>
-              <v-btn
-                large
-                :dark="isValid"
-                color="customGrey"
-                :loading="isLoading"
-                :disabled="!isValid"
-                @click="checkPassword()"
-              >
-                {{$t('saveDataButton')}}
-              </v-btn>
-            </v-card-actions>
+                <v-btn
+                  v-if="selectedUser"
+                  large
+                  color="error"
+                  :dark="isValid && !isLoading"
+                  :loading="isDeleting"
+                  :disabled="isLoading"
+                  @click="showDeleteDialog = true"
+                >
+                  {{$t('deleteAccountButton')}}
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                  large
+                  :dark="isValid"
+                  color="customGrey"
+                  :loading="isLoading"
+                  :disabled="!isValid"
+                  @click="checkPassword()"
+                >
+                  {{$t('saveDataButton')}}
+                </v-btn>
+              </v-card-actions>
+            </v-form>
           </v-card-text>
         </v-card>
       </v-col>
@@ -525,16 +463,13 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import vue2Dropzone from 'vue2-dropzone'
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
-
-const server = process.env.VUE_APP_SERVER_URL
+import FileUpload from '@/components/FileUpload.vue'
 
 export default {
   name: 'UserEditor',
 
   components: {
-    vueDropzone: vue2Dropzone
+    FileUpload
   },
 
   data: () => ({
@@ -545,7 +480,6 @@ export default {
     residence: undefined,
     age: undefined,
     showDeleteDialog: false,
-    isQueued: false,
     selectedUser: undefined,
     isLoading: false,
     isValid: false,
@@ -578,6 +512,24 @@ export default {
     ...mapActions('uploads', {
       removeUpload: 'remove'
     }),
+    async patchFileRemove () {
+      this.isLoading = true
+      try {
+        await this.patchUser([
+          this.selectedUser._id,
+          {
+            pic: null
+          }
+        ])
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.isLoading = false
+        this.adapt()
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.adapt()
+      }
+    },
     checkPassword () {
       if (this.pw) {
         this.showPasswordDialog = true
@@ -624,30 +576,6 @@ export default {
         this.isDeleting = false
       }
     },
-    addUuid (file, xhr, formData) {
-      formData.append('uuid', file.upload.uuid)
-    },
-    updateQueuedFiles (files) {
-      this.isQueued = true
-      this.$nextTick(() => {
-        if (files[0].status !== 'error') {
-          this.pic = { credit: undefined, url: files[0].upload.uuid }
-        }
-      })
-    },
-    dropzoneMounted () {
-      if (this.selectedUser && this.selectedUser.pic) {
-        var url = this.s3 + this.selectedUser.pic.url
-        var mockFile = {
-          name: '',
-          size: '',
-          type: 'image/jpeg',
-          accepted: true
-        }
-
-        this.$refs.vueDropzone.manuallyAddFile(mockFile, url)
-      }
-    },
     async adapt () {
       if (this.$route.params.user) {
         let selectedUser = this.getUser(this.$route.params.user)
@@ -669,109 +597,59 @@ export default {
         this.residence = this.selectedUser.residence
       }
     },
-    async uploadSuccess (file, response) {
-      this.pic = {
-        url: response.id,
-        credit: this.pic.credit
-      }
-      this.isQueued = false
-      this.saveUser()
-    },
-    async removeFile (file, error, xhr) {
-      try {
-        if (file.status === 'queued') {
-          this.pic = undefined
-          this.isQueued = false
-        } else if (file.status !== 'error') {
-          if (this.selectedUser) {
-            this.dropzoneError = false
-            await this.removeUpload([this.pic.url, {}, {}])
-            await this.patchUser([this.selectedUser._id, { pic: null }])
-            this.pic = undefined
-            this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-          }
-        }
-      } catch (e) {
-        if (this.isLoading) {
-          this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        }
-      }
-    },
-    queueComplete () {
-      if (this.isQueued) {
-        let hasErrors = false
-        for (const file of this.$refs.vueDropzone.getAcceptedFiles()) {
-          const newPic = this.pics
-          if (!newPic) {
-            file.previewElement.querySelector('.dz-error-message > span').innerHTML = this.$t('uploadFailed')
-            hasErrors = true
-            if (this.isLoading) {
-              this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-            }
-          }
-          if (hasErrors) {
-            this.isLoading = false
-            return
-          }
-          this.$refs.vueDropzonePics.removeFile(file)
-          const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
-          tmpMockFile.name = newPic.url
-          this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + newPic.url)
-        }
-        this.isQueued = false
-        if (this.isLoading) {
-          this.saveUser()
-        }
-      }
-    },
     async saveUser () {
       this.showPasswordDialog = false
       this.emailError = undefined
       this.userNameError = undefined
       this.isLoading = true
-      if (this.isQueued) {
-        await this.$refs.vueDropzone.processQueue()
-      } else {
-        const map = {
-          firstName: this.firstName,
-          lastName: this.lastName,
-          userName: this.userName,
-          email: this.email,
-          description: this.description,
-          role: this.role,
-          age: this.age,
-          gender: this.gender,
-          residence: this.residence
+      // Do uploads
+      try {
+        await this.$refs.userPicUpload.upload()
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
+      }
+      // Prepare map
+      const map = {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        userName: this.userName,
+        email: this.email,
+        description: this.description,
+        role: this.role,
+        age: this.age,
+        gender: this.gender,
+        residence: this.residence
+      }
+      if (this.pic && this.pic.url && this.pic.credit) {
+        map.pic = this.pic
+      }
+      if (this.pw && this.pw !== '') {
+        map.password = this.pw
+        map.tmpOldPassword = this.oldPw
+      }
+      if (!this.selectedUser) {
+        map.password = 'XXXXXXXX'
+      }
+      try {
+        if (this.selectedUser) {
+          await this.patchUser([this.selectedUser._id, map])
+        } else {
+          map.createdBy = 'editor'
+          await this.createUser([map, {}])
         }
-        if (this.pic && this.pic.url && this.pic.credit) {
-          map.pic = this.pic
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.$router.go(-1)
+      } catch (e) {
+        this.isLoading = false
+        if (e.errors && e.errors.email) {
+          this.emailError = [this.$t('emailExistsError')]
+        } else if (e.errors && e.errors.userName) {
+          this.userNameError = [this.$t('accountExistsError')]
         }
-        if (this.pw && this.pw !== '') {
-          map.password = this.pw
-          map.tmpOldPassword = this.oldPw
-        }
-        if (!this.selectedUser) {
-          map.password = 'XXXXXXXX'
-        }
-        try {
-          if (this.selectedUser) {
-            await this.patchUser([this.selectedUser._id, map])
-          } else {
-            map.createdBy = 'editor'
-            await this.createUser([map, {}])
-          }
-          this.isLoading = false
-          this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-          this.$router.go(-1)
-        } catch (e) {
-          this.isLoading = false
-          if (e.errors && e.errors.email) {
-            this.emailError = [this.$t('emailExistsError')]
-          } else if (e.errors && e.errors.userName) {
-            this.userNameError = [this.$t('accountExistsError')]
-          }
-          this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        }
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
     }
   },
@@ -788,30 +666,6 @@ export default {
     ...mapGetters('users', {
       getUser: 'get'
     }),
-    dropzoneOptions () {
-      return {
-        url: server + 'uploads',
-        maxFilesize: 0.5,
-        maxFiles: 1,
-        paramName: 'uri',
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('feathers-jwt')
-        },
-        autoProcessQueue: false,
-        addRemoveLinks: true,
-        dictDefaultMessage: '<i style="font-size: 40px" class="fas fa-images"></i><br><br><span class="v-label"><span class="font-weight-bold">' + this.$t('dropFilesHeadline', { filesize: '0.5' }) + '</span><br><br>' + this.$t('dropFilesBody', { resolution: '400x400' }) + '</span>',
-        dictRemoveFile: '<i style="font-size: 40px" class="fas fa-times"></i>',
-        dictCancelUpload: '<i style="font-size: 40px" class="fas fa-times"></i>',
-        dictFileTooBig: this.$t('fileTooBigError'),
-        dictInvalidFileType: this.$t('fileTypeNotAcceptedError'),
-        dictMaxFilesExceeded: this.$t('noMorePicsError'),
-        acceptedMimeTypes: 'image/png, image/jpeg',
-        resizeWidth: 400,
-        resizeHeight: 400,
-        resizeMethod: 'contain',
-        resizeQuality: 0.5
-      }
-    },
     pwRule () {
       return v => (!!v && v) === this.pw || this.$t('passwordsDoNotMatchError')
     },
@@ -834,13 +688,6 @@ export default {
     showPasswordDialog () {
       this.oldPw = undefined
     },
-    pic () {
-      if (this.$refs.userEditorForm) {
-        this.$nextTick(() => {
-          this.$refs.userEditorForm.validate()
-        })
-      }
-    },
     email () {
       this.emailError = undefined
     },
@@ -853,7 +700,3 @@ export default {
   }
 }
 </script>
-
-<style>
-
-</style>

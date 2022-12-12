@@ -2,6 +2,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
 const commonHooks = require('feathers-hooks-common')
 const Errors = require('@feathersjs/errors')
+const util = require('../util')
 
 module.exports = {
   before: {
@@ -12,7 +13,17 @@ module.exports = {
         authenticate('jwt', 'anonymous')
       )
     ],
-    find: [],
+    find: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.keepTranslations,
+          async (context) => {
+            await util.generateLanguageAggegationStages(context, ['text', 'description'])
+          }
+        )
+      )
+    ],
     get: [],
     create: [
       commonHooks.iff(

@@ -87,7 +87,7 @@
                   >
                     <v-sheet
                       class="px-4 py-2 foreign-sheet"
-                      :color="isOwnMessage(message) ? (isEditMessage === message._id ? '#ffeac2' : '#f0f0f0') : (computedOwnSubscriberStatusContainer && computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(message._id)) ? 'customLimeBg': '#f6f6f6'"
+                      :color="isOwnMessage(message) ? (isEditMessage && isEditMessage._id === message._id ? '#ffeac2' : '#f0f0f0') : (computedOwnSubscriberStatusContainer && computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(message._id)) ? $settings.indicatorColor: '#f6f6f6'"
                     >
                       <!-- User -->
                       <v-row
@@ -150,7 +150,7 @@
                           <v-row>
                             <v-col>
                               <v-sheet
-                                max-width="90%"
+                                width="100%"
                                 style="display:inline-block"
                                 color="transparent"
                               >
@@ -162,19 +162,71 @@
                                   <v-col
                                     cols="12"
                                   >
-                                    <v-sheet
-                                      v-html="$sanitize(newTab(message.text.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
-                                      color="transparent"
-                                      class="pa-1"
+
+                                    <TranslatableText
+                                      ownField="text"
+                                      :allFields="['text']"
+                                      :allIds="
+                                        computedMessages
+                                          .filter(m => !isOwnMessage(m))
+                                          .map(m => { return { id: m._id, translationSum: m.translationSum } })
+                                      "
+                                      type="discussion-messages"
+                                      :textParent="message"
                                     >
-                                    </v-sheet>
+                                      <template
+                                        v-slot:defaultLang="{ computedText, translateText }"
+                                      >
+                                        <v-sheet
+                                          v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                          color="transparent"
+                                          class="pa-1"
+                                        >
+                                        </v-sheet>
+                                        <TranslatableTextInfo
+                                          :canTranslate="true"
+                                          :canTranslateAll="computedMessages.filter(m => !isOwnMessage(m)).length > 1"
+                                          @translateText="(data) => { translateText(data) }"
+                                        ></TranslatableTextInfo>
+                                      </template>
+
+                                      <template
+                                        v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+                                      >
+                                        <v-sheet
+                                          v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                          color=""
+                                          class="pa-2 mb-4"
+                                        >
+                                        </v-sheet>
+                                        <TranslatableTextInfo
+                                          :canShowOriginal="true"
+                                          :needsUpdate="message.translationSum !== computedText.translationSum"
+                                          @showOriginal="(data) => { showOriginal(data) }"
+                                          @translateText="(data) => { translateText(data) }"
+                                        ></TranslatableTextInfo>
+                                      </template>
+                                    </TranslatableText>
+                                    <v-row
+                                      v-if="message.pics && message.pics.length > 0"
+                                      class="my-3"
+                                    >
+                                      <v-col
+                                        cols=2
+                                        v-for="(pic, i) in message.pics"
+                                        :key="i"
+                                      >
+                                        <Lightbox
+                                          :pic="pic"
+                                        ></Lightbox>
+                                      </v-col>
+                                    </v-row>
                                   </v-col>
                                   <v-col
                                     cols="12"
                                   >
                                     <v-menu
                                       v-if="isOwnMessage(message)"
-                                      offset-y
                                       open-on-hover
                                     >
                                       <template v-slot:activator="{ on, attrs }">
@@ -191,56 +243,44 @@
                                           </v-icon>
                                         </v-btn>
                                       </template>
-                                      <v-card>
-                                        <v-card-text>
-                                          <v-row
-                                            dense
-                                          >
-                                            <v-col>
-                                              <v-btn
-                                                block
-                                                outlined
-                                                small
-                                                color="customGrey"
-                                                @click="editMessage(message)"
-                                              >
-                                                {{$t('editButton')}}
-                                                <v-icon
-                                                  size="14"
-                                                  class="ml-2"
-                                                >
-                                                  fas fa-pen
-                                                </v-icon>
-                                              </v-btn>
-                                            </v-col>
-                                          </v-row>
-                                          <v-row
-                                            dense
-                                          >
-                                            <v-col>
-                                              <v-btn
-                                                block
-                                                outlined
-                                                small
-                                                color="customGrey"
-                                                @click="deleteMessage(message._id)"
-                                              >
-                                                {{$t('deleteButton')}}
-                                                <v-icon
-                                                  size="14"
-                                                  class="ml-2"
-                                                >
-                                                  fas fa-trash
-                                                </v-icon>
-                                              </v-btn>
-                                            </v-col>
-                                          </v-row>
-                                        </v-card-text>
-                                      </v-card>
+                                      <v-list
+                                        dense
+                                        rounded
+                                      >
+                                        <!-- Edit button -->
+                                        <v-list-item
+                                          @click="editMessage(message)"
+                                        >
+                                          <v-list-item-avatar>
+                                            <v-icon>
+                                              fas fa-pen
+                                            </v-icon>
+                                          </v-list-item-avatar>
+                                          <v-list-item-content>
+                                            <v-list-item-title>
+                                              {{$t('editButton')}}
+                                            </v-list-item-title>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                        <!-- Delete button -->
+                                        <v-list-item
+                                          @click="deleteMessage(message._id)"
+                                        >
+                                          <v-list-item-avatar>
+                                            <v-icon>
+                                              fas fa-trash
+                                            </v-icon>
+                                          </v-list-item-avatar>
+                                          <v-list-item-content>
+                                            <v-list-item-title>
+                                              {{$t('deleteButton')}}
+                                            </v-list-item-title>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                      </v-list>
                                     </v-menu>
                                     <v-menu
                                       v-if="!isOwnMessage(message) && user"
-                                      offset-y
                                       open-on-hover
                                     >
                                       <template v-slot:activator="{ on, attrs }">
@@ -257,25 +297,26 @@
                                           </v-icon>
                                         </v-btn>
                                       </template>
-                                      <v-card>
-                                        <v-card-text>
-                                          <v-btn
-                                            block
-                                            outlined
-                                            small
-                                            color="customGrey"
-                                            @click="$emit('report', message)"
-                                          >
-                                            {{$t('reportButton')}}
-                                            <v-icon
-                                              size="14"
-                                              class="ml-2"
-                                            >
+                                      <v-list
+                                        dense
+                                        rounded
+                                      >
+                                        <!-- Report button -->
+                                        <v-list-item
+                                          @click="$emit('report', message)"
+                                        >
+                                          <v-list-item-avatar>
+                                            <v-icon>
                                               fas fa-exclamation-triangle
                                             </v-icon>
-                                          </v-btn>
-                                        </v-card-text>
-                                      </v-card>
+                                          </v-list-item-avatar>
+                                          <v-list-item-content>
+                                            <v-list-item-title>
+                                              {{$t('reportButton')}}
+                                            </v-list-item-title>
+                                          </v-list-item-content>
+                                        </v-list-item>
+                                      </v-list>
                                     </v-menu>
                                   </v-col>
                                 </v-row>
@@ -303,7 +344,7 @@
                 <v-alert
                   dark
                   icon="fas fa-info-circle"
-                  color="customTeal"
+                  :color="$settings.modules.discussions.color"
                 >
                   <v-row>
                     <v-col>
@@ -348,7 +389,7 @@
                 <v-alert
                   dark
                   icon="fas fa-info-circle"
-                  color="customTeal"
+                  :color="$settings.modules.discussions.color"
                 >
                   <v-row>
                     <v-col>
@@ -378,21 +419,40 @@
                 v-else
               >
                 <v-form
-                  ref="messagesForm"
+                  ref="messagesReplyForm"
                   v-model="isValid"
                 >
+                  <v-row dense>
+                    <v-col
+                      class="font-weight-bold pb-0 pt-3"
+                      cols="12"
+                    >
+                      {{ isEditMessage ? $t('editAnswerTitle') : $t('writeNewAnswer')}}
+                      <v-btn
+                        v-if="isEditMessage"
+                        text
+                        small
+                        outlined
+                        class="ml-2"
+                        @click="resetInput"
+                      >
+                        {{$t('cancelButton')}}
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                   <v-row
-                    class="align-end"
+                    class="align-start"
                   >
                     <v-col
-                      class="grow pr-1 text-left"
+                      class="text-left"
+                      cols="11"
                     >
                       <tiptap-vuetify
                         :editor-properties="{
                           disableInputRules: true,
                           disablePasteRules: true
                         }"
-                        color="customGreyBg"
+                        color="customGreyUltraLight"
                         v-model="message"
                         :card-props="{ tile: true, flat: true }"
                         style="border: 1px solid #aaa;"
@@ -400,16 +460,40 @@
                         :placeholder="$t('writeNewAnswer') + ' ...'"
                       >
                       </tiptap-vuetify>
+                      <v-row class="mt-3">
+                        <v-col
+                          cols="12"
+                          class="pt-0"
+                          tabIndex="0"
+                          @keypress="$refs.messageReplyUpload.fakeClick()"
+                        >
+                          <FileUpload
+                            ref="messageReplyUpload"
+                            v-model="pics"
+                            @fileRemove="patchFileRemove"
+                            @fileAdd="$nextTick(() => { $refs.messagesReplyForm.validate() })"
+                            :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                            :maxFileSize="2"
+                            :maxFiles="10"
+                            bgColor="transparent"
+                            :scaleToFit="[1080, 1080]"
+                            :resizeQuality="50"
+                          ></FileUpload>
+                        </v-col>
+                      </v-row>
                     </v-col>
                     <v-col
-                      class="shrink px-3"
+                      cols="1"
+                      class="px-0 text-center"
+                      :class="$vuetify.breakpoint.smAndUp ? 'mt-11': 'mt-12'"
                     >
                       <v-btn
                         fab
+                        :small="!$vuetify.breakpoint.mdAndUp"
                         :loading="isSending"
-                        :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
+                        :disabled="!isValid || !message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                         @click="sendMessage()"
-                        color="customTeal"
+                        :color="$settings.modules.discussions.color"
                       >
                         <template
                           slot="loader"
@@ -444,6 +528,10 @@
 import { makeFindMixin } from 'feathers-vuex'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
+import TranslatableText from '@/components/TranslatableText.vue'
+import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
+import Lightbox from '@/components/Lightbox.vue'
+import FileUpload from '@/components/FileUpload.vue'
 
 export default {
   name: 'DiscussionReplies',
@@ -457,10 +545,15 @@ export default {
     'computedGroupStatus'
   ],
   components: {
-    TiptapVuetify
+    TiptapVuetify,
+    TranslatableText,
+    TranslatableTextInfo,
+    Lightbox,
+    FileUpload
   },
 
   data: () => ({
+    pics: [],
     isUpdating: false,
     isEditMessage: undefined,
     showRepliesObj: {},
@@ -497,6 +590,9 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    ...mapMutations('translations', {
+      updateTranslationItem: 'updateItem'
+    }),
     ...mapActions('discussion-messages', {
       createMessage: 'create',
       patchMessage: 'patch',
@@ -513,6 +609,34 @@ export default {
         return false
       }
     },
+    async patchFileRemove (file) {
+      this.isLoading = true
+      try {
+        await this.patchMessage([
+          this.isEditMessage._id,
+          {
+            $pull: {
+              pics: {
+                _id: file._id
+              }
+            }
+          }
+        ])
+        this.pics = this.isEditMessage.pics
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+      } catch (e) {
+        console.log(e)
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+      }
+    },
+    resetInput () {
+      this.isEditMessage = undefined
+      this.$refs.messagesReplyForm.reset()
+      this.message = undefined
+      this.pics = []
+    },
     async deleteMessage (messageId) {
       try {
         await this.removeMessage(messageId)
@@ -522,12 +646,20 @@ export default {
       }
     },
     async editMessage (message) {
-      this.isEditMessage = message._id
-      this.message = message.text
+      this.isEditMessage = message
+      this.message = message.text.value
+      this.pics = message.pics
       document.querySelector('#replyInput' + this.mainMessage._id).scrollIntoView()
     },
     async sendMessage () {
       this.isSending = true
+      try {
+        await this.$refs.messageReplyUpload.upload()
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
+      }
       if (!this.isEditMessage) {
         try {
           await this.createMessage(
@@ -535,13 +667,20 @@ export default {
               {
                 discussion: this.discussion._id,
                 author: this.user._id,
-                text: this.message,
-                repliesTo: this.mainMessage._id
+                text: [
+                  {
+                    value: this.message,
+                    lang: null,
+                    type: 'default'
+                  }
+                ],
+                repliesTo: this.mainMessage._id,
+                pics: this.pics
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
-          this.$refs.messagesForm.reset()
+          this.resetInput()
           this.$nextTick(() => {
             this.$nextTick(() => {
               this.$emit('checkVisibleMessages')
@@ -555,17 +694,22 @@ export default {
         try {
           await this.patchMessage(
             [
-              this.isEditMessage,
+              this.isEditMessage._id,
               {
-                text: this.message,
+                text: [
+                  {
+                    value: this.message,
+                    lang: null,
+                    type: 'default'
+                  }
+                ],
+                pics: this.pics,
                 editedAt: new Date()
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
-          this.$refs.messagesForm.reset()
-          this.message = undefined
-          this.isEditMessage = undefined
+          this.resetInput()
         } catch (e) {
           this.setSnackbar({ text: this.$t('snackbarEditError'), color: 'error' })
         }
@@ -585,6 +729,9 @@ export default {
     ...mapGetters('discussion-messages', {
       messages: 'list'
     }),
+    ...mapGetters('translations', {
+      getTranslation: 'get'
+    }),
     ...mapGetters('users', {
       getUser: 'get'
     }),
@@ -593,7 +740,7 @@ export default {
         discussion: this.discussion._id,
         repliesTo: this.mainMessage._id,
         $limit: this.itemsPerPage,
-        $skip: (this.page - 1) * this.itemsPerPage,
+        $skip: (this.page - 1) * this.itemsPerPage < 0 ? 0 : (this.page - 1) * this.itemsPerPage,
         $sort: { createdAt: -1 }
       }
       return {

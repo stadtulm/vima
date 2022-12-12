@@ -1,3 +1,5 @@
+const Translation = require('./translations.model')
+
 // ads-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -16,8 +18,14 @@ module.exports = function (app) {
       type: Boolean,
       default: true
     },
-    title: { type: String, required: true },
-    text: { type: String, required: true },
+    title: [{
+      type: Translation,
+      required: true
+    }],
+    text: [{
+      type: Translation,
+      required: true
+    }],
     pics: [
       {
         url: { type: String },
@@ -43,9 +51,13 @@ module.exports = function (app) {
         type: ObjectId,
         ref: 'users'
       }
+    },
+    translationSum: {
+      type: String
     }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   schema.virtual('author', {

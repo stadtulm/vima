@@ -13,7 +13,7 @@
       <v-col>
         <v-data-table
           :item-class="itemRowBackground"
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="chats"
           :loading="loading"
@@ -27,7 +27,10 @@
           :items-per-page.sync="itemsPerPage"
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
@@ -129,7 +132,7 @@
           >
             <v-badge
               :value="statusContainers.find(obj => obj.reference === item._id).unread.length > 0"
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               overlap
             >
               <template slot="badge">
@@ -180,7 +183,7 @@ export default {
     loading: true,
     blocks: {},
     total: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['createdAt'],
     sortDesc: [false]
   }),
@@ -399,7 +402,8 @@ export default {
   computed: {
     ...mapGetters([
       's3',
-      'blockedItems'
+      'blockedItems',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'

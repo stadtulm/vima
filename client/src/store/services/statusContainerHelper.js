@@ -2,20 +2,18 @@ import feathersClient, { makeServicePlugin, BaseModel } from '../../feathers-cli
 import Store from '..'
 
 class statusContainerHelper extends BaseModel {
-  /*
+  // eslint-disable-next-line no-useless-constructor
   constructor (data, options) {
     super(data, options)
   }
-  */
 
-  // Required for $FeathersVuex plugin to work after production transpile.
-  static modelName = 'statusContainerHelper'
   // Define default properties here
   static instanceDefaults () {
     return {
     }
   }
 }
+statusContainerHelper.modelName = 'statusContainerHelper'
 const servicePath = 'status-container-helper'
 const servicePlugin = makeServicePlugin({
   Model: statusContainerHelper,

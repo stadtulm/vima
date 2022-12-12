@@ -3,6 +3,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
 const { notifyUsers } = require('../mailer/generator')
 const Errors = require('@feathersjs/errors')
+const util = require('../util')
 
 module.exports = {
   before: {
@@ -13,7 +14,17 @@ module.exports = {
         authenticate('jwt', 'anonymous')
       )
     ],
-    find: [],
+    find: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.iff(
+          (context) => !context.params.keepTranslations,
+          async (context) => {
+            await util.generateLanguageAggegationStages(context, ['text'])
+          }
+        )
+      )
+    ],
     get: [],
     create: [
       commonHooks.iff(
@@ -29,7 +40,10 @@ module.exports = {
         },
         // Accept immediately if author is admin
         (context) => {
-          if (context.params.user.role === 'admins') {
+          if (
+            context.params.user.role === 'admins' &&
+            context.data.text.find(language => language.type === 'default')
+          ) {
             context.data.isAccepted = true
           } else {
             context.data.isAccepted = false

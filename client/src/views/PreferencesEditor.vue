@@ -4,7 +4,7 @@
       cols="12"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text>

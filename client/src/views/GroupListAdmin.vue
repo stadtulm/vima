@@ -12,7 +12,7 @@
     <v-row>
       <v-col>
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -26,7 +26,7 @@
         <v-data-table
           :item-class="itemRowBackground"
           item-key="_id"
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedGroups"
           :loading="loading"
@@ -40,23 +40,26 @@
           :items-per-page.sync="itemsPerPage"
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
           >
             <v-progress-linear
               indeterminate
-              color="customPurple"
+              :color="$settings.modules.groups.color"
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <div
               class="font-weight-bold"
             >
-              {{item.title}}
+              {{item.title.value}}
             </div>
           </template>
           <template
@@ -86,8 +89,9 @@
               v-for="category in getCategories(item.categories)"
               :key="category._id"
               class="mr-1"
+              disabled
             >
-            {{category.name}}
+            {{category.text.value}}
             </v-chip>
           </template>
           <template
@@ -97,8 +101,9 @@
               v-for="tag in getTags(item.tags)"
               :key="tag._id"
               class="mr-1"
+              disabled
             >
-            {{tag.name}}
+            {{tag.text.value}}
             </v-chip>
           </template>
           <template
@@ -106,7 +111,7 @@
           >
             <v-btn
               icon
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               :loading="loaders[item._id + 'isActive'] === true"
               disabled
               @click="changeGroupsProperty(
@@ -134,7 +139,7 @@
           >
             <v-btn
               icon
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               :disabled="user.role !== 'admins'"
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeGroupsProperty(
@@ -167,7 +172,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               class="my-4"
               :loading="loaders[item._id + 'delete'] === true"
               @click="deleteGroup(item._id)"
@@ -195,7 +200,7 @@
             <v-btn
               fab
               small
-              color="customPurple"
+              :color="$settings.modules.groups.color"
               class="my-4"
               :disabled="!item.isActive"
               :to="{name: 'Group', params: { group: item._id } }"
@@ -229,10 +234,10 @@ export default {
     message: undefined,
     activeAnswerField: undefined,
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['createdAt'],
     sortDesc: [true],
     isUpdating: false
@@ -426,7 +431,8 @@ export default {
       'deepSort',
       'visibilityItems',
       'getTags',
-      'getCategories'
+      'getCategories',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -439,7 +445,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('author'), value: 'owner' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('visibility'), value: 'visibility' },
@@ -457,8 +463,15 @@ export default {
         $skip: (this.page - 1) * this.computedSkip,
         $sort: { [this.sortBy]: this.computedSortDesc }
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       return query
     },

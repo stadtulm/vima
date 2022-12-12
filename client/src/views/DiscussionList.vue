@@ -33,7 +33,7 @@
         sm="6"
       >
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -53,11 +53,7 @@
             outlined
             dense
             hide-details
-            :items="[
-              { text: $t('allDiscussions'), value: 'all'},
-              { text: $t('discussionForums'), value: 'discussions'},
-              { text: $t('groupDiscussions'), value: 'groups'},
-            ]"
+            :items="computedDiscussionTypes"
           ></v-select>
       </v-col>
     </v-row>
@@ -66,7 +62,7 @@
         <v-data-table
           :item-class="itemRowBackground"
           item-key="_id"
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedDiscussions"
           :loading="loading"
@@ -80,7 +76,10 @@
           :items-per-page.sync="itemsPerPage"
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
@@ -91,12 +90,12 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <span
               class="font-weight-bold"
             >
-              {{item.title}}
+              {{item.title.value}}
             </span>
           </template>
           <template
@@ -123,7 +122,7 @@
             v-slot:[`item.group`]="{ item }"
           >
             <div>
-              {{getGroup(item.group) ? getGroup(item.group).title : '-'}}
+              {{getGroup(item.group) ? getGroup(item.group).title.value : '-'}}
             </div>
           </template>
           <template
@@ -265,7 +264,7 @@
           >
             <v-badge
               :value="(getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber') ? true : false) && (getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber').unread.length > 0 ? true : false)"
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               overlap
             >
               <template
@@ -323,14 +322,14 @@ export default {
   },
 
   data: () => ({
-    discussionsType: 'all',
+    discussionsType: undefined,
     isUpdating: false,
     isSending: false,
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['createdAt'],
     sortDesc: [true]
   }),
@@ -425,9 +424,9 @@ export default {
       } else {
         if (this.discussionsType === 'all') {
           if (item.group) {
-            return 'customPurpleBg'
+            return this.$settings.modules.groups.bgColor
           } else {
-            return 'customTealBg'
+            return this.$settings.modules.discussions.bgColor
           }
         } else {
           return ''
@@ -596,7 +595,8 @@ export default {
     ...mapGetters([
       's3',
       'relationItems',
-      'deepSort'
+      'deepSort',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -610,21 +610,32 @@ export default {
     ...mapGetters('groups', {
       getGroup: 'get'
     }),
+    computedDiscussionTypes () {
+      const tmpTypes = []
+      if (this.$settings.modules.discussions.isActive) {
+        tmpTypes.push({ text: this.$t('discussionForums'), value: 'discussions' })
+      }
+      if (this.$settings.modules.groups.isActive) {
+        tmpTypes.push({ text: this.$t('groupDiscussions'), value: 'groups' })
+      }
+      if (tmpTypes.length > 1) {
+        tmpTypes.unshift({ text: this.$t('allDiscussions'), value: 'all' })
+      }
+      return tmpTypes
+    },
     computedColor () {
-      if (this.discussionsType === 'discussions') {
-        return 'customTeal'
-      } else if (this.discussionsType === 'groups') {
-        return 'customPurple'
+      if (this.$settings.modules[this.discussionsType] && this.$settings.modules[this.discussionsType].color) {
+        return this.$settings.modules[this.discussionsType].color
       } else {
         return 'customGrey'
       }
     },
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
-        { text: this.$t('group'), value: 'group' },
+        { text: this.$t('group'), value: 'group', sortable: false },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
         { text: this.$t('active'), value: 'isActive', align: 'center' },
         { text: this.$t('editButton'), value: 'edit', align: 'center', sortable: false },
@@ -682,8 +693,15 @@ export default {
       } else if (this.discussionsType === 'groups') {
         query.group = { $exists: true, $ne: null }
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       // Adapt query to show discussions if active and accepted and group active and accepted if user is member of hidden group
       return query
@@ -739,6 +757,9 @@ export default {
   },
 
   watch: {
+    computedDiscussionTypes () {
+      this.discussionsType = this.computedDiscussionTypes[0].value
+    },
     discussionsType (newValue, oldValue) {
       if (newValue !== oldValue) {
         this.$emit('setStep', this.discussionsType)

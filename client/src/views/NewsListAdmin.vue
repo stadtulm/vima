@@ -41,10 +41,10 @@
     <v-row>
       <v-col>
         <v-data-table
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
-          :items="news"
-          :loading="loading"
+          :items="computedNews"
+          :loading="isFindNewsPending"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -56,7 +56,10 @@
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
           mobile-breakpoint="0"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
@@ -67,7 +70,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -76,12 +79,12 @@
                 <v-list-item-title
                   class="font-weight-bold"
                 >
-                  {{item.title}}
+                  {{item.title.value}}
                 </v-list-item-title>
                 <v-list-item-subtitle
                   v-if="item.subTitle && item.subTitle !== ''"
                 >
-                  {{item.subTitle}}
+                  {{item.subTitle.value}}
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -187,7 +190,7 @@
       max-width="1200"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -203,7 +206,7 @@
           <v-row>
             <v-col>
               <v-toolbar
-                color="customGreyBg"
+                color="customGreyUltraLight"
                 flat
               >
               <v-tabs
@@ -275,7 +278,7 @@
                             color="customGrey"
                             @click="sendTestNewsletter()"
                           >
-                            {{$t('sendToMe', { email: this.user.email })}}
+                            {{$t('sendToMe', { email: user.email })}}
                           </v-btn>
                         </v-col>
                       </v-row>
@@ -292,7 +295,10 @@
                       { text: this.$t('dt'), value: 'dt' },
                     ]"
                     :items="sendStats.sent"
-                    :footer-props="{ itemsPerPageText: '' }"
+                    :footer-props="{
+                      itemsPerPageText: '',
+                      itemsPerPageOptions
+                    }"
                   >
                     <template
                       v-slot:[`item.type`]="{ item }"
@@ -317,7 +323,10 @@
                       { text: this.$t('errorMessage'), value: 'message' },
                     ]"
                     :items="sendStats.error"
-                    :footer-props="{ itemsPerPageText: '' }"
+                    :footer-props="{
+                      itemsPerPageText: '',
+                      itemsPerPageOptions
+                    }"
                   >
                     <template
                       v-slot:[`item.type`]="{ item }"
@@ -356,7 +365,10 @@
                               { text: this.$t('type'), value: 'type' },
                             ]"
                             :items="computedRecievers"
-                            :footer-props="{ itemsPerPageText: '' }"
+                            :footer-props="{
+                              itemsPerPageText: '',
+                              itemsPerPageOptions
+                            }"
                           >
                             <template
                               v-slot:[`item.type`]="{ item }"
@@ -380,18 +392,16 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'NewsListAdmin',
 
-  mixins: [makeFindMixin({ service: 'news', watch: true })],
-
   components: {
   },
 
   data: () => ({
+    isFindNewsPending: false,
     searchRecipients: undefined,
     newsletterTypes: {
       users: 'Mitglied',
@@ -405,11 +415,11 @@ export default {
     loaders: {},
     search: '',
     page: 1,
-    loading: true,
     total: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['updatedAt'],
-    sortDesc: [true]
+    sortDesc: [true],
+    triggerReload: 1
   }),
 
   async mounted () {
@@ -423,7 +433,8 @@ export default {
       setSnackbar: 'SET_SNACKBAR'
     }),
     ...mapActions('news', {
-      removeNews: 'remove'
+      removeNews: 'remove',
+      findNews: 'find'
     }),
     ...mapActions('sendstats', {
       findSendstats: 'find',
@@ -442,7 +453,8 @@ export default {
             type: 'news',
             tmpTestUser: {
               email: this.user.email,
-              id: this.user._id
+              id: this.user._id,
+              language: this.user.language
             }
           }
         )
@@ -592,14 +604,17 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
+    ...mapGetters('news', {
+      news: 'list'
+    }),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
         { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
         { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
@@ -607,18 +622,6 @@ export default {
         { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
         { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
       ]
-    },
-    newsParams () {
-      return {
-        query: {
-          title: { $regex: this.search, $options: 'i' },
-          $limit: this.computedLimit,
-          $skip: (this.page - 1) * this.computedSkip,
-          $sort: { [this.sortBy]: this.computedSortDesc }
-        },
-        debounce: 1000,
-        qid: 'admin'
-      }
     },
     computedRecievers () {
       if (this.recipients) {
@@ -651,10 +654,47 @@ export default {
       } else {
         return -1
       }
+    },
+    computedNews () {
+      if (this.computedNewsData && this.computedNewsData.data) {
+        return this.computedNewsData.data
+      } else {
+        return []
+      }
     }
   },
 
   asyncComputed: {
+    async computedNewsData () {
+      if (this.triggerReload) {}
+      this.isFindNewsPending = true
+      const query = {
+        $limit: this.computedLimit,
+        $skip: (this.page - 1) * this.computedSkip,
+        $sort: { [this.sortBy]: this.computedSortDesc }
+      }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              {
+                $or: [
+                  { lang: this.$i18n.locale },
+                  { type: 'default' }
+                ]
+              }
+            ]
+          }
+        }
+      }
+      const tmpNews = await this.findNews(
+        {
+          query
+        }
+      )
+      return tmpNews
+    },
     async sendStats () {
       if (this.newsletterDialogItem && this.triggerStats) {
         const tmpSendStats = await this.findSendstats(
@@ -677,13 +717,18 @@ export default {
   },
 
   watch: {
-    isFindNewsPending () {
-      if (!this.isFindNewsPending) {
-        this.loading = false
-        this.total = this.newsPaginationData.admin.mostRecent.total
-      } else {
-        this.loading = true
+    news () {
+      this.triggerReload = Date.now()
+    },
+    computedNews (newValue, oldValue) {
+      //
+      this.total = this.computedNewsData.total
+      //
+      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
+        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
       }
+      //
+      this.isFindNewsPending = false
     },
     newsletterDialogItem () {
       if (this.newsletterDialogItem) {

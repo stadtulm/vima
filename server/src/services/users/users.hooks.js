@@ -1,4 +1,3 @@
-const locales = require('../../locales/de.json')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const verifyHooks = require('feathers-authentication-management').hooks
 const accountService = require('../authmanagement/notifier')
@@ -27,12 +26,7 @@ module.exports = {
             throw new Errors.Forbidden('Only registered user can find users')
           }
         )
-      ),
-      context => {
-        if (context.params.query) {
-          context.params.collation = { locale: 'en', strength: 2 }
-        }
-      }
+      )
     ],
     get: [
       commonHooks.iff(
@@ -47,10 +41,10 @@ module.exports = {
         async (context) => {
           const user = await context.app.service('users').get(context.arguments[0])
           if (!user.isVerified) {
-            throw new Errors.NotFound(locales.accessNotYetVerifiedByLink)
+            throw new Errors.NotFound(context.app.i18n.__({ phrase: 'accessNotYetVerifiedByLink', locale: context.params.connection.language }))
           }
           if (!user.isActive) {
-            throw new Errors.NotFound(locales.accessArchived)
+            throw new Errors.NotFound(context.app.i18n.__({ phrase: 'accessArchived', locale: context.params.connection.language }))
           }
         }
       )

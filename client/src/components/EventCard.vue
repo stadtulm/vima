@@ -1,8 +1,8 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedEvent"
-    :to="eventProp ? { name: 'Event', params: { event: computedEvent._id }} : ''"
+    :to="eventProp ? { name: 'Event', params: { event: computedEvent._id } } : ''"
   >
     <v-row>
       <v-col
@@ -18,7 +18,7 @@
             <v-card-title
               class="word-wrap"
             >
-              {{computedEvent.title}}
+              {{computedEvent.title.value}}
             </v-card-title>
             <!--
             <v-card-subtitle
@@ -69,9 +69,9 @@
               v-for="category in getCategories(computedEvent.categories)"
               :key="category._id"
               class="mr-1"
-              @click="$emit('selectCategory', category._id)"
+              disabled
             >
-            {{category.name}}
+            {{category.text.value}}
             </v-chip>
           </v-col>
         </v-row>
@@ -85,9 +85,9 @@
               v-for="tag in getTags(computedEvent.tags)"
               :key="tag._id"
               class="mr-1"
-              @click="$emit('selectTag', tag._id)"
+              disabled
             >
-            {{tag.name}}
+            {{tag.text.value}}
             </v-chip>
           </v-col>
         </v-row>
@@ -95,7 +95,7 @@
         <v-row>
           <v-col
             class="body-1 mx-4"
-            v-html="eventProp ? truncatedDescription(newTab(computedEvent.text)) : $sanitize(newTab(computedEvent.text))"
+            v-html="eventProp ? truncatedDescription(newTab(computedEvent.text.value)) : $sanitize(newTab(computedEvent.text.value))"
           ></v-col>
         </v-row>
       </v-col>
@@ -195,7 +195,7 @@ export default {
       text = this.$sanitize(text)
       text = text.replaceAll('<p>', '')
       text = text.replaceAll('</p>', '&nbsp;')
-      var div = document.createElement('div')
+      const div = document.createElement('div')
       div.innerHTML = text
       let tmpStr = div.innerText
       if (tmpStr && tmpStr.length > len) {

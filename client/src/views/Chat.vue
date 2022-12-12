@@ -12,7 +12,7 @@
     <v-row>
       <v-col>
         <v-card
-          color="customGreyBg"
+          color="customGreyUltraLight"
         >
           <v-card-text>
             <v-sheet
@@ -123,7 +123,6 @@
                                   class="align-center"
                                 >
                                   <v-menu
-                                    offset-y
                                     open-on-hover
                                     v-if="isOwnMessage(message)"
                                   >
@@ -132,7 +131,7 @@
                                         icon
                                         v-bind="attrs"
                                         v-on="on"
-                                        class="mb-2 mr-2 customGreyBg elevation-1"
+                                        class="mb-2 mr-2 customGreyUltraLight elevation-1"
                                       >
                                         <v-icon
                                           size="14"
@@ -141,52 +140,41 @@
                                         </v-icon>
                                       </v-btn>
                                     </template>
-                                    <v-card>
-                                      <v-card-text>
-                                        <v-row
-                                          dense
-                                        >
-                                          <v-col>
-                                            <v-btn
-                                              block
-                                              outlined
-                                              small
-                                              color="customGrey"
-                                              @click="editMessage(message)"
-                                            >
-                                              {{$t('editButton')}}
-                                              <v-icon
-                                                size="14"
-                                                class="ml-2"
-                                              >
-                                                fas fa-pen
-                                              </v-icon>
-                                            </v-btn>
-                                          </v-col>
-                                        </v-row>
-                                        <v-row
-                                          dense
-                                        >
-                                          <v-col>
-                                            <v-btn
-                                              block
-                                              outlined
-                                              small
-                                              color="customGrey"
-                                              @click="deleteMessage(message._id)"
-                                            >
-                                              {{$t('deleteButton')}}
-                                              <v-icon
-                                                size="14"
-                                                class="ml-2"
-                                              >
-                                                fas fa-trash
-                                              </v-icon>
-                                            </v-btn>
-                                          </v-col>
-                                        </v-row>
-                                      </v-card-text>
-                                    </v-card>
+                                    <v-list
+                                      dense
+                                      rounded
+                                    >
+                                      <!-- Edit button -->
+                                      <v-list-item
+                                        @click="editMessage(message)"
+                                      >
+                                        <v-list-item-avatar>
+                                          <v-icon>
+                                            fas fa-pen
+                                          </v-icon>
+                                        </v-list-item-avatar>
+                                        <v-list-item-content>
+                                          <v-list-item-title>
+                                            {{$t('editButton')}}
+                                          </v-list-item-title>
+                                        </v-list-item-content>
+                                      </v-list-item>
+                                      <!-- Delete button -->
+                                      <v-list-item
+                                        @click="deleteMessage(message._id)"
+                                      >
+                                        <v-list-item-avatar>
+                                          <v-icon>
+                                            fas fa-trash
+                                          </v-icon>
+                                        </v-list-item-avatar>
+                                        <v-list-item-content>
+                                          <v-list-item-title>
+                                            {{$t('deleteButton')}}
+                                          </v-list-item-title>
+                                        </v-list-item-content>
+                                      </v-list-item>
+                                    </v-list>
                                   </v-menu>
                                   <v-col
                                     class="shrink px-0"
@@ -195,7 +183,7 @@
                                       v-if="isOwnMessage(message)"
                                       icon
                                       color="customGrey"
-                                      class="mb-2 mr-2 customGreyBg elevation-1"
+                                      class="mb-2 mr-2 customGreyUltraLight elevation-1"
                                       @click="toggleShowReplies(message._id)"
                                     >
                                       <v-icon
@@ -208,19 +196,64 @@
                                   <v-col
                                     class="text-left"
                                   >
-                                    <v-sheet
-                                      v-html="$sanitize(newTab(message.text.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
-                                      :color="isOwnMessage(message) ? '#fff' : 'customGreyLight'"
-                                      :class="{'rounded-l-xl rounded-tr-xl': isOwnMessage(message), 'rounded-r-xl rounded-tl-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
-                                      class="px-3 py-1 elevation-4"
+                                    <TranslatableText
+                                      ownField="text"
+                                      :allFields="['text']"
+                                      :allIds="chatMessages.filter(m => !isOwnMessage(m)).map(m => ({ id: m._id, translationSum: m.translationSum }))"
+                                      type="chat-messages"
+                                      :textParent="message"
                                     >
-                                    </v-sheet>
+                                      <template
+                                        v-slot:defaultLang="{ computedText, translateText }"
+                                      >
+                                        <v-sheet
+                                          v-html="$sanitize(newTab(computedText.value))"
+                                          :color="isOwnMessage(message) ? '#fff' : 'customGreyLight'"
+                                          :class="{'rounded-l-xl rounded-tr-xl': isOwnMessage(message), 'rounded-r-xl rounded-tl-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
+                                          class="px-3 py-1 elevation-4"
+                                        >
+                                        </v-sheet>
+                                        <v-col
+                                          class="pa-0"
+                                          :class="isOwnMessage(message) ? 'text-right' : ''"
+                                        >
+                                          <TranslatableTextInfo
+                                            :canTranslate="true"
+                                            :canTranslateAll="chatMessages.filter(m => !isOwnMessage(m)).length > 1"
+                                            @translateText="(data) => { translateText(data) }"
+                                          ></TranslatableTextInfo>
+                                        </v-col>
+                                      </template>
+
+                                      <template
+                                        v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+                                      >
+                                        <v-sheet
+                                          :color="isOwnMessage(message) ? '#fff' : 'customGreyLight'"
+                                          :class="{'rounded-l-xl rounded-tr-xl': isOwnMessage(message), 'rounded-r-xl rounded-tl-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
+                                          class="px-3 pt-1 pb-3 elevation-4"
+                                        >
+                                          <v-sheet
+                                            class="py-1 mt-3 mb-4 px-2 rounded"
+                                            color="rgba(255,255,255,0.3)"
+                                            v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                          ></v-sheet>
+                                        </v-sheet>
+                                        <TranslatableTextInfo
+                                          :canShowOriginal="true"
+                                          :needsUpdate="message.translationSum !== computedText.translationSum"
+                                          @showOriginal="(data) => { showOriginal(data) }"
+                                          @translateText="(data) => { translateText(data) }"
+                                        ></TranslatableTextInfo>
+                                      </template>
+                                    </TranslatableText>
+
                                   </v-col>
                                   <v-btn
                                     v-if="!isOwnMessage(message)"
                                     icon
                                     color="customGrey"
-                                    class="mb-2 ml-2 customGreyBg elevation-1"
+                                    class="mb-2 ml-2 customGreyUltraLight elevation-1"
                                     @click="toggleShowReplies(message._id)"
                                   >
                                     <v-icon
@@ -230,14 +263,13 @@
                                     </v-icon>
                                   </v-btn>
                                   <v-menu
-                                    offset-y
                                     open-on-hover
                                     v-if="!isOwnMessage(message)"
                                   >
                                     <template v-slot:activator="{ on, attrs }">
                                       <v-btn
                                         icon
-                                        class="mb-2 ml-2 customGreyBg elevation-1"
+                                        class="mb-2 ml-2 customGreyUltraLight elevation-1"
                                         v-bind="attrs"
                                         v-on="on"
                                       >
@@ -248,25 +280,26 @@
                                         </v-icon>
                                       </v-btn>
                                     </template>
-                                    <v-card>
-                                      <v-card-text>
-                                        <v-btn
-                                          block
-                                          outlined
-                                          small
-                                          color="customGrey"
-                                          @click="openReportDialog(message)"
-                                        >
-                                          {{$t('reportButton')}}
-                                          <v-icon
-                                            size="14"
-                                            class="ml-2"
-                                          >
+                                    <v-list
+                                      dense
+                                      rounded
+                                    >
+                                      <!-- Report button -->
+                                      <v-list-item
+                                        @click="openReportDialog(message)"
+                                      >
+                                        <v-list-item-avatar>
+                                          <v-icon>
                                             fas fa-exclamation-triangle
                                           </v-icon>
-                                        </v-btn>
-                                      </v-card-text>
-                                    </v-card>
+                                        </v-list-item-avatar>
+                                        <v-list-item-content>
+                                          <v-list-item-title>
+                                            {{$t('reportButton')}}
+                                          </v-list-item-title>
+                                        </v-list-item-content>
+                                      </v-list-item>
+                                    </v-list>
                                   </v-menu>
                                 </v-row>
                               </v-sheet>
@@ -329,7 +362,7 @@
                                   {{ showRepliesObj[message._id] ? 'fas fa-chevron-up' : 'fas fa-chevron-down' }}
                                 </v-icon>
                                 <v-sheet
-                                  color="customLimeBg"
+                                  :color="$settings.indicatorColor"
                                   class="ml-4 px-2 pt-1"
                                   v-if="message.replies.filter(obj => computedOwnStatusContainer.unread.map(unread => unread.id).includes(obj)).length > 0"
                                 >
@@ -356,7 +389,7 @@
                     style="bottom: 120px; right: calc(50% - 105px);"
                     absolute
                     large
-                    color="customLimeBg"
+                    :color="$settings.indicatorColor"
                     @click="scrollDown()"
                     v-if="showScrollDown"
                   >
@@ -393,7 +426,7 @@
                           disableInputRules: true,
                           disablePasteRules: true
                         }"
-                        color="customGreyBg"
+                        color="customGreyUltraLight"
                         v-model="message"
                         :card-props="{ tile: true, flat: true }"
                         style="border: 1px solid #aaa;"
@@ -455,6 +488,8 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChatReplies from '@/views/ChatReplies.vue'
 import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import ViolationDialog from '@/components/ViolationDialog.vue'
+import TranslatableText from '@/components/TranslatableText.vue'
+import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 
 export default {
   name: 'Chat',
@@ -464,7 +499,9 @@ export default {
   components: {
     ChatReplies,
     TiptapVuetify,
-    ViolationDialog
+    ViolationDialog,
+    TranslatableText,
+    TranslatableTextInfo
   },
   data: () => ({
     showViolationDialog: undefined,
@@ -558,6 +595,12 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    ...mapMutations('translations', {
+      updateTranslationItem: 'updateItem'
+    }),
+    ...mapActions('translations', {
+      createTranslation: 'create'
+    }),
     ...mapActions('chats', {
       requestChat: 'get',
       requestChats: 'find',
@@ -597,7 +640,7 @@ export default {
           }
         } else {
           if (this.computedOwnStatusContainer.unread.map(unread => unread.id).includes(message._id)) {
-            return 'customLimeBg'
+            return this.$settings.indicatorColor
           } else {
             return '#f6f6f6'
           }
@@ -631,7 +674,7 @@ export default {
     },
     async editMessage (message) {
       this.isEditMessage = message._id
-      this.message = message.text
+      this.message = message.text.value
       document.querySelector('#messageInput').scrollIntoView({ block: 'start', behavior: 'smooth' })
     },
     async sendMessage () {
@@ -652,7 +695,13 @@ export default {
               {
                 chat: this.selectedChat._id,
                 author: this.user._id,
-                text: this.message
+                text: [
+                  {
+                    value: this.message,
+                    lang: null,
+                    type: 'default'
+                  }
+                ]
               }
             ]
           )
@@ -676,7 +725,13 @@ export default {
             [
               this.isEditMessage,
               {
-                text: this.message,
+                text: [
+                  {
+                    value: this.message,
+                    lang: null,
+                    type: 'default'
+                  }
+                ],
                 editedAt: new Date()
               }
             ]
@@ -793,6 +848,9 @@ export default {
     ...mapGetters('users', {
       users: 'list',
       getUser: 'get'
+    }),
+    ...mapGetters('translations', {
+      getTranslation: 'get'
     }),
     ...mapGetters('chats', {
       getChat: 'get'

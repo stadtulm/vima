@@ -4,11 +4,11 @@
     <v-dialog
       max-width="600"
       persistent
-      v-model="showNewsletterDialog"
+      :value="showNewsletterDialog"
       @click:outside="closeDialog()"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -42,7 +42,7 @@
             v-model="isValid"
             v-if="!user"
           >
-            <v-row>
+            <v-row dense>
               <v-col>
                 <v-text-field
                   v-model="newsletterEmail"
@@ -51,6 +51,17 @@
                   color="customGrey"
                   :error-messages="emailError"
                 ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row dense>
+              <v-col>
+                <v-select
+                  v-model="language"
+                  :label="$t('languageButton')"
+                  :rules="[rules.required]"
+                  :items="$settings.languages.map(lang => ({ text: $t(lang), value: lang}))"
+                  color="customGrey"
+                ></v-select>
               </v-col>
             </v-row>
             <v-row>
@@ -90,6 +101,7 @@ export default {
   data: () => ({
     isValid: false,
     isLoading: false,
+    language: undefined,
     newsletterEmail: undefined,
     emailError: undefined
   }),
@@ -113,7 +125,7 @@ export default {
     async saveSubscriber () {
       this.isLoading = true
       try {
-        await this.createSubscriber([{ email: this.newsletterEmail }])
+        await this.createSubscriber([{ email: this.newsletterEmail, language: this.language }])
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
         this.newsletterEmail = ''

@@ -1,3 +1,4 @@
+const Translation = require('./translations.model')
 // tags-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -7,11 +8,12 @@ module.exports = function (app) {
   const mongooseClient = app.get('mongooseClient')
   const { Schema } = mongooseClient
   const schema = new Schema({
-    name: { type: String, required: true },
+    text: [{ type: Translation, required: true }],
     isActive: { type: Boolean, default: true },
     isAccepted: { type: Boolean, default: false }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

@@ -14,7 +14,7 @@
         <v-btn
           dark
           :to="{ name: 'AdEditor' }"
-          color="customCyan"
+          :color="$settings.modules.ads.color"
         >
           {{$t('newAdButton')}}
           <v-icon
@@ -29,7 +29,7 @@
     <v-row>
       <v-col>
         <v-text-field
-          v-model="searchOwn"
+          v-model="search"
           :label="$t('filterByTitleLabel')"
           outlined
           dense
@@ -43,7 +43,7 @@
         <v-data-table
           :item-class="itemRowBackground"
           item-key="_id"
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedAds"
           :loading="loading"
@@ -57,14 +57,17 @@
           :items-per-page.sync="itemsPerPage"
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
           >
             <v-progress-linear
               indeterminate
-              color="customCyan"
+              :color="$settings.modules.ads.color"
             ></v-progress-linear>
           </template>
           <template
@@ -72,7 +75,7 @@
           >
             <v-badge
               :value="isOwnAd(item._id) && getOwnStatusContainerOfAd(item._id).unread.length > 0"
-              color="customLimeBg"
+              :color="$settings.indicatorColor"
               overlap
             >
               <template slot="badge">
@@ -85,7 +88,7 @@
               <v-btn
                 fab
                 small
-                color="customCyan"
+                :color="$settings.modules.ads.color"
                 @click="applicantsDialogItem = item"
                 :disabled="
                   !isOwnAd(item._id) ||
@@ -103,12 +106,12 @@
             </v-badge>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <span
               class="font-weight-bold"
             >
-              {{item.title}}
+              {{item.title.value}}
               <v-tooltip
                 right
                 color="customGrey"
@@ -130,7 +133,7 @@
                   dark
                 >
                   <v-card-title>
-                    {{item.title}}
+                    {{item.title.value}}
                   </v-card-title>
                   <v-card-text
                     class="white--text"
@@ -138,7 +141,7 @@
                     <v-row>
                       <v-col
                         cols="12"
-                        v-html="item.text"
+                        v-html="item.text.value"
                       ></v-col>
                     </v-row>
                   </v-card-text>
@@ -163,7 +166,7 @@
           >
             <v-btn
               icon
-              color="cyan"
+              :color="$settings.modules.ads.color"
               :loading="loaders[item._id + 'isActive'] === true"
               :disabled="!isOwnAd(item._id)"
               @click="changeAdProperty(
@@ -191,7 +194,7 @@
           >
             <v-btn
               icon
-              color="cyan"
+              :color="$settings.modules.ads.color"
               disabled
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeAdProperty(
@@ -224,7 +227,7 @@
             <v-btn
               fab
               small
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               class="my-4"
               :to="{name: 'AdEditor', params: { id: item._id } }"
               :disabled="!isOwnAd(item._id)"
@@ -243,7 +246,7 @@
             <v-btn
               fab
               small
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               class="my-4"
               :disabled="!isOwnAd(item._id)"
               :loading="loaders[item._id + 'delete'] === true"
@@ -272,7 +275,7 @@
             <v-btn
               fab
               small
-              color="customCyan"
+              :color="$settings.modules.ads.color"
               class="my-4"
               :disabled="
                 !statusContainers.find(obj => obj.reference === item._id && obj.user === user._id && obj.relation === 'owner') &&
@@ -300,7 +303,7 @@
       max-width="1200"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
         v-if="applicantsDialogItem"
       >
@@ -311,7 +314,7 @@
             <v-col
               class="text-h5 font-weight-bold"
             >
-              {{$t('applicants')}} {{$t('for')}} "{{applicantsDialogItem.title}}"
+              {{$t('applicants')}} {{$t('for')}} "{{applicantsDialogItem.title.value}}"
             </v-col>
           </v-row>
           <v-row
@@ -340,7 +343,10 @@
                   { text: this.$t('answer'), value: 'answer' },
                   { text: this.$t('goToChat'), value: 'goToChat', sortable: false, align: 'center' }
                 ]"
-                :footer-props="{ itemsPerPageText: '' }"
+                :footer-props="{
+                  itemsPerPageText: '',
+                  itemsPerPageOptions
+                }"
               >
                 <template
                   v-slot:[`item.pic.url`]="{ item }"
@@ -383,10 +389,29 @@
                 <template
                   v-slot:[`item.message`]="{ item }"
                 >
-                  <span
-                    v-html="$sanitize(newTab(item.text).replace(/<blockquote(.+?)blockquote>/g, ''))"
+                  <TranslatableText
+                    ownField="text"
+                    :allFields="['text']"
+                    type="ad-messages"
+                    :textParent="item"
                   >
-                  </span>
+                    <template
+                      v-slot:defaultLangText="{ computedText }"
+                    >
+                      <span
+                        v-html="$sanitize(newTab(computedText.value))"
+                      >
+                      </span>
+                    </template>
+                    <template
+                      v-slot:translatedLangText="{ computedText }"
+                    >
+                      <span
+                        v-html="$sanitize(newTab(computedText.value))"
+                      >
+                      </span>
+                    </template>
+                  </TranslatableText>
                 </template>
                 <template
                   v-slot:[`item.answer`]="{ item }"
@@ -394,7 +419,7 @@
                     <v-btn
                       v-if="!item.replies || item.replies.length === 0"
                       @click="answerDialogItem = item"
-                      color="customCyan"
+                      :color="$settings.modules.ads.color"
                       dark
                     >
                       {{$t('writeAnswer')}}
@@ -402,11 +427,30 @@
                     <template
                       v-else
                     >
-                      <span
+                      <TranslatableText
                         v-if="getAdMessage(item.replies[0])"
-                        v-html="$sanitize(newTab(getAdMessage(item.replies[0]).text))"
+                        ownField="text"
+                        :allFields="['text']"
+                        type="ad-messages"
+                        :textParent="getAdMessage(item.replies[0])"
                       >
-                      </span>
+                        <template
+                          v-slot:defaultLangText="{ computedText }"
+                        >
+                          <span
+                            v-html="$sanitize(newTab(computedText.value))"
+                          >
+                          </span>
+                        </template>
+                        <template
+                          v-slot:translatedLangText="{ computedText }"
+                        >
+                          <span
+                            v-html="$sanitize(newTab(computedText.value))"
+                          >
+                          </span>
+                        </template>
+                      </TranslatableText>
                     </template>
                 </template>
                 <template
@@ -415,8 +459,8 @@
                   <v-btn
                     fab
                     v-if="item.chat"
-                    :to="{ name: 'IdChat', params: { id: item.chat } }"
-                    color="customCyan"
+                    :to="{ name: 'IdChat', params: { chat: item.chat } }"
+                    :color="$settings.modules.ads.color"
                     small
                   >
                     <v-icon
@@ -439,7 +483,7 @@
       max-width="800"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -459,7 +503,7 @@
                   disableInputRules: true,
                   disablePasteRules: true
                 }"
-                color="customGreyBg"
+                color="customGreyUltraLight"
                 v-model="message"
                 :card-props="{ tile: true, flat: true }"
                 style="border: 1px solid #aaa;"
@@ -478,7 +522,7 @@
                 :dark="!(!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === '')"
                 :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                 @click="sendMessage(answerDialogItem)"
-                color="customCyan"
+                :color="$settings.modules.ads.color"
               >
                 {{$t('sendAnswer')}}
               </v-btn>
@@ -494,7 +538,7 @@
       max-width="600"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -543,6 +587,7 @@
 import { makeFindMixin } from 'feathers-vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
+import TranslatableText from '@/components/TranslatableText.vue'
 
 export default {
   name: 'AdList',
@@ -550,7 +595,8 @@ export default {
   mixins: [makeFindMixin({ service: 'ads', watch: true })],
 
   components: {
-    TiptapVuetify
+    TiptapVuetify,
+    TranslatableText
   },
 
   data: () => ({
@@ -566,11 +612,11 @@ export default {
     message: undefined,
     isSending: false,
     loaders: {},
-    searchOwn: '',
+    search: '',
     page: 1,
     loading: true,
     total: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['createdAt'],
     sortDesc: [true],
     extensions: [
@@ -709,7 +755,10 @@ export default {
           {
             ad: adMessage.ad,
             author: this.user._id,
-            text: this.message,
+            text: [{
+              value: this.message,
+              type: 'default'
+            }],
             repliesTo: adMessage._id
           }
         )
@@ -827,7 +876,8 @@ export default {
       's3',
       'relationItems',
       'deepSort',
-      'newTab'
+      'newTab',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -851,7 +901,7 @@ export default {
     },
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('role'), value: 'relation' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
@@ -875,8 +925,15 @@ export default {
         $skip: (this.page - 1) * this.computedSkip,
         $sort: { [this.sortBy]: this.computedSortDesc }
       }
-      if (this.searchOwn && this.searchOwn !== '') {
-        query.title = { $regex: this.searchOwn, $options: 'i' }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
       }
       return {
         query,

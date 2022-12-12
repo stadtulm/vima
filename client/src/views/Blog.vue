@@ -2,12 +2,13 @@
   <div>
     <v-row>
       <v-col
+        cols="12"
         class="mb-4"
       >
         <v-row>
           <v-col
             class="text-h5 font-weight-bold customGrey--text text-uppercase"
-            v-html="$t('adsTitle')"
+            v-html="$t('blogTitle')"
           >
           </v-col>
           <v-col
@@ -16,7 +17,7 @@
             <v-btn
               v-if="computedFiltersDirty"
               text
-              color="customCyan"
+              color="customGrey"
               @click="resetFilters()"
             >
               {{$t('resetFilters')}}
@@ -27,12 +28,12 @@
           >
             <v-badge
               :value="computedFiltersDirty"
-              color="customCyan"
+              color="customGrey"
               overlap
             >
               <v-btn
                 outlined
-                color="customCyan"
+                color="customGrey"
                 @click="showFilters = !showFilters"
               >
                 {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
@@ -45,24 +46,6 @@
               </v-btn>
             </v-badge>
           </v-col>
-          <v-col
-            v-if="user"
-            class="shrink align-self-center"
-          >
-            <v-btn
-              dark
-              :to="{ name: 'AdEditor' }"
-              color="customCyan"
-            >
-              {{$t('newAdButton')}}
-              <v-icon
-                class="ml-3"
-                size="18"
-              >
-                fas fa-plus
-              </v-icon>
-            </v-btn>
-          </v-col>
         </v-row>
       </v-col>
     </v-row>
@@ -71,6 +54,7 @@
     >
       <v-row
         v-if="showFilters"
+        class="mb-4"
       >
         <v-col
           cols="12"
@@ -88,13 +72,13 @@
         </v-col>
         <v-col
           cols="12"
-          sm="6"
+          sm="12"
           md="3"
         >
           <v-select
             v-model="combinedSort"
             color="black"
-            item-color="customCyan"
+            item-color="customGrey"
             :label="$t('sortByLabel')"
             outlined
             dense
@@ -102,8 +86,8 @@
             :items="[
               { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
               { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
-              { text: $t('sortTitleAsc'), value: [['title'], 1] },
-              { text: $t('sortTitleDesc'), value: [['title'], -1] }
+              { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
+              { text: $t('sortTitleDesc'), value: [['title.value'], -1] }
             ]"
           ></v-select>
         </v-col>
@@ -115,15 +99,15 @@
           <v-autocomplete
             v-model="categoriesList"
             color="black"
-            item-color="customCyan"
+            item-color="customGrey"
             :label="$t('filterByCategoriesLabel')"
             multiple
             outlined
             auto-select-first
             dense
             hide-details
-            :items="categories.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -135,7 +119,7 @@
           <v-autocomplete
             v-model="tagsList"
             color="black"
-            item-color="customCyan"
+            item-color="customGrey"
             :label="$t('filterByTagsLabel')"
             multiple
             outlined
@@ -144,35 +128,41 @@
             deletable-chips
             dense
             hide-details
-            :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
-            item-text="name"
+            :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-text="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
       </v-row>
     </v-expand-transition>
     <template
-      v-if="computedAds && computedAds.length > 0"
+      v-if="computedBlog && computedBlog.length > 0"
     >
       <v-row>
         <v-col
-          v-for="ad in computedAds"
-          :key="ad._id"
+          v-for="blogEntry in computedBlog"
+          :key="blogEntry._id"
           cols="12"
           sm="6"
           md="4"
         >
-          <AdCard
-            :adProp="ad"
+          <BlogCard
+            :blogProp="blogEntry"
+            :allGroupIds="computedBlog.map(
+                obj => ({
+                  id: obj._id,
+                  translationSum: obj.translationSum
+                })
+              )"
             @selectCategory="selectCategory"
             @selectTag="selectTag"
-          ></AdCard>
+          ></BlogCard>
         </v-col>
       </v-row>
       <v-row>
         <v-col>
           <v-pagination
-            color="customCyan"
+            color="customGrey"
             v-model="page"
             :length="Math.ceil(total / itemsPerPage)"
             :total-visible="6"
@@ -181,7 +171,7 @@
       </v-row>
     </template>
     <template
-      v-else-if="!isFindAdsPending"
+      v-else-if="!isFindBlogPending"
     >
       <v-row>
         <v-col
@@ -191,7 +181,7 @@
             color="customGreyLight"
             class="pa-4"
           >
-            {{$t('noAdsYet')}}
+            {{$t('noGroupsYet')}}
           </v-alert>
         </v-col>
       </v-row>
@@ -204,7 +194,7 @@
           class="text-center"
         >
           <v-progress-circular
-            color="customCyan"
+            color="customGrey"
             indeterminate
             size="160"
             width="6"
@@ -218,26 +208,26 @@
 <script>
 
 import { mapGetters, mapActions } from 'vuex'
-import AdCard from '@/components/AdCard.vue'
+import BlogCard from '@/components/BlogCard.vue'
 
 export default {
-  name: 'Ads',
+  name: 'Blog',
 
   components: {
-    AdCard
+    BlogCard
   },
 
   data: () => ({
     showFilters: false,
     init: true,
     manualLoad: false,
-    isFindAdsPending: false,
+    isFindBlogPending: false,
     triggerReload: 1,
     page: 1,
     loading: true,
+    search: '',
     categoriesList: [],
     tagsList: [],
-    search: '',
     categoriesListDefault: [],
     tagsListDefault: [],
     searchDefault: '',
@@ -255,8 +245,8 @@ export default {
   },
 
   methods: {
-    ...mapActions('ads', {
-      findAds: 'find'
+    ...mapActions('blog', {
+      findBlog: 'find'
     }),
     resetFilters () {
       this.categoriesList = this.categoriesListDefault
@@ -316,8 +306,11 @@ export default {
     ...mapGetters('tags', {
       tags: 'list'
     }),
-    ...mapGetters('ads', {
-      allAds: 'list'
+    ...mapGetters('blog', {
+      allBlogEntries: 'list'
+    }),
+    ...mapGetters('status-containers', {
+      statusContainers: 'list'
     }),
     computedFiltersDirty () {
       if (
@@ -331,29 +324,39 @@ export default {
       }
     },
     computedTags () {
-      return this.tags.filter(obj => obj.isActive && obj.isAccepted)
+      return this.tags
+        .filter(obj => obj.isActive && obj.isAccepted)
     },
-    computedAds () {
-      if (this.computedAdsData && this.computedAdsData.data) {
-        return this.computedAdsData.data
+    computedBlog () {
+      if (this.computedBlogData && this.computedBlogData.data) {
+        return this.computedBlogData.data
       } else {
         return []
       }
     }
   },
   asyncComputed: {
-    async computedAdsData () {
+    async computedBlogData () {
       if (this.triggerReload) {}
-      this.isFindAdsPending = true
+      this.isFindBlogPending = true
       const query = {
-        'accepted.isAccepted': true,
         isActive: true,
         $limit: this.itemsPerPage,
         $skip: (this.page - 1) * this.itemsPerPage,
         $sort: { [this.sortBy]: this.sortDesc }
       }
       if (this.search && this.search !== '') {
-        query.title = { $regex: this.search, $options: 'i' }
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              { type: 'default' }
+            ]
+          }
+        }
+      }
+      if (!this.user) {
+        query.isInternal = false
       }
       if (this.categoriesList.length > 0) {
         query.categories = { $in: this.categoriesList }
@@ -361,7 +364,7 @@ export default {
       if (this.tagsList.length > 0) {
         query.tags = { $in: this.tagsList }
       }
-      return await this.findAds(
+      return await this.findBlog(
         {
           query
         }
@@ -510,7 +513,7 @@ export default {
         )
       }
     },
-    allAds: {
+    allBlogEntries: {
       deep: true,
       handler (newValue, oldValue) {
         if (!this.init && !this.manualLoad) {
@@ -519,15 +522,15 @@ export default {
         }
       }
     },
-    computedAds (newValue, oldValue) {
+    computedBlog (newValue, oldValue) {
       //
-      this.total = this.computedAdsData.total
+      this.total = this.computedBlogData.total
       //
       if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
         this.page = Math.ceil(this.total / this.itemsPerPage) + 1
       }
       //
-      this.isFindAdsPending = false
+      this.isFindBlogPending = false
       this.init = false
       this.manualLoad = false
     }

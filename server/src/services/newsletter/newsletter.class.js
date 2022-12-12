@@ -1,4 +1,3 @@
-const locales = require('../../locales/de.json')
 const Errors = require('@feathersjs/errors')
 const { getRecipients, sendNewsletter } = require('../sendstats/sendstats.class.js')
 
@@ -67,7 +66,7 @@ exports.Newsletter = class Newsletter {
       try {
         return await this.app.service('subscribers').remove(id)
       } catch (e) {
-        throw new Errors.NotFound(locales.noEntryFound)
+        throw new Errors.NotFound(this.app.i18n.__({ phrase: 'noEntryFound', locale: this.app.customSettings.defaultLanguage }))
       }
     }
   }

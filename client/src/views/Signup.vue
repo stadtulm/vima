@@ -5,7 +5,7 @@
         cols="12"
       >
         <v-card
-          color="customGreyBg"
+          color="customGreyUltraLight"
           tile
         >
           <v-card-text>
@@ -146,18 +146,50 @@
                 <v-col>
                   <v-checkbox
                     color="customGrey"
-                    v-model="isAgreed"
+                    v-model="isPrivacyAgreed"
                     :rules="[v => v === true || $t('acceptPrivacyRule')]"
                   >
                     <template
                       v-slot:label
                     >
                       <div
-                        v-html="$t('privacyCheckbox')"
+                        @click.stop
+                        v-html="$t('audienceCheckbox') + ' ' + $t('privacyCheckbox')"
                       >
                       </div>
                     </template>
                   </v-checkbox>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col>
+                  <v-tooltip
+                    color="customGrey"
+                    right
+                    :max-width="400"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <span
+                        class="pointer"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                      <v-icon
+                        class="mr-1"
+                      >
+                        fa fa-question-circle
+                      </v-icon>
+                      <span class="body-1">
+                      {{$t('audienceCheckBox')}}
+                      </span>
+                      </span>
+                    </template>
+                    <div
+                      v-html="$t('audienceCheckBoxTooltip')"
+                      class="pa-3"
+                    >
+                    </div>
+                  </v-tooltip>
                 </v-col>
               </v-row>
               <v-row
@@ -212,7 +244,7 @@ export default {
     isLoading: false,
     loginError: undefined,
     isValid: false,
-    isAgreed: false,
+    isPrivacyAgreed: false,
     firstName: undefined,
     lastName: undefined,
     userName: undefined,

@@ -1,3 +1,51 @@
+const Cookie = require('cookie')
+
+function createLanguageChannels (app, data, connections, properties) {
+  const languages = app.customSettings.languages
+  const isArray = Array.isArray(data)
+  if (!isArray) {
+    data = [data]
+  }
+  const filteredChannels = []
+  const filteredData = {}
+  const sortedConnections = {}
+  // Split filtered data
+  for (const language of languages) {
+    sortedConnections[language] = []
+    filteredData[language] = data.map(obj => {
+      const clone = JSON.parse(JSON.stringify(obj))
+      for (const property of properties) {
+        // Check if language exists and use default if not
+        const languageProperty = obj[property].find(t => t.lang === language)
+        if (languageProperty) {
+          clone[property] = obj[property].find(t => t.lang === language)
+        } else {
+          clone[property] = obj[property].find(t => t.type === 'default')
+        }
+      }
+      return clone
+    })
+    if (!isArray) {
+      filteredData[language] = filteredData[language][0]
+    }
+  }
+  // Sort connections by language
+  for (const connection of connections.connections) {
+    let id
+    if (connection.user) {
+      id = connection.user._id.toString()
+    } else {
+      id = connection.clientId
+    }
+    sortedConnections[connection.language] = id
+  }
+  // Create channels
+  for (const language of languages) {
+    filteredChannels.push(app.channel(sortedConnections[language]).send(filteredData[language]))
+  }
+  return filteredChannels
+}
+
 module.exports = function (app) {
   if (typeof app.channel !== 'function') {
     // If no real-time functionality has been configured just return
@@ -8,9 +56,12 @@ module.exports = function (app) {
   * Connection stuff
   */
 
-  app.on('connection', connection => {
+  app.on('connection', async connection => {
     // Join anonymous as default channel
     app.channel('anonymous').join(connection)
+    app.channel(connection.clientId).join(connection)
+    // Expose user language
+    app.io.sockets.connected[connection.clientId].feathers.language = Cookie.parse(connection.headers.cookie).clientLanguage
   })
 
   app.on('disconnect', async (connection) => {
@@ -32,6 +83,7 @@ module.exports = function (app) {
         // Join anonymous channel
       }, 1000)
       // Join anonymous
+      app.channel(connection.clientId).join(connection)
       app.channel('anonymous').join(connection)
     }
     // Update users count
@@ -41,6 +93,7 @@ module.exports = function (app) {
   app.on('login', async (authResult, { connection }) => {
     // Leave common channels
     app.channel('anonymous').leave(connection)
+    app.channel(connection.clientId).leave(connection)
     if (connection && connection.user) {
       // Join common channels
       app.channel('authenticated').join(connection)
@@ -78,6 +131,24 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('ads').publish((data, hook) => {
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.text)) {
+          message.text = message.text.find(obj => obj.type === 'default')
+        }
+        if (Array.isArray(data.title)) {
+          message.title = message.title.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.text)) {
+        data.text = data.text.find(obj => obj.type === 'default')
+      }
+      if (Array.isArray(data.title)) {
+        data.title = data.title.find(obj => obj.type === 'default')
+      }
+    }
     return app.channel('anonymous', 'authenticated')
   })
 
@@ -104,7 +175,29 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('categories').publish((data, hook) => {
-    return app.channel('anonymous', 'authenticated')
+    return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['text', 'description'])
+  })
+
+  /*
+  * Ad messages
+  */
+
+  app.service('ad-messages').publish((data, hook) => {
+    const tmpUsers = data.tmpUsers
+    delete data.tmpUsers
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.text)) {
+          message.text = message.text.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.text)) {
+        data.text = data.text.find(obj => obj.type === 'default')
+      }
+    }
+    return tmpUsers.map(obj => app.channel(obj))
   })
 
   /*
@@ -114,6 +207,18 @@ module.exports = function (app) {
   app.service('chat-messages').publish((data, hook) => {
     const tmpUsers = data.tmpUsers
     delete data.tmpUsers
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.text)) {
+          message.text = message.text.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.text)) {
+        data.text = data.text.find(obj => obj.type === 'default')
+      }
+    }
     return tmpUsers.map(obj => app.channel(obj))
   })
 
@@ -132,6 +237,24 @@ module.exports = function (app) {
   */
 
   app.service('discussion-messages').publish(async (data, hook) => {
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.text)) {
+          message.text = message.text.find(obj => obj.type === 'default')
+        }
+        if (Array.isArray(data.latestAnswers?.text)) {
+          message.latestAnswers.text = message.latestAnswers.text.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.text)) {
+        data.text = data.text.find(obj => obj.type === 'default')
+      }
+      if (Array.isArray(data.latestAnswers?.text)) {
+        data.latestAnswers.text = data.latestAnswers.text.find(obj => obj.type === 'default')
+      }
+    }
     // Get discussion (and group) of message
     const discussion = await app.service('discussions').get(
       data.discussion,
@@ -160,6 +283,24 @@ module.exports = function (app) {
   */
 
   app.service('discussions').publish((data, hook) => {
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.description)) {
+          message.description = message.description.find(obj => obj.type === 'default')
+        }
+        if (Array.isArray(data.title)) {
+          message.title = message.title.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.description)) {
+        data.description = data.description.find(obj => obj.type === 'default')
+      }
+      if (Array.isArray(data.title)) {
+        data.title = data.title.find(obj => obj.type === 'default')
+      }
+    }
     if (
       !data.group ||
       data.group.visibility !== 'hidden'
@@ -180,15 +321,26 @@ module.exports = function (app) {
   * Events
   */
 
+  // TODO: Add members to a channel and post updates of inactive events to that channel
+
   // eslint-disable-next-line no-unused-vars
   app.service('events').publish((data, hook) => {
-    if (
-      Array.isArray(data) ||
-      !data.isActive
-    ) {
-      return app.channel('admins')
+    let isPublic = true
+
+    if (Array.isArray(data)) {
+      if (data.find(event => !event.isActive)) {
+        isPublic = false
+      }
     } else {
-      return app.channel('anonymous', 'authenticated')
+      if (!data.isActive) {
+        isPublic = false
+      }
+    }
+
+    if (isPublic) {
+      return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['text', 'title'])
+    } else {
+      return createLanguageChannels(app, data, app.channel('admins'), ['text', 'title'])
     }
   })
 
@@ -198,6 +350,24 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('groups').publish((data, hook) => {
+    if (Array.isArray(data)) {
+      data = data.map(message => {
+        if (Array.isArray(data.description)) {
+          message.description = message.description.find(obj => obj.type === 'default')
+        }
+        if (Array.isArray(data.title)) {
+          message.title = message.title.find(obj => obj.type === 'default')
+        }
+        return message
+      })
+    } else {
+      if (Array.isArray(data.description)) {
+        data.description = data.description.find(obj => obj.type === 'default')
+      }
+      if (Array.isArray(data.title)) {
+        data.title = data.title.find(obj => obj.type === 'default')
+      }
+    }
     if (
       Array.isArray(data) ||
       !data.isActive ||
@@ -216,17 +386,67 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('news').publish((data, hook) => {
-    if (
-      Array.isArray(data) ||
-      !data.isActive
-    ) {
-      return app.channel('admins')
-    } else {
-      if (data.isInternal) {
-        return app.channel('authenticated')
-      } else {
-        return app.channel('anonymous', 'authenticated')
+    let isPublic = true
+    let isInternal = false
+    if (Array.isArray(data)) {
+      if (data.find(newsEntry => !newsEntry.isActive)) {
+        isPublic = false
       }
+      if (data.find(newsEntry => !newsEntry.isInternal)) {
+        isInternal = true
+      }
+    } else {
+      if (!data.isActive) {
+        isPublic = false
+      }
+      if (data.isInternal) {
+        isInternal = true
+      }
+    }
+
+    if (isPublic) {
+      if (isInternal) {
+        return createLanguageChannels(app, data, app.channel('authenticated'), ['title', 'subTitle', 'text'])
+      } else {
+        return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['title', 'subTitle', 'text'])
+      }
+    } else {
+      return createLanguageChannels(app, data, app.channel('admins'), ['title', 'subTitle', 'text'])
+    }
+  })
+
+  /*
+  * Blog
+  */
+
+  // eslint-disable-next-line no-unused-vars
+  app.service('blog').publish((data, hook) => {
+    let isPublic = true
+    let isInternal = false
+    if (Array.isArray(data)) {
+      if (data.find(blogEntry => !blogEntry.isActive)) {
+        isPublic = false
+      }
+      if (data.find(blogEntry => !blogEntry.isInternal)) {
+        isInternal = true
+      }
+    } else {
+      if (!data.isActive) {
+        isPublic = false
+      }
+      if (data.isInternal) {
+        isInternal = true
+      }
+    }
+
+    if (isPublic) {
+      if (isInternal) {
+        return createLanguageChannels(app, data, app.channel('authenticated'), ['title', 'subTitle', 'text'])
+      } else {
+        return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['title', 'subTitle', 'text'])
+      }
+    } else {
+      return createLanguageChannels(app, data, app.channel('admins'), ['title', 'subTitle', 'text'])
     }
   })
 
@@ -279,23 +499,34 @@ module.exports = function (app) {
   * Status containers
   */
 
-  app.service('status-containers').publish((data, hook) => {
-    let tmpData = data
-    if (!Array.isArray(data)) {
-      tmpData = [data]
+  app.service('status-containers').publish(async (data, hook) => {
+    if (!Array.isArray(data) && data.type === 'chats') {
+      const chatStatusContainers = await app.service('status-containers').find({
+        query: {
+          reference: data.reference,
+          type: 'chats',
+          relation: 'owner'
+        }
+      })
+      return chatStatusContainers.map(obj => app.channel(obj.user))
+    } else {
+      let tmpData = data
+      if (!Array.isArray(data)) {
+        tmpData = [data]
+      }
+      // Concat array of users and array of status container ids
+      // to notify all users directly linked in the status container
+      // and all users who are owners of the status container reference
+      return [
+        ...new Set(
+          tmpData.map(obj => obj.user.toString())
+        )
+      ]
+        .concat(
+          tmpData.map(obj => obj._id.toString())
+        )
+        .map(obj => app.channel(obj))
     }
-    // Concat array of users and array of status container ids
-    // to notify all users directly linked in the status container
-    // and all users who are owners of the status container reference
-    return [
-      ...new Set(
-        tmpData.map(obj => obj.user.toString())
-      )
-    ]
-      .concat(
-        tmpData.map(obj => obj._id.toString())
-      )
-      .map(obj => app.channel(obj))
   })
 
   /*
@@ -313,14 +544,22 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('tags').publish((data, hook) => {
-    if (
-      Array.isArray(data) ||
-      !data.isActive ||
-      !data.isAccepted
-    ) {
-      return app.channel('admins')
+    let isPublic = true
+    if (Array.isArray(data)) {
+      if (data.find(tag => !tag.isActive || !tag.isAccepted)) {
+        isPublic = false
+      }
     } else {
-      return app.channel('anonymous', 'authenticated')
+      if (!data.isActive || !data.isAccepted) {
+        isPublic = false
+      }
+    }
+    if (
+      isPublic
+    ) {
+      return createLanguageChannels(app, data, app.channel('anonymous', 'authenticated'), ['text'])
+    } else {
+      return createLanguageChannels(app, data, app.channel('admins'), ['text'])
     }
   })
 
@@ -343,6 +582,7 @@ module.exports = function (app) {
 
   // eslint-disable-next-line no-unused-vars
   app.service('violations').publish((data, hook) => {
+    // TODO: What about group moderators / owners
     return app.channel('admins')
   })
 }

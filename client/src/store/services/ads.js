@@ -17,7 +17,8 @@ const servicePath = 'ads'
 const servicePlugin = makeServicePlugin({
   Model: ads,
   service: feathersClient.service(servicePath),
-  servicePath
+  servicePath,
+  whitelist: ['$and', '$regex', '$options']
 })
 
 // Setup the client-side Feathers hooks.

@@ -2,7 +2,7 @@
   <div>
     <v-data-table
       :item-class="itemRowBackground"
-      class="customGreyBg elevation-3"
+      class="customGreyUltraLight elevation-3"
       :headers="headers"
       :items="violations"
       :loading="loading"
@@ -18,7 +18,8 @@
       :sort-desc.sync="sortDesc"
       mobile-breakpoint="0"
       :footer-props="{
-        itemsPerPageText: ''
+        itemsPerPageText: '',
+        itemsPerPageOptions
       }"
     >
       <template
@@ -57,7 +58,7 @@
             class="font-weight-bold pointer"
             @click="$router.push(item.link)"
           >
-            {{$t('discussion')}}: {{item.discussion ? item.discussion.title : ''}}
+            {{$t('discussion')}}: {{item.discussion ? item.discussion.title.value : ''}}
           </div>
         </template>
         <template
@@ -67,7 +68,7 @@
             class="font-weight-bold pointer"
             @click="$router.push(item.link)"
           >
-            {{$t('groupDiscussion')}}: {{item.discussion ? item.discussion.title : ''}} ({{item.discussion && item.discussion.group ? item.discussion.group.title : ''}})
+            {{$t('groupDiscussion')}}: {{item.discussion ? item.discussion.title.value : ''}} ({{item.discussion && item.discussion.group ? item.discussion.group.title.value : ''}})
           </div>
         </template>
         <template
@@ -87,7 +88,7 @@
         <template
           v-if="item.discussion"
         >
-          {{item.discussion.title}}
+          {{item.discussion.title.value}}
         </template>
       </template>
       <template
@@ -230,7 +231,7 @@ export default {
     page: 1,
     loading: true,
     total: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['isClosed'],
     sortDesc: [true]
   }),
@@ -423,7 +424,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'

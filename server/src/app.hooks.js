@@ -1,9 +1,9 @@
 // Application hooks that run for every service
-const { traverse } = require('feathers-hooks-common')
+const { traverse, paramsFromClient } = require('feathers-hooks-common')
 const sanitizeHtml = require('sanitize-html')
 const sanitizeOptions = {
-  allowedTags: ['p', 'strong', 'em', 'u', 's', 'blockquote', 'ul', 'li', 'ol', 'a', 'br', 'div', 'h1', 'h2', 'h3', 'h4', 'h5'],
-  allowedAttributes: { blockquote: ['class'], a: ['href', 'target'] }
+  allowedTags: ['img', 'p', 'strong', 'em', 'u', 's', 'blockquote', 'ul', 'li', 'ol', 'a', 'br', 'div', 'h1', 'h2', 'h3', 'h4', 'h5'],
+  allowedAttributes: { blockquote: ['class'], a: ['href', 'target'], img: ['src', 'style', 'height'], p: ['style'], div: ['style'] }
 }
 
 // Sanitize strings
@@ -15,7 +15,9 @@ const sanitizer = function (node) {
 
 module.exports = {
   before: {
-    all: [],
+    all: [
+      paramsFromClient('keepTranslations')
+    ],
     find: [],
     get: [],
     create: [

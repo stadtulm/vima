@@ -12,19 +12,10 @@ const vuetify = new Vuetify({
     },
     themes: {
       light: {
-        customCyan: colors.cyan,
-        customTeal: colors.teal.lighten1,
-        customPurple: colors.deepPurple.lighten1,
         customGrey: colors.blueGrey.darken2,
         customGreyMedium: colors.blueGrey.lighten2,
         customGreyLight: colors.blueGrey.lighten4,
-        customGreyUltraLight: colors.blueGrey.lighten5,
-        customLimeBg: colors.lime.lighten3,
-        customCyanBg: colors.cyan.lighten4,
-        customTealBg: colors.teal.lighten4,
-        customPurpleBg: colors.deepPurple.lighten5,
-        customGreyBg: colors.blueGrey.lighten5
-
+        customGreyUltraLight: colors.blueGrey.lighten5
       }
     }
   },

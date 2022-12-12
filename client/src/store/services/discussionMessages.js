@@ -24,7 +24,8 @@ const servicePath = 'discussion-messages'
 const servicePlugin = makeServicePlugin({
   Model: discussionMessages,
   service: feathersClient.service(servicePath),
-  servicePath
+  servicePath,
+  whitelist: ['$exists']
 })
 
 // Setup the client-side Feathers hooks.

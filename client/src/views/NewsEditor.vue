@@ -7,7 +7,7 @@
         cols="12"
       >
         <v-card
-          color="customGreyBg"
+          color="customGreyUltraLight"
           tile
         >
           <v-card-text>
@@ -25,6 +25,7 @@
               ref="newsEditorForm"
             >
               <v-row
+                v-if="title"
                 dense
               >
                 <v-col
@@ -37,14 +38,22 @@
                     :label="$t('headline')"
                     color="customGrey"
                     background-color="#fff"
-                    v-model="title"
-                    :rules="[rules.required]"
+                    v-model="title.find(obj => obj.lang === currentLanguage).value"
+                    :rules="[v => title.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
                   >
+                    <template v-slot:prepend>
+                      <LanguageSelect
+                        :currentLanguage="currentLanguage"
+                        :languageObjects="title"
+                        @setLanguage="(l) => { currentLanguage = l }"
+                      ></LanguageSelect>
+                    </template>
                   </v-text-field>
                 </v-col>
               </v-row>
               <v-row
                 dense
+                v-if="subTitle"
               >
                 <v-col
                   cols="12"
@@ -55,8 +64,15 @@
                     color="customGrey"
                     background-color="#fff"
                     :label="$t('subHeadline') + ' ' + $t('optionalLabelExtension')"
-                    v-model="subTitle"
+                    v-model="subTitle.find(obj => obj.lang === currentLanguage).value"
                   >
+                    <template v-slot:prepend>
+                      <LanguageSelect
+                        :currentLanguage="currentLanguage"
+                        :languageObjects="subTitle"
+                        @setLanguage="(l) => { currentLanguage = l }"
+                      ></LanguageSelect>
+                    </template>
                   </v-text-field>
                 </v-col>
               </v-row>
@@ -86,6 +102,7 @@
               </v-row>
               <v-divider class="mt-4 mb-9"></v-divider>
               <v-row
+                v-if="text"
                 dense
                 class="mb-6"
               >
@@ -94,7 +111,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyBg"
+                    color="customGreyUltraLight"
                   >
                     <v-row>
                       <v-col
@@ -123,18 +140,25 @@
                         cols="12"
                       >
                         <v-input
-                          :rules="[rules.tiptapRequired]"
-                          v-model="text"
+                          :rules="[v => (text.find(obj => obj.type === 'default').value !== '' && text.find(obj => obj.type === 'default').value !== '<p></p>') || $t('defaultLanguageRequired')]"
+                          v-model="text.find(obj => obj.lang === currentLanguage).value"
                           width="100%"
                         >
+                          <template v-slot:prepend>
+                            <LanguageSelect
+                              :currentLanguage="currentLanguage"
+                              :languageObjects="text"
+                              @setLanguage="(l) => { currentLanguage = l }"
+                            ></LanguageSelect>
+                          </template>
                           <template slot="default">
                             <tiptap-vuetify
                               :editor-properties="{
                                 disableInputRules: true,
                                 disablePasteRules: true
                               }"
-                              color="customGreyBg"
-                              v-model="text"
+                              color="customGreyUltraLight"
+                              v-model="text.find(obj => obj.lang === currentLanguage).value"
                               :card-props="{ tile: true, flat: true }"
                               style="border: 1px solid #aaa;"
                               :extensions="extensions"
@@ -155,7 +179,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyBg"
+                    color="customGreyUltraLight"
                   >
                     <v-row>
                       <v-col
@@ -335,7 +359,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyBg"
+                    color="customGreyUltraLight"
                   >
                     <v-row>
                       <v-col
@@ -351,87 +375,25 @@
                       <v-col
                         cols="12"
                         tabIndex="0"
-                        @keypress="$refs.vueDropzonePics.$el.click()"
+                        @keypress="$refs.newsUpload.fakeClick()"
                       >
-                        <vue-dropzone
-                          id="vueDropzonePics"
-                          ref="vueDropzonePics"
-                          :options="dropzoneOptionsPics"
-                          :headers="dropzoneOptionsPics.headers"
-                          @vdropzone-success="uploadSuccessPics"
-                          @vdropzone-removed-file="removeFilePics"
-                          @vdropzone-mounted="dropzoneMountedPics"
-                          @vdropzone-queue-complete="queueComplete"
-                          @vdropzone-files-added="updateQueuedFiles"
-                          @vdropzone-sending="addUuid"
-                          :destroyDropzone="false"
-                        >
-                        </vue-dropzone>
+                        <FileUpload
+                          ref="newsUpload"
+                          v-model="pics"
+                          @fileRemove="patchFileRemove"
+                          @fileAdd="$nextTick(() => { $refs.newsEditorForm.validate() })"
+                          :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                          :maxFileSize="2"
+                          :maxFiles="10"
+                          bgColor="white"
+                          :scaleToFit="[1080, 1080]"
+                          :resizeQuality="50"
+                        ></FileUpload>
                       </v-col>
                     </v-row>
                   </v-card>
                 </v-col>
               </v-row>
-              <v-row
-                v-if="pics && pics.length > 0"
-              >
-                <v-col
-                  cols="12"
-                >
-                  <v-card
-                    flat
-                    color="customGreyBg"
-                  >
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        class="subtitle-1"
-                      >
-                        {{$t('copyrightOwner')}}
-                      </v-col>
-                    </v-row>
-                    <v-row
-                      dense
-                    >
-                      <v-col>
-                        <v-alert
-                          icon="fas fa-info-circle"
-                          color="customGrey"
-                          dark
-                          outlined
-                        >
-                          {{$t('publicHint')}}
-                        </v-alert>
-                      </v-col>
-                    </v-row>
-                      <v-row
-                        dense
-                        v-for="(pic, i) in pics"
-                        :key="i"
-                        class="align-center"
-                      >
-                        <v-col
-                          cols="12"
-                        >
-                          <v-text-field
-                            dense
-                            color="customGrey"
-                            item-color="customGrey"
-                            v-model="pic.credit"
-                            :label="$t('copyrightOwner') + ' ' + $t('pic') + ' ' + (i + 1)"
-                            outlined
-                            :rules="[rules.required]"
-                            background-color="#fff"
-                          >
-                          </v-text-field>
-                        </v-col>
-                    </v-row>
-                  </v-card>
-                </v-col>
-              </v-row>
-              <v-divider
-                :class="isQueued ? 'mb-9 mt-3' : 'my-9'"
-              ></v-divider>
             </v-form>
             <v-card-actions
               class="px-0"
@@ -457,22 +419,20 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import vue2Dropzone from 'vue2-dropzone'
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link, Heading } from 'tiptap-vuetify'
-
-const server = process.env.VUE_APP_SERVER_URL
+import LanguageSelect from '@/components/LanguageSelect.vue'
+import FileUpload from '@/components/FileUpload.vue'
 
 export default {
   name: 'NewsEditor',
 
   components: {
-    vueDropzone: vue2Dropzone,
-    TiptapVuetify
+    FileUpload,
+    TiptapVuetify,
+    LanguageSelect
   },
 
   data: () => ({
-    isQueued: false,
     selectedNews: undefined,
     isInternal: false,
     isActive: true,
@@ -486,11 +446,7 @@ export default {
     videos: [],
     tmpVideos: [],
     pics: [],
-    mockFile: {
-      name: '',
-      size: '',
-      type: ''
-    },
+    currentLanguage: 'en',
     extensions: [
       Bold,
       Italic,
@@ -509,6 +465,7 @@ export default {
   }),
 
   async mounted () {
+    this.currentLanguage = this.$i18n.locale
     window.load = () => {
       try {
         this.$refs.newsEditorForm.resetValidation()
@@ -525,157 +482,95 @@ export default {
     ...mapActions('news', {
       patchNews: 'patch',
       createNews: 'create',
-      requestNews: 'get'
+      getNews: 'get'
     }),
     ...mapActions('uploads', {
       removeUpload: 'remove'
     }),
-    addUuid (file, xhr, formData) {
-      formData.append('uuid', file.upload.uuid)
-    },
-    updateQueuedFiles (files) {
-      this.isQueued = true
-      this.$nextTick(() => {
-        for (const file of files) {
-          if (file.status !== 'error') {
-            this.pics.push(
-              {
-                credit: undefined,
-                url: file.upload.uuid
+    async patchFileRemove (file) {
+      this.isLoading = true
+      try {
+        await this.patchNews([
+          this.selectedNews._id,
+          {
+            $pull: {
+              pics: {
+                _id: file._id
               }
-            )
+            }
           }
-        }
-      })
-    },
-    dropzoneMountedPics () {
-      if (this.selectedNews && this.selectedNews.pics) {
-        for (const pic of this.selectedNews.pics) {
-          const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
-          tmpMockFile.name = pic.url
-          this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + pic.url)
-        }
+        ])
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.adapt()
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.adapt()
       }
     },
     async adapt () {
       if (this.$route.params.id) {
-        let selectedNews = this.getNews(this.$route.params.id)
-        if (!selectedNews) {
-          selectedNews = await this.requestNews([this.$route.params.id])
-        }
-        this.selectedNews = selectedNews
+        this.selectedNews = await this.getNews([this.$route.params.id, { keepTranslations: true }])
       }
       this.tmpVideos = []
       if (this.selectedNews) {
-        this.title = this.selectedNews.title
-        this.subTitle = this.selectedNews.subTitle
+        this.title = this.hydrateTranslations(this.selectedNews.title)
+        this.subTitle = this.hydrateTranslations(this.selectedNews.subTitle)
+        this.text = this.hydrateTranslations(this.selectedNews.text)
         this.isInternal = this.selectedNews.isInternal
         this.isActive = this.selectedNews.isActive
-        this.text = this.selectedNews.text
         if (this.selectedNews.pics) {
           this.pics = this.selectedNews.pics
         }
         if (this.selectedNews.videos) {
           this.videos = this.selectedNews.videos
         }
-      }
-    },
-    async uploadSuccessPics (file, response) {
-      if (file.status === 'success') {
-        this.$set(this.pics.find(obj => obj.url === response.uuid), 'uuid', response.uuid)
-        this.$set(this.pics.find(obj => obj.url === response.uuid), 'url', response.id)
-      }
-    },
-    queueComplete () {
-      if (this.isQueued) {
-        let hasErrors = false
-        for (const file of this.$refs.vueDropzonePics.getAcceptedFiles()) {
-          const newPic = this.pics.find(obj => obj.uuid === file.upload.uuid)
-          if (!newPic) {
-            file.previewElement.querySelector('.dz-error-message > span').innerHTML = this.$t('uploadFailed')
-            hasErrors = true
-            if (this.isLoading) {
-              this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-            }
-          }
-          if (hasErrors) {
-            this.isLoading = false
-            return
-          }
-          this.$refs.vueDropzonePics.removeFile(file)
-          const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
-          tmpMockFile.name = newPic.url
-          this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + newPic.url)
-        }
-        this.isQueued = false
-        if (this.isLoading) {
-          this.saveNews()
-        }
-      }
-    },
-    async removeFilePics (file, error, xhr) {
-      try {
-        if (file.status === 'queued') {
-          if (this.$refs.vueDropzonePics.getQueuedFiles().length === 0) {
-            this.isQueued = false
-          }
-        } else if (file.status !== 'error') {
-          if (this.selectedNews) {
-            await this.removeUpload([file.name, {}, {}])
-            let tmpPictures = []
-            if (this.selectedNews && this.selectedNews.pics) {
-              tmpPictures = this.selectedNews.pics
-            }
-            tmpPictures = tmpPictures.filter(obj => obj.url !== file.name)
-            await this.patchNews([this.selectedNews._id, { pics: tmpPictures }, {}])
-            this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-          }
-        } else if (this.isLoading) {
-          throw error
-        }
-        const index = this.pics.findIndex(obj => obj.url === file.upload?.uuid || obj.url === file.name)
-        if (index !== -1) {
-          this.pics.splice(index, 1)
-        }
-      } catch (e) {
-        if (this.isLoading) {
-          this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        }
+      } else {
+        this.title = this.hydrateTranslations()
+        this.subTitle = this.hydrateTranslations()
+        this.text = this.hydrateTranslations()
       }
     },
     async saveNews () {
       this.isLoading = true
-      if (this.isQueued) {
-        await this.$refs.vueDropzonePics.processQueue()
-      } else {
-        if (this.videoId && this.videoType) {
-          this.addTmpVideo()
+      // Do uploads
+      try {
+        await this.$refs.newsUpload.upload()
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
+      }
+      // Prepare videos
+      if (this.videoId && this.videoType) {
+        this.addTmpVideo()
+      }
+      // Prepare map
+      const map = {
+        title: this.title.filter(language => language.value && language.value !== ''),
+        subTitle: this.subTitle.filter(language => language.value && language.value !== ''),
+        isInternal: this.isInternal,
+        isActive: this.isActive,
+        text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>'),
+        videos: this.videos.concat(this.tmpVideos),
+        author: this.user._id
+      }
+      if (this.pics) {
+        map.pics = this.pics
+      }
+      try {
+        if (this.$route.params.id) {
+          await this.patchNews([this.$route.params.id, map, {}])
+        } else {
+          await this.createNews([map, {}])
         }
-        const map = {
-          title: this.title,
-          subTitle: this.subTitle,
-          isInternal: this.isInternal,
-          isActive: this.isActive,
-          text: this.text,
-          videos: this.videos.concat(this.tmpVideos),
-          author: this.user._id
-        }
-        if (this.pics) {
-          map.pics = this.pics
-        }
-        try {
-          if (this.$route.params.id) {
-            await this.patchNews([this.$route.params.id, map, {}])
-          } else {
-            await this.createNews([map, {}])
-          }
-          this.isLoading = false
-          this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-          this.$router.go(-1)
-        } catch (e) {
-          this.isLoading = false
-          this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        }
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.$router.go(-1)
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
     },
     addTmpVideo () {
@@ -689,47 +584,23 @@ export default {
     ...mapGetters([
       'rules',
       's3',
-      'videoTypeItems'
+      'videoTypeItems',
+      'hydrateTranslations'
     ]),
-    ...mapGetters('news', {
-      getNews: 'get'
-    }),
     ...mapGetters('auth', [
       'user'
     ]),
-    dropzoneOptionsPics () {
-      return {
-        url: server + 'uploads',
-        maxFilesize: 2,
-        maxFiles: 10,
-        paramName: 'uri',
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('feathers-jwt')
-        },
-        autoProcessQueue: false,
-        addRemoveLinks: true,
-        dictDefaultMessage: '<i style="font-size: 40px" class="fas fa-images"></i><br><br><span class="v-label"><span class="font-weight-bold">' + this.$t('dropFilesHeadline', { filesize: '2' }) + '</span><br><br>' + this.$t('dropFilesBody', { resolution: '1400x400' }) + '</span>',
-        dictRemoveFile: '<i style="font-size: 40px" class="fas fa-times"></i>',
-        dictCancelUpload: '<i style="font-size: 40px" class="fas fa-times"></i>',
-        dictFileTooBig: this.$t('fileTooBigError'),
-        dictInvalidFileType: this.$t('fileTypeNotAcceptedError'),
-        dictMaxFilesExceeded: this.$t('noMorePicsError'),
-        acceptedMimeTypes: 'image/png, image/jpeg',
-        resizeWidth: 1080,
-        resizeMethod: 'contain',
-        resizeQuality: 0.5
-      }
+    sanitizedText () {
+      return this.text.map(language => {
+        return {
+          ...language,
+          value: this.$sanitize(language.value)
+        }
+      })
     }
   },
 
   watch: {
-    pics () {
-      if (this.$refs.newsEditorForm) {
-        this.$nextTick(() => {
-          this.$refs.newsEditorForm.validate()
-        })
-      }
-    },
     videos () {
       if (this.$refs.newsEditorForm) {
         this.$refs.newsEditorForm.validate()
@@ -738,11 +609,6 @@ export default {
     tmpVideos () {
       if (this.$refs.newsEditorForm) {
         this.$refs.newsEditorForm.validate()
-      }
-    },
-    text () {
-      if (this.text) {
-        this.text = this.$sanitize(this.text)
       }
     }
   }

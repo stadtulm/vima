@@ -3,6 +3,7 @@ const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
 const Errors = require('@feathersjs/errors')
+const JSum = require('jsum')
 
 module.exports = {
   before: {
@@ -137,7 +138,14 @@ module.exports = {
             }
           }
         }
-      )
+      ),
+      (context) => {
+        context.data.translationSum = JSum.digest(
+          ['text'].map(field => context.data[field].find(t => t.type === 'default').value),
+          'SHA256',
+          'hex'
+        )
+      }
     ],
     update: [
       commonHooks.iff(
@@ -155,6 +163,16 @@ module.exports = {
           if (context.params.user._id.toString() !== discussionMessage.author.toString()) {
             throw new Errors.Forbidden('Only author can patch discussion messages')
           }
+        }
+      ),
+      commonHooks.iff(
+        (context) => context.data?.text?.find(t => t.type === 'default'),
+        (context) => {
+          context.data.translationSum = JSum.digest(
+            ['text'].map(field => context.data[field].find(t => t.type === 'default').value),
+            'SHA256',
+            'hex'
+          )
         }
       )
     ],
@@ -211,7 +229,33 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.alterItems(async (rec, context) => {
+          if (rec.latestAnswers?.text && Array.isArray(rec.latestAnswers.text)) {
+            if (!rec.latestAnswers.text.find(t => t.lang === context.params.connection?.language)) {
+              // Create translation
+              const translatedText = await context.app.service('translations').create({
+                type: 'discussion-messages',
+                texts: [{
+                  ...rec.latestAnswers,
+                  id: rec.latestAnswers._id
+                }],
+                allFields: ['text'],
+                fields: ['text'],
+                target: context.params.connection?.language
+              })
+              rec.latestAnswers.text.push(translatedText)
+            }
+          }
+          if (Array.isArray(rec.text)) {
+            rec.text = rec.text.find(t => t.type === 'default')
+          }
+          return rec
+        })
+      )
+    ],
     find: [],
     get: [],
     create: [
@@ -363,6 +407,22 @@ module.exports = {
               }
             }
           )
+        }
+      },
+      // Remove pics
+      async (context) => {
+        let isArray = false
+        if (!Array.isArray(context.result)) {
+          context.result = [context.result]
+          isArray = false
+        }
+        for (const message of context.result) {
+          for (const pic of message.pics) {
+            await context.app.service('uploads').remove(pic.url)
+          }
+        }
+        if (!isArray) {
+          context.result = context.result[0]
         }
       }
     ]

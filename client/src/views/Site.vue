@@ -1,6 +1,6 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedSite"
   >
     <v-card-text>
@@ -8,13 +8,13 @@
         <v-col
           class="word-wrap text-h5 font-weight-bold customGrey--text text-uppercase"
         >
-          {{$t(computedSite.type)}}
+          {{$t(computedSite.type === 'communicationrules' ? 'communicationRules' : computedSite.type)}}
         </v-col>
       </v-row>
       <v-row>
         <v-col
           class="body-1 customGrey--text"
-          v-html="$sanitize(newTab(computedSite.text))"
+          v-html="$sanitize(newTab(computedSite.text.value))"
         ></v-col>
       </v-row>
     </v-card-text>

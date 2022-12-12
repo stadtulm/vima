@@ -11,7 +11,8 @@ module.exports = function (app) {
     clientId: { type: ObjectId, ref: 'organisations', required: true, unique: true },
     clientSecret: { type: String, required: true }
   }, {
-    timestamps: true
+    timestamps: true,
+    collation: { locale: 'en', strength: 1 }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

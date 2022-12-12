@@ -1,6 +1,6 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedOrganisation"
     height="100%"
     :to="organisationProp ? { name: 'Organisation', params: { organisation: computedOrganisation._id }} : ''"
@@ -146,7 +146,7 @@ export default {
       text = this.$sanitize(text)
       text = text.replaceAll('<p>', '')
       text = text.replaceAll('</p>', '&nbsp;')
-      var div = document.createElement('div')
+      const div = document.createElement('div')
       div.innerHTML = text
       let tmpStr = div.innerText
       if (tmpStr && tmpStr.length > len) {

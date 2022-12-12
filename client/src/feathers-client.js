@@ -2,10 +2,24 @@ import feathers from '@feathersjs/feathers'
 import socketio from '@feathersjs/socketio-client'
 import auth from '@feathersjs/authentication-client'
 import io from 'socket.io-client'
-import { iff, discard, traverse } from 'feathers-hooks-common'
+import { iff, discard, traverse, paramsForServer } from 'feathers-hooks-common'
 import feathersVuex from 'feathers-vuex'
 import Store from '@/store'
 import { decode } from 'he'
+import Cookies from 'js-cookie'
+import i18n from '@/i18n'
+const appMode = process.env.VUE_APP_MODE
+const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
+
+if (!Cookies.get('clientLanguage', { path: '/' })) {
+  document.cookie = Cookies.set('clientLanguage', i18n.locale, {
+    domain: serverDomain,
+    path: '/',
+    sameSite: appMode === 'production' ? 'None' : 'Lax',
+    secure: appMode === 'production',
+    expires: 365 * 100
+  })
+}
 
 const socket = io(process.env.VUE_APP_SERVER_URL, {
   transports: ['websocket'],
@@ -29,6 +43,9 @@ const feathersClient = feathers()
   .hooks({
     before: {
       all: [
+        context => {
+          context.params = paramsForServer(context.params, 'keepTranslations')
+        },
         iff(
           context => ['create', 'update', 'patch'].includes(context.method),
           discard('__id', '__isTemp')

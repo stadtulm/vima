@@ -84,11 +84,23 @@
       <v-col
         cols="12"
       >
+        <v-btn
+          block
+          dark
+          :color="computedColor"
+          :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView' }"
+        >
+          {{$t('buttonShowAllEntries')}}
+        </v-btn>
+      </v-col>
+      <v-col
+        cols="12"
+      >
         <v-data-table
           item-class="pointer"
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
-          :items="computedCategories.sort((a, b) => a.name.localeCompare(b.name))"
+          :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -98,7 +110,10 @@
           :items-per-page.sync="itemsPerPage"
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:[`item.pic`]="{ item }"
@@ -115,13 +130,13 @@
             </v-img>
           </template>
           <template
-            v-slot:[`item.name`]="{ item }"
+            v-slot:[`item.text`]="{ item }"
           >
             <div
               class="pointer font-weight-bold"
               @click="$router.push({ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id }})"
             >
-              {{item.name}}
+              {{item.text.value}}
             </div>
           </template>
           <template
@@ -141,10 +156,15 @@
               v-for="tag in getTags(item)"
               :key="tag._id"
               class="ma-1"
-              :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id, t: tag._id }}"
+              :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id, t: tag._id } }"
             >
-              {{tag.name}}
+              {{tag.text.value}}
             </v-chip>
+          </template>
+          <template
+            v-slot:[`item.description`]="{ item }"
+          >
+              {{item.description ? item.description.value : '-'}}
           </template>
         </v-data-table>
       </v-col>
@@ -310,15 +330,16 @@ export default {
             )
           ]
             .map(obj => {
-              const category = this.getTag(obj)
-              if (category) {
-                return category
+              const tag = this.getTag(obj)
+              if (tag) {
+                return tag
               } else {
                 this.createLog({ type: 'error', route: window.location.pathname, user: (this.user ? this.user._id : '-'), method: 'getTags (CategoriesListView)', message: 'Not existant category: ' + obj })
+                return false
               }
             })
             .filter(obj => !!obj)
-            .sort((a, b) => '' + a.name.localeCompare(b.name))
+            .sort((a, b) => '' + a.text.value.localeCompare(b.text.value))
         } else {
           return []
         }
@@ -330,7 +351,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters([
       'typeItems'
@@ -347,19 +369,15 @@ export default {
     headers () {
       return [
         { text: '', value: 'pic' },
-        { text: this.$t('name'), value: 'name', width: '30%' },
+        { text: this.$t('name'), value: 'text', width: '30%' },
         { text: this.$t('tags'), value: 'tags', sortable: false },
         { text: this.$t('description'), value: 'description', width: '50%' },
         { text: this.$t('entries'), value: 'entries', align: 'center' }
       ]
     },
     computedColor () {
-      if (this.$route.params.type === 'ads') {
-        return 'customCyan'
-      } else if (this.$route.params.type === 'discussions') {
-        return 'customTeal'
-      } else if (this.$route.params.type === 'groups') {
-        return 'customPurple'
+      if (this.$settings.modules[this.$route.params.type] && this.$settings.modules[this.$route.params.type].color) {
+        return this.$settings.modules[this.$route.params.type].color
       } else {
         return 'customGrey'
       }
@@ -367,7 +385,7 @@ export default {
     computedCategories () {
       if (this.computedCategoriesWithCount) {
         if (this.search && this.search.trim() !== '') {
-          return this.categories.filter(obj => obj.name.toLowerCase().includes(this.search.toLowerCase()))
+          return this.categories.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
         } else {
           return this.categories
         }

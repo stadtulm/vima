@@ -41,7 +41,7 @@
     <v-row>
       <v-col>
         <v-data-table
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedEvents"
           :loading="loading"
@@ -56,7 +56,10 @@
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
           mobile-breakpoint="0"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
@@ -67,7 +70,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -76,7 +79,7 @@
                 <v-list-item-title
                   class="font-weight-bold"
                 >
-                  {{item.title}}
+                  {{item.title.value}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -184,7 +187,7 @@ export default {
     search: '',
     page: 1,
     loading: true,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['updatedAt'],
     sortDesc: [true]
   }),
@@ -316,7 +319,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -329,7 +333,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
         { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
         { text: this.$t('eventStart'), value: 'duration.start', width: 170 },
@@ -338,15 +342,6 @@ export default {
         { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
         { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
       ]
-    },
-    eventsParams () {
-      return {
-        organisation: this.computedUserOrganisationId,
-        title: { $regex: this.search, $options: 'i' },
-        $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc }
-      }
     },
     computedUserOrganisationId () {
       const organisationStatusContainer = this.statusContainers.find(
@@ -401,9 +396,30 @@ export default {
     async eventsResponse () {
       if (this.triggerReload) {
         this.loading = true
+        const query = {
+          organisation: this.computedUserOrganisationId,
+          $limit: this.computedLimit,
+          $skip: (this.page - 1) * this.computedSkip,
+          $sort: { [this.sortBy]: this.computedSortDesc }
+        }
+        if (this.search && this.search !== '') {
+          query.title = {
+            $elemMatch: {
+              $and: [
+                { value: { $regex: this.search, $options: 'i' } },
+                {
+                  $or: [
+                    { lang: this.$i18n.locale },
+                    { type: 'default' }
+                  ]
+                }
+              ]
+            }
+          }
+        }
         const events = await this.findEvents(
           {
-            query: this.eventsParams
+            query
           }
         )
         this.loading = false
@@ -413,7 +429,7 @@ export default {
   },
 
   watch: {
-    async events () {
+    events () {
       this.triggerReload = Date.now()
     }
   }

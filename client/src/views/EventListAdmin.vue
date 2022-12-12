@@ -24,10 +24,10 @@
     <v-row>
       <v-col>
         <v-data-table
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
-          :items="events"
-          :loading="loading"
+          :items="computedEvents"
+          :loading="isFindEventsPending"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -39,7 +39,10 @@
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
           mobile-breakpoint="0"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
@@ -50,7 +53,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.title`]="{ item }"
+            v-slot:[`item.title.value`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -59,7 +62,7 @@
                 <v-list-item-title
                   class="font-weight-bold"
                 >
-                  {{item.title}}
+                  {{item.title.value}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -153,26 +156,25 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'EventListAdmin',
 
-  mixins: [makeFindMixin({ service: 'events', watch: true })],
-
   components: {
   },
 
   data: () => ({
+    isFindEventsPending: false,
     loaders: {},
     search: '',
     page: 1,
     loading: true,
     total: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['updatedAt'],
-    sortDesc: [true]
+    sortDesc: [true],
+    triggerReload: 1
   }),
 
   async mounted () {
@@ -186,6 +188,7 @@ export default {
       setSnackbar: 'SET_SNACKBAR'
     }),
     ...mapActions('events', {
+      findEvents: 'find',
       removeEvent: 'remove'
     }),
     async deleteEvent (id) {
@@ -301,14 +304,18 @@ export default {
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'itemsPerPageOptions'
     ]),
+    ...mapGetters('events', {
+      events: 'list'
+    }),
     ...mapGetters('auth', {
       user: 'user'
     }),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title' },
+        { text: this.$t('title'), value: 'title.value' },
         { text: this.$t('organisation'), value: 'organisation' },
         { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
         { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
@@ -317,18 +324,6 @@ export default {
         { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
         { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
       ]
-    },
-    eventsParams () {
-      return {
-        query: {
-          title: { $regex: this.search, $options: 'i' },
-          $limit: this.computedLimit,
-          $skip: (this.page - 1) * this.computedSkip,
-          $sort: { [this.sortBy]: this.computedSortDesc }
-        },
-        debounce: 1000,
-        qid: 'admin'
-      }
     },
     computedLimit () {
       if (this.itemsPerPage === -1) {
@@ -350,24 +345,62 @@ export default {
       } else {
         return -1
       }
+    },
+    computedEvents () {
+      if (this.computedEventsData && this.computedEventsData.data) {
+        return this.computedEventsData.data
+      } else {
+        return []
+      }
+    }
+  },
+
+  asyncComputed: {
+    async computedEventsData () {
+      if (this.triggerReload) {}
+      this.isFindEventsPending = true
+      const query = {
+        $limit: this.computedLimit,
+        $skip: (this.page - 1) * this.computedSkip,
+        $sort: { [this.sortBy]: this.computedSortDesc }
+      }
+      if (this.search && this.search !== '') {
+        query.title = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.search, $options: 'i' } },
+              {
+                $or: [
+                  { lang: this.$i18n.locale },
+                  { type: 'default' }
+                ]
+              }
+            ]
+          }
+        }
+      }
+      const tmpEvents = await this.findEvents(
+        {
+          query
+        }
+      )
+      return tmpEvents
     }
   },
 
   watch: {
-    isFindEventsPending () {
-      if (!this.isFindEventsPending) {
-        this.loading = false
-        this.total = this.eventsPaginationData.admin.mostRecent.total
-      } else {
-        this.loading = true
-      }
+    events () {
+      this.triggerReload = Date.now()
     },
-    async events () {
-      for (const event of this.events) {
-        if (typeof event.organisation !== 'object') {
-          await this.findEvents()
-        }
+    async computedEvents () {
+    //
+      this.total = this.computedEventsData.total
+      //
+      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
+        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
       }
+      //
+      this.isFindEventsPending = false
     }
   }
 }

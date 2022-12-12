@@ -44,9 +44,9 @@
         <v-data-table
           @current-items="setCurrentItems"
           :item-class="itemRowBackground"
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
-          :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
+          :items="computedTags"
           @update:page="updatePage"
           @update:items-per-page="updateItemsPerPage"
           @update:sort-by="updateSortBy"
@@ -57,7 +57,10 @@
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
           mobile-breakpoint="0"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:progress
@@ -68,7 +71,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.name`]="{ item }"
+            v-slot:[`item.text.value`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -76,8 +79,9 @@
               <v-list-item-content>
                 <v-list-item-title
                   class="font-weight-bold"
+                  :class="item.text.type === 'error' ? 'error--text' : ''"
                 >
-                  {{item.name}}
+                  {{item.text.value}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -98,7 +102,7 @@
             <v-btn
               icon
               color="customGrey"
-              :disabled="user.role !== 'admins'"
+              :disabled="user.role !== 'admins' || item.text.type === 'error'"
               :loading="loaders[item._id + 'accepted'] === true"
               @click="changeTagProperty(
                 item,
@@ -216,7 +220,7 @@ export default {
     loaders: {},
     page: 1,
     total: 0,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['name'],
     sortDesc: [false]
   }),
@@ -406,9 +410,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      's3'
-    ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -420,7 +421,7 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('name'), value: 'name' },
+        { text: this.$t('name'), value: 'text.value' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('updatedAt'), value: 'updatedAt' },
         { text: this.$t('accepted'), value: 'isAccepted', align: 'center' },
@@ -433,10 +434,11 @@ export default {
       return this.statusContainers.find(obj => obj.user === this.user._id && obj.type === 'tags' && obj.relation === 'admin')
     },
     computedTags () {
+      const filteredTags = this.tags.map(tag => tag.text && (tag.text.lang === this.$i18n.locale || tag.text.type === 'default') ? tag : { ...tag, text: { value: this.$t('noDefaultValue'), type: 'error' } })
       if (this.search && this.search.trim() !== '') {
-        return this.tags.filter(obj => obj.name.toLowerCase().includes(this.search.toLowerCase()))
+        return filteredTags.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
       } else {
-        return this.tags
+        return filteredTags
       }
     }
   },

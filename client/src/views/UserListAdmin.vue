@@ -62,7 +62,7 @@
     <v-row>
       <v-col>
         <v-data-table
-          class="customGreyBg elevation-3"
+          class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedUsers"
           :loading="loading"
@@ -77,7 +77,10 @@
           :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc"
           mobile-breakpoint="0"
-          :footer-props="{ itemsPerPageText: '' }"
+          :footer-props="{
+            itemsPerPageText: '',
+            itemsPerPageOptions
+          }"
         >
           <template
             v-slot:[`item.pic.url`]="{ item }"
@@ -128,6 +131,11 @@
               </template>
               <span>{{item.status ? $t(statusItems[item.status].textKey) : ''}}</span>
             </v-tooltip>
+          </template>
+          <template
+            v-slot:[`item.createdAt`]="{ item }"
+          >
+            {{$moment(item.createdAt).format('DD.MM.YYYY')}}
           </template>
           <template
             v-slot:[`item.role`]="{ item }"
@@ -319,7 +327,7 @@ export default {
     loaders: {},
     page: 1,
     loading: true,
-    itemsPerPage: 5,
+    itemsPerPage: 25,
     sortBy: ['userName'],
     sortDesc: [true],
     triggerReload: 1
@@ -529,7 +537,8 @@ export default {
     ...mapGetters([
       'roleItems',
       'statusItems',
-      's3'
+      's3',
+      'itemsPerPageOptions'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -561,6 +570,11 @@ export default {
         {
           text: this.$t('state'),
           value: 'status',
+          align: 'center'
+        },
+        {
+          text: this.$t('dt'),
+          value: 'createdAt',
           align: 'center'
         },
         { text: this.$t('role'), width: 150, value: 'role' },

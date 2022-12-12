@@ -1,13 +1,73 @@
 import i18n from '@/i18n.js'
 import Store from '@/store'
+import Vue from 'vue'
+import Cookies from 'js-cookie'
+const appMode = process.env.VUE_APP_MODE
+const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
 
 const state = {
   hasMatomo: false,
   isDisconnected: true,
-  currentLanguage: 'de',
   userCount: undefined,
   firstLoad: true,
   showTour: true,
+  moduleVisibilities: {},
+  cancelledTour: false,
+  itemsPerPageOptions: [10, 25, 50, 100, -1],
+  i18nMap: {
+    rs: 'sr',
+    ua: 'uk'
+  },
+  isModuleActiveOrDependency (moduleKey) {
+    if (!Vue.prototype.$settings) {
+      return false
+    }
+    if (
+      Vue.prototype.$settings.modules[moduleKey].isActive ||
+      (
+        Vue.prototype.$settings.modules[moduleKey].dependents && Vue.prototype.$settings.modules[moduleKey].dependents.length > 0 &&
+        Vue.prototype.$settings.modules[moduleKey].dependents.map(depKey => Vue.prototype.$settings.modules[depKey]).find(dependent => dependent.isActive)
+      )
+    ) {
+      return true
+    } else {
+      return false
+    }
+  },
+  async setLanguage (languageCode) {
+    // Update cookie
+    document.cookie = Cookies.set('clientLanguage', languageCode, {
+      domain: serverDomain,
+      path: '/',
+      sameSite: appMode === 'production' ? 'None' : 'Lax',
+      secure: appMode === 'production',
+      expires: 365 * 100
+    })
+    // Update user language
+    const user = Store.getters['auth/user']
+    if (user && user._id) {
+      Store.dispatch('users/patch', [
+        user._id,
+        {
+          language: languageCode
+        }
+      ])
+    }
+    // Refresh page
+    document.location.reload(true)
+  },
+  parseRgbString (str) {
+    const vals = str.substring(str.indexOf('(') + 1, str.length - 1).split(', ')
+    return {
+      r: vals[0],
+      g: vals[1],
+      b: vals[2]
+    }
+  },
+  resolveProperty (path, obj = self, separator = '.') {
+    const properties = Array.isArray(path) ? path : path.split(separator)
+    return properties.reduce((prev, curr) => prev && prev[curr], obj)
+  },
   deepSort: function (sortBy, sortDesc, arr) {
     const prop = sortBy.split('.')
     const len = prop.length
@@ -43,10 +103,11 @@ const state = {
             return tag
           } else {
             Store.dispatch('logging/create', { type: 'error', route: window.location.pathname, user: (Store.getters['auth/user'] ? Store.getters['auth/user']._id : '-'), method: 'getTags', message: 'Not existant tag: ' + obj })
+            return false
           }
         })
         .filter(obj => !!obj)
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => a.text.value.localeCompare(b.text.value))
     } else {
       return []
     }
@@ -60,10 +121,11 @@ const state = {
             return category
           } else {
             Store.dispatch('logging/create', { type: 'error', route: window.location.pathname, user: (Store.getters['auth/user'] ? Store.getters['auth/user']._id : '-'), method: 'getCategories', message: 'Not existant category: ' + obj })
+            return false
           }
         })
         .filter(obj => !!obj)
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => a.text.value.localeCompare(b.text.value))
     } else {
       return []
     }
@@ -74,6 +136,40 @@ const state = {
     } else {
       return text
     }
+  },
+  reduceTranslations: function (data, language, properties) {
+    for (const property of properties) {
+      if (data[property] && Array.isArray(data[property])) {
+        const dataProperty = data[property].find(translation => translation && translation.lang === language)
+        if (dataProperty) {
+          data[property] = dataProperty
+        } else if (data[property].find(translation => translation && translation.type === 'default')) {
+          data[property] = data[property].find(translation => translation && translation.type === 'default')
+        } else {
+          data[property] = {
+            value: i18n.t('noDefaultValue'),
+            type: 'error'
+          }
+        }
+      }
+    }
+    return data
+  },
+  hydrateTranslations: function (data) {
+    let tmpLanguages = JSON.parse(JSON.stringify(data || []))
+    if (!Array.isArray(tmpLanguages)) {
+      tmpLanguages = [tmpLanguages]
+    }
+    for (const language of Vue.prototype.$settings.languages) {
+      if (!tmpLanguages.find(obj => obj.lang === language)) {
+        tmpLanguages.push({
+          type: i18n.fallbackLocale === language ? 'default' : 'author',
+          lang: language,
+          value: ''
+        })
+      }
+    }
+    return tmpLanguages
   },
   rules: {
     required: value => !!value || i18n.t('rulesRequired'),
@@ -156,14 +252,44 @@ const state = {
 }
 
 const getters = {
+  i18nMap: state => {
+    return state.i18nMap
+  },
+  setLanguage: state => {
+    return state.setLanguage
+  },
+  moduleVisibilities: state => {
+    return state.moduleVisibilities
+  },
+  isModuleActiveOrDependency: state => {
+    return state.isModuleActiveOrDependency
+  },
+  itemsPerPageOptions: state => {
+    return state.itemsPerPageOptions
+  },
   hasMatomo: state => {
     return state.hasMatomo
+  },
+  cancelledTour: state => {
+    return state.cancelledTour
   },
   showTour: state => {
     return state.showTour
   },
   newTab: state => {
     return state.newTab
+  },
+  reduceTranslations: state => {
+    return state.reduceTranslations
+  },
+  hydrateTranslations: state => {
+    return state.hydrateTranslations
+  },
+  parseRgbString: state => {
+    return state.parseRgbString
+  },
+  resolveProperty: state => {
+    return state.resolveProperty
   },
   deepSort: state => {
     return state.deepSort
@@ -179,9 +305,6 @@ const getters = {
   },
   isDisconnected: state => {
     return state.isDisconnected
-  },
-  currentLanguage: state => {
-    return state.currentLanguage
   },
   rules: state => {
     return state.rules
@@ -225,6 +348,12 @@ const getters = {
 }
 
 const mutations = {
+  SET_MODULE_VISIBILITIES: (state, msg) => {
+    state.moduleVisibilities = msg
+  },
+  SET_CANCELLED_TOUR: (state, msg) => {
+    state.cancelledTour = msg
+  },
   SET_SHOW_TOUR: (state, msg) => {
     state.showTour = msg
   },

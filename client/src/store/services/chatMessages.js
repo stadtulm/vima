@@ -28,7 +28,8 @@ const servicePath = 'chat-messages'
 const servicePlugin = makeServicePlugin({
   Model: chatMessages,
   service: feathersClient.service(servicePath),
-  servicePath
+  servicePath,
+  whitelist: ['$exists']
 })
 
 // Setup the client-side Feathers hooks.

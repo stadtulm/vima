@@ -1,6 +1,6 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedAd"
     :to="adProp ? { name: 'Ad', params: { id: computedAd._id }} : ''"
   >
@@ -16,9 +16,16 @@
           <v-col>
             <!-- Title -->
             <v-card-title
-              class="word-wrap"
+              class="word-wrap mb-3"
             >
-              {{computedAd.title}}
+              <TranslatableText
+                ownField="title"
+                :allFields="['title', 'text']"
+                type="ads"
+                :allIds="allAdIds"
+                :textParent="computedAd"
+              >
+              </TranslatableText>
               <v-tooltip
                 right
                 color="customGrey"
@@ -31,14 +38,15 @@
                     v-bind="attrs"
                     v-on="on"
                     color="#fff"
-                    class="customCyan--text ml-3"
+                    class="ml-3"
+                    :style="'color:' + $settings.modules.ads.bgColor"
                     icon
                     :disabled="user ? false : true"
                     @click="toggleAdSubscription()"
                     :title="$t(computedAdStatus.textKey)"
                   >
                     <v-icon
-                      color="customCyan"
+                      :color="$settings.modules.ads.color"
                     >
                       {{computedAdStatus.value === 'subscriber' ? 'fas fa-star' : 'far fa-star'}}
                     </v-icon>
@@ -64,11 +72,24 @@
                 </span>
               </v-tooltip>
             </v-card-title>
-            <!-- Subtitle -->
+            <!-- Info -->
             <v-card-subtitle
               class="pb-1"
             >
-              {{computedAd.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}} vom {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}}
+              {{computedAd.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}}
+              {{$t('from')}} {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}}
+              <template
+                v-if="user"
+              >
+                {{$t('by')}}
+                <v-btn
+                  text
+                  class="px-1"
+                  @click="$router.push({name: 'User', params: { user: computedAd.author.user._id} })"
+                >
+                {{computedAd.author.user.userName}}
+                </v-btn>
+              </template>
             </v-card-subtitle>
           </v-col>
           <v-col
@@ -80,15 +101,15 @@
           >
             <!-- View more button -->
             <v-btn
-              class="customCyan--text"
+              :style="'color:' + $settings.modules.ads.color"
               :class="$vuetify.breakpoint.mdAndUp ? '' : 'mx-4 mb-4'"
-              :to="{ name: 'Ad', params: { id: computedAd._id }}"
+              :to="{ name: 'Ad', params: { id: computedAd._id } }"
             >
               {{$t('viewButton')}}
               <v-icon
                 class="ml-3"
                 size="18"
-                color="customCyan"
+                :color="$settings.modules.ads.color"
               >
                 fas fa-arrow-right
               </v-icon>
@@ -101,16 +122,17 @@
           v-if="computedAd.categories && computedAd.categories.length > 0"
         >
           <v-col
-            class="mx-4"
+            class="mx-4 mt-2"
           >
             <v-chip
               outlined
               v-for="category in getCategories(computedAd.categories)"
               :key="category._id"
               class="mr-1"
-              @click="$emit('selectCategory', category._id)"
+              :disabled="!adProp"
+              @click.prevent="$emit('selectCategory', category._id)"
             >
-            {{category.name}}
+            {{category.text.value}}
             </v-chip>
           </v-col>
         </v-row>
@@ -126,18 +148,64 @@
               v-for="tag in getTags(computedAd.tags)"
               :key="tag._id"
               class="mr-1"
-              @click="$emit('selectTag', tag._id)"
+              :disabled="!adProp"
+              @click.prevent="$emit('selectTag', tag._id)"
             >
-            {{tag.name}}
+            {{tag.text.value}}
             </v-chip>
           </v-col>
         </v-row>
         <!-- Description -->
         <v-row>
-          <v-col
-            class="body-1 mx-4"
-            v-html="adProp ? truncatedDescription(newTab(computedAd.text)) : $sanitize(newTab(computedAd.text))"
-          ></v-col>
+          <TranslatableText
+            ownField="text"
+            :allFields="['title', 'text']"
+            type="ads"
+            :allIds="allAdIds"
+            :textParent="computedAd"
+          >
+            <template
+              v-slot:defaultLang="{ computedText, translateText }"
+            >
+              <v-col
+                class="body-1 mx-4"
+              >
+                <span
+                  v-html="adProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
+                ></span>
+                <TranslatableTextInfo
+                  :canTranslate="true"
+                  :canShowOriginal="false"
+                  @translateText="(data) => { translateText(data) }"
+                ></TranslatableTextInfo>
+              </v-col>
+            </template>
+            <template
+              v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+            >
+              <v-col
+                class="pb-0"
+              >
+                <v-sheet
+                  class="ma-4 pa-1 px-3"
+                >
+                  <TranslatableTextInfo
+                    :canTranslate="false"
+                    :canShowOriginal="true"
+                    :needsUpdate="computedAd.translationSum !== computedText.translationSum"
+                    @showOriginal="(data) => { showOriginal(data) }"
+                    @translateText="(data) => { translateText(data) }"
+                  ></TranslatableTextInfo>
+                  <span
+                    v-html="adProp ?
+                      $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
+                      truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
+                    "
+                  ></span>
+                </v-sheet>
+              </v-col>
+            </template>
+          </TranslatableText>
         </v-row>
       </v-col>
       <v-col
@@ -215,7 +283,7 @@
             class="mx-4 mb-2"
             dark
             icon="fas fa-info-circle"
-            color="customCyan"
+            :color="$settings.modules.ads.color"
           >
             <v-row>
               <v-col>
@@ -265,7 +333,7 @@
             class="mx-4 mb-2"
             dark
             icon="fas fa-info-circle"
-            color="customCyan"
+            :color="$settings.modules.ads.color"
           >
             <v-row>
               <v-col>
@@ -314,7 +382,7 @@
                             :loading="isSending"
                             :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                             @click="sendMessage()"
-                            color="customCyan"
+                            :color="$settings.modules.ads.color"
                             class="mx-1"
                             style="margin-top: -5px;"
                           >
@@ -351,15 +419,20 @@
 <script>
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
+import TranslatableText from '@/components/TranslatableText.vue'
+import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 
 export default {
   name: 'AdCard',
 
   components: {
+    TranslatableText,
+    TranslatableTextInfo
   },
 
   props: [
-    'adProp'
+    'adProp',
+    'allAdIds'
   ],
 
   data: () => ({
@@ -390,7 +463,7 @@ export default {
       text = this.$sanitize(text)
       text = text.replaceAll('<p>', '')
       text = text.replaceAll('</p>', '&nbsp;')
-      var div = document.createElement('div')
+      const div = document.createElement('div')
       div.innerHTML = text
       let tmpStr = div.innerText
       if (tmpStr && tmpStr.length > len) {
@@ -436,7 +509,10 @@ export default {
           {
             ad: this.computedAd._id,
             author: this.user._id,
-            text: this.message
+            text: [{
+              value: this.message,
+              type: 'default'
+            }]
           }
         )
         this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
@@ -464,9 +540,6 @@ export default {
     }),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
-    }),
-    ...mapGetters('chat-messages', {
-      getChatMessage: 'get'
     }),
     ...mapGetters('categories', {
       categories: 'list',

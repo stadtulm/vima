@@ -7,7 +7,7 @@
         cols="12"
       >
         <v-card
-          color="customGreyBg"
+          color="customGreyUltraLight"
           tile
         >
           <v-card-text>
@@ -48,7 +48,7 @@
                     dense
                     outlined
                     :label="$t('headline')"
-                    color="customTeal"
+                    :color="$settings.modules.discussions.color"
                     background-color="#fff"
                     v-model="title"
                     :rules="[rules.required]"
@@ -64,15 +64,15 @@
                 <v-col>
                   <v-select
                     dense
-                    color="customTeal"
-                    item-color="customTeal"
+                    :color="$settings.modules.discussions.color"
+                    :item-color="$settings.modules.discussions.color"
                     background-color="#fff"
                     outlined
                     v-model="group"
                     item-text="title"
                     item-value="_id"
                     :label="$t('group')"
-                    :items="[{ title: $t('none'), _id: null}].concat(computedGroups)"
+                    :items="[{ title: $t('none'), _id: null}].concat(computedGroups.map(group => ({ _id: group._id, title: group.title.value })))"
                     :disabled="user.role !== 'admins'"
                   >
                   </v-select>
@@ -80,21 +80,20 @@
               </v-row>
               <v-row
                 dense
-                v-if="!group"
               >
                 <v-col>
                   <v-select
                     dense
                     multiple
-                    color="customTeal"
-                    item-color="customTeal"
+                    :color="$settings.modules.discussions.color"
+                    :item-color="$settings.modules.discussions.color"
                     background-color="#fff"
                     outlined
                     v-model="selectedCategories"
-                    item-text="name"
+                    item-text="text.value"
                     item-value="_id"
                     :label="$t('categories')"
-                    :items="categories.sort((a, b) => a.name.localeCompare(b.name))"
+                    :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
                     :rules="[rules.minOneCategory, rules.maxThreeCategories]"
                   >
                   </v-select>
@@ -113,15 +112,15 @@
                     deletable-chips
                     auto-select-first
                     hide-details
-                    color="customTeal"
-                    item-color="customTeal"
+                    :color="$settings.modules.discussions.color"
+                    :item-color="$settings.modules.discussions.color"
                     background-color="#fff"
                     outlined
                     v-model="selectedTags"
-                    item-text="name"
+                    item-text="text.value"
                     item-value="_id"
                     :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
-                    :items="computedTags.sort((a, b) => a.name.localeCompare(b.name))"
+                    :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
                   >
                   </v-autocomplete>
                 </v-col>
@@ -131,7 +130,7 @@
                 >
                   <v-btn
                     text
-                    color="customTeal"
+                    :color="$settings.modules.discussions.color"
                     @click="showTagProposalDialog = true"
                   >
                     {{$t('proposeNewTags')}}
@@ -153,7 +152,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyBg"
+                    color="customGreyUltraLight"
                   >
                     <v-row>
                       <v-col
@@ -180,7 +179,7 @@
                                 disableInputRules: true,
                                 disablePasteRules: true
                               }"
-                              color="customGreyBg"
+                              color="customGreyUltraLight"
                               v-model="description"
                               :card-props="{ tile: true, flat: true }"
                               :extensions="extensions"
@@ -203,7 +202,7 @@
                 >
                   <v-card
                     flat
-                    color="customGreyBg"
+                    color="customGreyUltraLight"
                   >
                     <v-row>
                       <v-col
@@ -219,86 +218,25 @@
                       <v-col
                         cols="12"
                         tabIndex="0"
-                        @keypress="$refs.vueDropzonePics.$el.click()"
+                        @keypress="$refs.discussionUpload.fakeClick()"
                       >
-                        <vue-dropzone
-                          id="vueDropzonePics"
-                          ref="vueDropzonePics"
-                          :options="dropzoneOptionsPics"
-                          :headers="dropzoneOptionsPics.headers"
-                          @vdropzone-success="uploadSuccessPics"
-                          @vdropzone-removed-file="removeFilePics"
-                          @vdropzone-mounted="dropzoneMountedPics"
-                          @vdropzone-queue-complete="queueComplete"
-                          @vdropzone-files-added="updateQueuedFiles"
-                          @vdropzone-sending="addUuid"
-                          :destroyDropzone="false"
-                        >
-                        </vue-dropzone>
+                        <FileUpload
+                          ref="discussionUpload"
+                          v-model="pics"
+                          @fileRemove="patchFileRemove"
+                          @fileAdd="$nextTick(() => { $refs.discussionEditorForm.validate() })"
+                          :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                          :maxFileSize="2"
+                          :maxFiles="10"
+                          bgColor="white"
+                          :scaleToFit="[1080, 1080]"
+                          :resizeQuality="50"
+                        ></FileUpload>
                       </v-col>
                     </v-row>
                   </v-card>
                 </v-col>
               </v-row>
-              <v-row
-                v-if="pics && pics.length > 0"
-              >
-                <v-col
-                  cols="12"
-                >
-                  <v-card
-                    flat
-                    color="customGreyBg"
-                  >
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        class="subtitle-1"
-                      >
-                        {{$t('copyrightOwner')}}
-                      </v-col>
-                    </v-row>
-                    <v-row
-                      dense
-                    >
-                      <v-col>
-                        <v-alert
-                          outlined
-                          icon="fas fa-info-circle"
-                          color="customGrey"
-                          dark
-                        >
-                          {{$t('publicHint')}}
-                        </v-alert>
-                        </v-col>
-                      </v-row>
-                      <v-row
-                        dense
-                        v-for="(pic, i) in pics"
-                        :key="i"
-                        class="align-center"
-                      >
-                        <v-col
-                          cols="12"
-                        >
-                          <v-text-field
-                            dense
-                            color="customTeal"
-                            v-model="pic.credit"
-                            :label="$t('copyrightOwner') + ' ' + $t('pic') + ' ' + (i + 1)"
-                            outlined
-                            :rules="[rules.required]"
-                            background-color="#fff"
-                          >
-                          </v-text-field>
-                        </v-col>
-                    </v-row>
-                  </v-card>
-                </v-col>
-              </v-row>
-              <v-divider
-                :class="isQueued ? 'mb-9 mt-3' : 'my-9'"
-              ></v-divider>
             </v-form>
             <v-card-actions
               class="px-0"
@@ -306,7 +244,7 @@
               <v-btn
                 block
                 :dark="isValid"
-                color="customTeal"
+                :color="$settings.modules.discussions.color"
                 :loading="isLoading"
                 :disabled="!isValid"
                 @click="saveOrWarn()"
@@ -325,7 +263,7 @@
       max-width="600"
     >
       <v-card
-        color="customGreyBg"
+        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -364,7 +302,7 @@
             <v-btn
               @click="prepareSaveDiscussion()"
               dark
-              color="customTeal"
+              :color="$settings.modules.discussions.color"
             >
               {{$t('understoodButton')}}
             </v-btn>
@@ -382,27 +320,23 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import vue2Dropzone from 'vue2-dropzone'
-import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+import FileUpload from '@/components/FileUpload.vue'
 import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TagProposalDialog from '@/components/TagProposalDialog.vue'
-
-const server = process.env.VUE_APP_SERVER_URL
 
 export default {
   name: 'DiscussionEditor',
 
   components: {
-    vueDropzone: vue2Dropzone,
     TiptapVuetify,
-    TagProposalDialog
+    TagProposalDialog,
+    FileUpload
   },
 
   data: () => ({
     showTagProposalDialog: false,
     selectedTags: [],
     group: undefined,
-    isQueued: false,
     showAcceptDialog: false,
     selectedDiscussion: undefined,
     selectedCategories: [],
@@ -412,11 +346,6 @@ export default {
     title: undefined,
     description: undefined,
     pics: [],
-    mockFile: {
-      name: '',
-      size: '',
-      type: ''
-    },
     extensions: [
       Bold,
       Italic,
@@ -438,6 +367,9 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    ...mapMutations('groups', {
+      updateGroupItem: 'updateItem'
+    }),
     ...mapActions('discussions', {
       patchDiscussion: 'patch',
       createDiscussion: 'create',
@@ -449,6 +381,28 @@ export default {
     ...mapActions('groups', {
       findGroups: 'find'
     }),
+    async patchFileRemove (file) {
+      this.isLoading = true
+      try {
+        await this.patchDiscussion([
+          this.selectedDiscussion._id,
+          {
+            $pull: {
+              pics: {
+                _id: file._id
+              }
+            }
+          }
+        ])
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.adapt()
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.adapt()
+      }
+    },
     saveOrWarn () {
       if (this.group) {
         const userRelationContainers = this.statusContainers.filter(obj =>
@@ -473,64 +427,9 @@ export default {
         }
       }
     },
-    async getAllGroups (existingGroups, skip) {
-      const tmpGroups = await this.findGroups(
-        {
-          query: {
-            _id: {
-              $in: [...new Set(this.statusContainers.filter(
-                obj => obj.type === 'groups' &&
-                  obj.user === this.user._id &&
-                  (
-                    obj.relation === 'owner' ||
-                    obj.relation === 'member'
-                  )
-              ).map(obj => obj.reference))]
-            },
-            $select: { title: 1 },
-            $skip: skip,
-            $limit: 1
-          }
-        }
-      )
-      existingGroups.push(...tmpGroups.data)
-      if (tmpGroups.total > tmpGroups.limit + tmpGroups.skip) {
-        skip += tmpGroups.limit
-        return this.getAllGroups(existingGroups, skip)
-      } else {
-        return existingGroups
-      }
-    },
     prepareSaveDiscussion () {
       this.showAcceptDialog = false
       this.saveDiscussion()
-    },
-    addUuid (file, xhr, formData) {
-      formData.append('uuid', file.upload.uuid)
-    },
-    updateQueuedFiles (files) {
-      this.isQueued = true
-      this.$nextTick(() => {
-        for (const file of files) {
-          if (file.status !== 'error') {
-            this.pics.push(
-              {
-                credit: undefined,
-                url: file.upload.uuid
-              }
-            )
-          }
-        }
-      })
-    },
-    dropzoneMountedPics () {
-      if (this.selectedDiscussion && this.selectedDiscussion.pics) {
-        for (const pic of this.selectedDiscussion.pics) {
-          const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
-          tmpMockFile.name = pic.url
-          this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + pic.url)
-        }
-      }
     },
     async adapt () {
       if (this.$route.params.id) {
@@ -541,8 +440,8 @@ export default {
         this.selectedDiscussion = selectedDiscussion
       }
       if (this.selectedDiscussion) {
-        this.title = this.selectedDiscussion.title
-        this.description = this.selectedDiscussion.description
+        this.title = this.selectedDiscussion.title.value
+        this.description = this.selectedDiscussion.description.value
         this.selectedCategories = this.selectedDiscussion.categories
         this.selectedTags = this.selectedDiscussion.tags
         if (this.selectedDiscussion.pics) {
@@ -558,95 +457,49 @@ export default {
         this.group = this.$route.params.group
       }
     },
-    async uploadSuccessPics (file, response) {
-      if (file.status === 'success') {
-        this.$set(this.pics.find(obj => obj.url === response.uuid), 'uuid', response.uuid)
-        this.$set(this.pics.find(obj => obj.url === response.uuid), 'url', response.id)
-      }
-    },
-    queueComplete () {
-      if (this.isQueued) {
-        let hasErrors = false
-        for (const file of this.$refs.vueDropzonePics.getAcceptedFiles()) {
-          const newPic = this.pics.find(obj => obj.uuid === file.upload.uuid)
-          if (!newPic) {
-            file.previewElement.querySelector('.dz-error-message > span').innerHTML = this.$t('uploadFailed')
-            hasErrors = true
-            if (this.isLoading) {
-              this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-            }
-          }
-          if (hasErrors) {
-            this.isLoading = false
-            return
-          }
-          this.$refs.vueDropzonePics.removeFile(file)
-          const tmpMockFile = JSON.parse(JSON.stringify(this.mockFile))
-          tmpMockFile.name = newPic.url
-          this.$refs.vueDropzonePics.manuallyAddFile(tmpMockFile, this.s3 + newPic.url)
-        }
-        this.isQueued = false
-        if (this.isLoading) {
-          this.saveDiscussion()
-        }
-      }
-    },
-    async removeFilePics (file, error, xhr) {
-      try {
-        if (file.status === 'queued') {
-          if (this.$refs.vueDropzonePics.getQueuedFiles().length === 0) {
-            this.isQueued = false
-          }
-        } else if (file.status !== 'error') {
-          if (this.selectedDiscussion) {
-            await this.removeUpload([file.name, {}, {}])
-            let tmpPictures = []
-            if (this.selectedDiscussion && this.selectedDiscussion.pics) {
-              tmpPictures = this.selectedDiscussion.pics
-            }
-            tmpPictures = tmpPictures.filter(obj => obj.url !== file.name)
-            await this.patchDiscussion([this.selectedDiscussion._id, { pics: tmpPictures }, {}])
-            this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-          }
-        } else if (this.isLoading) {
-          throw error
-        }
-        const index = this.pics.findIndex(obj => obj.url === file.upload?.uuid || obj.url === file.name)
-        if (index !== -1) {
-          this.pics.splice(index, 1)
-        }
-      } catch (e) {
-        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-      }
-    },
     async saveDiscussion () {
       this.isLoading = true
-      if (this.isQueued) {
-        await this.$refs.vueDropzonePics.processQueue()
-      } else {
-        const map = {
-          title: this.title,
-          description: this.description,
-          categories: this.selectedCategories,
-          group: this.group,
-          tags: this.selectedTags
-        }
-        if (this.pics) {
-          map.pics = this.pics
-        }
-        try {
-          if (this.$route.params.id) {
-            await this.patchDiscussion([this.$route.params.id, map, {}])
-          } else {
-            await this.createDiscussion([map, {}])
+      // Do uploads
+      try {
+        await this.$refs.discussionUpload.upload()
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
+      }
+      // Prepare map
+      const map = {
+        title: [
+          {
+            value: this.title,
+            type: 'default'
           }
-          this.isLoading = false
-          this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-          this.$router.go(-1)
-        } catch (e) {
-          this.isLoading = false
-          this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        ],
+        description: [
+          {
+            value: this.description,
+            type: 'default'
+          }
+        ],
+        categories: this.selectedCategories,
+        group: this.group,
+        tags: this.selectedTags
+      }
+      if (this.pics) {
+        map.pics = this.pics
+      }
+      try {
+        if (this.$route.params.id) {
+          await this.patchDiscussion([this.$route.params.id, map, {}])
+        } else {
+          await this.createDiscussion([map, {}])
         }
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.$router.go(-1)
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
     }
   },
@@ -654,7 +507,8 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'reduceTranslations'
     ]),
     ...mapGetters('discussions', {
       getDiscussion: 'get'
@@ -672,30 +526,8 @@ export default {
       tags: 'list'
     }),
     computedTags () {
-      return this.tags.filter(obj => obj.isActive && obj.isAccepted)
-    },
-    dropzoneOptionsPics () {
-      return {
-        url: server + 'uploads',
-        maxFilesize: 2,
-        maxFiles: 10,
-        paramName: 'uri',
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('feathers-jwt')
-        },
-        autoProcessQueue: false,
-        addRemoveLinks: true,
-        dictDefaultMessage: '<i style="font-size: 40px" class="fas fa-images"></i><br><br><span class="v-label"><span class="font-weight-bold">' + this.$t('dropFilesHeadline', { filesize: '2' }) + '</span><br><br>' + this.$t('dropFilesBody', { resolution: '1400x400' }) + '</span>',
-        dictRemoveFile: '<i style="font-size: 40px" class="fas fa-times"></i>',
-        dictCancelUpload: '<i style="font-size: 40px" class="fas fa-times"></i>',
-        dictFileTooBig: this.$t('fileTooBigError'),
-        dictInvalidFileType: this.$t('fileTypeNotAcceptedError'),
-        dictMaxFilesExceeded: this.$t('noMorePicsError'),
-        acceptedMimeTypes: 'image/png, image/jpeg',
-        resizeWidth: 1080,
-        resizeMethod: 'contain',
-        resizeQuality: 0.5
-      }
+      return this.tags
+        .filter(obj => obj.isActive && obj.isAccepted)
     },
     computedGroups () {
       if (this.requestedGroups) {
@@ -708,7 +540,23 @@ export default {
 
   asyncComputed: {
     async requestedGroups () {
-      return await this.getAllGroups([], 0)
+      return await this.findGroups(
+        {
+          query: {
+            _id: {
+              $in: [...new Set(this.statusContainers.filter(
+                obj => obj.type === 'groups' &&
+                  obj.user === this.user._id &&
+                  (
+                    obj.relation === 'owner' ||
+                    obj.relation === 'member'
+                  )
+              ).map(obj => obj.reference))]
+            }
+          },
+          $paginate: false
+        }
+      )
     }
   },
 
@@ -716,13 +564,6 @@ export default {
     group () {
       if (this.group) {
         this.selectedCategories = []
-      }
-    },
-    pics () {
-      if (this.$refs.discussionEditorForm) {
-        this.$nextTick(() => {
-          this.$refs.discussionEditorForm.validate()
-        })
       }
     },
     description () {

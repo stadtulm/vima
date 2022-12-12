@@ -24,6 +24,7 @@
             :src="'/pics/people/' + i + '.jpeg'"
             :alt="$t('welcomePic')"
             title="© ILEU e.V."
+            class="bordered"
           >
           </v-img>
         </v-col>
@@ -50,11 +51,104 @@
                       <v-row>
                         <v-col
                           cols="12"
+                        >
+                          <LanguageSelect
+                            :isMainSwitch="true"
+                            :currentLanguage="$i18n.locale"
+                            @setLanguage="setLanguageAtHome"
+                          ></LanguageSelect>
+                        </v-col>
+                      </v-row>
+                      <v-alert
+                        dismissible
+                        class="my-3"
+                        color="customGreyMedium"
+                      >
+                      <span>
+                        {{$t('howToSwitchLanguage')}}
+                        <br><br>
+                        <v-row>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            md="3"
+                          >
+                            <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_DE.pdf" target="_blank">
+                              <v-icon
+                                class="mr-2 mb-1"
+                              >
+                                fas fa-file-pdf
+                              </v-icon>
+                              DE
+                            </a>
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            md="3"
+                          >
+                            <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_EN.pdf" target="_blank">
+                              <v-icon
+                                class="mr-2 mb-1"
+                              >
+                                fas fa-file-pdf
+                              </v-icon>
+                              EN
+                            </a>
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            md="3"
+                          >
+                            <a href="/downloads/ViMA-Danube_How to translate_Tekste_UKR.pdf" target="_blank">
+                              <v-icon
+                                class="mr-2 mb-1"
+                              >
+                                fas fa-file-pdf
+                              </v-icon>
+                              UKR
+                            </a>
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            md="3"
+                          >
+                            <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_RO.pdf" target="_blank">
+                              <v-icon
+                                class="mr-2 mb-1"
+                              >
+                                fas fa-file-pdf
+                              </v-icon>
+                              RO
+                            </a>
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            md="3"
+                          >
+                            <a href="/downloads/ViMA-Danube_Translation Manual_BG.pdf" target="_blank">
+                              <v-icon
+                                class="mr-2 mb-1"
+                              >
+                                fas fa-file-pdf
+                              </v-icon>
+                              BG
+                            </a>
+                          </v-col>
+                        </v-row>
+                      </span>
+                      </v-alert>
+                      <v-row>
+                        <v-col
+                          cols="12"
                           class="text-h4 font-weight-bold mt-4 customGrey--text"
                         >
                           {{$t('welcomeHeadline')}}
                           <img
-                            src="/pics/logo.svg"
+                            :src="$settings && $settings.headerLogo ? s3 + $settings.headerLogo.url : '/pics/vima.svg'"
                             height="35px"
                             style="margin-bottom: -1px"
                             alt="Vima Logo"
@@ -64,7 +158,7 @@
                           cols="12"
                           class="title customGrey--text font-weight-bold"
                         >
-                          {{$t('sloganUlm')}}
+                          {{$t('sloganHome')}}
                         </v-col>
                       </v-row>
                     </v-col>
@@ -78,29 +172,52 @@
                           class="subtitle-1 customGrey--text"
                         >
                           <p>
-                            <span class="pointer font-weight-bold" @click="$router.push({ name: 'Vima' })">{{$t('vima')}}</span>{{$t('homeWelcome1')}}
+                            <span
+                              class="pointer font-weight-bold"
+                              @click="$router.push({ name: 'Vima' })"
+                            >
+                              {{$t('vima')}}
+                            </span>
+                            <span v-html="$t('homeWelcomeAbout')"></span>
                           </p>
-                          <p>
-                            {{$t('homeWelcome2')}}<span class="pointer font-weight-bold" @click="$router.push({ name: 'Ileu' })">{{$t('ileu')}}</span>{{$t('homeWelcome3')}}<span class="pointer font-weight-bold" @click="$router.push({ name: 'Vives' })">{{$t('vives')}}</span>.
+                          <p
+                            v-html="$t('homeWelcomePartners')"
+                          >
                           </p>
-                          <p>
-                            {{$t('homeWelcome4')}}
+                          <p
+                            v-html="$t('homeWelcomeBeta')"
+                          >
                           </p>
                         </v-col>
                       </v-row>
+                      <v-alert
+                        v-if="isDisconnected"
+                        color="customGreyUltraLight"
+                      >
+                        <template v-slot:prepend>
+                          <v-progress-circular
+                            size="18"
+                            width="2"
+                            indeterminate
+                            class="mr-4"
+                          ></v-progress-circular>
+                        </template>
+                        {{$t('connectingToServer')}}
+                      </v-alert>
                       <v-row>
                         <v-col
                           cols="12"
                           md="6"
                         >
                           <v-btn
+                            v-if="!isDisconnected"
                             color="customGrey"
                             dark
                             large
                             class="mr-3 mb-3"
                             :to="{name: 'Participate'}"
                           >
-                            {{$t('tourButton')}}
+                            {{$t('participate')}}
                           </v-btn>
                           <v-btn
                             color="customGrey"
@@ -112,6 +229,29 @@
                           >
                             {{$t('introductionVideo')}}
                           </v-btn>
+                        </v-col>
+                      </v-row>
+                      <v-row
+                        v-if="!isDisconnected && computedShowHelpButton"
+                      >
+                        <v-col
+                          cols="12"
+                        >
+                          <v-sheet
+                            color="yellow"
+                            class="pa-5"
+                          >
+                            <v-btn
+                              color="blue"
+                              dark
+                              x-large
+                              block
+                              class="mr-3"
+                              :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
+                            >
+                              {{$t("help_title")}}
+                            </v-btn>
+                          </v-sheet>
                         </v-col>
                       </v-row>
                       <v-row>
@@ -151,11 +291,15 @@
 <script>
 
 import { mapGetters } from 'vuex'
+import LanguageSelect from '@/components/LanguageSelect.vue'
+
+const showHelpButtons = process.env.VUE_APP_SHOW_HELP_BUTTON
 
 export default {
   name: 'Home',
 
   components: {
+    LanguageSelect
   },
 
   data: () => ({
@@ -165,9 +309,21 @@ export default {
   },
 
   methods: {
+    getImageSrc (src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.src = src
+      })
+    },
+    setLanguageAtHome (languageKey) {
+      localStorage.removeItem('skipWelcome')
+      this.setLanguage(languageKey)
+    },
     shuffle () {
       const array = []
-      for (let i = 0; i < 10; ++i) {
+      for (let i = 0; i < this.computedPicLength; ++i) {
         array[i] = i + 1
       }
       let tmp
@@ -192,16 +348,46 @@ export default {
 
   computed: {
     ...mapGetters([
-      'currentLanguage'
+      'isDisconnected',
+      's3',
+      'setLanguage'
     ]),
+    computedShowHelpButton () {
+      return showHelpButtons
+    },
     computedPics () {
       const picSet = this.shuffle()
       let pics = []
-      for (let i = 0; i < 10; ++i) {
+      for (let i = 0; i < this.computedPicLength; ++i) {
         pics = pics.concat(picSet)
       }
       return pics
+    },
+    computedPicLength () {
+      return this.asyncComputedPicLength || 0
+    }
+  },
+  asyncComputed: {
+    async asyncComputedPicLength () {
+      let i = 0
+      await (async () => {
+        while (i < 100) {
+          i++
+          try {
+            await this.getImageSrc('/pics/people/' + i + '.jpeg')
+          } catch (e) {
+            break
+          }
+        }
+      })()
+      return i - 1
     }
   }
 }
 </script>
+
+<style>
+.bordered {
+  border: 1px solid black;
+}
+</style>

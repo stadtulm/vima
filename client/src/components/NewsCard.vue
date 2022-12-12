@@ -1,6 +1,6 @@
 <template>
   <v-card
-    color="customGreyBg"
+    color="customGreyUltraLight"
     v-if="computedNewsEntry"
   >
     <v-card-text
@@ -64,16 +64,18 @@
     <v-card-title
       class="word-wrap"
     >
-      {{computedNewsEntry.title}}
+      {{computedNewsEntry.title.value}}
     </v-card-title>
-    <v-card-subtitle>
-      {{computedNewsEntry.subTitle}}
+    <v-card-subtitle
+      v-if="computedNewsEntry.subTitle"
+    >
+      {{computedNewsEntry.subTitle.value}}
     </v-card-subtitle>
       <v-card-text>
       <v-row>
         <v-col
           class="body-1"
-          v-html="newsProp ? truncatedDescription(newTab(computedNewsEntry.text.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedNewsEntry.text.replace(/\{(.+?)\}/g, '')))"
+          v-html="newsProp ? truncatedDescription(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, '')))"
         ></v-col>
       </v-row>
       <v-row
@@ -223,7 +225,7 @@ export default {
       text = this.$sanitize(text)
       text = text.replaceAll('<p>', '')
       text = text.replaceAll('</p>', '&nbsp;')
-      var div = document.createElement('div')
+      const div = document.createElement('div')
       div.innerHTML = text
       let tmpStr = div.innerText
       if (tmpStr && tmpStr.length > len) {
