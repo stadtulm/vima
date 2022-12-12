@@ -421,9 +421,28 @@
                             </v-list-item>
                             <v-alert
                               color="customGreyUltraLight"
-                              v-html="$sanitize(newTab(message.latestAnswers.text.value))"
+                              v-html="$sanitize(newTab(latestAnswersLanguage === 'default' ? message.latestAnswers.text.find(t => t.type === 'default').value : message.latestAnswers.text.find(t => t.lang === $i18n.locale).value))"
                             >
                             </v-alert>
+                              <template
+                                v-if="latestAnswersLanguage === 'default'"
+                              >
+                                <v-btn
+                                  text
+                                  x-small
+                                  @click="latestAnswersLanguage = $i18n.locale"
+                                >{{$t('translateText')}}</v-btn>
+                              </template>
+                              <template
+                                v-else
+                              >
+                                {{$t('machineTranslationHint')}}.
+                                <v-btn
+                                  text
+                                  x-small
+                                  @click="latestAnswersLanguage = 'default'"
+                                >{{$t('showOriginal')}}</v-btn>
+                              </template>
                           </v-alert>
                         </v-col>
                       </v-row>
@@ -706,6 +725,7 @@ export default {
     page: 1,
     loading: true,
     total: 0,
+    latestAnswersLanguage: 'default',
     itemsPerPage: 10,
     intersectionOptions: {
       root: null,

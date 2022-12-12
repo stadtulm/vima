@@ -133,6 +133,11 @@
             </v-tooltip>
           </template>
           <template
+            v-slot:[`item.createdAt`]="{ item }"
+          >
+            {{$moment(item.createdAt).format('DD.MM.YYYY')}}
+          </template>
+          <template
             v-slot:[`item.role`]="{ item }"
           >
             <v-select
@@ -565,6 +570,11 @@ export default {
         {
           text: this.$t('state'),
           value: 'status',
+          align: 'center'
+        },
+        {
+          text: this.$t('dt'),
+          value: 'createdAt',
           align: 'center'
         },
         { text: this.$t('role'), width: 150, value: 'role' },

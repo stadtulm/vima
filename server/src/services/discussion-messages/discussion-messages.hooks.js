@@ -232,9 +232,22 @@ module.exports = {
     all: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
-        commonHooks.alterItems(rec => {
+        commonHooks.alterItems(async (rec, context) => {
           if (rec.latestAnswers?.text && Array.isArray(rec.latestAnswers.text)) {
-            rec.latestAnswers.text = rec.latestAnswers.text.find(t => t.type === 'default')
+            if (!rec.latestAnswers.text.find(t => t.lang === context.params.connection?.language)) {
+              // Create translation
+              const translatedText = await context.app.service('translations').create({
+                type: 'discussion-messages',
+                texts: [{
+                  ...rec.latestAnswers,
+                  id: rec.latestAnswers._id
+                }],
+                allFields: ['text'],
+                fields: ['text'],
+                target: context.params.connection?.language
+              })
+              rec.latestAnswers.text.push(translatedText)
+            }
           }
           if (Array.isArray(rec.text)) {
             rec.text = rec.text.find(t => t.type === 'default')

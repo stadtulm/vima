@@ -153,6 +153,7 @@
                       v-slot:label
                     >
                       <div
+                        @click.stop
                         v-html="$t('audienceCheckbox') + ' ' + $t('privacyCheckbox')"
                       >
                       </div>
