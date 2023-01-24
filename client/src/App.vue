@@ -1867,64 +1867,6 @@
         :showNewsletterDialog="showNewsletterDialog"
         @closeNewsletterDialog="showNewsletterDialog = false"
       ></NewsletterDialog>
-      <!-- Matomo consent bottom sheet -->
-      <v-bottom-sheet
-        v-model="showMatomoConsent"
-        style="z-index:10000"
-      >
-        <v-sheet
-          v-if="!hasMatomo"
-          class="text-center pa-4"
-        >
-          <v-row>
-            <v-col
-              class="body-1 black--text"
-              v-html="$t('adBlockerHint')"
-            >
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-btn
-                class="mr-4"
-                color="customGreyUltraLight"
-                @click="showMatomoConsent = false"
-              >
-                {{$t('understoodButton')}}
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-sheet>
-        <v-sheet
-          v-else
-          class="text-center pa-4"
-        >
-          <v-row>
-            <v-col
-              class="body-1 black--text"
-              v-html="$t('askForConsent')"
-            >
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-btn
-                class="mr-4"
-                color="customGreyUltraLight"
-                @click="removeConsent()"
-              >
-                {{$t('no')}}
-              </v-btn>
-              <v-btn
-                color="success"
-                @click="setConsent()"
-              >
-                {{$t('yes')}}
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-sheet>
-      </v-bottom-sheet>
       <!-- Tour snackbar -->
       <v-snackbar
         v-model="showTour"
@@ -2001,6 +1943,67 @@
           </v-row>
         </v-card-text>
       </v-card>
+    </v-dialog>
+    <!-- Matomo consent bottom sheet -->
+    <v-dialog
+      v-model="showMatomoConsent"
+      style="z-index:10000"
+      overlay-color="#000000"
+      overlay-opacity="0.7"
+      persistent
+    >
+      <v-sheet
+        v-if="!hasMatomo"
+        class="text-center pa-4 py-10"
+      >
+        <v-row>
+          <v-col
+            class="body-1 black--text"
+            v-html="$t('adBlockerHint')"
+          >
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn
+              class="mr-4"
+              color="customGreyUltraLight"
+              @click="showMatomoConsent = false"
+            >
+              {{$t('understoodButton')}}
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-sheet>
+      <v-sheet
+        v-else
+        class="text-center pa-4 py-10"
+      >
+        <v-row>
+          <v-col
+            class="body-1 black--text"
+            v-html="$t('askForConsent')"
+          >
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn
+              class="mr-4"
+              color="customGreyUltraLight"
+              @click="removeConsent()"
+            >
+              {{$t('no')}}
+            </v-btn>
+            <v-btn
+              color="success"
+              @click="setConsent()"
+            >
+              {{$t('yes')}}
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-sheet>
     </v-dialog>
   </v-app>
 </template>

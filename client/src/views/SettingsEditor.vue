@@ -685,7 +685,7 @@ export default {
       this.isLoading = true
       try {
         if (multiple) {
-          await this.patchMessage([
+          await this.patchSettings([
             this.$settings._id,
             {
               $pull: {
