@@ -406,6 +406,7 @@ async function filterUser (context, user) {
     // Add properties based on preferences
     for (const key of ['Gender', 'Age', 'Residence']) {
       if (
+        preferences &&
         tmpUser[key.toLowerCase()] !== undefined &&
         (
           preferences['publish' + key] === 'all' ||

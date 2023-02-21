@@ -1443,23 +1443,6 @@
             v-if="$route.name && $route.name !== 'Home'"
           >
             <v-alert
-              dismissible
-              class="mt-0 mb-5"
-              color="customGreyMedium"
-            >
-              {{$t('testHint')}};
-              <span
-                class="pointer"
-                @click="$router.push({name: 'Faq'})"
-              >
-                How to change the language on ViMA
-                <v-icon
-                  size="18"
-                  class="ml-2 mb-1"
-                >fas fa-arrow-right</v-icon>
-              </span>
-            </v-alert>
-            <v-alert
               color="yellow"
               dismissible
               class="mb-5"

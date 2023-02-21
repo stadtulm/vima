@@ -8,10 +8,11 @@
           icon
           v-bind="attrs"
           v-on="on"
-          class="ml-3"
+          small
+          class="ml-1"
         >
           <v-icon
-            size="24"
+            size="20"
             color="customGrey"
           >
             {{needsUpdate ? 'fas fa-exclamation-triangle': 'fas fa-globe'}}
