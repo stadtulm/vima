@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div>
     <v-row
       class="mb-4"
@@ -77,7 +77,16 @@
                 <v-list-item-title
                   class="font-weight-bold"
                 >
-                  {{item.organisation.name}}
+                  <template v-if="item.organisation && item.organisation.name">
+                    {{item.organisation.name}}
+                  </template>
+                  <template v-else>
+                    <v-icon
+                      color="error"
+                    >
+                      fas fa-exclamation-triangle
+                    </v-icon>
+                  </template>
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
