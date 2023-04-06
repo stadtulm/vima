@@ -574,6 +574,49 @@
                         ></FileUpload>
                       </v-col>
                     </v-row>
+                    <v-row>
+                      <v-col
+                        class="subtitle-1"
+                        cols="12"
+                      >
+                        {{$t('description')}}
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                      >
+                        <v-input
+                          v-model="modules[key].text.find(obj => obj.lang === currentLanguage).value"
+                          width="100%"
+                        >
+                          <template v-slot:prepend>
+                            <LanguageSelect
+                              :currentLanguage="currentLanguage"
+                              :languageObjects="modules[key].text"
+                              @setLanguage="(l) => { currentLanguage = l }"
+                            ></LanguageSelect>
+                          </template>
+                          <template slot="default">
+                            <tiptap-vuetify
+                              :editor-properties="{
+                                disableInputRules: true,
+                                disablePasteRules: true
+                              }"
+                              color="customGreyUltraLight"
+                              v-model="modules[key].text.find(obj => obj.lang === currentLanguage).value"
+                              :card-props="{ tile: true, flat: true }"
+                              style="border: 1px solid #aaa"
+                              :extensions="extensions"
+                              :placeholder="$t('enterText')"
+                            >
+                            </tiptap-vuetify>
+                          </template>
+                        </v-input>
+                      </v-col>
+                    </v-row>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -602,15 +645,20 @@
 
 <script>
 
+import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FileUpload from '@/components/FileUpload.vue'
+import LanguageSelect from '@/components/LanguageSelect.vue'
+
 const appName = process.env.VUE_APP_NAME
 
 export default {
   name: 'SettingsEditor',
 
   components: {
-    FileUpload
+    FileUpload,
+    TiptapVuetify,
+    LanguageSelect
   },
 
   data: () => ({
@@ -628,10 +676,22 @@ export default {
     otherVimaLinks: [],
     tmpOtherVimaLinks: [],
     linkName: undefined,
-    linkUrl: undefined
+    linkUrl: undefined,
+    currentLanguage: 'en',
+    extensions: [
+      Bold,
+      Italic,
+      Underline,
+      Strike,
+      ListItem,
+      BulletList,
+      OrderedList,
+      Link
+    ]
   }),
 
   async mounted () {
+    this.currentLanguage = this.$i18n.locale
     await this.adapt()
   },
 
@@ -668,6 +728,11 @@ export default {
           }
           if (tmpSettings.modules[key].bgColor) {
             tmpSettings.modules[key].bgColor = this.parseRgbString(tmpSettings.modules[key].bgColor)
+          }
+          if (tmpSettings.modules[key].text) {
+            tmpSettings.modules[key].text = this.hydrateTranslations(tmpSettings.modules[key].text)
+          } else {
+            tmpSettings.modules[key].text = this.hydrateTranslations()
           }
         }
         this.modules = tmpSettings.modules
@@ -734,6 +799,14 @@ export default {
         if (tmpModules[key].bgColor) {
           tmpModules[key].bgColor = `rgba(${tmpModules[key].bgColor.r}, ${tmpModules[key].bgColor.g}, ${tmpModules[key].bgColor.b}, 1)`
         }
+        if (tmpModules[key].text) {
+          tmpModules[key].text = tmpModules[key].text.map(language => {
+            return {
+              ...language,
+              value: this.$sanitize(language.value)
+            }
+          }).filter(language => language.value && language.value !== '' && language.value !== '<p></p>')
+        }
       }
       // Sort default language to start
       this.languages.unshift(this.languages.splice(this.languages.indexOf(this.defaultLanguage), 1)[0])
@@ -773,7 +846,8 @@ export default {
     ...mapGetters([
       'rules',
       's3',
-      'parseRgbString'
+      'parseRgbString',
+      'hydrateTranslations'
     ])
   },
 
