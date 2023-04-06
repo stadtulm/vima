@@ -31,24 +31,33 @@
         v-bind:showOriginal="showOriginal"
         v-bind:translateText="translateText"
       >
-        <v-sheet
-          class="pa-1 px-3"
-          outlined
-        >
-            <slot
-              name="translatedLangText"
-              v-bind:computedText="computedText"
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-sheet
+              class="pa-1 px-3"
+              outlined
+              v-bind="attrs"
+              v-on="on"
             >
-              {{computedText.value}}
-            </slot>
-            <TranslatableTextInfo
-              :canShowOriginal="true"
-              :canTranslateObject="allFields.length > 1"
-              :needsUpdate="textParent.translationSum !== computedText.translationSum"
-              @showOriginal="showOriginal"
-              @translateText="translateText"
-            ></TranslatableTextInfo>
-        </v-sheet>
+              <slot
+                name="translatedLangText"
+                v-bind:computedText="computedText"
+              >
+                {{computedText.value}}
+              </slot>
+              <TranslatableTextInfo
+                :canShowOriginal="true"
+                :canTranslateObject="allFields.length > 1"
+                :needsUpdate="textParent.translationSum !== computedText.translationSum"
+                @showOriginal="showOriginal"
+                @translateText="translateText"
+              ></TranslatableTextInfo>
+            </v-sheet>
+          </template>
+          <span>
+            {{$t('machineTranslationHint')}}
+          </span>
+        </v-tooltip>
       </slot>
     </div>
   </div>
