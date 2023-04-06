@@ -2078,10 +2078,12 @@ export default {
     closeTour () {
       this.setCancelledTour(true)
       this.setShowTour(false)
+      localStorage.setItem('hideTour', true)
     },
     startTour () {
       this.setShowTour(false)
       this.$tours.app.start()
+      localStorage.setItem('hideTour', true)
     },
     setConsent () {
       if (this.$matomo && this.$matomo.isUserOptedOut()) {
@@ -2672,7 +2674,7 @@ export default {
 
   watch: {
     isDisconnected () {
-      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected) {
+      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected && !localStorage.getItem('hideTour')) {
         this.setShowTour(true)
       } else {
         this.setShowTour(false)
@@ -2680,7 +2682,7 @@ export default {
     },
     $route () {
       this.setStep()
-      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected) {
+      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected && !localStorage.getItem('hideTour')) {
         this.setShowTour(true)
       } else {
         this.setShowTour(false)
