@@ -13,7 +13,7 @@
         >
           <v-icon
             size="20"
-            color="customGrey"
+            :color="canShowOriginal ? 'success' : 'customGrey'"
           >
             {{needsUpdate ? 'fas fa-exclamation-triangle': 'fas fa-globe'}}
           </v-icon>

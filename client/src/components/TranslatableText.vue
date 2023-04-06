@@ -33,6 +33,7 @@
       >
         <v-sheet
           class="pa-1 px-3"
+          outlined
         >
             <slot
               name="translatedLangText"
