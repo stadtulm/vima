@@ -177,7 +177,6 @@
                     chips
                     deletable-chips
                     auto-select-first
-                    hide-details
                     color="customGrey"
                     item-color="customGrey"
                     background-color="#fff"
@@ -187,6 +186,7 @@
                     item-value="_id"
                     :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
                     :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+                    :rules="[rules.maxThreeCategories]"
                   >
                   </v-autocomplete>
                 </v-col>
