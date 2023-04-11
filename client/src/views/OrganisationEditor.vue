@@ -78,6 +78,22 @@
                 </v-text-field>
               </v-col>
             </v-row>
+            <v-row>
+              <v-col>
+                <v-select
+                  dense
+                  color="customGrey"
+                  item-color="customGrey"
+                  background-color="#fff"
+                  outlined
+                  v-model="position"
+                  :label="$t('position')"
+                  :items="Array.from({length: 1000}, (_, i) => i + 1)"
+                  :rules="[rules.required]"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
             <v-row
               dense
             >
@@ -171,6 +187,7 @@ export default {
     isValid: false,
     name: undefined,
     description: undefined,
+    position: undefined,
     pic: undefined,
     website: undefined,
     isActive: undefined
@@ -223,6 +240,7 @@ export default {
         this.pic = this.selectedOrganisation.pic
         this.name = this.selectedOrganisation.name
         this.description = this.selectedOrganisation.description
+        this.position = this.selectedOrganisation.position
         this.website = this.selectedOrganisation.website
         this.isActive = this.selectedOrganisation.isActive
       }
@@ -241,6 +259,7 @@ export default {
         name: this.name,
         description: this.description,
         website: this.website,
+        position: this.position,
         isActive: this.isActive,
         pic: this.pic
       }

@@ -517,6 +517,7 @@ export default {
         { text: this.$t('name'), value: 'name' },
         { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
         { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
+        { text: this.$t('position'), value: 'position', width: 170 },
         { text: this.$t('manageMembersButton'), value: 'members', align: 'center', sortable: false },
         { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
         { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
