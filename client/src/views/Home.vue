@@ -24,7 +24,7 @@
             :src="'/pics/people/' + i + '.jpeg'"
             :alt="$t('welcomePic')"
             title="© ILEU e.V."
-            class="bordered"
+            class="bordered fill-height"
           >
           </v-img>
         </v-col>
@@ -57,90 +57,26 @@
                             :currentLanguage="$i18n.locale"
                             @setLanguage="setLanguageAtHome"
                           ></LanguageSelect>
+                          <span
+                            class="ml-4 pointer body-2"
+                            @click="$router.push({name: 'Faq'})"
+                          >
+                            <v-icon
+                              class="ml-3 mr-1 mb-1"
+                              size="18"
+                            >
+                              fas fa-info-circle
+                            </v-icon>
+                            {{$t('howToSwitchLanguage')}}
+                            <v-icon
+                              class="ml-2"
+                              size="18"
+                            >
+                              fas fa-arrow-right
+                            </v-icon>
+                          </span>
                         </v-col>
                       </v-row>
-                      <v-alert
-                        dismissible
-                        class="my-3"
-                        color="customGreyMedium"
-                      >
-                      <span>
-                        {{$t('howToSwitchLanguage')}}
-                        <br><br>
-                        <v-row>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="3"
-                          >
-                            <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_DE.pdf" target="_blank">
-                              <v-icon
-                                class="mr-2 mb-1"
-                              >
-                                fas fa-file-pdf
-                              </v-icon>
-                              DE
-                            </a>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="3"
-                          >
-                            <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_EN.pdf" target="_blank">
-                              <v-icon
-                                class="mr-2 mb-1"
-                              >
-                                fas fa-file-pdf
-                              </v-icon>
-                              EN
-                            </a>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="3"
-                          >
-                            <a href="/downloads/ViMA-Danube_How to translate_Tekste_UKR.pdf" target="_blank">
-                              <v-icon
-                                class="mr-2 mb-1"
-                              >
-                                fas fa-file-pdf
-                              </v-icon>
-                              UKR
-                            </a>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="3"
-                          >
-                            <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_RO.pdf" target="_blank">
-                              <v-icon
-                                class="mr-2 mb-1"
-                              >
-                                fas fa-file-pdf
-                              </v-icon>
-                              RO
-                            </a>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            sm="6"
-                            md="3"
-                          >
-                            <a href="/downloads/ViMA-Danube_Translation Manual_BG.pdf" target="_blank">
-                              <v-icon
-                                class="mr-2 mb-1"
-                              >
-                                fas fa-file-pdf
-                              </v-icon>
-                              BG
-                            </a>
-                          </v-col>
-                        </v-row>
-                      </span>
-                      </v-alert>
                       <v-row>
                         <v-col
                           cols="12"
