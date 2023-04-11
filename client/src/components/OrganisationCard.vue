@@ -19,7 +19,7 @@
             <v-col
               cols="12"
               sm="12"
-              :md="organisationProp ? 12 : 6"
+              :md="organisationProp ? 12 : 8"
               :order="2"
               :order-md="organisationProp ? 2 : 1"
             >
@@ -62,7 +62,7 @@
             <v-col
               cols="12"
               sm="12"
-              :md="organisationProp ? 12 : 6"
+              :md="organisationProp ? 12 : 4"
               :class="organisationProp ? 'py-0': ''"
               :order="1"
               :order-md="organisationProp ? 1 : 2"
@@ -72,7 +72,7 @@
               >
                 <v-img
                   v-if="computedOrganisation.pic"
-                  :height="organisationProp ? 300 : 500"
+                  :height="organisationProp ? 250 : 350"
                   :src="s3 + computedOrganisation.pic.url"
                   :alt="$t('organisationPic')"
                   :title="computedOrganisation.pic.credit ? '© ' + computedOrganisation.pic.credit : ''"

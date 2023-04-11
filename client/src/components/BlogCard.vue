@@ -13,7 +13,7 @@
         :show-arrows="computedBlogEntry.pics.length > 1"
         :show-arrows-on-hover="computedBlogEntry.pics.length > 1"
         :cycle="false"
-        :height="blogProp ? 300 : '100%'"
+        :height="blogProp ? 250 : '100%'"
         class="mb-3 white"
       >
         <template
@@ -47,7 +47,7 @@
           :key="pic.url"
         >
           <v-img
-            :height="blogProp ? 300 : 600"
+            :height="blogProp ? 250 : 350"
             :src="s3 + pic.url"
             :contain="blogProp ? false : true"
             :alt="$t('blogPic')"
@@ -89,7 +89,7 @@
             :show-arrows="computedBlogEntry.videos.length > 1"
             :show-arrows-on-hover="computedBlogEntry.videos.length > 1"
             :cycle="false"
-            :height="blogProp ? 300 : '100%'"
+            :height="blogProp ? 250 : '100%'"
           >
             <template
               v-slot:prev="{ on, attrs }"

@@ -13,7 +13,7 @@
         :show-arrows="computedNewsEntry.pics.length > 1"
         :show-arrows-on-hover="computedNewsEntry.pics.length > 1"
         :cycle="false"
-        :height="newsProp ? 300 : '100%'"
+        :height="newsProp ? 250 : '100%'"
         class="mb-3 white"
       >
         <template
@@ -47,7 +47,7 @@
           :key="pic.url"
         >
           <v-img
-            :height="newsProp ? 300 : 600"
+            :height="newsProp ? 250 : 350"
             :src="s3 + pic.url"
             :contain="newsProp ? false : true"
             :alt="$t('newsPic')"
@@ -91,7 +91,7 @@
             :show-arrows="computedNewsEntry.videos.length > 1"
             :show-arrows-on-hover="computedNewsEntry.videos.length > 1"
             :cycle="false"
-            :height="newsProp ? 300 : '100%'"
+            :height="newsProp ? 250 : '100%'"
           >
             <template
               v-slot:prev="{ on, attrs }"

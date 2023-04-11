@@ -19,7 +19,7 @@
             <v-col
               cols="12"
               sm="12"
-              :md="groupProp ? 12 : 6"
+              :md="groupProp ? 12 : 8"
               :order="2"
               :order-md="groupProp ? 2 : 1"
             >
@@ -261,7 +261,7 @@
               v-if="!computedCategory"
               cols="12"
               sm="12"
-              :md="groupProp ? 12 : 6"
+              :md="groupProp ? 12 : 4"
               :class="groupProp ? 'py-0': ''"
               :order="1"
               :order-md="groupProp ? 1 : 2"
@@ -276,7 +276,7 @@
                   :show-arrows="computedPics.length > 1"
                   :show-arrows-on-hover="computedPics.length > 1"
                   :cycle="false"
-                  :height="groupProp ? 300 : '100%'"
+                  :height="groupProp ? 250 : '100%'"
                   class="mb-3 white"
                 >
                   <template
@@ -310,7 +310,7 @@
                     :key="pic.url"
                   >
                     <v-img
-                      :height="groupProp ? 300 : 350"
+                      :height="groupProp ? 250 : 350"
                       :src="pic.url && pic.url !== 'nopic' ? s3 + pic.url : ''"
                       :contain="groupProp ? false : true"
                       :alt="$t('groupTitlePic')"

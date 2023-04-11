@@ -8,7 +8,7 @@
       <v-col
         cols="12"
         sm="12"
-        :md="eventProp ? 12 : 6"
+        :md="eventProp ? 12 : 8"
         :order="2"
         :order-md="eventProp ? 2 : 1"
       >
@@ -101,7 +101,7 @@
       <v-col
         cols="12"
         sm="12"
-        :md="eventProp ? 12 : 6"
+        :md="eventProp ? 12 : 4"
         :order="1"
         :order-md="eventProp ? 1 : 2"
         :class="eventProp ? 'py-0' : $vuetify.breakpoint.mdAndUp ? 'pr-6' : 'pt-0'"
@@ -147,7 +147,7 @@
               :key="pic.url"
             >
               <v-img
-                :height="eventProp ? 300 : 600"
+                :height="eventProp ? 250 : 350"
                 :src="s3 + pic.url"
                 :contain="eventProp ? false : true"
                 :alt="$t('eventTitlePic')"

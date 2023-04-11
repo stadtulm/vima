@@ -8,7 +8,7 @@
       <v-col
         cols="12"
         sm="12"
-        :md="adProp ? 8 : 6"
+        md="8"
         :order="2"
         :order-md="1"
       >
@@ -211,7 +211,7 @@
       <v-col
         cols="12"
         sm="12"
-        :md="adProp ? 4 : 6"
+        md="4"
         :order="1"
         :order-md="2"
         :class="adProp ? 'py-0' : $vuetify.breakpoint.mdAndUp ? 'pr-6' : 'pt-0'"
