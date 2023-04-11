@@ -6,6 +6,7 @@ const { hashPassword } = require('@feathersjs/authentication-local').hooks
 const Errors = require('@feathersjs/errors')
 const allowAnonymous = require('../authmanagement/anonymous')
 const bcrypt = require('bcryptjs')
+const { notifyUsers } = require('../mailer/generator')
 
 module.exports = {
   before: {
@@ -263,7 +264,12 @@ module.exports = {
           (context) => context.result.createdBy !== 'signup',
           useFilter
         )
-      )
+      ),
+      // Notify admins
+      async (context) => {
+        const admins = await context.app.service('users').find({ query: { role: 'admins', isActive: true, $populate: ['preferences'], $select: { preferences: 1 } }, paginate: false })
+        await notifyUsers(context.app, 'newUser', 'create', context.result, admins.filter(admin => admin.preferences?.newUser === 'emailAlways').map(admin => admin._id))
+      }
     ],
     update: [],
     patch: [
