@@ -76,6 +76,24 @@
               >
                 <v-col
                   cols="12"
+                >
+                  <v-text-field
+                    dense
+                    outlined
+                    :label="$t('location')"
+                    color="customGrey"
+                    background-color="#fff"
+                    v-model="location"
+                    :rules="[rules.shortText]"
+                  >
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-row
+                dense
+              >
+                <v-col
+                  cols="12"
                   sm="6"
                 >
                   <v-input
@@ -501,6 +519,7 @@ export default {
         this.selectedCategories = this.selectedEvent.categories
         this.selectedTags = this.selectedEvent.tags
         this.organisation = this.selectedEvent.organisation
+        this.location = this.selectedEvent.location
         if (this.selectedEvent.duration) {
           this.durationStart = new Date(this.selectedEvent.duration.start)
           this.durationEnd = new Date(this.selectedEvent.duration.end)
@@ -529,6 +548,7 @@ export default {
         text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>'),
         isActive: this.isActive,
         organisation: this.organisation,
+        location: this.location,
         categories: this.selectedCategories,
         tags: this.selectedTags,
         duration: {

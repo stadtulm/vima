@@ -16,18 +16,16 @@
           <v-col>
             <!-- Title -->
             <v-card-title
-              class="word-wrap"
+              class="word-wrap mb-3"
             >
               {{computedEvent.title.value}}
             </v-card-title>
-            <!--
             <v-card-subtitle
-              class="body-1"
-              v-if="computedEvent.organisation"
+              class="body-1 pb-0"
+              v-if="computedEvent.location"
             >
-              {{$t('by')}} {{computedEvent.organisation.name}}
+              {{computedEvent.location}}
             </v-card-subtitle>
-            -->
             <v-card-subtitle
               class="body-1"
             >

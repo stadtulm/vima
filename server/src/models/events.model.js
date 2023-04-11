@@ -11,6 +11,7 @@ module.exports = function (app) {
   const schema = new Schema({
     title: [{ type: Translation, required: true }],
     text: [{ type: Translation, required: true }],
+    location: { type: String },
     categories: [
       {
         type: ObjectId,
