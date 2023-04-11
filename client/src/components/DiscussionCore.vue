@@ -186,7 +186,7 @@
                           style="text-decoration: none !important;"
                         >
                           <v-sheet
-                            class="px-1 text-center align-center d-flex pointer fill-height"
+                            class="pa-1 text-center align-center d-flex pointer fill-height"
                           >
                             <v-row>
                               <v-col

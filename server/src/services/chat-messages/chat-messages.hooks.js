@@ -278,6 +278,22 @@ module.exports = {
             }
           )
         }
+      },
+      // Remove pics
+      async (context) => {
+        let isArray = false
+        if (!Array.isArray(context.result)) {
+          context.result = [context.result]
+          isArray = false
+        }
+        for (const message of context.result) {
+          for (const pic of message.pics) {
+            await context.app.service('uploads').remove(pic.url)
+          }
+        }
+        if (!isArray) {
+          context.result = context.result[0]
+        }
       }
     ]
   },
