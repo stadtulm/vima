@@ -84,6 +84,28 @@ module.exports = function (app) {
     }
   })
 
+  schema.virtual('members', {
+    ref: 'statusContainers', // Collection
+    localField: '_id', // Here
+    foreignField: 'reference', // There
+    options: {
+      query: { type: 'groups', relation: 'member' },
+      select: { user: 1 },
+      populate: { path: 'user', select: { userName: 1, _id: 1 } }
+    }
+  })
+
+  schema.virtual('moderators', {
+    ref: 'statusContainers', // Collection
+    localField: '_id', // Here
+    foreignField: 'reference', // There
+    options: {
+      query: { type: 'groups', relation: 'moderator' },
+      select: { user: 1 },
+      populate: { path: 'user', select: { userName: 1, _id: 1 } }
+    }
+  })
+
   // Ensure virtual fields are serialised.
   schema.set('toJSON', { virtuals: true })
   schema.set('toObject', { virtuals: true })
