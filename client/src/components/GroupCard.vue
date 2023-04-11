@@ -78,6 +78,21 @@
                 </span>
               </v-card-subtitle>
               <v-card-text>
+                <!-- Latest message -->
+                <v-row
+                  v-if="computedLatestDiscussionMessage"
+                >
+                  <v-col>
+                    <v-chip
+                      :color="$moment().diff($moment(computedLatestDiscussionMessage), 'days') <= 5 ? $settings.indicatorColor : 'customGreyMedium'"
+                      :dark="$moment().diff($moment(computedLatestDiscussionMessage), 'days') > 5"
+                      disabled
+                      :class="$moment().diff($moment(computedLatestDiscussionMessage), 'days') <= 5 ? 'elevation-8 font-weight-bold' : ''"
+                    >
+                      {{$t('latestPost')}}: {{$moment(computedLatestDiscussionMessage).format("DD.MM.YYYY, HH:mm")}} {{$t('oClock')}}
+                    </v-chip>
+                  </v-col>
+                </v-row>
                 <!-- Visibility -->
                 <v-row
                   v-if="!computedCategory"
@@ -739,6 +754,19 @@ export default {
     ...mapGetters('categories', {
       categories: 'list'
     }),
+    computedLatestDiscussionMessage () {
+      const latestDiscussionMessages = this.computedGroup.latestDiscussionMessages
+        .map(discussion => discussion.latestMessage)
+        .filter(discussion => !!discussion)
+      if (latestDiscussionMessages.length === 0) {
+        return null
+      } else {
+        return latestDiscussionMessages
+          .map(discussionMessage => discussionMessage.updatedAt)
+          .sort()
+          .reverse()[0]
+      }
+    },
     computedCategory () {
       if (this.$route.params.category) {
         return this.getCategories([this.$route.params.category])[0]

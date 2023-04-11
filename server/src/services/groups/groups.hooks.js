@@ -19,7 +19,7 @@ module.exports = {
         allowAnonymous(),
         authenticate('jwt', 'anonymous'),
         (context) => {
-          context.params.query.$populate = ['owner']
+          context.params.query.$populate = ['owner', 'latestDiscussionMessages']
         }
       )
     ],

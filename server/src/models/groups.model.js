@@ -72,6 +72,16 @@ module.exports = function (app) {
     collation: { locale: 'en', strength: 1 }
   })
 
+  schema.virtual('latestDiscussionMessages', {
+    ref: 'discussions', // Collection
+    localField: '_id', // Here
+    foreignField: 'group', // There
+    options: {
+      select: { latestMessage: 1 },
+      populate: { path: 'latestMessage', select: { updatedAt: 1, _id: 1 } }
+    }
+  })
+
   schema.virtual('owner', {
     ref: 'statusContainers', // Collection
     localField: '_id', // Here
