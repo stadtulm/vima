@@ -139,6 +139,11 @@
                           </v-list-item>
                         </v-col>
                       </v-row>
+                      <v-row dense>
+                        <v-col>
+                          <v-divider></v-divider>
+                        </v-col>
+                      </v-row>
                       <!-- Message -->
                       <v-row
                         dense
@@ -222,6 +227,15 @@
                                       </v-col>
                                     </v-row>
                                   </v-col>
+                                </v-row>
+                                <v-row dense>
+                                  <v-col>
+                                    <v-divider
+                                      class="mt-4"
+                                    ></v-divider>
+                                  </v-col>
+                                </v-row>
+                                <v-row>
                                   <v-col
                                     cols="12"
                                   >

@@ -19,467 +19,473 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-card
-          color="customGreyUltraLight"
+        <v-sheet
+          id="messageContainer"
+          min-height="100px"
+          style="overflow-y: auto; overflow-x: hidden"
+          class="px-7"
         >
-          <v-card-text>
-            <v-sheet
-              id="messageContainer"
-              min-height="100px"
-              style="overflow-y: auto; overflow-x: hidden"
-              class="pa-4"
+          <template
+            v-if="!computedDiscussionMessages || computedDiscussionMessages.length === 0"
+          >
+            <template v-if="isFindDiscussionMessagesPending || init">
+              <v-progress-linear
+                color="customGrey"
+                indeterminate
+              ></v-progress-linear>
+              <v-col
+                class="text-center customGrey--text body-1 mt-4"
+              >
+                {{$t('loadingPosts')}}
+              </v-col>
+            </template>
+            <v-col
+              v-else
+              class="text-center customGrey--text body-1 mt-3"
             >
-              <v-row>
-                <v-col
-                  v-if="!computedDiscussionMessages || computedDiscussionMessages.length === 0"
+              {{$t('noPostsYet')}}
+              <v-icon
+                color="customGrey"
+                class="ml-2 mb-1"
+              >
+                fas fa-heart-broken
+              </v-icon>
+            </v-col>
+          </template>
+          <template
+            v-else
+          >
+            <v-col
+              v-for="(message, i) in computedDiscussionMessages"
+              :key="i"
+              cols="12"
+              class="pa-0 my-8 elevation-4"
+              :class="isOwnMessage(message) ? '': 'message'"
+              :name="message._id"
+              :id="'replyInput' + message._id"
+            >
+              <v-sheet
+                class="pa-4 foreign-sheet"
+                :class="showRepliesObj[message._id] ? 'elevation-12 my-4' : 'elevation-0'"
+                :color="getBGColor(message)"
+              >
+                <!-- User -->
+                <v-row
+                  dense
                 >
-                  <template v-if="isFindDiscussionMessagesPending || init">
-                    <v-progress-linear
-                      color="customGrey"
-                      indeterminate
-                    ></v-progress-linear>
-                    <v-col
-                      class="text-center customGrey--text body-1 mt-4"
-                    >
-                      {{$t('loadingPosts')}}
-                    </v-col>
-                  </template>
                   <v-col
-                    v-else
-                    class="text-center customGrey--text body-1 mt-3"
+                    :class="showRepliesObj[message._id] ? 'white--text' : 'grey--text'"
                   >
-                    {{$t('noPostsYet')}}
-                    <v-icon
-                      color="customGrey"
-                      class="ml-2 mb-1"
+                    <v-list-item
+                      class="px-0"
                     >
-                      fas fa-heart-broken
-                    </v-icon>
+                      <v-list-item-avatar>
+                        <v-avatar
+                          color="customGreyLight"
+                        >
+                          <v-img
+                            v-if="getUser(message.author).pic"
+                            :src="s3 + getUser(message.author).pic.url"
+                            :alt="$t('userPic') + ' ' + $t('by') + ' ' + getUser(message.author).userName"
+                            :title="getUser(message.author).pic.credit ? '© ' + getUser(message.author).pic.credit : ''"
+                          >
+                          </v-img>
+                          <v-icon
+                            v-else
+                            color="white"
+                          >
+                            fas fa-user
+                          </v-icon>
+                        </v-avatar>
+                      </v-list-item-avatar>
+                      <v-list-item-content>
+                        <v-list-item-title
+                          @click="!isOwnMessage(message) ? $router.push({name: 'User', params: { user: message.author}}) : ''"
+                          :class="!isOwnMessage(message) ? 'pointer' : ''"
+                        >
+                          {{getUser(message.author).userName}}
+                        </v-list-item-title>
+                        <v-list-item-subtitle>
+                          {{$moment(message.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.editedAt ? '(' + $t('editedAt') + ' ' + $moment(message.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
                   </v-col>
-                </v-col>
-                <template
-                  v-else
+                </v-row>
+                <v-row dense>
+                  <v-col>
+                    <v-divider
+                      class="mb-1"
+                    ></v-divider>
+                  </v-col>
+                </v-row>
+                <!-- Message and ellipsis-button -->
+                <v-row
+                  dense
+                  class="align-center body-1"
                 >
                   <v-col
-                    v-for="(message, i) in computedDiscussionMessages"
-                    :key="i"
                     cols="12"
-                    class="pa-2"
-                    :class="isOwnMessage(message) ? '': 'message'"
-                    :name="message._id"
-                    :id="'replyInput' + message._id"
                   >
-                    <v-sheet
-                      class="pa-4 foreign-sheet"
-                      :class="showRepliesObj[message._id] ? 'elevation-12 my-4' : 'elevation-0'"
-                      :color="getBGColor(message)"
+                    <TranslatableText
+                      ownField="text"
+                      :allFields="['text']"
+                      :allIds="
+                        computedDiscussionMessages
+                          .filter(m => !isOwnMessage(m))
+                          .map(m => { return { id: m._id, translationSum: m.translationSum } })
+                      "
+                      type="discussion-messages"
+                      :textParent="message"
                     >
-                      <!-- User -->
-                      <v-row
-                        dense
+                      <template
+                        v-slot:defaultLang="{ computedText, translateText }"
                       >
-                        <v-col
-                          :class="showRepliesObj[message._id] ? 'white--text' : 'grey--text'"
+                          <v-sheet
+                          v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                          color="transparent"
+                          class="pa-1"
                         >
-                          <v-list-item
-                            class="px-0"
-                          >
-                            <v-list-item-avatar>
-                              <v-avatar
-                                color="customGreyLight"
-                              >
-                                <v-img
-                                  v-if="getUser(message.author).pic"
-                                  :src="s3 + getUser(message.author).pic.url"
-                                  :alt="$t('userPic') + ' ' + $t('by') + ' ' + getUser(message.author).userName"
-                                  :title="getUser(message.author).pic.credit ? '© ' + getUser(message.author).pic.credit : ''"
-                                >
-                                </v-img>
-                                <v-icon
-                                  v-else
-                                  color="white"
-                                >
-                                  fas fa-user
-                                </v-icon>
-                              </v-avatar>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
-                              <v-list-item-title
-                                @click="!isOwnMessage(message) ? $router.push({name: 'User', params: { user: message.author}}) : ''"
-                                :class="!isOwnMessage(message) ? 'pointer' : ''"
-                              >
-                                {{getUser(message.author).userName}}
-                              </v-list-item-title>
-                              <v-list-item-subtitle>
-                               {{$moment(message.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.editedAt ? '(' + $t('editedAt') + ' ' + $moment(message.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
-                              </v-list-item-subtitle>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-col>
-                      </v-row>
-                      <!-- Message and ellipsis-button -->
-                      <v-row
-                        dense
-                        class="align-center body-1"
-                      >
-                        <v-col
-                          cols="12"
-                        >
-                          <TranslatableText
-                            ownField="text"
-                            :allFields="['text']"
-                            :allIds="
-                              computedDiscussionMessages
-                                .filter(m => !isOwnMessage(m))
-                                .map(m => { return { id: m._id, translationSum: m.translationSum } })
-                            "
-                            type="discussion-messages"
-                            :textParent="message"
-                          >
-                            <template
-                              v-slot:defaultLang="{ computedText, translateText }"
-                            >
-                               <v-sheet
-                                v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
-                                color="transparent"
-                                class="pa-1"
-                              >
-                              </v-sheet>
-                              <TranslatableTextInfo
-                                :canTranslate="true"
-                                :canTranslateAll="computedDiscussionMessages.filter(m => !isOwnMessage(m)).length > 1"
-                                @translateText="(data) => { translateText(data) }"
-                              ></TranslatableTextInfo>
-                            </template>
+                        </v-sheet>
+                        <TranslatableTextInfo
+                          :canTranslate="true"
+                          :canTranslateAll="computedDiscussionMessages.filter(m => !isOwnMessage(m)).length > 1"
+                          @translateText="(data) => { translateText(data) }"
+                        ></TranslatableTextInfo>
+                      </template>
 
-                            <template
-                              v-slot:translatedLang="{ computedText, showOriginal, translateText }"
-                            >
-                              <v-sheet
-                                v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
-                                class="pa-2"
-                              >
-                              </v-sheet>
-                              <TranslatableTextInfo
-                                :canShowOriginal="true"
-                                :needsUpdate="message.translationSum !== computedText.translationSum"
-                                @showOriginal="(data) => { showOriginal(data) }"
-                                @translateText="(data) => { translateText(data) }"
-                              ></TranslatableTextInfo>
-                            </template>
-                          </TranslatableText>
-                          <v-row
-                            v-if="message.pics && message.pics.length > 0"
-                            class="my-3"
+                      <template
+                        v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+                      >
+                        <v-sheet
+                          v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                          class="pa-2"
+                        >
+                        </v-sheet>
+                        <TranslatableTextInfo
+                          :canShowOriginal="true"
+                          :needsUpdate="message.translationSum !== computedText.translationSum"
+                          @showOriginal="(data) => { showOriginal(data) }"
+                          @translateText="(data) => { translateText(data) }"
+                        ></TranslatableTextInfo>
+                      </template>
+                    </TranslatableText>
+                    <v-row
+                      v-if="message.pics && message.pics.length > 0"
+                      class="my-3"
+                    >
+                      <v-col
+                        cols=2
+                        v-for="(pic, i) in message.pics"
+                        :key="i"
+                      >
+                        <a
+                          v-if="!['jpg', 'jpeg', 'png', 'tiff', 'gif', 'bmp', 'svg'].includes(pic.url.split('.')[pic.url.split('.').length - 1].toLowerCase())"
+                          :href="s3 + pic.url"
+                          target="_blank"
+                          style="text-decoration: none !important;"
+                        >
+                          <v-sheet
+                            class="px-1 text-center align-center d-flex pointer fill-height"
                           >
-                            <v-col
-                              cols=2
-                              v-for="(pic, i) in message.pics"
-                              :key="i"
-                            >
-                              <a
-                                v-if="!['jpg', 'jpeg', 'png', 'tiff', 'gif', 'bmp', 'svg'].includes(pic.url.split('.')[pic.url.split('.').length - 1].toLowerCase())"
-                                :href="s3 + pic.url"
-                                target="_blank"
-                                style="text-decoration: none !important;"
+                            <v-row>
+                              <v-col
+                                cols="12"
+                                class="pb-0"
                               >
-                                <v-sheet
-                                  class="px-1 text-center align-center d-flex pointer fill-height"
-                                >
-                                  <v-row>
-                                    <v-col
-                                      cols="12"
-                                      class="pb-0"
-                                    >
-                                      <v-icon
-                                        size="48"
-                                      >fas fa-file</v-icon>
-                                    </v-col>
-                                    <v-col
-                                      cols="12"
-                                    >
-                                      {{/_(.+)/.exec(pic.url)[1]}}
-                                    </v-col>
-                                  </v-row>
-                                </v-sheet>
-                              </a>
-                              <Lightbox
-                                v-else
-                                :pic="pic"
-                              ></Lightbox>
+                                <v-icon
+                                  size="48"
+                                >fas fa-file</v-icon>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                              >
+                                {{/_(.+)/.exec(pic.url)[1]}}
+                              </v-col>
+                            </v-row>
+                          </v-sheet>
+                        </a>
+                        <Lightbox
+                          v-else
+                          :pic="pic"
+                        ></Lightbox>
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </v-row>
+                <v-row dense>
+                  <v-col>
+                    <v-divider
+                      class="my-3"
+                    ></v-divider>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-tooltip
+                      color="customGrey"
+                      top
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          v-bind="attrs"
+                          v-on="on"
+                          icon
+                          color="customGrey"
+                          class="mb-2 customGreyUltraLight elevation-1"
+                          @click="toggleShowReplies(message._id)"
+                          :title="$t('replies')"
+                        >
+                          <v-icon
+                            size="14"
+                          >
+                            {{ showRepliesObj[message._id] ? 'fas fa-chevron-up' : 'fas fa-reply' }}
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <span>{{$t('replies')}}</span>
+                    </v-tooltip>
+                    <v-menu
+                      open-on-hover
+                      v-if="isOwnMessage(message)"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          icon
+                          v-bind="attrs"
+                          v-on="on"
+                          class="mb-2 ml-2 customGreyUltraLight elevation-1"
+                        >
+                          <v-icon
+                            size="14"
+                          >
+                            fas fa-ellipsis-v
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list
+                        dense
+                        rounded
+                      >
+                        <!-- Edit button -->
+                        <v-list-item
+                          @click="editMessage(message)"
+                        >
+                          <v-list-item-avatar>
+                            <v-icon>
+                              fas fa-pen
+                            </v-icon>
+                          </v-list-item-avatar>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              {{$t('editButton')}}
+                            </v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                        <!-- Delete button -->
+                        <v-list-item
+                          @click="deleteMessage(message._id)"
+                        >
+                          <v-list-item-avatar>
+                            <v-icon>
+                              fas fa-trash
+                            </v-icon>
+                          </v-list-item-avatar>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              {{$t('deleteButton')}}
+                            </v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                    <v-menu
+                      open-on-hover
+                      v-else-if="!isOwnMessage(message) && user"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          icon
+                          class="mb-2 ml-2 customGreyUltraLight elevation-1"
+                          v-bind="attrs"
+                          v-on="on"
+                        >
+                          <v-icon
+                            size="14"
+                          >
+                            fas fa-ellipsis-v
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list
+                        dense
+                        rounded
+                      >
+                        <!-- Report button -->
+                        <v-list-item
+                          @click="openReportDialog(message)"
+                        >
+                          <v-list-item-avatar>
+                            <v-icon>
+                              fas fa-exclamation-triangle
+                            </v-icon>
+                          </v-list-item-avatar>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              {{$t('reportButton')}}
+                            </v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-col>
+                </v-row>
+                <!-- Replies -->
+                <v-expand-transition
+                  mode="in-out"
+                >
+                  <v-row
+                    v-if="showRepliesObj[message._id]"
+                  >
+                    <v-col
+                      class="pt-0"
+                    >
+                      <DiscussionReplies
+                        :mainMessage="message"
+                        :discussion="discussion"
+                        @checkVisibleMessages="checkVisibleMessages"
+                        @report="openReportDialog"
+                        @translateText="translateText"
+                        :computedOwnSubscriberStatusContainer="computedOwnSubscriberStatusContainer"
+                        :computedGroupStatus="computedGroupStatus"
+                      ></DiscussionReplies>
+                    </v-col>
+                  </v-row>
+                </v-expand-transition>
+                <!-- Reply button -->
+                <v-row
+                  v-if="message.replies && message.replies.length > 0"
+                >
+                  <v-col
+                    class="pt-0"
+                    cols="12"
+                  >
+                    <v-btn
+                      @click="toggleShowReplies(message._id)"
+                      :color="showRepliesObj[message._id] ? 'customGrey' : 'customGreyLight'"
+                      :dark="showRepliesObj[message._id]"
+                      block
+                      :x-small="!$vuetify.breakpoint.smAndUp"
+                      class="my-2 py-4 elevation-1"
+                    >
+                      {{$t('older')}}
+                      {{$t('replies')}}
+                      {{showRepliesObj[message._id] ? $t('hideButton') : $t('showButton')}}
+                      <v-icon
+                        size="18"
+                        class="ml-3"
+                      >
+                        {{ showRepliesObj[message._id] ? 'fas fa-chevron-up' : 'fas fa-chevron-down' }}
+                      </v-icon>
+                      <v-sheet
+                        :color="$settings.indicatorColor"
+                        class="ml-4 px-2 pt-1"
+                        v-if="computedOwnSubscriberStatusContainer && message.replies.filter(obj => computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(obj)).length > 0"
+                      >
+                        {{message.replies.filter(obj => computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(obj)).length}}
+                        <span>
+                          {{$t('newMultiple')}}
+                          <v-icon
+                            size="18"
+                            class="ml-1"
+                            style="margin-bottom: 3px"
+                          >
+                            far fa-envelope
+                          </v-icon>
+                        </span>
+                      </v-sheet>
+                    </v-btn>
+                  </v-col>
+                  <v-col
+                    v-if="!showRepliesObj[message._id]"
+                    cols="12"
+                  >
+                    <v-alert
+                      color="customGreyMedium"
+                      outlined
+                    >
+                      <v-list-item
+                        class="px-0"
+                      >
+                        <v-list-item-avatar>
+                          <v-avatar
+                            color="customGreyLight"
+                          >
+                            <v-img
+                              v-if="getUser(message.latestAnswers.author).pic"
+                              :src="s3 + getUser(message.latestAnswers.author).pic.url"
+                              :alt="$t('userPic') + ' ' + $t('by') + ' ' + getUser(message.latestAnswers.author).userName"
+                              :title="getUser(message.latestAnswers.author).pic.credit ? '© ' + getUser(message.latestAnswers.author).pic.credit : ''"
+                            >
+                            </v-img>
+                            <v-icon
+                              v-else
+                              color="white"
+                            >
+                              fas fa-user
+                            </v-icon>
+                          </v-avatar>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                          <v-row>
+                            <v-col
+                              cols="12"
+                              class="subtitle-1 pb-0"
+                              style="line-height:20px"
+                              @click="!isOwnMessage(message.latestAnswers) ? $router.push({name: 'User', params: { user: message.latestAnswers.author}}) : ''"
+                              :class="!isOwnMessage(message.latestAnswers) ? 'pointer' : ''"
+                            >
+                              {{$t('newestAnswerFrom')}} {{getUser(message.latestAnswers.author).userName}}
+                            </v-col>
+                            <v-col
+                              class="pt-0 caption"
+                            >
+                              {{$moment(message.latestAnswers.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.latestAnswers.editedAt ? '(' + $t('editedAt') + ' ' + $moment(message.latestAnswers.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
                             </v-col>
                           </v-row>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                        >
-                          <v-tooltip
-                            color="customGrey"
-                            top
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                v-bind="attrs"
-                                v-on="on"
-                                icon
-                                color="customGrey"
-                                class="mb-2 customGreyUltraLight elevation-1"
-                                @click="toggleShowReplies(message._id)"
-                                :title="$t('replies')"
-                              >
-                                <v-icon
-                                  size="14"
-                                >
-                                  {{ showRepliesObj[message._id] ? 'fas fa-chevron-up' : 'fas fa-reply' }}
-                                </v-icon>
-                              </v-btn>
-                            </template>
-                            <span>{{$t('replies')}}</span>
-                          </v-tooltip>
-                          <v-menu
-                            open-on-hover
-                            v-if="isOwnMessage(message)"
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                icon
-                                v-bind="attrs"
-                                v-on="on"
-                                class="mb-2 ml-2 customGreyUltraLight elevation-1"
-                              >
-                                <v-icon
-                                  size="14"
-                                >
-                                  fas fa-ellipsis-v
-                                </v-icon>
-                              </v-btn>
-                            </template>
-                            <v-list
-                              dense
-                              rounded
-                            >
-                              <!-- Edit button -->
-                              <v-list-item
-                                @click="editMessage(message)"
-                              >
-                                <v-list-item-avatar>
-                                  <v-icon>
-                                    fas fa-pen
-                                  </v-icon>
-                                </v-list-item-avatar>
-                                <v-list-item-content>
-                                  <v-list-item-title>
-                                    {{$t('editButton')}}
-                                  </v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-                              <!-- Delete button -->
-                              <v-list-item
-                                @click="deleteMessage(message._id)"
-                              >
-                                <v-list-item-avatar>
-                                  <v-icon>
-                                    fas fa-trash
-                                  </v-icon>
-                                </v-list-item-avatar>
-                                <v-list-item-content>
-                                  <v-list-item-title>
-                                    {{$t('deleteButton')}}
-                                  </v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
-                          <v-menu
-                            open-on-hover
-                            v-else-if="!isOwnMessage(message) && user"
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                icon
-                                class="mb-2 ml-2 customGreyUltraLight elevation-1"
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                <v-icon
-                                  size="14"
-                                >
-                                  fas fa-ellipsis-v
-                                </v-icon>
-                              </v-btn>
-                            </template>
-                            <v-list
-                              dense
-                              rounded
-                            >
-                              <!-- Report button -->
-                              <v-list-item
-                                @click="openReportDialog(message)"
-                              >
-                                <v-list-item-avatar>
-                                  <v-icon>
-                                    fas fa-exclamation-triangle
-                                  </v-icon>
-                                </v-list-item-avatar>
-                                <v-list-item-content>
-                                  <v-list-item-title>
-                                    {{$t('reportButton')}}
-                                  </v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
-                        </v-col>
-                      </v-row>
-                      <!-- Replies -->
-                      <v-expand-transition
-                        mode="in-out"
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-alert
+                        color="customGreyUltraLight"
+                        v-html="$sanitize(newTab(latestAnswersLanguage === 'default' ? message.latestAnswers.text.find(t => t.type === 'default').value : message.latestAnswers.text.find(t => t.lang === $i18n.locale).value))"
                       >
-                        <v-row
-                          v-if="showRepliesObj[message._id]"
-                        >
-                          <v-col
-                            class="pt-0"
-                          >
-                            <DiscussionReplies
-                              :mainMessage="message"
-                              :discussion="discussion"
-                              @checkVisibleMessages="checkVisibleMessages"
-                              @report="openReportDialog"
-                              @translateText="translateText"
-                              :computedOwnSubscriberStatusContainer="computedOwnSubscriberStatusContainer"
-                              :computedGroupStatus="computedGroupStatus"
-                            ></DiscussionReplies>
-                          </v-col>
-                        </v-row>
-                      </v-expand-transition>
-                      <!-- Reply button -->
-                      <v-row
-                        v-if="message.replies && message.replies.length > 0"
-                      >
-                        <v-col
-                          class="pt-0"
-                          cols="12"
+                      </v-alert>
+                        <template
+                          v-if="latestAnswersLanguage === 'default'"
                         >
                           <v-btn
-                            @click="toggleShowReplies(message._id)"
-                            :color="showRepliesObj[message._id] ? 'customGrey' : 'customGreyLight'"
-                            :dark="showRepliesObj[message._id]"
-                            block
-                            :x-small="!$vuetify.breakpoint.smAndUp"
-                            class="my-2 py-4 elevation-1"
-                          >
-                            {{$t('older')}}
-                            {{$t('replies')}}
-                            {{showRepliesObj[message._id] ? $t('hideButton') : $t('showButton')}}
-                            <v-icon
-                              size="18"
-                              class="ml-3"
-                            >
-                              {{ showRepliesObj[message._id] ? 'fas fa-chevron-up' : 'fas fa-chevron-down' }}
-                            </v-icon>
-                            <v-sheet
-                              :color="$settings.indicatorColor"
-                              class="ml-4 px-2 pt-1"
-                              v-if="computedOwnSubscriberStatusContainer && message.replies.filter(obj => computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(obj)).length > 0"
-                            >
-                              {{message.replies.filter(obj => computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(obj)).length}}
-                              <span>
-                                {{$t('newMultiple')}}
-                                <v-icon
-                                  size="18"
-                                  class="ml-1"
-                                  style="margin-bottom: 3px"
-                                >
-                                  far fa-envelope
-                                </v-icon>
-                              </span>
-                            </v-sheet>
-                          </v-btn>
-                        </v-col>
-                        <v-col
-                          v-if="!showRepliesObj[message._id]"
-                          cols="12"
+                            text
+                            x-small
+                            @click="latestAnswersLanguage = $i18n.locale"
+                          >{{$t('translateText')}}</v-btn>
+                        </template>
+                        <template
+                          v-else
                         >
-                          <v-alert
-                            color="customGreyMedium"
-                            outlined
-                          >
-                            <v-list-item
-                              class="px-0"
-                            >
-                              <v-list-item-avatar>
-                                <v-avatar
-                                  color="customGreyLight"
-                                >
-                                  <v-img
-                                    v-if="getUser(message.latestAnswers.author).pic"
-                                    :src="s3 + getUser(message.latestAnswers.author).pic.url"
-                                    :alt="$t('userPic') + ' ' + $t('by') + ' ' + getUser(message.latestAnswers.author).userName"
-                                    :title="getUser(message.latestAnswers.author).pic.credit ? '© ' + getUser(message.latestAnswers.author).pic.credit : ''"
-                                  >
-                                  </v-img>
-                                  <v-icon
-                                    v-else
-                                    color="white"
-                                  >
-                                    fas fa-user
-                                  </v-icon>
-                                </v-avatar>
-                              </v-list-item-avatar>
-                              <v-list-item-content>
-                                <v-row>
-                                  <v-col
-                                    cols="12"
-                                    class="subtitle-1 pb-0"
-                                    style="line-height:20px"
-                                    @click="!isOwnMessage(message.latestAnswers) ? $router.push({name: 'User', params: { user: message.latestAnswers.author}}) : ''"
-                                    :class="!isOwnMessage(message.latestAnswers) ? 'pointer' : ''"
-                                  >
-                                    {{$t('newestAnswerFrom')}} {{getUser(message.latestAnswers.author).userName}}
-                                  </v-col>
-                                  <v-col
-                                    class="pt-0 caption"
-                                  >
-                                    {{$moment(message.latestAnswers.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.latestAnswers.editedAt ? '(' + $t('editedAt') + ' ' + $moment(message.latestAnswers.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
-                                  </v-col>
-                                </v-row>
-                              </v-list-item-content>
-                            </v-list-item>
-                            <v-alert
-                              color="customGreyUltraLight"
-                              v-html="$sanitize(newTab(latestAnswersLanguage === 'default' ? message.latestAnswers.text.find(t => t.type === 'default').value : message.latestAnswers.text.find(t => t.lang === $i18n.locale).value))"
-                            >
-                            </v-alert>
-                              <template
-                                v-if="latestAnswersLanguage === 'default'"
-                              >
-                                <v-btn
-                                  text
-                                  x-small
-                                  @click="latestAnswersLanguage = $i18n.locale"
-                                >{{$t('translateText')}}</v-btn>
-                              </template>
-                              <template
-                                v-else
-                              >
-                                {{$t('machineTranslationHint')}}.
-                                <v-btn
-                                  text
-                                  x-small
-                                  @click="latestAnswersLanguage = 'default'"
-                                >{{$t('showOriginal')}}</v-btn>
-                              </template>
-                          </v-alert>
-                        </v-col>
-                      </v-row>
-                    </v-sheet>
+                          {{$t('machineTranslationHint')}}.
+                          <v-btn
+                            text
+                            x-small
+                            @click="latestAnswersLanguage = 'default'"
+                          >{{$t('showOriginal')}}</v-btn>
+                        </template>
+                    </v-alert>
                   </v-col>
-                </template>
-              </v-row>
-            </v-sheet>
-          </v-card-text>
-        </v-card>
+                </v-row>
+              </v-sheet>
+            </v-col>
+          </template>
+        </v-sheet>
       </v-col>
     </v-row>
     <v-btn
