@@ -82,8 +82,8 @@
             hide-details
             :items="[
 
-              { text: $t('sortEventDateDesc'), value: [['duration.start'], 1]},
-              { text: $t('sortEventDateAsc'), value: [['duration.start'], -1]},
+              { text: $t('sortEventDateDesc'), value: [['duration.end'], 1]},
+              { text: $t('sortEventDateAsc'), value: [['duration.end'], -1]},
               { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
               { text: $t('sortTitleDesc'), value: [['title.value'], -1] },
               { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
@@ -183,9 +183,9 @@ export default {
     searchDefault: '',
     total: 0,
     itemsPerPage: 12,
-    combinedSort: [['duration.start'], 1],
-    sortBy: ['duration.start'],
-    sortDesc: 1
+    combinedSort: [['duration.end'], -1],
+    sortBy: ['duration.end'],
+    sortDesc: -1
   }),
 
   async mounted () {
