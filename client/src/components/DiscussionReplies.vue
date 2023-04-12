@@ -221,7 +221,34 @@
                                         v-for="(pic, i) in message.pics"
                                         :key="i"
                                       >
+                                        <a
+                                          v-if="!['jpg', 'jpeg', 'png', 'tiff', 'gif', 'bmp', 'svg'].includes(pic.url.split('.')[pic.url.split('.').length - 1].toLowerCase())"
+                                          :href="s3 + pic.url"
+                                          target="_blank"
+                                          style="text-decoration: none !important;"
+                                        >
+                                          <v-sheet
+                                            class="pa-1 text-center align-center d-flex pointer fill-height"
+                                          >
+                                            <v-row>
+                                              <v-col
+                                                cols="12"
+                                                class="pb-0"
+                                              >
+                                                <v-icon
+                                                  size="48"
+                                                >fas fa-file</v-icon>
+                                              </v-col>
+                                              <v-col
+                                                cols="12"
+                                              >
+                                                {{/_(.+)/.exec(pic.url)[1]}}
+                                              </v-col>
+                                            </v-row>
+                                          </v-sheet>
+                                        </a>
                                         <Lightbox
+                                          v-else
                                           :pic="pic"
                                         ></Lightbox>
                                       </v-col>
@@ -486,7 +513,7 @@
                             v-model="pics"
                             @fileRemove="patchFileRemove"
                             @fileAdd="$nextTick(() => { $refs.messagesReplyForm.validate() })"
-                            :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                            :acceptedMimeTypes="[]"
                             :maxFileSize="2"
                             :maxFiles="10"
                             bgColor="transparent"
