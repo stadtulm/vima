@@ -97,6 +97,21 @@
             </span>
           </v-card-subtitle>
           <v-card-text>
+            <!-- Latest message -->
+            <v-row
+              v-if="computedDiscussion.latestMessage"
+            >
+              <v-col>
+                <v-chip
+                  :color="$moment().diff($moment(computedDiscussion.latestMessage), 'days') <= 5 ? $settings.indicatorColor : 'customGreyMedium'"
+                  :dark="$moment().diff($moment(computedDiscussion.latestMessage), 'days') > 5"
+                  disabled
+                  :class="$moment().diff($moment(computedDiscussion.latestMessage), 'days') <= 5 ? 'elevation-8 font-weight-bold' : ''"
+                >
+                  {{$t('latestPost')}}: {{$moment(computedDiscussion.latestMessage).format("DD.MM.YYYY, HH:mm")}} {{$t('oClock')}}
+                </v-chip>
+              </v-col>
+            </v-row>
             <!-- Categories -->
             <v-row
               v-if="computedDiscussion.categories && computedDiscussion.categories.length > 0"

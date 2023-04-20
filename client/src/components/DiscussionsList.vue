@@ -131,7 +131,7 @@
             <template
               v-slot:[`item.latestMessage`]="{ item }"
             >
-              {{ item.latestMessage ? $moment(item.latestMessage.updatedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock')  : '-' }}
+              {{ item.latestMessage ? $moment(item.latestMessage).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock')  : '-' }}
             </template>
             <template
               v-slot:[`item.messagesCount`]="{ item }"
@@ -302,7 +302,7 @@ export default {
     tagsList: [],
     search: '',
     sortBy: ['latestMessage'],
-    sortDesc: [true],
+    sortDesc: [false],
     categoriesListDefault: [],
     tagsListDefault: [],
     searchDefault: '',

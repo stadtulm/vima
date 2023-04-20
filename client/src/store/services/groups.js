@@ -11,7 +11,23 @@ class groups extends BaseModel {
     return {
     }
   }
+
+  // Adds latest message if not there
+  static setupInstance (data, { store, models }) {
+    if (data.latestMessage === undefined) {
+      const latestDiscussionMessage = data.latestDiscussionMessages
+        .map(discussion => discussion.latestDiscussionMessage)
+        .filter(discussion => !!discussion)
+      if (latestDiscussionMessage.length > 0) {
+        data.latestMessage = latestDiscussionMessage.map(discussionMessage => discussionMessage.createdAt)
+          .sort()
+          .reverse()[0]
+      }
+    }
+    return data
+  }
 }
+
 groups.modelName = 'groups'
 const servicePath = 'groups'
 const servicePlugin = makeServicePlugin({

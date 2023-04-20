@@ -80,16 +80,16 @@
               <v-card-text>
                 <!-- Latest message -->
                 <v-row
-                  v-if="computedLatestDiscussionMessage"
+                  v-if="computedGroup.latestMessage"
                 >
                   <v-col>
                     <v-chip
-                      :color="$moment().diff($moment(computedLatestDiscussionMessage), 'days') <= 5 ? $settings.indicatorColor : 'customGreyMedium'"
-                      :dark="$moment().diff($moment(computedLatestDiscussionMessage), 'days') > 5"
+                      :color="$moment().diff($moment(computedGroup.latestMessage), 'days') <= 5 ? $settings.indicatorColor : 'customGreyMedium'"
+                      :dark="$moment().diff($moment(computedGroup.latestMessage), 'days') > 5"
                       disabled
-                      :class="$moment().diff($moment(computedLatestDiscussionMessage), 'days') <= 5 ? 'elevation-8 font-weight-bold' : ''"
+                      :class="$moment().diff($moment(computedGroup.latestMessage), 'days') <= 5 ? 'elevation-8 font-weight-bold' : ''"
                     >
-                      {{$t('latestPost')}}: {{$moment(computedLatestDiscussionMessage).format("DD.MM.YYYY, HH:mm")}} {{$t('oClock')}}
+                      {{$t('latestPost')}}: {{$moment(computedGroup.latestMessage).format("DD.MM.YYYY, HH:mm")}} {{$t('oClock')}}
                     </v-chip>
                   </v-col>
                 </v-row>
@@ -754,19 +754,6 @@ export default {
     ...mapGetters('categories', {
       categories: 'list'
     }),
-    computedLatestDiscussionMessage () {
-      const latestDiscussionMessages = this.computedGroup.latestDiscussionMessages
-        .map(discussion => discussion.latestMessage)
-        .filter(discussion => !!discussion)
-      if (latestDiscussionMessages.length === 0) {
-        return null
-      } else {
-        return latestDiscussionMessages
-          .map(discussionMessage => discussionMessage.updatedAt)
-          .sort()
-          .reverse()[0]
-      }
-    },
     computedCategory () {
       if (this.$route.params.category) {
         return this.getCategories([this.$route.params.category])[0]

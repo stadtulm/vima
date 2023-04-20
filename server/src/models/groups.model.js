@@ -77,8 +77,8 @@ module.exports = function (app) {
     localField: '_id', // Here
     foreignField: 'group', // There
     options: {
-      select: { latestMessage: 1 },
-      populate: { path: 'latestMessage', select: { updatedAt: 1, _id: 1 } }
+      select: { latestDiscussionMessage: 1 },
+      populate: { path: 'latestDiscussionMessage', select: { createdAt: 1 } }
     }
   })
 

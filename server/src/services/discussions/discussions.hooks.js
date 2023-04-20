@@ -22,7 +22,7 @@ module.exports = {
         (context) => {
           context.params.query.$populate = [
             'author',
-            'latestMessage',
+            'latestDiscussionMessage',
             'messagesCount',
             {
               path: 'group',

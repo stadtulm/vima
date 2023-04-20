@@ -274,7 +274,7 @@ module.exports = {
   },
 
   generateDefaultAggegationStages: async function (context, properties) {
-    const stages = []
+    let stages = []
     // Extract query properties
     const populates = context.params.query.$populate
     delete context.params.query.$populate
@@ -313,11 +313,173 @@ module.exports = {
             }
           })
           properties = properties.filter(e => e !== sortPropertyBaseName)
+          stages.push({
+            $sort: sort
+          })
+        } else if (prop === 'latestMessage') {
+          if (context.path === 'discussions') {
+            stages.push(
+              {
+                $lookup: {
+                  from: 'discussionmessages',
+                  let: {
+                    discussion: '$_id'
+                  },
+                  pipeline: [{
+                    $match: { $expr: { $eq: ['$discussion', '$$discussion'] } }
+                  },
+                  {
+                    $project: { createdAt: 1 }
+                  },
+                  {
+                    $sort: { createdAt: sort[prop] }
+                  }, {
+                    $limit: 1
+                  }
+                  ],
+                  as: 'latestMessage'
+                }
+              },
+              {
+                $sort: {
+                  'latestMessage.createdAt': sort[prop]
+                }
+              },
+              {
+                $set: {
+                  latestMessage: { $first: '$latestMessage.createdAt' }
+                }
+              }
+            )
+          } else if (context.path === 'groups') {
+            stages = stages.concat([
+              {
+                $lookup: {
+                  from: 'discussions',
+                  localField: '_id',
+                  foreignField: 'group',
+                  as: 'discussions'
+                }
+              },
+              {
+                $unwind: {
+                  path: '$discussions',
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $lookup: {
+                  from: 'discussionmessages',
+                  let: {
+                    discussion: '$discussions._id'
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        $expr: {
+                          $eq: [
+                            '$discussion',
+                            '$$discussion'
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        createdAt: 1
+                      }
+                    },
+                    {
+                      $sort: {
+                        createdAt: sort[prop]
+                      }
+                    },
+                    {
+                      $limit: 1
+                    }
+                  ],
+                  as: 'latestMessage'
+                }
+              },
+              {
+                $sort: {
+                  'latestMessage.createdAt': sort[prop]
+                }
+              },
+              {
+                $group:
+                /**
+                 * _id: The id of the group.
+                 * fieldN: The first field name.
+                 */
+                {
+                  _id: '$_id',
+                  accepted: {
+                    $first: '$accepted'
+                  },
+                  categories: {
+                    $first: '$categories'
+                  },
+                  tage: {
+                    $first: '$tags'
+                  },
+                  prominentCategories: {
+                    $first: '$prominentCategories'
+                  },
+                  isActive: {
+                    $first: '$isActive'
+                  },
+                  title: {
+                    $first: '$title'
+                  },
+                  description: {
+                    $first: '$description'
+                  },
+                  visibility: {
+                    $first: '$visibility'
+                  },
+                  pics: {
+                    $first: '$pics'
+                  },
+                  files: {
+                    $first: '$files'
+                  },
+                  createdAt: {
+                    $first: '$createdAt'
+                  },
+                  updatedAt: {
+                    $first: '$updatedAt'
+                  },
+                  __v: {
+                    $first: '$__v'
+                  },
+                  translationSum: {
+                    $first: '$translationSum'
+                  },
+                  latestMessage: {
+                    $first: {
+                      $first: '$latestMessage.createdAt'
+                    }
+                  }
+                }
+              },
+              {
+                $sort:
+                /**
+                 * Provide any number of field/order pairs.
+                 */
+                {
+                  latestMessage: sort[prop]
+                }
+              }
+            ])
+          }
+        } else {
+          stages.push({
+            $sort: sort
+          })
         }
       }
-      stages.push({
-        $sort: sort
-      })
     }
     if (limit) {
       // Facet stage

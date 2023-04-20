@@ -102,6 +102,7 @@
             dense
             hide-details
             :items="[
+              { text: $t('sortUpdateDesc'), value: [['latestMessage'], -1]},
               { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
               { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
               { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
@@ -251,8 +252,8 @@ export default {
     searchDefault: '',
     total: 0,
     itemsPerPage: 12,
-    combinedSort: [['createdAt'], -1],
-    sortBy: ['createdAt'],
+    combinedSort: [['latestMessage'], -1],
+    sortBy: ['latestMessage'],
     sortDesc: -1
   }),
 
@@ -447,6 +448,7 @@ export default {
     },
     sortBy () {
       let tmpData
+      this.page = 1
       if (Array.isArray(this.sortBy)) {
         tmpData = this.sortBy.join(',')
       } else {

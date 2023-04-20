@@ -12,13 +12,17 @@ class discussions extends BaseModel {
     }
   }
 
-  // Updates `data.group` to be an instance of the `Group` class.
+  // Updates `data.group` to be an instance of the `Group` class
+  // and adds latestMessage
   static setupInstance (data, { store, models }) {
     if (data.group) {
       if (typeof data.group === 'object') {
         // eslint-disable-next-line new-cap
         data.group = new models.api.groups(data.group)._id
       }
+    }
+    if (data.latestMessage === undefined && data.latestDiscussionMessage) {
+      data.latestMessage = data.latestDiscussionMessage.createdAt
     }
     return data
   }
