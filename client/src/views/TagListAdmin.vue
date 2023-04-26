@@ -43,7 +43,6 @@
       <v-col>
         <v-data-table
           @current-items="setCurrentItems"
-          :item-class="itemRowBackground"
           class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="computedTags"
@@ -71,7 +70,7 @@
             ></v-progress-linear>
           </template>
           <template
-            v-slot:[`item.text.value`]="{ item }"
+            v-slot:[`item.text`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -79,9 +78,8 @@
               <v-list-item-content>
                 <v-list-item-title
                   class="font-weight-bold"
-                  :class="item.text.type === 'error' ? 'error--text' : ''"
                 >
-                  {{item.text.value}}
+                  {{item.text}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -95,62 +93,6 @@
             v-slot:[`item.createdAt`]="{ item }"
           >
             {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
-          </template>
-          <template
-            v-slot:[`item.isAccepted`]="{ item }"
-          >
-            <v-btn
-              icon
-              color="customGrey"
-              :disabled="user.role !== 'admins' || item.text.type === 'error'"
-              :loading="loaders[item._id + 'accepted'] === true"
-              @click="changeTagProperty(
-                item,
-                'isAccepted',
-                !item.isAccepted
-              )"
-            >
-              <template
-                slot="loader"
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon>
-                {{item.isAccepted ? 'fas fa-check-square' : 'far fa-square'}}
-              </v-icon>
-            </v-btn>
-          </template>
-          <template
-            v-slot:[`item.isActive`]="{ item }"
-          >
-            <v-btn
-              icon
-              color="customGrey"
-              :disabled="user.role !== 'admins'"
-              :loading="loaders[item._id + 'accepted'] === true"
-              @click="changeTagProperty(
-                item,
-                'isActive',
-                !item.isActive
-              )"
-            >
-              <template
-                slot="loader"
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon>
-                {{item.isActive ? 'fas fa-check-square' : 'far fa-square'}}
-              </v-icon>
-            </v-btn>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
@@ -229,9 +171,6 @@ export default {
     // Save current query
     this.$router.options.tmpQuery = this.$route.query
     this.initQuery()
-    setTimeout(async () => {
-      await this.checkAcceptedTags()
-    }, 1000)
   },
 
   methods: {
@@ -275,38 +214,6 @@ export default {
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
         this.$set(this.loaders, tag._id + property, undefined)
-      }
-    },
-    itemRowBackground (item) {
-      if (
-        this.adminTagStatusContainer &&
-        this.adminTagStatusContainer.unread &&
-        this.adminTagStatusContainer.unread.map(obj => obj.id).includes(item._id)
-      ) {
-        return 'new'
-      } else {
-        return ''
-      }
-    },
-    async checkAcceptedTags () {
-      const visibleTags = this.currentTags.map(obj => obj._id)
-      let adminTags = []
-      if (this.adminTagStatusContainer && this.adminTagStatusContainer.unread) {
-        adminTags = this.adminTagStatusContainer.unread.map(obj => obj.id)
-      }
-      const tagIds = visibleTags.filter(e => adminTags.indexOf(e) !== -1)
-      if (tagIds.length > 0 && !this.isUpdating) {
-        this.isUpdating = true
-        await this.patchTagNotifications(
-          [
-            'pullUnreadById',
-            {
-              containerId: this.adminTagStatusContainer,
-              ids: tagIds
-            }
-          ]
-        )
-        this.isUpdating = false
       }
     },
     initQuery () {
@@ -410,6 +317,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters([
+      'itemsPerPageOptions'
+    ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -421,38 +331,22 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('name'), value: 'text.value' },
+        { text: this.$t('name'), value: 'text' },
         { text: this.$t('createdAt'), value: 'createdAt' },
         { text: this.$t('updatedAt'), value: 'updatedAt' },
-        { text: this.$t('accepted'), value: 'isAccepted', align: 'center' },
-        { text: this.$t('active'), value: 'isActive', align: 'center' },
         { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
         { text: this.$t('deleteButton'), value: 'delete', align: 'center', sortable: false }
       ]
     },
-    adminTagStatusContainer () {
-      return this.statusContainers.find(obj => obj.user === this.user._id && obj.type === 'tags' && obj.relation === 'admin')
-    },
     computedTags () {
-      const filteredTags = this.tags.map(tag => tag.text && (tag.text.lang === this.$i18n.locale || tag.text.type === 'default') ? tag : { ...tag, text: { value: this.$t('noDefaultValue'), type: 'error' } })
       if (this.search && this.search.trim() !== '') {
-        return filteredTags.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
+        return this.tags.filter(obj => obj.text.toLowerCase().includes(this.search.toLowerCase()))
       } else {
-        return filteredTags
+        return this.tags
       }
     }
   },
 
-  watch: {
-    async currentTags () {
-      await this.checkAcceptedTags()
-    },
-    statusContainers: {
-      deep: true,
-      async handler () {
-        await this.checkAcceptedTags()
-      }
-    }
-  }
+  watch: {}
 }
 </script>

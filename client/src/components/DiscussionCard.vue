@@ -141,7 +141,7 @@
                   :disabled="!discussionProp"
                   @click.prevent="$emit('selectTag', tag._id)"
                 >
-                {{tag.text.value}}
+                {{tag.text}}
                 </v-chip>
               </v-col>
             </v-row>

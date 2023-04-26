@@ -54,8 +54,8 @@
             deletable-chips
             dense
             hide-details
-            :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
-            item-text="text.value"
+            :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
+            item-text="text"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -160,7 +160,7 @@
                 class="mr-1"
                 @click="selectTag(tag._id)"
               >
-              {{tag.text.value}}
+              {{tag.text}}
               </v-chip>
             </template>
             <template
@@ -228,7 +228,7 @@
               <v-btn
                 fab
                 small
-                :color="'custom' + computedColor"
+                :color="computedColor"
                 class="my-4"
                 :loading="loaders[item._id + 'delete'] === true"
                 @click="deleteDiscussion(item._id)"
@@ -532,10 +532,6 @@ export default {
       } else {
         return false
       }
-    },
-    computedTags () {
-      return this.tags
-        .filter(obj => obj.isActive && obj.isAccepted)
     },
     headers () {
       if (this.isAcceptList) {

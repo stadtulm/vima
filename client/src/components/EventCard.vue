@@ -85,7 +85,7 @@
               class="mr-1"
               disabled
             >
-            {{tag.text.value}}
+            {{tag.text}}
             </v-chip>
           </v-col>
         </v-row>

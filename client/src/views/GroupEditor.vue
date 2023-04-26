@@ -112,10 +112,10 @@
                     background-color="#fff"
                     outlined
                     v-model="selectedTags"
-                    item-text="text.value"
+                    item-text="text"
                     item-value="_id"
                     :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
-                    :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+                    :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
                     :rules="[rules.maxThreeCategories]"
                   >
                   </v-autocomplete>
@@ -129,12 +129,12 @@
                     :color="$settings.modules.groups.color"
                     @click="showTagProposalDialog = true"
                   >
-                    {{$t('proposeNewTags')}}
+                    {{$t('newTagButton')}}
                     <v-icon
                       size="18"
                       class="ml-3 pb-1"
                     >
-                      fas fa-lightbulb
+                      fas fa-plus
                     </v-icon>
                   </v-btn>
                 </v-col>
@@ -518,10 +518,6 @@ export default {
         tmpItems.push({ text: this.$t('hiddenVisibilityTitle') + ' - ' + this.$t('hiddenVisibilityDescription'), value: 'hidden' })
       }
       return tmpItems
-    },
-    computedTags () {
-      return this.tags
-        .filter(obj => obj.isActive && obj.isAccepted)
     }
   },
 

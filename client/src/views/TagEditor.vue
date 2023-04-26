@@ -24,7 +24,6 @@
           >
             <v-row
               dense
-              v-if="text"
             >
               <v-col
                 cols="12"
@@ -35,33 +34,14 @@
                   color="customGrey"
                   :label="$t('name')"
                   background-color="#fff"
-                  v-model="text.find(obj => obj.lang === currentLanguage).value"
+                  v-model="text"
                   :rules="[
-                    v => text.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired'),
+                    rules.required,
                     rules.tagText,
                     rules.noBlanks
                   ]"
                 >
-                  <template v-slot:prepend>
-                    <LanguageSelect
-                      :currentLanguage="currentLanguage"
-                      :languageObjects="text"
-                      @setLanguage="(l) => { currentLanguage = l }"
-                    ></LanguageSelect>
-                  </template>
                 </v-text-field>
-              </v-col>
-            </v-row>
-            <v-row
-              dense
-            >
-              <v-col>
-                <v-checkbox
-                  color="customGrey"
-                  v-model="isActive"
-                  :label="$t('tagActiveCheckbox')"
-                >
-                </v-checkbox>
               </v-col>
             </v-row>
           </v-form>
@@ -89,35 +69,26 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import LanguageSelect from '@/components/LanguageSelect.vue'
 
 export default {
   name: 'TagEditor',
 
-  components: {
-    LanguageSelect
-  },
+  components: {},
 
   data: () => ({
     selectedTag: undefined,
     isLoading: false,
     isValid: false,
-    text: undefined,
-    isActive: true,
-    currentLanguage: 'en'
+    text: undefined
   }),
 
   async mounted () {
-    this.currentLanguage = this.$i18n.locale
     await this.adapt()
   },
 
   methods: {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
-    }),
-    ...mapMutations('tags', {
-      updateTagItem: 'updateItem'
     }),
     ...mapActions('tags', {
       patchTag: 'patch',
@@ -129,29 +100,23 @@ export default {
     }),
     async adapt () {
       if (this.$route.params.id) {
-        this.selectedTag = await this.requestTag([this.$route.params.id, { keepTranslations: true }])
+        this.selectedTag = await this.requestTag([this.$route.params.id])
       }
       if (this.selectedTag) {
-        this.text = this.hydrateTranslations(this.selectedTag.text)
-        this.isActive = this.selectedTag.isActive
-      } else {
-        this.text = this.hydrateTranslations()
+        this.text = this.selectedTag.text
       }
     },
     async saveTag () {
       this.isLoading = true
       const map = {
-        text: this.text.filter(language => language.value && language.value !== ''),
-        isActive: this.isActive
+        text: this.text
       }
       try {
-        let result
         if (this.selectedTag) {
-          result = await this.patchTag([this.selectedTag._id, map, {}])
+          await this.patchTag([this.selectedTag._id, map, {}])
         } else {
-          result = await this.createTag([map, {}])
+          await this.createTag([map, {}])
         }
-        this.updateTagItem(this.reduceTranslations(result, this.$i18n.locale, ['text']))
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         this.$router.go(-1)
@@ -164,9 +129,7 @@ export default {
 
   computed: {
     ...mapGetters([
-      'rules',
-      'reduceTranslations',
-      'hydrateTranslations'
+      'rules'
     ]),
     ...mapGetters('auth', [
       'user'

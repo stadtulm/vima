@@ -14,7 +14,7 @@ class groups extends BaseModel {
 
   // Adds latest message if not there
   static setupInstance (data, { store, models }) {
-    if (data.latestMessage === undefined) {
+    if (data.latestMessage === undefined && data.latestDiscussionMessages) {
       const latestDiscussionMessage = data.latestDiscussionMessages
         .map(discussion => discussion.latestDiscussionMessage)
         .filter(discussion => !!discussion)

@@ -230,6 +230,12 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         commonHooks.alterItems(rec => {
+          if (rec.group && typeof rec.group === 'object' && rec.group.title && Array.isArray(rec.group.title)) {
+            rec.group.title = rec.group.title.find(t => t.type === 'default')
+          }
+          if (rec.group && typeof rec.group === 'object' && rec.group.description && Array.isArray(rec.group.description)) {
+            rec.group.description = rec.group.description.find(t => t.type === 'default')
+          }
           if (Array.isArray(rec.title)) {
             rec.title = rec.title.find(t => t.type === 'default')
           }
