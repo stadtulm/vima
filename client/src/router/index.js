@@ -1389,12 +1389,7 @@ async function init (to, from, next) {
       throw Error('No settings available on server')
     }
     await Store.dispatch('categories/find', { $paginate: false })
-    const query = {}
-    if (!Store.getters['auth/user'] || (Store.getters['auth/user'] && Store.getters['auth/user'].role !== 'admins')) {
-      query.isActive = true
-      query.isAccepted = true
-    }
-    await Store.dispatch('tags/find', { query, $paginate: false })
+    await Store.dispatch('tags/find', { $paginate: false })
     // If logged in load stuff if not there
     if (Store.getters['auth/user']) {
       try {
