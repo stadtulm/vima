@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Vuetify from 'vuetify/lib/framework'
+import Vuetify from 'vuetify/lib'
 import de from 'vuetify/lib/locale/de'
 import colors from 'vuetify/lib/util/colors'
 import { TiptapVuetifyPlugin } from 'tiptap-vuetify'
@@ -30,7 +30,7 @@ const vuetify = new Vuetify({
 
 Vue.use(Vuetify)
 Vue.use(TiptapVuetifyPlugin, {
-  vuetify: vuetify,
+  vuetify,
   iconsGroup: 'fa'
 })
 

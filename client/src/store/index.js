@@ -1,4 +1,3 @@
-
 import Store from './store'
 import Globals from './globals'
 
