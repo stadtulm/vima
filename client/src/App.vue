@@ -196,9 +196,11 @@
               :color="$settings.modules.ads.color"
               :to="{ name: 'CategoryList', params: { type: 'ads' } }"
             >
-              <v-list-item-title
-                v-html="$t('adsTitle')"
-              >
+              <v-list-item-title>
+                <div
+                  v-html="$t('adsTitle')"
+                >
+              </div>
               </v-list-item-title>
             </v-list-item>
             <v-list-item
@@ -206,9 +208,11 @@
               :color="$settings.modules.groups.color"
               :to="{ name: 'Groups' }"
             >
-              <v-list-item-title
-                v-html="$t('groupsTitle')"
-              >
+              <v-list-item-title>
+                <div
+                  v-html="$t('groupsTitle')"
+                >
+                </div>
               </v-list-item-title>
             </v-list-item>
             <v-list-item
@@ -216,9 +220,11 @@
               :color="$settings.modules.discussions.color"
               :to="{ name: 'Discussions', params: { type: 'discussions' } }"
             >
-              <v-list-item-title
-                v-html="$t('discussionsTitle')"
-              >
+              <v-list-item-title>
+                <div
+                  v-html="$t('discussionsTitle')"
+                >
+                </div>
               </v-list-item-title>
             </v-list-item>
             <v-list-item
@@ -226,9 +232,11 @@
               color="customGrey"
               :to="{ name: 'News' }"
             >
-              <v-list-item-title
-                v-html="$t('newsTitle')"
-              >
+              <v-list-item-title>
+                <div
+                  v-html="$t('newsTitle')"
+                >
+                </div>
               </v-list-item-title>
             </v-list-item>
             <v-list-item
@@ -236,9 +244,11 @@
               color="customGrey"
               :to="{ name: 'Events' }"
             >
-              <v-list-item-title
-                v-html="$t('eventsTitle')"
-              >
+              <v-list-item-title>
+                <div
+                  v-html="$t('eventsTitle')"
+                >
+                </div>
               </v-list-item-title>
             </v-list-item>
             <v-list-item
@@ -246,9 +256,11 @@
               color="customGrey"
               :to="{ name: 'Blog' }"
             >
-              <v-list-item-title
-                v-html="$t('blogTitle')"
-              >
+              <v-list-item-title>
+                <div
+                  v-html="$t('blogTitle')"
+                >
+                </div>
               </v-list-item-title>
             </v-list-item>
             <v-list-item
@@ -256,8 +268,11 @@
               color="customGrey"
               :to="{ name: 'Organisations' }"
             >
-              <v-list-item-title
-                v-html="$t('organisationsTitle')"
+              <v-list-item-title>
+                <div
+                  v-html="$t('organisationsTitle')"
+                >
+                </div
               >
               </v-list-item-title>
             </v-list-item>
@@ -266,9 +281,11 @@
               color="customGrey"
               :to="{ name: 'Sponsors' }"
             >
-              <v-list-item-title
-                v-html="$t('sponsorsTitle')"
-              >
+              <v-list-item-title>
+                <div
+                  v-html="$t('sponsorsTitle')"
+                >
+                </div>
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -1963,8 +1980,10 @@
         <v-row>
           <v-col
             class="body-1 black--text"
-            v-html="$t('adBlockerHint')"
           >
+            <div
+              v-html="$t('adBlockerHint')"
+            ></div>
           </v-col>
         </v-row>
         <v-row>
@@ -1986,8 +2005,10 @@
         <v-row>
           <v-col
             class="body-1 black--text"
-            v-html="$t('askForConsent')"
           >
+            <div
+              v-html="$t('askForConsent')"
+            ></div>
           </v-col>
         </v-row>
         <v-row>

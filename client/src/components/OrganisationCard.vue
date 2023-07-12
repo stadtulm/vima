@@ -43,8 +43,12 @@
                 >
                   <v-col
                     class="body-1"
-                    v-html="organisationProp ? truncatedDescription(newTab(computedOrganisation.description)) : $sanitize(newTab(computedOrganisation.description))"
-                  ></v-col>
+                  >
+                    <div
+                      v-html="organisationProp ? truncatedDescription(newTab(computedOrganisation.description)) : $sanitize(newTab(computedOrganisation.description))"
+                    >
+                    </div>
+                  </v-col>
                 </v-row>
                 <!-- Website -->
                 <v-row

@@ -361,7 +361,7 @@ export default {
           state: errors.length === 0 ? 'pending' : 'error',
           type: file.type,
           size: file.size,
-          errors: errors
+          errors
         }
       }))
     },

@@ -183,10 +183,13 @@
                                         v-slot:defaultLang="{ computedText, translateText }"
                                       >
                                         <v-sheet
-                                          v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
                                           color="transparent"
                                           class="pa-1"
                                         >
+                                          <div
+                                            v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                          >
+                                          </div>
                                         </v-sheet>
                                         <TranslatableTextInfo
                                           :canTranslate="true"
@@ -199,10 +202,13 @@
                                         v-slot:translatedLang="{ computedText, showOriginal, translateText }"
                                       >
                                         <v-sheet
-                                          v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
                                           color=""
                                           class="pa-2 mb-4"
                                         >
+                                          <div
+                                            v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                          >
+                                          </div>
                                         </v-sheet>
                                         <TranslatableTextInfo
                                           :canShowOriginal="true"

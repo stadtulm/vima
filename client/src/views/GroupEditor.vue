@@ -309,8 +309,11 @@
           <v-row>
             <v-col
               class="body-1 font-weight-bold"
-              v-html="$t('acceptGroupWarningBody', { type: $t('group') })"
             >
+              <div
+                v-html="$t('acceptGroupWarningBody', { type: $t('group') })"
+              >
+              </div>
             </v-col>
           </v-row>
           <v-card-actions

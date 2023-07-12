@@ -5,8 +5,11 @@
     >
       <v-col
         class="text-h5 font-weight-bold customGrey--text text-uppercase"
-        v-html="$t('adminView') + ' ' + $t('adsTitle')"
       >
+        <div
+          v-html="$t('adminView') + ' ' + $t('adsTitle')"
+        >
+        </div>
       </v-col>
     </v-row>
     <v-row>

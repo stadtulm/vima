@@ -14,8 +14,12 @@
       <v-row>
         <v-col
           class="body-1 customGrey--text"
-          v-html="$sanitize(newTab(computedSite.text.value))"
-        ></v-col>
+        >
+          <div
+            v-html="$sanitize(newTab(computedSite.text.value))"
+          >
+          </div>
+        </v-col>
       </v-row>
     </v-card-text>
   </v-card>

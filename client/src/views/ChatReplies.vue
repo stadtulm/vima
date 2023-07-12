@@ -197,11 +197,14 @@
                                         v-slot:defaultLang="{ computedText, translateText }"
                                       >
                                         <v-sheet
-                                          v-html="message.text ? $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) : ''"
                                           :color="isOwnMessage(message) ? '#fff' : 'customGreyLight'"
                                           :class="{'rounded-l-xl rounded-tr-xl': isOwnMessage(message), 'rounded-r-xl rounded-tl-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
                                           class="px-4 py-1 elevation-4"
                                         >
+                                          <div
+                                            v-html="message.text ? $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) : ''"
+                                          >
+                                          </div>
                                         </v-sheet>
                                         <v-col
                                           class="pa-0"
@@ -226,8 +229,12 @@
                                           <v-sheet
                                             class="py-1 mt-3 mb-4 px-2 rounded"
                                             color="rgba(255,255,255,0.3)"
-                                            v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
-                                          ></v-sheet>
+                                          >
+                                            <div
+                                              v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                                            >
+                                            </div>
+                                          </v-sheet>
                                         </v-sheet>
                                         <TranslatableTextInfo
                                           :canShowOriginal="true"

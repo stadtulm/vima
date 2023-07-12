@@ -93,8 +93,12 @@
         <v-row>
           <v-col
             class="body-1 mx-4"
-            v-html="eventProp ? truncatedDescription(newTab(computedEvent.text.value)) : $sanitize(newTab(computedEvent.text.value))"
-          ></v-col>
+          >
+            <div
+              v-html="eventProp ? truncatedDescription(newTab(computedEvent.text.value)) : $sanitize(newTab(computedEvent.text.value))"
+            >
+            </div>
+          </v-col>
         </v-row>
       </v-col>
       <!-- Carousel -->

@@ -12,7 +12,7 @@ Vue.use(VueMatomo, {
   trackerFileName: 'matomo',
 
   // Enables automatically registering pageviews on the router
-  router: router,
+  router,
 
   // Enables link tracking on regular links. Note that this won't
   // work for routing links (ie. internal Vue router links)

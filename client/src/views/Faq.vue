@@ -98,9 +98,12 @@
       </v-row>
       <v-row>
         <v-col
-          v-html="$t('manualBody')"
           class="customGrey--text"
         >
+          <div
+            v-html="$t('manualBody')"
+          >
+          </div>
         </v-col>
       </v-row>
       <template
@@ -133,8 +136,12 @@
                   <v-expansion-panel-content>
                     <v-row>
                       <v-col
-                        v-html="item.text"
-                      ></v-col>
+                      >
+                        <div
+                          v-html="item.text"
+                        >
+                        </div>
+                      </v-col>
                     </v-row>
                   </v-expansion-panel-content>
                 </v-expansion-panel>

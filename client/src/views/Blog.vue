@@ -8,8 +8,11 @@
         <v-row>
           <v-col
             class="text-h5 font-weight-bold customGrey--text text-uppercase"
-            v-html="$t('blogTitle')"
           >
+            <div
+              v-html="$t('blogTitle')"
+            >
+            </div>
           </v-col>
           <v-col
             class="shrink align-self-center"

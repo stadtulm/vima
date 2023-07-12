@@ -22,8 +22,11 @@
             <v-row>
               <v-col
                 class="body-1"
-                v-html="$t('resendVerifyBody')"
               >
+                <div
+                  v-html="$t('resendVerifyBody')"
+                >
+                </div>
               </v-col>
             </v-row>
             <v-row>

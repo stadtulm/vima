@@ -141,8 +141,12 @@
                     <v-row>
                       <v-col
                         cols="12"
-                        v-html="item.text"
-                      ></v-col>
+                      >
+                        <div
+                          v-html="item.text"
+                        >
+                        </div>
+                      </v-col>
                     </v-row>
                   </v-card-text>
                 </v-card>
@@ -554,8 +558,11 @@
           <v-row>
             <v-col
               class="body-1 font-weight-bold"
-              v-html="$t('deleteWarningBody')"
             >
+              <div
+                v-html="$t('deleteWarningBody')"
+              >
+              </div>
             </v-col>
           </v-row>
           <v-card-actions

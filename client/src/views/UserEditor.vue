@@ -355,8 +355,11 @@
           <v-row>
             <v-col
               class="body-1 font-weight-bold"
-              v-html="$t('deleteAccountWarningBody')"
             >
+              <div
+                v-html="$t('deleteAccountWarningBody')"
+              >
+              </div>
             </v-col>
           </v-row>
           <v-row>
@@ -418,8 +421,11 @@
           <v-row>
             <v-col
               class="body-1 font-weight-bold"
-              v-html="$t('changePasswordBody')"
             >
+              <div
+                v-html="$t('changePasswordBody')"
+              >
+              </div>
             </v-col>
           </v-row>
           <v-row>

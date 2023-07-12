@@ -142,10 +142,13 @@
                         v-slot:defaultLang="{ computedText, translateText }"
                       >
                           <v-sheet
-                          v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
                           color="transparent"
                           class="pa-1"
                         >
+                          <div
+                            v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                          >
+                          </div>
                         </v-sheet>
                         <TranslatableTextInfo
                           :canTranslate="true"
@@ -158,9 +161,12 @@
                         v-slot:translatedLang="{ computedText, showOriginal, translateText }"
                       >
                         <v-sheet
-                          v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
                           class="pa-2"
                         >
+                          <div
+                            v-html="$sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))"
+                          >
+                          </div>
                         </v-sheet>
                         <TranslatableTextInfo
                           :canShowOriginal="true"
@@ -457,8 +463,11 @@
                       </v-list-item>
                       <v-alert
                         color="customGreyUltraLight"
-                        v-html="$sanitize(newTab(latestAnswersLanguage === 'default' ? message.latestAnswers.text.find(t => t.type === 'default').value : message.latestAnswers.text.find(t => t.lang === $i18n.locale).value))"
                       >
+                        <div
+                          v-html="$sanitize(newTab(latestAnswersLanguage === 'default' ? message.latestAnswers.text.find(t => t.type === 'default').value : message.latestAnswers.text.find(t => t.lang === $i18n.locale).value))"
+                        >
+                        </div>
                       </v-alert>
                         <template
                           v-if="latestAnswersLanguage === 'default'"

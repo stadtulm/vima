@@ -75,8 +75,12 @@
       <v-row>
         <v-col
           class="body-1"
-          v-html="newsProp ? truncatedDescription(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, '')))"
-        ></v-col>
+        >
+          <div
+            v-html="newsProp ? truncatedDescription(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, '')))"
+          >
+          </div>
+        </v-col>
       </v-row>
       <v-row
         v-if="!newsProp"

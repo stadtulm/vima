@@ -280,14 +280,20 @@
             <v-col
               v-if="group"
               class="body-1 font-weight-bold"
-              v-html="$t('acceptWarningBodyInternal', { type: $t('discussion') })"
             >
+              <div
+                v-html="$t('acceptWarningBodyInternal', { type: $t('discussion') })"
+              >
+              </div>
             </v-col>
             <v-col
               v-else
               class="body-1 font-weight-bold"
-              v-html="$t('acceptWarningBody', { type: $t('discussion') })"
             >
+              <div
+                v-html="$t('acceptWarningBody', { type: $t('discussion') })"
+              >
+              </div>
             </v-col>
           </v-row>
           <v-card-actions

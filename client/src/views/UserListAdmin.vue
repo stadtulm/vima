@@ -277,8 +277,11 @@
           <v-row>
             <v-col
               class="body-1"
-              v-html="$t('deactivateUserWarningBody')"
             >
+              <div
+                v-html="$t('deactivateUserWarningBody')"
+              >
+              </div>
             </v-col>
           </v-row>
         </v-card-text>

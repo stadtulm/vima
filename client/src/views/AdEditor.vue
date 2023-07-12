@@ -275,8 +275,11 @@
           <v-row>
             <v-col
               class="body-1 font-weight-bold"
-              v-html="$t('acceptWarningBody', { type: $t('ad') })"
             >
+              <div
+                v-html="$t('acceptWarningBody', { type: $t('ad') })"
+              >
+              </div>
             </v-col>
           </v-row>
           <v-card-actions

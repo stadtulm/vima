@@ -55,9 +55,12 @@
                 class="px-0 pb-0"
               >
                 <v-card-title
-                  v-html="$t(module.type + 'Title')"
                   class="word-wrap"
                 >
+                  <div
+                    v-html="$t(module.type + 'Title')"
+                  >
+                  </div>
                 </v-card-title>
               </v-col>
               <v-col
@@ -81,8 +84,11 @@
               <v-col
                 cols="12"
                 class="pb-4 px-4 body-1 black--text"
-                v-html="$sanitize(pickLanguage(module))"
               >
+                <div
+                  v-html="$sanitize(pickLanguage(module))"
+                >
+                </div>
               </v-col>
             </v-row>
           </v-container>

@@ -35,8 +35,11 @@
               <v-alert
                 color="warning"
                 dark
-                v-html="selectedViolation ? selectedViolation.originalMessage : computedMessage.text.value"
               >
+                <div
+                  v-html="selectedViolation ? selectedViolation.originalMessage : computedMessage.text.value"
+                >
+                </div>
               </v-alert>
               <v-row
                 v-if="computedMessage && computedMessage.pics && computedMessage.pics.length > 0"

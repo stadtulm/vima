@@ -7,8 +7,11 @@
         <v-row>
           <v-col
             class="text-h5 font-weight-bold customGrey--text text-uppercase"
-            v-html="$t('organisationsTitle')"
           >
+            <div
+              v-html="$t('organisationsTitle')"
+            >
+            </div>
           </v-col>
           <v-col
             class="shrink align-self-center"

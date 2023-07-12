@@ -75,8 +75,11 @@
             <v-col
               cols="12"
               class="body-1"
-              v-html="$t('resetPasswordThanks')"
             >
+              <div
+                v-html="$t('resetPasswordThanks')"
+              >
+              </div>
             </v-col>
           </v-row>
         </v-card-text>

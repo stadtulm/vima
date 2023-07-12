@@ -73,8 +73,12 @@
       <v-row>
         <v-col
           class="body-1"
-          v-html="blogProp ? truncatedDescription(newTab(computedBlogEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedBlogEntry.text.value.replace(/\{(.+?)\}/g, '')))"
-        ></v-col>
+        >
+          <div
+            v-html="blogProp ? truncatedDescription(newTab(computedBlogEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedBlogEntry.text.value.replace(/\{(.+?)\}/g, '')))"
+          >
+          </div>
+        </v-col>
       </v-row>
       <v-row
         v-if="!blogProp"

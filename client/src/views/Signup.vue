@@ -21,8 +21,11 @@
             >
               <v-col
                 class="body-1"
-                v-html="$t('registerBody')"
               >
+                <div
+                  v-html="$t('registerBody')"
+                >
+                </div>
               </v-col>
             </v-row>
             <v-form
