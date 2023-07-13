@@ -168,6 +168,20 @@ module.exports = function (app) {
             type: String
           }
         ]
+      },
+      team: {
+        isActive: { type: Boolean, required: true },
+        position: { type: Number, required: true },
+        pic: {
+          url: { type: String },
+          credit: { type: String }
+        },
+        text: [{ type: Translation, required: true }],
+        dependents: [
+          {
+            type: String
+          }
+        ]
       }
     }
   }, {

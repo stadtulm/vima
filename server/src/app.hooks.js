@@ -3,7 +3,10 @@ const { traverse, paramsFromClient } = require('feathers-hooks-common')
 const sanitizeHtml = require('sanitize-html')
 const sanitizeOptions = {
   allowedTags: ['img', 'p', 'strong', 'em', 'u', 's', 'blockquote', 'ul', 'li', 'ol', 'a', 'br', 'div', 'h1', 'h2', 'h3', 'h4', 'h5'],
-  allowedAttributes: { blockquote: ['class'], a: ['href', 'target'], img: ['src', 'style', 'height'], p: ['style'], div: ['style'] }
+  allowedAttributes: { blockquote: ['class'], a: ['href', 'target'], img: ['src', 'style', 'height'], p: ['style'], div: ['style'] },
+  allowedSchemesByTag: {
+    img: ['data', 'http', 'https']
+  }
 }
 
 // Sanitize strings

@@ -120,6 +120,17 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="$settings.modules.team.isActive"
+              :to="{ name: 'Team' }"
+            >
+              <v-list-item-title>
+                <div
+                  v-html="$t('teamTitle')"
+                >
+              </div>
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
               v-if="$route && $route.name === 'Participate'"
               @click="$tours['app'].start()"
             >

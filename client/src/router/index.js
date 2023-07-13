@@ -1213,6 +1213,17 @@ const routes = [
     }
   },
   {
+    path: '/team',
+    name: 'Team',
+    component: Site,
+    meta: {
+      breadCrumbTextKey: 'teamTitle',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ]
+    }
+  },
+  {
     path: '/kommunikationsregeln',
     name: 'CommunicationRules',
     component: Site,

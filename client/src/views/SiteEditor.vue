@@ -44,7 +44,8 @@
                       { text: $t('aboutIleu'), value: 'ileu', disabled: !computedTypes || computedTypes.includes('ileu')},
                       { text: $t('aboutVima'), value: 'vima', disabled: !computedTypes || computedTypes.includes('vima')},
                       { text: $t('aboutVives'), value: 'vives', disabled: !computedTypes || computedTypes.includes('vives')},
-                      { text: $t('communicationRules'), value: 'communicationrules', disabled: !computedTypes || computedTypes.includes('communicationrules')}
+                      { text: $t('communicationRules'), value: 'communicationrules', disabled: !computedTypes || computedTypes.includes('communicationrules')},
+                      { text: $t('teamTitle'), value: 'team', disabled: !computedTypes || computedTypes.includes('team')}
                     ]"
                   >
                   </v-select>
@@ -106,6 +107,185 @@
                         </v-input>
                       </v-col>
                     </v-row>
+                    <v-divider class="my-9 mt-3"></v-divider>
+                    <v-row>
+                      <v-col
+                        cols="12"
+                      >
+                        <v-card
+                          flat
+                          color="customGreyUltraLight"
+                        >
+                          <v-row>
+                            <v-col
+                              cols="12"
+                              class="subtitle-1"
+                            >
+                              {{$t('videos')}} {{$t('optionalLabelExtension')}}
+                            </v-col>
+                          </v-row>
+                          <template
+                            v-if="selectedSite"
+                          >
+                            <v-row
+                              dense
+                              v-for="(video, i) in videos"
+                              :key="i"
+                            >
+                              <v-col
+                                cols="5"
+                              >
+                                <v-text-field
+                                  dense
+                                  color="customGrey"
+                                  v-model="video.id"
+                                  outlined
+                                  :label="$t('videoIdLabel')"
+                                  :rules="[rules.required]"
+                                  background-color="#fff"
+                                >
+                                </v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="5"
+                              >
+                                <v-select
+                                  dense
+                                  color="customGrey"
+                                  item-color="customGrey"
+                                  v-model="video.type"
+                                  :label="$t('type')"
+                                  outlined
+                                  :items="videoTypeItems"
+                                  :item-text="(item) => $t(item.textKey)"
+                                  :rules="[rules.required]"
+                                  background-color="#fff"
+                                >
+                                </v-select>
+                              </v-col>
+                              <v-col
+                                cols="2"
+                                align-self="center"
+                                class="text-right"
+                              >
+                                <v-btn
+                                  icon
+                                  @click="videos.splice(i, 1)"
+                                  class="mb-6"
+                                >
+                                  <v-icon>
+                                    fas fa-times
+                                  </v-icon>
+                                </v-btn>
+                              </v-col>
+                            </v-row>
+                          </template>
+                          <v-row
+                            dense
+                            v-for="(video, j) in tmpVideos"
+                            :key="j + '_tmp'"
+                          >
+                            <v-col
+                              cols="5"
+                            >
+                              <v-text-field
+                                dense
+                                color="customGrey"
+                                v-model="video.id"
+                                outlined
+                                :label="$t('videoIdLabel')"
+                                :rules="[rules.required]"
+                                background-color="#fff"
+                              >
+                              </v-text-field>
+                            </v-col>
+                            <v-col
+                              cols="5"
+                            >
+                              <v-select
+                                dense
+                                color="customGrey"
+                                item-color="customGrey"
+                                v-model="video.type"
+                                :label="$t('type')"
+                                outlined
+                                :items="videoTypeItems"
+                                :item-text="(item) => $t(item.textKey)"
+                                :rules="[rules.required]"
+                                background-color="#fff"
+                              >
+                              </v-select>
+                            </v-col>
+                            <v-col
+                              cols="2"
+                              align-self="center"
+                              class="text-right"
+                            >
+                              <v-btn
+                                icon
+                                @click="tmpVideos.splice(j, 1)"
+                                class="mb-6"
+                              >
+                                <v-icon>
+                                  fas fa-times
+                                </v-icon>
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+                          <v-row
+                            dense
+                          >
+                            <v-col
+                              cols="5"
+                            >
+                              <v-text-field
+                                dense
+                                color="customGrey"
+                                v-model="videoId"
+                                outlined
+                                :label="$t('videoIdLabel')"
+                                background-color="#fff"
+                                :rules="videoId || videoType ? [rules.required] : []"
+                              >
+                              </v-text-field>
+                            </v-col>
+                            <v-col
+                              cols="5"
+                            >
+                              <v-select
+                                dense
+                                color="customGrey"
+                                item-color="customGrey"
+                                v-model="videoType"
+                                :label="$t('type')"
+                                outlined
+                                :items="videoTypeItems"
+                                :item-text="(item) => $t(item.textKey)"
+                                :rules="videoId || videoType ? [rules.required] : []"
+                                background-color="#fff"
+                              >
+                              </v-select>
+                            </v-col>
+                            <v-col
+                              cols="2"
+                              align-self="center"
+                              class="text-right"
+                            >
+                              <v-btn
+                                icon
+                                :disabled="!videoId || !videoType"
+                                @click="addTmpVideo()"
+                                class="mb-6"
+                              >
+                                <v-icon>
+                                  fas fa-plus
+                                </v-icon>
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+                        </v-card>
+                      </v-col>
+                    </v-row>
                   </v-card>
                 </v-col>
               </v-row>
@@ -135,7 +315,7 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link, Heading } from 'tiptap-vuetify'
+import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link, Heading, Image } from 'tiptap-vuetify'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 
 export default {
@@ -153,6 +333,10 @@ export default {
     isValid: false,
     text: undefined,
     currentLanguage: 'en',
+    videoId: undefined,
+    videoType: undefined,
+    videos: [],
+    tmpVideos: [],
     extensions: [
       Bold,
       Italic,
@@ -166,7 +350,8 @@ export default {
         options: {
           levels: [1, 2, 3]
         }
-      }]
+      }],
+      Image
     ]
   }),
 
@@ -189,7 +374,11 @@ export default {
       if (this.$route.params.site) {
         this.selectedSite = await this.requestSite([this.$route.params.site, { keepTranslations: true }])
       }
+      this.tmpVideos = []
       if (this.selectedSite) {
+        if (this.selectedSite.videos) {
+          this.videos = this.selectedSite.videos
+        }
         this.type = this.selectedSite.type
         this.text = this.hydrateTranslations(this.selectedSite.text)
       } else {
@@ -198,9 +387,14 @@ export default {
     },
     async saveSite () {
       this.isLoading = true
+      // Prepare videos
+      if (this.videoId && this.videoType) {
+        this.addTmpVideo()
+      }
       const map = {
         type: this.type,
-        text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>')
+        text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>'),
+        videos: this.videos.concat(this.tmpVideos)
       }
       try {
         if (this.$route.params.site) {
@@ -215,6 +409,11 @@ export default {
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
+    },
+    addTmpVideo () {
+      this.tmpVideos.push({ id: this.videoId, type: this.videoType })
+      this.videoId = undefined
+      this.videoType = undefined
     }
   },
 
@@ -222,6 +421,7 @@ export default {
     ...mapGetters([
       'rules',
       's3',
+      'videoTypeItems',
       'hydrateTranslations'
     ]),
     ...mapGetters('sites', {
@@ -252,6 +452,19 @@ export default {
         ]
       )
       return types.data.map(obj => obj.type)
+    }
+  },
+
+  watch: {
+    videos () {
+      if (this.$refs.newsEditorForm) {
+        this.$refs.newsEditorForm.validate()
+      }
+    },
+    tmpVideos () {
+      if (this.$refs.newsEditorForm) {
+        this.$refs.newsEditorForm.validate()
+      }
     }
   }
 }

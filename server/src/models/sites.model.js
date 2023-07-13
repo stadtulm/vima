@@ -10,9 +10,20 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const schema = new Schema({
     text: [{ type: Translation, required: true }],
+    videos: [
+      {
+        type: {
+          type: String,
+          enum: ['youtube', 'vimeo']
+        },
+        id: {
+          type: String
+        }
+      }
+    ],
     type: {
       type: String,
-      enum: ['imprint', 'privacy', 'contact', 'vima', 'ileu', 'communicationrules', 'vives'],
+      enum: ['imprint', 'privacy', 'contact', 'vima', 'ileu', 'communicationrules', 'vives', 'team'],
       unique: true
     }
   }, {
