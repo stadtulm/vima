@@ -134,6 +134,22 @@
                 >
                   <v-col>
                     <v-btn
+                      v-if="computedGroup.visibility === 'public'"
+                      dark
+                      :color="$settings.modules.groups.color"
+                      :loading="isLoading"
+                      @click="joinGroup()"
+                    >
+                      {{$t('join')}}
+                      <v-icon
+                        size="18"
+                        class="ml-3"
+                      >
+                        fas fa-user-plus
+                      </v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-else
                       dark
                       :color="$settings.modules.groups.color"
                       :loading="isLoading"
@@ -694,7 +710,7 @@ export default {
       requestGroup: 'get'
     }),
     ...mapActions('status-container-helper', {
-      createGroupApplication: 'create'
+      handleGroupMembership: 'create'
     }),
     truncatedDescription (text) {
       const len = 200
@@ -713,11 +729,32 @@ export default {
       this.isLoading = true
       if (!this.computedStatusContainers || !this.computedStatusContainers.find(obj => obj.relation === 'applicant')) {
         try {
-          await this.createGroupApplication(
+          await this.handleGroupMembership(
             {
               type: 'createGroupApplication',
               groupId: this.computedGroup._id,
               message: this.message
+            }
+          )
+          this.isLoading = false
+          this.applicantDialogMode = 'sent'
+        } catch (e) {
+          this.isLoading = false
+          this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
+        }
+      }
+    },
+    async joinGroup () {
+      this.isLoading = true
+      if (
+        !this.computedStatusContainers ||
+        !this.computedStatusContainers.find(obj => obj.reference === this.computedGroup._id)
+      ) {
+        try {
+          await this.handleGroupMembership(
+            {
+              type: 'joinGroup',
+              groupId: this.computedGroup._id
             }
           )
           this.isLoading = false

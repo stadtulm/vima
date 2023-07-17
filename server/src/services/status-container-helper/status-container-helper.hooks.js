@@ -41,8 +41,13 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         async (context) => {
+          if (context.data.type === 'joinGroup') {
+            const group = await context.app.service('groups').get(context.data.groupId)
+            if (group.visibility !== 'public') {
+              throw new Errors.Forbidden('Not allowed to directly join non public groups')
+            }
           // One can not apply for hidden groups
-          if (context.data.type === 'createGroupApplication') {
+          } else if (context.data.type === 'createGroupApplication') {
             const group = await context.app.service('groups').get(context.data.groupId)
             if (group.visibility === 'hidden') {
               throw new Errors.Forbidden('Not allowed to apply for hidden groups')

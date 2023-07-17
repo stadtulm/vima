@@ -71,6 +71,13 @@ exports.StatusContainerHelper = class StatusContainerHelper {
         reference: data.discussionId
 
       })
+    } else if (data.type === 'joinGroup') {
+      await this.app.service('status-containers').create({
+        type: 'groups',
+        user: params.user._id,
+        relation: 'member',
+        reference: data.groupId
+      })
     } else if (data.type === 'createGroupApplication') {
       await this.app.service('status-containers').create({
         type: 'groups',
