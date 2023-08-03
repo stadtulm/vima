@@ -111,16 +111,16 @@
                     chips
                     deletable-chips
                     auto-select-first
-                    hide-details
                     :color="$settings.modules.discussions.color"
                     :item-color="$settings.modules.discussions.color"
                     background-color="#fff"
                     outlined
                     v-model="selectedTags"
-                    item-text="text.value"
+                    item-text="text"
                     item-value="_id"
                     :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
-                    :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+                    :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
+                    :rules="[rules.maxThreeCategories]"
                   >
                   </v-autocomplete>
                 </v-col>
@@ -133,12 +133,12 @@
                     :color="$settings.modules.discussions.color"
                     @click="showTagProposalDialog = true"
                   >
-                    {{$t('proposeNewTags')}}
+                    {{$t('newTagButton')}}
                     <v-icon
                       size="18"
                       class="ml-3 pb-1"
                     >
-                      fas fa-lightbulb
+                      fas fa-plus
                     </v-icon>
                   </v-btn>
                 </v-col>
@@ -450,9 +450,6 @@ export default {
         if (this.selectedDiscussion.group) {
           this.group = this.selectedDiscussion.group
         }
-        if (this.selectedDiscussion.group) {
-          this.group = this.selectedDiscussion.group
-        }
       } else if (this.$route.params.group) {
         this.group = this.$route.params.group
       }
@@ -525,10 +522,6 @@ export default {
     ...mapGetters('tags', {
       tags: 'list'
     }),
-    computedTags () {
-      return this.tags
-        .filter(obj => obj.isActive && obj.isAccepted)
-    },
     computedGroups () {
       if (this.requestedGroups) {
         return this.requestedGroups
@@ -561,11 +554,6 @@ export default {
   },
 
   watch: {
-    group () {
-      if (this.group) {
-        this.selectedCategories = []
-      }
-    },
     description () {
       if (this.description) {
         this.description = this.$sanitize(this.description)

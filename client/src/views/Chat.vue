@@ -247,7 +247,6 @@
                                         ></TranslatableTextInfo>
                                       </template>
                                     </TranslatableText>
-
                                   </v-col>
                                   <v-btn
                                     v-if="!isOwnMessage(message)"
@@ -315,6 +314,48 @@
                               class="caption"
                             >
                               {{$t('unread')}}
+                            </v-col>
+                          </v-row>
+                          <v-row
+                            v-if="message.pics && message.pics.length > 0"
+                            class="my-3 d-flex"
+                            :class="isOwnMessage(message) ? 'justify-end': 'justify-start'"
+                          >
+                            <v-col
+                              cols=2
+                              v-for="(pic, i) in message.pics"
+                              :key="i"
+                            >
+                              <a
+                                v-if="!['jpg', 'jpeg', 'png', 'tiff', 'gif', 'bmp', 'svg'].includes(pic.url.split('.')[pic.url.split('.').length - 1].toLowerCase())"
+                                :href="s3 + pic.url"
+                                target="_blank"
+                                style="text-decoration: none !important;"
+                              >
+                                <v-sheet
+                                  class="pa-1 text-center align-center d-flex pointer fill-height"
+                                >
+                                  <v-row>
+                                    <v-col
+                                      cols="12"
+                                      class="pb-0"
+                                    >
+                                      <v-icon
+                                        size="48"
+                                      >fas fa-file</v-icon>
+                                    </v-col>
+                                    <v-col
+                                      cols="12"
+                                    >
+                                      {{/_(.+)/.exec(pic.url)[1]}}
+                                    </v-col>
+                                  </v-row>
+                                </v-sheet>
+                              </a>
+                              <Lightbox
+                                v-else
+                                :pic="pic"
+                              ></Lightbox>
                             </v-col>
                           </v-row>
                           <!-- Replies -->
@@ -415,6 +456,24 @@
                   ref="messagesForm"
                   v-model="isValid"
                 >
+                  <v-row dense>
+                    <v-col
+                      class="font-weight-bold"
+                      cols="12"
+                    >
+                      {{ isEditMessage ? $t('editPostTitle') : $t('writeNewPostTitle')}}
+                      <v-btn
+                        v-if="isEditMessage"
+                        text
+                        small
+                        outlined
+                        class="ml-2"
+                        @click="resetInput"
+                      >
+                        {{$t('cancelButton')}}
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                   <v-row
                     class="align-end"
                   >
@@ -435,6 +494,27 @@
                         id="messageInput"
                       >
                       </tiptap-vuetify>
+                      <v-row class="mt-3">
+                        <v-col
+                          cols="12"
+                          class="pt-0"
+                          tabIndex="0"
+                          @keypress="$refs.messageUpload.fakeClick()"
+                        >
+                          <FileUpload
+                            ref="messageUpload"
+                            v-model="pics"
+                            @fileRemove="patchFileRemove"
+                            @fileAdd="$nextTick(() => { $refs.messagesForm.validate() })"
+                            :acceptedMimeTypes="[]"
+                            :maxFileSize="2"
+                            :maxFiles="10"
+                            bgColor="transparent"
+                            :scaleToFit="[1080, 1080]"
+                            :resizeQuality="50"
+                          ></FileUpload>
+                        </v-col>
+                      </v-row>
                     </v-col>
                     <v-col
                       class="shrink px-3"
@@ -490,6 +570,8 @@ import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Lin
 import ViolationDialog from '@/components/ViolationDialog.vue'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
+import Lightbox from '@/components/Lightbox.vue'
+import FileUpload from '@/components/FileUpload.vue'
 
 export default {
   name: 'Chat',
@@ -501,12 +583,15 @@ export default {
     TiptapVuetify,
     ViolationDialog,
     TranslatableText,
-    TranslatableTextInfo
+    TranslatableTextInfo,
+    Lightbox,
+    FileUpload
   },
   data: () => ({
+    pics: [],
     showViolationDialog: undefined,
     itemToReport: undefined,
-    triggerReload: 1,
+    triggerNewMessage: 1,
     isUpdating: false,
     isEditMessage: undefined,
     showRepliesObj: {},
@@ -618,6 +703,34 @@ export default {
       findCommonChat: 'find',
       patchChatMessageNotifications: 'patch'
     }),
+    async patchFileRemove (file) {
+      this.isLoading = true
+      try {
+        await this.patchMessage([
+          this.isEditMessage._id,
+          {
+            $pull: {
+              pics: {
+                _id: file._id
+              }
+            }
+          }
+        ])
+        this.pics = this.isEditMessage.pics
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+      } catch (e) {
+        console.log(e)
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+      }
+    },
+    resetInput () {
+      this.isEditMessage = undefined
+      this.$refs.messagesForm.reset()
+      this.message = undefined
+      this.pics = []
+    },
     openReportDialog (message) {
       this.itemToReport = message
     },
@@ -673,13 +786,21 @@ export default {
       }
     },
     async editMessage (message) {
-      this.isEditMessage = message._id
+      this.isEditMessage = message
       this.message = message.text.value
+      this.pics = message.pics
       document.querySelector('#messageInput').scrollIntoView({ block: 'start', behavior: 'smooth' })
     },
     async sendMessage () {
       this.manualLoad = true
       this.isSending = true
+      try {
+        await this.$refs.messageUpload.upload()
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
+      }
       if (!this.isEditMessage) {
         // Create chat if there is none
         if (!this.selectedChat) {
@@ -701,12 +822,13 @@ export default {
                     lang: null,
                     type: 'default'
                   }
-                ]
+                ],
+                pics: this.pics
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
-          this.$refs.messagesForm.reset()
+          this.resetInput()
           this.$nextTick(() => {
             this.$nextTick(() => {
               if (!this.ScrollDirty) {
@@ -715,6 +837,7 @@ export default {
               this.checkVisibleMessages()
             })
           })
+          this.triggerNewMessage = Date.now()
           this.message = undefined
         } catch (e) {
           this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
@@ -732,14 +855,14 @@ export default {
                     type: 'default'
                   }
                 ],
+                pics: this.pics,
                 editedAt: new Date()
               }
             ]
           )
           this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
-          this.$refs.messagesForm.reset()
-          this.message = undefined
-          this.isEditMessage = undefined
+          this.resetInput()
+          this.triggerNewMessage = Date.now()
         } catch (e) {
           this.setSnackbar({ text: this.$t('snackbarEditError'), color: 'error' })
         }
@@ -885,7 +1008,7 @@ export default {
       }
     },
     computedMessages () {
-      if (this.selectedChat && this.messages && this.triggerReload) {
+      if (this.selectedChat && this.messages && this.triggerNewMessage) {
         return this.messages.filter(obj => obj.chat === this.selectedChat._id && !obj.repliesTo)
       } else {
         return []
@@ -895,6 +1018,7 @@ export default {
 
   asyncComputed: {
     async computedOtherStatusContainers () {
+      if (this.triggerNewMessage) {}
       if (this.selectedChat) {
         return await this.findStatusContainers(
           {
@@ -941,7 +1065,7 @@ export default {
       ) {
         this.loading = false
         this.total = this.chatMessagesPaginationData[this.selectedChat._id].mostRecent.total
-        this.triggerReload = Date.now()
+        this.triggerNewMessage = Date.now()
       } else {
         this.loading = true
         setTimeout(() => {

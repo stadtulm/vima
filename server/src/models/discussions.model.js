@@ -72,14 +72,14 @@ module.exports = function (app) {
     }
   })
 
-  schema.virtual('latestMessage', {
+  schema.virtual('latestDiscussionMessage', {
     ref: 'discussionMessages', // Collection
     localField: '_id', // Here
     foreignField: 'discussion', // There
     justOne: true,
     options: {
-      sort: { updatedAt: -1 },
-      select: { updatedAt: 1 }
+      sort: { createdAt: -1 },
+      select: { createdAt: 1 }
     }
   })
 

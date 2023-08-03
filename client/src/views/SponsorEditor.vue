@@ -61,6 +61,22 @@
               </v-col>
             </v-row>
             <v-row>
+              <v-col>
+                <v-select
+                  dense
+                  color="customGrey"
+                  item-color="customGrey"
+                  background-color="#fff"
+                  outlined
+                  v-model="position"
+                  :label="$t('position')"
+                  :items="Array.from({length: 1000}, (_, i) => i + 1)"
+                  :rules="[rules.required]"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
+            <v-row>
               <v-col
                 cols="12"
               >
@@ -141,7 +157,8 @@ export default {
     isValid: false,
     name: undefined,
     pic: undefined,
-    link: undefined
+    link: undefined,
+    position: undefined
   }),
 
   async mounted () {
@@ -191,6 +208,7 @@ export default {
         this.pic = this.selectedSponsor.pic
         this.name = this.selectedSponsor.name
         this.link = this.selectedSponsor.link
+        this.position = this.selectedSponsor.position
       }
     },
     async saveSponsor () {
@@ -206,7 +224,8 @@ export default {
       const map = {
         name: this.name,
         link: this.link,
-        pic: this.pic
+        pic: this.pic,
+        position: this.position
       }
       try {
         if (this.selectedSponsor) {

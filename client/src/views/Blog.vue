@@ -128,8 +128,8 @@
             deletable-chips
             dense
             hide-details
-            :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
-            item-text="text.value"
+            :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
+            item-text="text"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -322,10 +322,6 @@ export default {
       } else {
         return false
       }
-    },
-    computedTags () {
-      return this.tags
-        .filter(obj => obj.isActive && obj.isAccepted)
     },
     computedBlog () {
       if (this.computedBlogData && this.computedBlogData.data) {

@@ -673,6 +673,31 @@
                           ></v-select>
                         </v-col>
                       </v-row>
+                      <v-row
+                        dense
+                      >
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          class="body-1 align-self-center"
+                        >
+                          {{$t('newUserLabel')}}
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                        >
+                          <v-select
+                            color="customGrey"
+                            item-color="customGrey"
+                            :label="$t('notification')"
+                            single
+                            class="min-width"
+                            :items="items.filter(item => item.value !== 'emailOffline')"
+                            v-model="newUser"
+                          ></v-select>
+                        </v-col>
+                      </v-row>
                     </v-card-text>
                   </v-card>
                 </v-col>
@@ -736,7 +761,8 @@ export default {
     newAcceptedGroupDiscussions: 'emailOffline',
     newAcceptedDiscussions: 'emailOffline',
     newViolationsToProve: 'emailOffline',
-    newGroupViolationsToProve: 'emailOffline'
+    newGroupViolationsToProve: 'emailOffline',
+    newUser: 'emailOff'
   }),
 
   async mounted () {
@@ -801,6 +827,7 @@ export default {
         this.newAcceptedGroupDiscussions = this.selectedPreferences.newAcceptedGroupDiscussions || this.newAcceptedGroupDiscussions
         this.newViolationsToProve = this.selectedPreferences.newViolationsToProve || this.newViolationsToProve
         this.newGroupViolationsToProve = this.selectedPreferences.newGroupViolationsToProve || this.newGroupViolationsToProve
+        this.newUser = this.selectedPreferences.newUser || this.newUser
       }
     },
     async savePreferences () {
@@ -829,7 +856,8 @@ export default {
         newAcceptedDiscussions: this.newAcceptedDiscussions,
         newAcceptedGroupDiscussions: this.newAcceptedGroupDiscussions,
         newViolationsToProve: this.newViolationsToProve,
-        newGroupViolationsToProve: this.newGroupViolationsToProve
+        newGroupViolationsToProve: this.newGroupViolationsToProve,
+        newUser: this.newUser
       }
       try {
         if (this.selectedPreferences) {

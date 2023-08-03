@@ -25,6 +25,12 @@ module.exports = function (app) {
         rewuired: true
       }
     ],
+    pics: [
+      {
+        url: { type: String },
+        credit: { type: String }
+      }
+    ],
     repliesTo: {
       type: ObjectId,
       ref: 'chatMessages'

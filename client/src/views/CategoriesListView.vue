@@ -158,7 +158,7 @@
               class="ma-1"
               :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id, t: tag._id } }"
             >
-              {{tag.text.value}}
+              {{tag.text}}
             </v-chip>
           </template>
           <template
@@ -339,7 +339,7 @@ export default {
               }
             })
             .filter(obj => !!obj)
-            .sort((a, b) => '' + a.text.value.localeCompare(b.text.value))
+            .sort((a, b) => '' + a.text.localeCompare(b.text))
         } else {
           return []
         }

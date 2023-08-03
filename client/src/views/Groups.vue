@@ -102,6 +102,7 @@
             dense
             hide-details
             :items="[
+              { text: $t('sortUpdateDesc'), value: [['latestMessage'], -1]},
               { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
               { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
               { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
@@ -146,8 +147,8 @@
             deletable-chips
             dense
             hide-details
-            :items="computedTags.sort((a, b) => a.text.value.localeCompare(b.text.value))"
-            item-text="text.value"
+            :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
+            item-text="text"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -251,8 +252,8 @@ export default {
     searchDefault: '',
     total: 0,
     itemsPerPage: 12,
-    combinedSort: [['createdAt'], -1],
-    sortBy: ['createdAt'],
+    combinedSort: [['latestMessage'], -1],
+    sortBy: ['latestMessage'],
     sortDesc: -1
   }),
 
@@ -340,10 +341,6 @@ export default {
       } else {
         return false
       }
-    },
-    computedTags () {
-      return this.tags
-        .filter(obj => obj.isActive && obj.isAccepted)
     },
     computedGroups () {
       if (this.computedGroupsData && this.computedGroupsData.data) {
@@ -447,6 +444,7 @@ export default {
     },
     sortBy () {
       let tmpData
+      this.page = 1
       if (Array.isArray(this.sortBy)) {
         tmpData = this.sortBy.join(',')
       } else {

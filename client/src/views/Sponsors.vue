@@ -178,8 +178,8 @@ export default {
     searchDefault: '',
     total: 0,
     itemsPerPage: 12,
-    combinedSort: [['name'], 1],
-    sortBy: ['name'],
+    combinedSort: [['position'], 1],
+    sortBy: ['position'],
     sortDesc: 1
   }),
 

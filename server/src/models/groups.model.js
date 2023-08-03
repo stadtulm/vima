@@ -72,6 +72,16 @@ module.exports = function (app) {
     collation: { locale: 'en', strength: 1 }
   })
 
+  schema.virtual('latestDiscussionMessages', {
+    ref: 'discussions', // Collection
+    localField: '_id', // Here
+    foreignField: 'group', // There
+    options: {
+      select: { latestDiscussionMessage: 1 },
+      populate: { path: 'latestDiscussionMessage', select: { createdAt: 1 } }
+    }
+  })
+
   schema.virtual('owner', {
     ref: 'statusContainers', // Collection
     localField: '_id', // Here
@@ -79,6 +89,28 @@ module.exports = function (app) {
     justOne: true,
     options: {
       query: { type: 'groups', relation: 'owner' },
+      select: { user: 1 },
+      populate: { path: 'user', select: { userName: 1, _id: 1 } }
+    }
+  })
+
+  schema.virtual('members', {
+    ref: 'statusContainers', // Collection
+    localField: '_id', // Here
+    foreignField: 'reference', // There
+    options: {
+      query: { type: 'groups', relation: 'member' },
+      select: { user: 1 },
+      populate: { path: 'user', select: { userName: 1, _id: 1 } }
+    }
+  })
+
+  schema.virtual('moderators', {
+    ref: 'statusContainers', // Collection
+    localField: '_id', // Here
+    foreignField: 'reference', // There
+    options: {
+      query: { type: 'groups', relation: 'moderator' },
       select: { user: 1 },
       populate: { path: 'user', select: { userName: 1, _id: 1 } }
     }

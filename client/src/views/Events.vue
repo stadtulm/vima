@@ -72,6 +72,19 @@
           cols="12"
           sm="6"
         >
+          <v-text-field
+            v-model="location"
+            color="black"
+            :label="$t('filterByLocationLabel')"
+            hide-details
+            outlined
+            dense
+          ></v-text-field>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+        >
           <v-select
             v-model="combinedSort"
             color="black"
@@ -82,8 +95,8 @@
             hide-details
             :items="[
 
-              { text: $t('sortEventDateDesc'), value: [['duration.start'], 1]},
-              { text: $t('sortEventDateAsc'), value: [['duration.start'], -1]},
+              { text: $t('sortEventDateDesc'), value: [['duration.end'], 1]},
+              { text: $t('sortEventDateAsc'), value: [['duration.end'], -1]},
               { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
               { text: $t('sortTitleDesc'), value: [['title.value'], -1] },
               { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
@@ -178,14 +191,16 @@ export default {
     categoriesList: [],
     tagsList: [],
     search: '',
+    location: '',
+    locationDefault: '',
     categoriesListDefault: [],
     tagsListDefault: [],
     searchDefault: '',
     total: 0,
     itemsPerPage: 12,
-    combinedSort: [['duration.start'], 1],
-    sortBy: ['duration.start'],
-    sortDesc: 1
+    combinedSort: [['duration.end'], -1],
+    sortBy: ['duration.end'],
+    sortDesc: -1
   }),
 
   async mounted () {
@@ -202,6 +217,7 @@ export default {
       this.categoriesList = this.categoriesListDefault
       this.tagsList = this.tagsListDefault
       this.search = this.searchDefault
+      this.location = this.locationDefault
     },
     areArraysEqual (array1, array2) {
       if (
@@ -246,7 +262,7 @@ export default {
       allEvents: 'list'
     }),
     computedFiltersDirty () {
-      if (this.search !== this.searchDefault) {
+      if (this.search !== this.searchDefault || this.location !== this.locationDefault) {
         return true
       } else {
         return false
@@ -266,7 +282,6 @@ export default {
       this.isFindEventsPending = true
       const query = {
         isActive: true,
-        'duration.end': { $gt: new Date() },
         $limit: this.itemsPerPage,
         $skip: (this.page - 1) * this.itemsPerPage,
         $sort: { [this.sortBy]: this.sortDesc }
@@ -285,6 +300,9 @@ export default {
             ]
           }
         }
+      }
+      if (this.location && this.location !== '') {
+        query.location = { $regex: this.location, $options: 'i' }
       }
       return await this.findEvents(
         {

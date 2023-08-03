@@ -107,7 +107,7 @@ const state = {
           }
         })
         .filter(obj => !!obj)
-        .sort((a, b) => a.text.value.localeCompare(b.text.value))
+        .sort((a, b) => a.text.localeCompare(b.text))
     } else {
       return []
     }
@@ -176,7 +176,7 @@ const state = {
     tiptapRequired: value => (value && value.replaceAll('<p>', '').replaceAll('</p>', '') !== '') || i18n.t('rulesRequired'),
     radio: value => value !== null || i18n.t('rulesRequired'),
     content: value => (!value || value.length < 0) || i18n.t('rulesRequired'),
-    tagText: value => (!value || value.length <= 40) || i18n.t('rulesMaxLength', { msg: 40 }),
+    tagText: value => (!value || value.length <= 50) || i18n.t('rulesMaxLength', { msg: 40 }),
     shortText: value => (!value || value.length <= 150) || i18n.t('rulesMaxLength', { msg: 150 }),
     longText: value => (!value || value.length <= 500) || i18n.t('rulesMaxLength', { msg: 500 }),
     email: value => {

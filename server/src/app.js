@@ -57,13 +57,15 @@ app.use('/', express.static(app.get('public')))
 app.configure(express.rest())
 
 app.configure(
-  socketio(io => {
-    io.set('transports', ['websocket'])
-    io.use((socket, next) => {
-      socket.feathers.clientId = socket.client.id
-      next()
+  socketio(
+    { maxHttpBufferSize: 1e8 },
+    io => {
+      io.set('transports', ['websocket'])
+      io.use((socket, next) => {
+        socket.feathers.clientId = socket.client.id
+        next()
+      })
     })
-  })
 )
 
 app.configure(mongoose)

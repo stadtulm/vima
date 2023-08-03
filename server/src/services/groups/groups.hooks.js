@@ -19,7 +19,7 @@ module.exports = {
         allowAnonymous(),
         authenticate('jwt', 'anonymous'),
         (context) => {
-          context.params.query.$populate = ['owner']
+          context.params.query.$populate = ['owner', 'latestDiscussionMessages']
         }
       )
     ],
@@ -93,7 +93,7 @@ module.exports = {
             context.arguments[0],
             {
               query: {
-                $populate: ['owner']
+                $populate: ['owner', 'moderators']
               }
             }
           )
@@ -103,6 +103,7 @@ module.exports = {
           delete tmpData.accepted
           if (
             group.owner.user._id.toString() !== context.params.user?._id.toString() &&
+            !group.moderators.map(moderator => moderator.user._id.toString()).includes(context.params.user?._id.toString()) &&
             Object.keys(tmpData).length > 0
           ) {
             throw new Errors.Forbidden('Only group owner can patch group properties')

@@ -18,7 +18,7 @@
             <v-col
               cols="12"
               sm="12"
-              :md="discussionProp ? 12 : 6"
+              :md="discussionProp ? 12 : 8"
               :order="2"
               :order-md="discussionProp ? 2 : 1"
             >
@@ -97,6 +97,21 @@
             </span>
           </v-card-subtitle>
           <v-card-text>
+            <!-- Latest message -->
+            <v-row
+              v-if="computedDiscussion.latestMessage"
+            >
+              <v-col>
+                <v-chip
+                  :color="$moment().diff($moment(computedDiscussion.latestMessage), 'days') <= 5 ? $settings.indicatorColor : 'customGreyMedium'"
+                  :dark="$moment().diff($moment(computedDiscussion.latestMessage), 'days') > 5"
+                  disabled
+                  :class="$moment().diff($moment(computedDiscussion.latestMessage), 'days') <= 5 ? 'elevation-8 font-weight-bold' : ''"
+                >
+                  {{$t('latestPost')}}: {{$moment(computedDiscussion.latestMessage).format("DD.MM.YYYY, HH:mm")}} {{$t('oClock')}}
+                </v-chip>
+              </v-col>
+            </v-row>
             <!-- Categories -->
             <v-row
               v-if="computedDiscussion.categories && computedDiscussion.categories.length > 0"
@@ -126,7 +141,7 @@
                   :disabled="!discussionProp"
                   @click.prevent="$emit('selectTag', tag._id)"
                 >
-                {{tag.text.value}}
+                {{tag.text}}
                 </v-chip>
               </v-col>
             </v-row>
@@ -187,37 +202,37 @@
             <v-col
               cols="12"
               sm="12"
-              :md="discussionProp ? 12 : 6"
+              :md="discussionProp ? 12 : 4"
               :class="discussionProp ? 'py-0': ''"
               :order="1"
               :order-md="discussionProp ? 1 : 2"
             >
             <v-card-text
-                :class="discussionProp ? 'pa-0' : ''"
-              >
-            <!-- Carousel -->
-            <v-carousel
-              v-if="computedPics.length > 0"
-              v-model="picsCarousel"
-              hide-delimiters
-              :show-arrows="computedPics.length > 1"
-              :show-arrows-on-hover="computedPics.length > 1"
-              :cycle="false"
-              :height="discussionProp ? 300 : '100%'"
-              class="mb-3 white"
+              :class="discussionProp ? 'pa-0' : ''"
             >
-              <template
-                v-slot:prev="{ on, attrs }"
+              <!-- Carousel -->
+              <v-carousel
+                v-if="computedPics.length > 0"
+                v-model="picsCarousel"
+                hide-delimiters
+                :show-arrows="computedPics.length > 1"
+                :show-arrows-on-hover="computedPics.length > 1"
+                :cycle="false"
+                :height="discussionProp ? 250 : '100%'"
+                class="mb-3 white"
               >
-              <v-btn
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>
-                  fas fa-chevron-left
-                </v-icon>
-              </v-btn>
+                <template
+                  v-slot:prev="{ on, attrs }"
+                >
+                <v-btn
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>
+                    fas fa-chevron-left
+                  </v-icon>
+                </v-btn>
               </template>
               <template
                 v-slot:next="{ on, attrs }"
@@ -237,7 +252,7 @@
                 :key="pic.url"
               >
                 <v-img
-                  :height="discussionProp ? 300 : 500"
+                  :height="discussionProp ? 250 : 350"
                   :src="s3 + pic.url"
                   :contain="discussionProp ? false : true"
                   :alt="$t('discussionTitlePic')"

@@ -288,13 +288,19 @@ module.exports = {
               }
             )
             // Create applicant chat message
+            let tmpApplicantAdMessage
+            if (Array.isArray(context.params.tmpApplicantAdMessage.text)) {
+              tmpApplicantAdMessage = context.params.tmpApplicantAdMessage.text.find(obj => obj.type === 'default').value
+            } else {
+              tmpApplicantAdMessage = context.params.tmpApplicantAdMessage.text.value
+            }
             const applicantChatMessage = await context.app.service('chat-messages').create(
               {
                 chat: chatId,
                 text: [{
                   value: '<blockquote class="blockquote"><p>' +
                     '⮌ "' + ad.title.find(obj => obj.type === 'default').value + '"</blockquote>' +
-                  '<p>' + context.params.tmpApplicantAdMessage.text.find(obj => obj.type === 'default').value + '</p>',
+                  '<p>' + tmpApplicantAdMessage + '</p>',
                   type: 'default'
                 }],
                 author: context.params.tmpApplicantAdMessage.author,

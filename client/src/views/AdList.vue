@@ -141,7 +141,7 @@
                     <v-row>
                       <v-col
                         cols="12"
-                        v-html="item.text.value"
+                        v-html="item.text"
                       ></v-col>
                     </v-row>
                   </v-card-text>

@@ -1,3 +1,4 @@
+const Translation = require('./translations.model')
 // settings-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html
@@ -49,6 +50,7 @@ module.exports = function (app) {
           url: { type: String },
           credit: { type: String }
         },
+        text: [{ type: Translation, required: true }],
         dependents: [
           {
             type: String
@@ -69,6 +71,7 @@ module.exports = function (app) {
           url: { type: String },
           credit: { type: String }
         },
+        text: [{ type: Translation, required: true }],
         dependents: [
           {
             type: String
@@ -89,6 +92,7 @@ module.exports = function (app) {
           url: { type: String },
           credit: { type: String }
         },
+        text: [{ type: Translation, required: true }],
         dependents: [
           {
             type: String
@@ -102,6 +106,7 @@ module.exports = function (app) {
           url: { type: String },
           credit: { type: String }
         },
+        text: [{ type: Translation, required: true }],
         dependents: [
           {
             type: String
@@ -115,6 +120,7 @@ module.exports = function (app) {
           url: { type: String },
           credit: { type: String }
         },
+        text: [{ type: Translation, required: true }],
         dependents: [
           {
             type: String
@@ -128,6 +134,7 @@ module.exports = function (app) {
           url: { type: String },
           credit: { type: String }
         },
+        text: [{ type: Translation, required: true }],
         dependents: [
           {
             type: String
@@ -141,6 +148,7 @@ module.exports = function (app) {
           url: { type: String },
           credit: { type: String }
         },
+        text: [{ type: Translation, required: true }],
         dependents: [
           {
             type: String
@@ -154,6 +162,7 @@ module.exports = function (app) {
           url: { type: String },
           credit: { type: String }
         },
+        text: [{ type: Translation, required: true }],
         dependents: [
           {
             type: String

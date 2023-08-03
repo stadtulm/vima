@@ -19,7 +19,7 @@
             <v-col
               cols="12"
               sm="12"
-              :md="groupProp ? 12 : 6"
+              :md="groupProp ? 12 : 8"
               :order="2"
               :order-md="groupProp ? 2 : 1"
             >
@@ -78,6 +78,21 @@
                 </span>
               </v-card-subtitle>
               <v-card-text>
+                <!-- Latest message -->
+                <v-row
+                  v-if="computedGroup.latestMessage"
+                >
+                  <v-col>
+                    <v-chip
+                      :color="$moment().diff($moment(computedGroup.latestMessage), 'days') <= 5 ? $settings.indicatorColor : 'customGreyMedium'"
+                      :dark="$moment().diff($moment(computedGroup.latestMessage), 'days') > 5"
+                      disabled
+                      :class="$moment().diff($moment(computedGroup.latestMessage), 'days') <= 5 ? 'elevation-8 font-weight-bold' : ''"
+                    >
+                      {{$t('latestPost')}}: {{$moment(computedGroup.latestMessage).format("DD.MM.YYYY, HH:mm")}} {{$t('oClock')}}
+                    </v-chip>
+                  </v-col>
+                </v-row>
                 <!-- Visibility -->
                 <v-row
                   v-if="!computedCategory"
@@ -171,7 +186,7 @@
                       :disabled="!groupProp"
                       @click.prevent="$emit('selectTag', tag._id)"
                     >
-                    {{tag.text.value}}
+                    {{tag.text}}
                     </v-chip>
                   </v-col>
                 </v-row>
@@ -246,7 +261,7 @@
               v-if="!computedCategory"
               cols="12"
               sm="12"
-              :md="groupProp ? 12 : 6"
+              :md="groupProp ? 12 : 4"
               :class="groupProp ? 'py-0': ''"
               :order="1"
               :order-md="groupProp ? 1 : 2"
@@ -261,7 +276,7 @@
                   :show-arrows="computedPics.length > 1"
                   :show-arrows-on-hover="computedPics.length > 1"
                   :cycle="false"
-                  :height="groupProp ? 300 : '100%'"
+                  :height="groupProp ? 250 : '100%'"
                   class="mb-3 white"
                 >
                   <template
@@ -295,7 +310,7 @@
                     :key="pic.url"
                   >
                     <v-img
-                      :height="groupProp ? 300 : 350"
+                      :height="groupProp ? 250 : 350"
                       :src="pic.url && pic.url !== 'nopic' ? s3 + pic.url : ''"
                       :contain="groupProp ? false : true"
                       :alt="$t('groupTitlePic')"

@@ -32,6 +32,7 @@
           {{$t('dropFilesHeadline', { maxfiles: maxFiles, filesize: maxFileSize })}}
         </v-col>
         <v-col
+          v-if="acceptedMimeTypes.length > 1"
           cols=12
           class="text-center"
         >
@@ -40,12 +41,14 @@
         <v-col
           cols=12
           class="text-center"
+          v-if="acceptedMimeTypes.length > 1"
         >
           {{$t('dropFilesBody', { resolution: scaleToFit.join('x') })}}
         </v-col>
       </v-row>
       <v-container
         fluid
+        class="mt-3"
       >
         <v-row>
           <v-col
@@ -61,11 +64,18 @@
               @click.stop
               style="cursor: auto !important"
             >
+              <v-row>
+                <v-col
+                  class="mx-3 mb-3 font-weight-bold"
+                >
+                  {{file.originalname || file.url}}
+                </v-col>
+              </v-row>
               <v-img
                 class="text-center align-center"
                 :src="file.state === 'uploaded' ? s3 + file.url : file.uri"
                 height="200"
-                :gradient="file.errors.length > 0 ? 'to top, red, transparent' : ''"
+                :gradient="file.errors.length > 0 ? 'to top, red, transparent' : 'to top, lightgrey, transparent'"
               >
                 <v-tooltip
                   v-if="file.state"
@@ -302,7 +312,7 @@ export default {
             'image/tiff',
             'image/gif',
             'image/bmp'
-          ].includes(pic.type)) {
+          ].includes(pic.type.toLowerCase())) {
             const jimpPic = await Jimp.read(pic.uri)
             pic.uri = await jimpPic
               .scaleToFit(this.scaleToFit[0], this.scaleToFit[1])
@@ -340,7 +350,7 @@ export default {
         if (file.size / 1024 / 1024 > this.maxFileSize) {
           errors.push('fileTooBigError')
         }
-        if (!this.acceptedMimeTypes.includes(file.type)) {
+        if (this.acceptedMimeTypes.length > 1 && !this.acceptedMimeTypes.includes(file.type)) {
           errors.push('fileTypeNotAcceptedError')
         }
         return {

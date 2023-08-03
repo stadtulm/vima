@@ -101,7 +101,7 @@
               class="mr-1"
               disabled
             >
-            {{tag.text.value}}
+            {{tag.text}}
             </v-chip>
           </template>
           <template

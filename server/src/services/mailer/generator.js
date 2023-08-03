@@ -84,6 +84,9 @@ module.exports = {
         .replaceAll('{{discussionId}}', item.discussion?._id)
         .replaceAll('{{tagId}}', item.tag?._id)
         .replaceAll('{{tagName}}', reducedDefaultTranslation(item.tag?.text))
+        .replaceAll('{{newUserName}}', item.firstName + ' ' + item.lastName)
+        .replaceAll('{{newUserUserName}}', item.userName)
+        .replaceAll('{{newUserEmail}}', item.email)
       await app.service('mailer').create(
         JSON.parse(tmpBody)
       )
@@ -475,6 +478,20 @@ function returnMailBody (app, type, action, language) {
           app.i18n.__({ phrase: 'checkGroupNotification1', locale: language }) +
           '<a href="' + process.env.CLIENT_URL + 'interessengruppen/uebersicht">' +
           app.i18n.__({ phrase: 'checkGroupNotification2', locale: language }) +
+          app.i18n.__({ phrase: 'bestRegards', locale: language })
+      }
+    },
+    newUser: {
+      create: {
+        from: process.env.FROM_EMAIL,
+        to: '{{recipient}}',
+        subject: app.i18n.__({ phrase: 'newUserNotification', locale: language }),
+        html: app.i18n.__({ phrase: 'hello', locale: language }) +
+          ' {{firstName}} {{lastName}}!<br><br>' +
+          app.i18n.__({ phrase: 'newUserNotification', locale: language }) + ':<br>' +
+          'Name: {{newUserName}}<br>' +
+          'User-Name: {{newUserUserName}}<br>' +
+          'E-Mail: {{newUserEmail}}<br><br>' +
           app.i18n.__({ phrase: 'bestRegards', locale: language })
       }
     }

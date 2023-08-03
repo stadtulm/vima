@@ -555,7 +555,7 @@ const routes = [
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
       checkLoggedIn,
-      checkOwnerOrNew
+      checkOwnerModeratorOrNew
     ])
   },
   // Overviews
@@ -1389,12 +1389,7 @@ async function init (to, from, next) {
       throw Error('No settings available on server')
     }
     await Store.dispatch('categories/find', { $paginate: false })
-    const query = {}
-    if (!Store.getters['auth/user'] || (Store.getters['auth/user'] && Store.getters['auth/user'].role !== 'admins')) {
-      query.isActive = true
-      query.isAccepted = true
-    }
-    await Store.dispatch('tags/find', { query, $paginate: false })
+    await Store.dispatch('tags/find', { $paginate: false })
     // If logged in load stuff if not there
     if (Store.getters['auth/user']) {
       try {
@@ -1468,14 +1463,17 @@ function checkAdminPartner (to, from, next) {
   next()
 }
 
-function checkOwnerOrNew (to, from, next) {
+function checkOwnerModeratorOrNew (to, from, next) {
   if (
     Object.keys(to.params)[Object.keys(to.params).length - 1] &&
     !Store.getters['status-containers/list'].find(
       obj =>
         obj.reference === to.params[Object.keys(to.params)[0]] &&
         obj.user === Store.getters['auth/user']._id &&
-        obj.relation === 'owner'
+        (
+          obj.relation === 'owner' ||
+          obj.relation === 'moderator'
+        )
     )
   ) {
     return next({ name: 'Forbidden', query: { redirect: from.path } })

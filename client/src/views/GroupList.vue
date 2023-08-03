@@ -481,7 +481,7 @@
               :color="$settings.modules.groups.color"
               class="my-4"
               :to="{name: 'GroupEditor', params: { id: item._id } }"
-              :disabled="!isOwnGroup(item._id)"
+              :disabled="!isOwnGroup(item._id) && !isModeratorGroup(item._id)"
             >
               <v-icon
                 color="white"

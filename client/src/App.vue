@@ -1436,77 +1436,98 @@
       <span tour-step-container="2"></span>
 
       <v-main>
+        <!-- Change margin-y when help-section is gone -->
         <v-container
-          class="my-6 main-container"
+          class="my-6 mt-1 main-container"
         >
           <template
             v-if="$route.name && $route.name !== 'Home'"
           >
             <v-alert
-              color="yellow"
               dismissible
-              class="mb-5"
+              class="mb-9 pl-0 pr-2"
+              color="transparent"
               v-if="computedShowHelpButton"
             >
               <v-row>
                 <v-col
-                  class="py-1 text-h5 font-weight-bold blue--text text-center"
+                  class="py-1 text-h5 font-weight-bold blue--text text-right"
                 >
-                  {{$t("help_title")}}
+                  <v-menu offset-y>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        block
+                        outlined
+                      >
+                        {{$t("help_title")}}
+                        <v-icon
+                          class="ml-3"
+                          size="18"
+                        >
+                          fas fa-chevron-down
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item
+                        :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
+                      >
+                        <v-list-item-content>
+                        <v-list-item-title>{{$t("help_vima_title")}}</v-list-item-title>
+                        <v-list-item-subtitle>{{$t("help_vima_subtitle")}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-btn
+                            icon
+                          >
+                            <v-icon>
+                              fas fa-arrow-right
+                            </v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+                      </v-list-item>
+                      <v-list-item
+                        target="_blank"
+                        href="https://www.engagiert-in-ulm.de"
+                      >
+                        <v-list-item-content>
+                        <v-list-item-title>{{$t("help_eiu_title")}}</v-list-item-title>
+                        <v-list-item-subtitle>{{$t("help_eiu_subtitle")}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-btn
+                            icon
+                          >
+                            <v-icon>
+                              fas fa-arrow-right
+                            </v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+                      </v-list-item>
+                      <v-list-item
+                        target="_blank"
+                        href="https://www.ulm.de/leben-in-ulm/ukraine"
+                      >
+                        <v-list-item-content>
+                        <v-list-item-title>{{$t("help_ulm_title")}}</v-list-item-title>
+                        <v-list-item-subtitle>{{$t("help_ulm_subtitle")}}</v-list-item-subtitle>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-btn
+                            icon
+                          >
+                            <v-icon>
+                              fas fa-arrow-right
+                            </v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </v-col>
               </v-row>
-                <v-row>
-                  <v-col
-                    cols="12"
-                    md="4"
-                    class="text-center"
-                  >
-                    <v-btn
-                      color="blue"
-                      dark
-                      large
-                      block
-                      class="py-6"
-                      :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
-                    >
-                      - {{$t("help_vima_title")}} -<br>{{$t("help_vima_subtitle")}}
-                    </v-btn>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="4"
-                    class="text-center"
-                  >
-                    <v-btn
-                      color="blue"
-                      dark
-                      large
-                      block
-                      class="py-6"
-                      target="_blank"
-                      href="https://www.engagiert-in-ulm.de"
-                    >
-                      - {{$t("help_eiu_title")}} -<br>{{$t("help_eiu_subtitle")}}
-                    </v-btn>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="4"
-                    class="text-center"
-                  >
-                    <v-btn
-                      color="blue"
-                      dark
-                      large
-                      block
-                      class="py-6"
-                      target="_blank"
-                      href="https://www.ulm.de/leben-in-ulm/ukraine"
-                    >
-                      - {{$t("help_ulm_title")}} -<br>{{$t("help_ulm_subtitle")}}
-                    </v-btn>
-                  </v-col>
-                </v-row>
             </v-alert>
             <v-row>
               <v-col>
@@ -2078,10 +2099,12 @@ export default {
     closeTour () {
       this.setCancelledTour(true)
       this.setShowTour(false)
+      localStorage.setItem('hideTour', true)
     },
     startTour () {
       this.setShowTour(false)
       this.$tours.app.start()
+      localStorage.setItem('hideTour', true)
     },
     setConsent () {
       if (this.$matomo && this.$matomo.isUserOptedOut()) {
@@ -2672,7 +2695,7 @@ export default {
 
   watch: {
     isDisconnected () {
-      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected) {
+      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected && !localStorage.getItem('hideTour')) {
         this.setShowTour(true)
       } else {
         this.setShowTour(false)
@@ -2680,7 +2703,7 @@ export default {
     },
     $route () {
       this.setStep()
-      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected) {
+      if (!this.cancelledTour && this.$route.name === 'Participate' && !this.isDisconnected && !localStorage.getItem('hideTour')) {
         this.setShowTour(true)
       } else {
         this.setShowTour(false)

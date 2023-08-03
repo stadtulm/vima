@@ -18,7 +18,7 @@
             <v-col
               class="text-h5 font-weight-bold"
             >
-              {{$t('tag')}} {{$t('propose')}}
+              {{$t('newTagButton')}}
             </v-col>
           </v-row>
           <v-form
@@ -44,12 +44,6 @@
                     rules.noBlanks,
                   ]"
                 >
-                  <template v-slot:prepend>
-                    <LanguageSelect
-                      :currentLanguage="currentLanguage"
-                      @setLanguage="(l) => { currentLanguage = l }"
-                    ></LanguageSelect>
-                  </template>
                 </v-text-field>
               </v-col>
             </v-row>
@@ -78,13 +72,11 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import LanguageSelect from '@/components/LanguageSelect.vue'
 
 export default {
   name: 'TagProposalDialog',
 
   components: {
-    LanguageSelect
   },
 
   props: [
@@ -94,12 +86,10 @@ export default {
   data: () => ({
     isTagLoading: false,
     tagProposal: undefined,
-    isValidTagProposal: false,
-    currentLanguage: 'en'
+    isValidTagProposal: false
   }),
 
   async mounted () {
-    this.currentLanguage = this.$i18n.locale
   },
 
   methods: {
@@ -114,13 +104,7 @@ export default {
       try {
         await this.createTag([
           {
-            text: [
-              {
-                value: this.tagProposal,
-                type: this.currentLanguage === this.$settings.defaultLanguage ? 'default' : 'author',
-                lang: this.currentLanguage
-              }
-            ]
+            text: this.tagProposal
           }
         ])
         this.isTagLoading = false
