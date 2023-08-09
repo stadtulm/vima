@@ -24,6 +24,7 @@ module.exports = function (app) {
     },
     indicatorColor: { type: String, required: true },
     headerColor: { type: String, required: true },
+    replyLevel: { type: Number, required: true },
     socialMediaUrls: {
       fb: { type: String },
       instagram: { type: String },

@@ -14,6 +14,7 @@ const state = {
   moduleVisibilities: {},
   cancelledTour: false,
   itemsPerPageOptions: [10, 25, 50, 100, -1],
+  replyColors: ['#e4e4e4', '#d0d0d0', '#b4b4b4', '#989898', '#909090'],
   i18nMap: {
     rs: 'sr',
     ua: 'uk'
@@ -252,6 +253,9 @@ const state = {
 }
 
 const getters = {
+  replyColors: state => {
+    return state.replyColors
+  },
   i18nMap: state => {
     return state.i18nMap
   },

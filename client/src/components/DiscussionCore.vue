@@ -17,13 +17,26 @@
         ></v-select>
       </v-col>
     </v-row>
+    <v-row
+      v-if="sortDesc < 0"
+    >
+      <DiscussionReply
+        :level="0"
+        :user="user"
+        :discussion="discussion"
+        :computedGroupStatus="computedGroupStatus"
+        :isEditMessage="isEditMessage"
+        @resetInput="resetInput()"
+      >
+      </DiscussionReply>
+    </v-row>
     <v-row>
       <v-col>
         <v-sheet
           id="messageContainer"
           min-height="100px"
+          color="transparent"
           style="overflow-y: auto; overflow-x: hidden"
-          class="px-7"
         >
           <template
             v-if="!computedDiscussionMessages || computedDiscussionMessages.length === 0"
@@ -219,7 +232,10 @@
                     </v-row>
                   </v-col>
                 </v-row>
-                <v-row dense>
+                <v-row
+                  v-if="isOwnMessage(message) || (!isOwnMessage(message) && user)"
+                  dense
+                >
                   <v-col>
                     <v-divider
                       class="my-3"
@@ -227,30 +243,8 @@
                   </v-col>
                   <v-col
                     cols="12"
+                    class="pl-0"
                   >
-                    <v-tooltip
-                      color="customGrey"
-                      top
-                    >
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn
-                          v-bind="attrs"
-                          v-on="on"
-                          icon
-                          color="customGrey"
-                          class="mb-2 customGreyUltraLight elevation-1"
-                          @click="toggleShowReplies(message._id)"
-                          :title="$t('replies')"
-                        >
-                          <v-icon
-                            size="14"
-                          >
-                            {{ showRepliesObj[message._id] ? 'fas fa-chevron-up' : 'fas fa-reply' }}
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <span>{{$t('replies')}}</span>
-                    </v-tooltip>
                     <v-menu
                       open-on-hover
                       v-if="isOwnMessage(message)"
@@ -260,7 +254,7 @@
                           icon
                           v-bind="attrs"
                           v-on="on"
-                          class="mb-2 ml-2 customGreyUltraLight elevation-1"
+                          class="mb-2 ml-1 customGreyUltraLight elevation-1"
                         >
                           <v-icon
                             size="14"
@@ -312,7 +306,7 @@
                       <template v-slot:activator="{ on, attrs }">
                         <v-btn
                           icon
-                          class="mb-2 ml-2 customGreyUltraLight elevation-1"
+                          class="mb-2 ml-1 customGreyUltraLight elevation-1"
                           v-bind="attrs"
                           v-on="on"
                         >
@@ -347,148 +341,23 @@
                   </v-col>
                 </v-row>
                 <!-- Replies -->
-                <v-expand-transition
-                  mode="in-out"
-                >
-                  <v-row
-                    v-if="showRepliesObj[message._id]"
-                  >
-                    <v-col
-                      class="pt-0"
-                    >
-                      <DiscussionReplies
-                        :mainMessage="message"
-                        :discussion="discussion"
-                        @checkVisibleMessages="checkVisibleMessages"
-                        @report="openReportDialog"
-                        @translateText="translateText"
-                        :computedOwnSubscriberStatusContainer="computedOwnSubscriberStatusContainer"
-                        :computedGroupStatus="computedGroupStatus"
-                      ></DiscussionReplies>
-                    </v-col>
-                  </v-row>
-                </v-expand-transition>
-                <!-- Reply button -->
                 <v-row
-                  v-if="message.replies && message.replies.length > 0"
+                  v-if="showRepliesObj[message._id] || true"
                 >
                   <v-col
                     class="pt-0"
-                    cols="12"
                   >
-                    <v-btn
-                      @click="toggleShowReplies(message._id)"
-                      :color="showRepliesObj[message._id] ? 'customGrey' : 'customGreyLight'"
-                      :dark="showRepliesObj[message._id]"
-                      block
-                      :x-small="!$vuetify.breakpoint.smAndUp"
-                      class="my-2 py-4 elevation-1"
-                    >
-                      {{$t('older')}}
-                      {{$t('replies')}}
-                      {{showRepliesObj[message._id] ? $t('hideButton') : $t('showButton')}}
-                      <v-icon
-                        size="18"
-                        class="ml-3"
-                      >
-                        {{ showRepliesObj[message._id] ? 'fas fa-chevron-up' : 'fas fa-chevron-down' }}
-                      </v-icon>
-                      <v-sheet
-                        :color="$settings.indicatorColor"
-                        class="ml-4 px-2 pt-1"
-                        v-if="computedOwnSubscriberStatusContainer && message.replies.filter(obj => computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(obj)).length > 0"
-                      >
-                        {{message.replies.filter(obj => computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(obj)).length}}
-                        <span>
-                          {{$t('newMultiple')}}
-                          <v-icon
-                            size="18"
-                            class="ml-1"
-                            style="margin-bottom: 3px"
-                          >
-                            far fa-envelope
-                          </v-icon>
-                        </span>
-                      </v-sheet>
-                    </v-btn>
-                  </v-col>
-                  <v-col
-                    v-if="!showRepliesObj[message._id]"
-                    cols="12"
-                  >
-                    <v-alert
-                      color="customGreyMedium"
-                      outlined
-                    >
-                      <v-list-item
-                        class="px-0"
-                      >
-                        <v-list-item-avatar>
-                          <v-avatar
-                            color="customGreyLight"
-                          >
-                            <v-img
-                              v-if="getUser(message.latestAnswers.author).pic"
-                              :src="s3 + getUser(message.latestAnswers.author).pic.url"
-                              :alt="$t('userPic') + ' ' + $t('by') + ' ' + getUser(message.latestAnswers.author).userName"
-                              :title="getUser(message.latestAnswers.author).pic.credit ? '© ' + getUser(message.latestAnswers.author).pic.credit : ''"
-                            >
-                            </v-img>
-                            <v-icon
-                              v-else
-                              color="white"
-                            >
-                              fas fa-user
-                            </v-icon>
-                          </v-avatar>
-                        </v-list-item-avatar>
-                        <v-list-item-content>
-                          <v-row>
-                            <v-col
-                              cols="12"
-                              class="subtitle-1 pb-0"
-                              style="line-height:20px"
-                              @click="!isOwnMessage(message.latestAnswers) ? $router.push({name: 'User', params: { user: message.latestAnswers.author}}) : ''"
-                              :class="!isOwnMessage(message.latestAnswers) ? 'pointer' : ''"
-                            >
-                              {{$t('newestAnswerFrom')}} {{getUser(message.latestAnswers.author).userName}}
-                            </v-col>
-                            <v-col
-                              class="pt-0 caption"
-                            >
-                              {{$moment(message.latestAnswers.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.latestAnswers.editedAt ? '(' + $t('editedAt') + ' ' + $moment(message.latestAnswers.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
-                            </v-col>
-                          </v-row>
-                        </v-list-item-content>
-                      </v-list-item>
-                      <v-alert
-                        color="customGreyUltraLight"
-                      >
-                        <div
-                          v-html="$sanitize(newTab(latestAnswersLanguage === 'default' ? message.latestAnswers.text.find(t => t.type === 'default').value : message.latestAnswers.text.find(t => t.lang === $i18n.locale).value))"
-                        >
-                        </div>
-                      </v-alert>
-                        <template
-                          v-if="latestAnswersLanguage === 'default'"
-                        >
-                          <v-btn
-                            text
-                            x-small
-                            @click="latestAnswersLanguage = $i18n.locale"
-                          >{{$t('translateText')}}</v-btn>
-                        </template>
-                        <template
-                          v-else
-                        >
-                          {{$t('machineTranslationHint')}}.
-                          <v-btn
-                            text
-                            x-small
-                            @click="latestAnswersLanguage = 'default'"
-                          >{{$t('showOriginal')}}</v-btn>
-                        </template>
-                    </v-alert>
+                    <DiscussionReplies
+                      :mainMessage="message"
+                      :discussion="discussion"
+                      @checkVisibleMessages="checkVisibleMessages"
+                      @report="openReportDialog"
+                      @translateText="translateText"
+                      :computedOwnSubscriberStatusContainer="computedOwnSubscriberStatusContainer"
+                      :computedGroupStatus="computedGroupStatus"
+                      :level="1"
+                      :sort="sortDesc"
+                    ></DiscussionReplies>
                   </v-col>
                 </v-row>
               </v-sheet>
@@ -513,6 +382,19 @@
         fas fa-arrow-right
       </v-icon>
     </v-btn>
+    <v-row
+      v-if="sortDesc > 0"
+    >
+      <DiscussionReply
+        :level="0"
+        :user="user"
+        :discussion="discussion"
+        :computedGroupStatus="computedGroupStatus"
+        :isEditMessage="isEditMessage"
+        @resetInput="resetInput()"
+      >
+      </DiscussionReply>
+    </v-row>
     <v-row>
       <v-col>
         <v-pagination
@@ -521,192 +403,6 @@
           :length="Math.ceil(total / itemsPerPage)"
           :total-visible="6"
         ></v-pagination>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-divider class="mb-6"></v-divider>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col
-        v-if="!user"
-      >
-        <v-alert
-          dark
-          icon="fas fa-info-circle"
-          :color="$settings.modules.discussions.color"
-        >
-          <v-row>
-            <v-col>
-              {{$t('loginForDiscussions')}}
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-btn
-                class="elevation-1 customGrey--text"
-                color="white"
-                :to="{ name: 'Signup' }"
-              >
-                {{$t('createProfileButton')}}
-                <v-icon
-                  class="ml-3"
-                  size="18"
-                >
-                  fa fa-user-plus
-                </v-icon>
-              </v-btn>
-              <v-btn
-                class="elevation-1 ml-3 customGrey--text"
-                color="white"
-                :to="{ name: 'Login' }"
-              >
-                {{$t('login')}}
-                <v-icon
-                  class="ml-3"
-                  size="18"
-                >
-                  fa fa-sign-in-alt
-                </v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-alert>
-      </v-col>
-      <v-col
-        v-else-if="discussion.group && !computedGroupStatus.isMember"
-      >
-        <v-alert
-          dark
-          icon="fas fa-info-circle"
-          :color="$settings.modules.discussions.color"
-        >
-          <v-row>
-            <v-col>
-              {{$t('applyForGroup')}}
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-btn
-                class="elevation-1 customGrey--text"
-                color="white"
-                :to="{ name: 'Group',  params: { group: discussion.group } }"
-              >
-                {{$t('group')}} {{$t('viewButton')}}
-                <v-icon
-                  class="ml-3"
-                  size="18"
-                >
-                  fa fa-arrow-right
-                </v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-alert>
-      </v-col>
-      <v-col
-        v-else
-      >
-        <v-form
-          ref="messagesForm"
-          v-model="isValid"
-        >
-          <v-row dense>
-            <v-col
-              class="font-weight-bold"
-              cols="12"
-            >
-              {{ isEditMessage ? $t('editPostTitle') : $t('writeNewPostTitle')}}
-              <v-btn
-                v-if="isEditMessage"
-                text
-                small
-                outlined
-                class="ml-2"
-                @click="resetInput"
-              >
-                {{$t('cancelButton')}}
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row
-            class="align-start"
-          >
-            <v-col
-              cols="11"
-            >
-              <tiptap-vuetify
-                :editor-properties="{
-                  disableInputRules: true,
-                  disablePasteRules: true
-                }"
-                color="customGreyUltraLight"
-                v-model="message"
-                :card-props="{ tile: true, flat: true }"
-                style="border: 1px solid #aaa;"
-                :extensions="extensions"
-                :placeholder="$t('writeNewPost')"
-                id="messageInput"
-              >
-              </tiptap-vuetify>
-              <v-row class="mt-3">
-                <v-col
-                  cols="12"
-                  class="pt-0"
-                  tabIndex="0"
-                  @keypress="$refs.messageUpload.fakeClick()"
-                >
-                  <FileUpload
-                    ref="messageUpload"
-                    v-model="pics"
-                    @fileRemove="patchFileRemove"
-                    @fileAdd="$nextTick(() => { $refs.messagesForm.validate() })"
-                    :acceptedMimeTypes="[]"
-                    :maxFileSize="2"
-                    :maxFiles="10"
-                    bgColor="transparent"
-                    :scaleToFit="[1080, 1080]"
-                    :resizeQuality="50"
-                  ></FileUpload>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col
-              cols="1"
-              class="px-0 text-center"
-              :class="$vuetify.breakpoint.smAndUp ? 'mt-11': 'mt-12'"
-            >
-              <v-btn
-                fab
-                :small="!$vuetify.breakpoint.smAndUp"
-                :loading="isSending"
-                :disabled="!isValid || !message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
-                @click="sendMessage()"
-                :color="$settings.modules.discussions.color"
-                :title="$t('sendButton')"
-              >
-                <template
-                  slot="loader"
-                >
-                  <v-progress-circular
-                    color="white"
-                    width="3"
-                    indeterminate
-                  ></v-progress-circular>
-                </template>
-                <div ref="test"></div>
-                <v-icon
-                  size="18"
-                  color="white"
-                >
-                  fas fa-paper-plane
-                </v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
       </v-col>
     </v-row>
     <ViolationDialog
@@ -725,23 +421,21 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import DiscussionReplies from '@/components/DiscussionReplies.vue'
 import ViolationDialog from '@/components/ViolationDialog.vue'
-import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 import Lightbox from '@/components/Lightbox.vue'
-import FileUpload from '@/components/FileUpload.vue'
+import DiscussionReply from '@/components/DiscussionReply.vue'
 
 export default {
   name: 'DiscussionCore',
 
   components: {
     DiscussionReplies,
-    TiptapVuetify,
     ViolationDialog,
     TranslatableText,
     TranslatableTextInfo,
     Lightbox,
-    FileUpload
+    DiscussionReply
   },
 
   props: ['discussion'],
@@ -754,14 +448,13 @@ export default {
     hasNewMessages: false,
     triggerNewMessage: 1,
     isFindDiscussionMessagesPending: false,
-    sortDesc: 1,
+    sortDesc: -1,
     isUpdating: false,
     isEditMessage: undefined,
     showRepliesObj: {},
     init: true,
     manualLoad: false,
     isValid: false,
-    message: undefined,
     isSending: false,
     search: '',
     page: 1,
@@ -773,15 +466,7 @@ export default {
       root: null,
       rootMargin: '0px 0px 0px 0px',
       threshold: [0, 1]
-    },
-    extensions: [
-      Bold,
-      Blockquote,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link
-    ]
+    }
   }),
 
   async mounted () {
@@ -825,32 +510,8 @@ export default {
     ...mapActions('status-container-helper', {
       patchDiscussionMessageNotifications: 'patch'
     }),
-    async patchFileRemove (file) {
-      this.isLoading = true
-      try {
-        await this.patchMessage([
-          this.isEditMessage._id,
-          {
-            $pull: {
-              pics: {
-                _id: file._id
-              }
-            }
-          }
-        ])
-        this.pics = this.isEditMessage.pics
-        this.isLoading = false
-        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-      } catch (e) {
-        console.log(e)
-        this.isLoading = false
-        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-      }
-    },
     resetInput () {
       this.isEditMessage = undefined
-      this.$refs.messagesForm.reset()
-      this.message = undefined
       this.pics = []
     },
     async translateText ({ texts, force }) {
@@ -902,16 +563,6 @@ export default {
         }
       }
     },
-    toggleShowReplies (messageId) {
-      const tmpState = !this.showRepliesObj[messageId]
-      this.showRepliesObj = {}
-      if (tmpState) {
-        this.$set(this.showRepliesObj, messageId, true)
-        setTimeout(() => {
-          document.querySelector('#replyInput' + messageId).scrollIntoView({ block: 'end', behavior: 'smooth' })
-        }, 500)
-      }
-    },
     isOwnMessage (message) {
       if (this.user) {
         return message.author === this.user._id
@@ -931,79 +582,12 @@ export default {
     },
     async editMessage (message) {
       this.isEditMessage = message
-      this.message = message.text.value
       this.pics = message.pics
-      document.querySelector('#messageInput').scrollIntoView({ block: 'start', behavior: 'smooth' })
-    },
-    async sendMessage () {
-      this.isSending = true
-      try {
-        await this.$refs.messageUpload.upload()
-      } catch (e) {
-        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        this.isLoading = false
-        return
-      }
-      if (!this.isEditMessage) {
-        this.manualLoad = 'create'
-        try {
-          await this.createMessage(
-            [
-              {
-                discussion: this.discussion._id,
-                author: this.user._id,
-                text: [
-                  {
-                    value: this.message,
-                    lang: null,
-                    type: 'default'
-                  }
-                ],
-                pics: this.pics
-              }
-            ]
-          )
-          this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
-          this.resetInput()
-          this.$nextTick(() => {
-            this.$nextTick(() => {
-              document.querySelector('#messageContainer').scrollTop = document.querySelector('#messageContainer').scrollHeight
-              this.checkVisibleMessages()
-            })
-          })
-          this.triggerNewMessage = Date.now()
-        } catch (e) {
-          console.log(e)
-          this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
-        }
-      } else {
-        this.manualLoad = 'patch'
-        try {
-          await this.patchMessage(
-            [
-              this.isEditMessage._id,
-              {
-                text: [
-                  {
-                    value: this.message,
-                    lang: null,
-                    type: 'default'
-                  }
-                ],
-                pics: this.pics,
-                editedAt: new Date()
-              }
-            ]
-          )
-          this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
-          this.resetInput()
-          this.triggerNewMessage = Date.now()
-        } catch (e) {
-          console.log(e)
-          this.setSnackbar({ text: this.$t('snackbarEditError'), color: 'error' })
-        }
-      }
-      this.isSending = false
+      await this.$nextTick()
+      await this.$nextTick()
+      const element = document.getElementById('messageInput_' + message._id)
+      const y = element.getBoundingClientRect().top + window.pageYOffset - 180
+      window.scrollTo({ top: y, behavior: 'smooth' })
     },
     async checkVisibleMessages () {
       document.querySelectorAll('.message').forEach(async message => {
@@ -1209,12 +793,6 @@ export default {
         setTimeout(() => {
           this.init = false
         }, 1000)
-      }
-    },
-    message () {
-      if (this.message) {
-        this.message = this.$sanitize(this.message)
-        this.message = this.message.replaceAll('<blockquote>', '<blockquote class="blockquote">')
       }
     },
     showViolationDialog () {
