@@ -56,7 +56,7 @@
             v-slot:[`item.pic.url`]="{ item }"
           >
             <v-avatar
-              :class="$vuetify.breakpoint.smAndUp ? 'ma-3' : ''"
+              :class="$vuetify.display.smAndUp ? 'ma-3' : ''"
               color="customGreyLight"
             >
               <v-img

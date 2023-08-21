@@ -383,7 +383,7 @@
                   class="text-left"
                   cols="11"
                 >
-                  <tiptap-vuetify
+                  <VuetifyTiptap
                     :editor-properties="{
                       disableInputRules: true,
                       disablePasteRules: true
@@ -395,7 +395,7 @@
                     :extensions="extensions"
                     :placeholder="$t('writeNewAnswer') + ' ...'"
                   >
-                  </tiptap-vuetify>
+                  </VuetifyTiptap>
                   <v-row class="mt-3">
                     <v-col
                       cols="12"
@@ -424,7 +424,7 @@
                 >
                   <v-btn
                     fab
-                    :small="!$vuetify.breakpoint.mdAndUp"
+                    :small="!$vuetify.display.mdAndUp"
                     :loading="isSending"
                     :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                     @click="sendMessage()"
@@ -458,9 +458,8 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
+import { makeFindMixin } from '@feathersjs/vuex'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 import Lightbox from '@/components/Lightbox.vue'
@@ -478,7 +477,6 @@ export default {
     'computedOtherStatusContainers'
   ],
   components: {
-    TiptapVuetify,
     TranslatableText,
     TranslatableTextInfo,
     Lightbox,
@@ -505,15 +503,7 @@ export default {
       root: null,
       rootMargin: '0px 0px 0px 0px',
       threshold: [0, 1]
-    },
-    extensions: [
-      Bold,
-      Blockquote,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link
-    ]
+    }
   }),
 
   async mounted () {

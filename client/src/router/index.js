@@ -1,5 +1,6 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import app from '@/main'
+import { nextTick } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import Store from '@/store'
 import i18n from '@/i18n'
 import Multiguard from 'vue-router-multiguard'
@@ -74,10 +75,8 @@ import ChatList from '@/views/ChatList.vue'
 import Chat from '@/views/Chat.vue'
 import helpItems from '@/data/help.js'
 
-const appMode = process.env.VUE_APP_MODE
-const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
-
-Vue.use(VueRouter)
+const appMode = import.meta.env.VITE_MODE
+const serverDomain = import.meta.env.VITE_SERVER_DOMAIN
 
 const routes = [
   {
@@ -1280,7 +1279,7 @@ const routes = [
     }
   },
   {
-    path: '*',
+    path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFound,
     meta: {
@@ -1292,18 +1291,19 @@ const routes = [
   }
 ]
 
+/*
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (location) {
   return originalPush.call(this, location).catch(err => err)
 }
+*/
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior (to, from, savedPosition) {
     return new Promise((resolve, reject) => {
-      Vue.nextTick(() => {
+      nextTick(() => {
         setTimeout(() => {
           if (savedPosition) {
             resolve(savedPosition)
@@ -1349,9 +1349,9 @@ async function init (to, from, next) {
         await Store.dispatch('status-containers/find', { query: { user: Store.getters['auth/user']._id } })
         let i = 0
         const matomoInterval = setInterval(() => {
-          if (Vue.prototype.$matomo) {
-            Vue.prototype.$matomo.setUserId(Store.getters['auth/user']._id)
-            Vue.prototype.$matomo.setCustomVariable(1, 'Rolle', Store.getters['auth/user'].role, 'visit')
+          if (app.config.globalProperties.$matomo) {
+            app.config.globalProperties.$matomo.setUserId(Store.getters['auth/user']._id)
+            app.config.globalProperties.$matomo.setCustomVariable(1, 'Rolle', Store.getters['auth/user'].role, 'visit')
             Store.commit('SET_HAS_MATOMO', true)
             clearInterval(matomoInterval)
           }
@@ -1363,9 +1363,9 @@ async function init (to, from, next) {
       } catch (e) {
         let i = 0
         const matomoInterval = setInterval(() => {
-          if (Vue.prototype.$matomo) {
-            Vue.prototype.$matomo.setUserId(undefined)
-            Vue.prototype.$matomo.setCustomVariable(1, 'Rolle', 'anonymous', 'visit')
+          if (app.config.globalProperties.$matomo) {
+            app.config.globalProperties.$matomo.setUserId(undefined)
+            app.config.globalProperties.$matomo.setCustomVariable(1, 'Rolle', 'anonymous', 'visit')
             Store.commit('SET_HAS_MATOMO', true)
             clearInterval(matomoInterval)
           }
@@ -1391,7 +1391,7 @@ async function init (to, from, next) {
       secure: appMode === 'production',
       expires: 365 * 100
     })
-    Vuetify.framework.lang.current = Store.getters.i18nMap[i18n.locale] || i18n.locale
+    Vuetify.locale.current = Store.getters.i18nMap[i18n.locale] || i18n.locale
     // Load stuff
     const settings = await Store.dispatch('settings/find')
     if (settings.length === 1) {
@@ -1512,7 +1512,8 @@ function checkOwnerModeratorMember (to, from, next) {
 
 function checkOwnerModeratorMemberOrNew (to, from, next) {
   if (
-    Object.keys(to.params)[Object.keys(to.params).length - 1] &&
+    // Object.keys(to.params)[Object.keys(to.params).length - 1] &&
+    to.params[Object.keys(to.params)[Object.keys(to.params).length - 1]] &&
     !Store.getters['status-containers/list'].find(
       obj =>
         obj.reference === to.params[Object.keys(to.params)[0]] &&

@@ -128,7 +128,7 @@
               class="text-left"
               cols="11"
             >
-              <tiptap-vuetify
+              <VuetifyTiptap
                 :editor-properties="{
                   disableInputRules: true,
                   disablePasteRules: true
@@ -141,7 +141,7 @@
                 :placeholder="$t('writeNewAnswer') + ' ...'"
                 :id="'messageInput_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
               >
-              </tiptap-vuetify>
+              </VuetifyTiptap>
               <v-row class="mt-3">
                 <v-col
                   cols="12"
@@ -167,11 +167,11 @@
             <v-col
               cols="1"
               class="px-0 text-center"
-              :class="$vuetify.breakpoint.smAndUp ? 'mt-11': 'mt-12'"
+              :class="$vuetify.display.smAndUp ? 'mt-11': 'mt-12'"
             >
               <v-btn
                 fab
-                :small="!$vuetify.breakpoint.mdAndUp"
+                :small="!$vuetify.display.mdAndUp"
                 :loading="isSending"
                 :disabled="!isValid || !messageText || messageText.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                 @click="sendMessage()"
@@ -204,7 +204,6 @@
 <script>
 
 import { mapActions, mapMutations } from 'vuex'
-import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import FileUpload from '@/components/FileUpload.vue'
 
 export default {
@@ -220,7 +219,6 @@ export default {
     'isEditMessage'
   ],
   components: {
-    TiptapVuetify,
     FileUpload
   },
 
@@ -228,14 +226,6 @@ export default {
     pics: [],
     isValid: false,
     isSending: false,
-    extensions: [
-      Bold,
-      Blockquote,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link
-    ],
     messageText: undefined
   }),
 

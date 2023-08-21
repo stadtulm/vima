@@ -1,54 +1,24 @@
-import feathersClient, { makeServicePlugin, BaseModel } from '../../feathers-client'
+export function categories ({ feathers }) {
+  const { apiClient, apiVuex } = feathers
+  const { BaseModel, makeServicePlugin } = apiVuex
 
-class categories extends BaseModel {
-  // eslint-disable-next-line no-useless-constructor
-  constructor (data, options) {
-    super(data, options)
-  }
-
-  // Define default properties here
-  static instanceDefaults () {
-    return {
+  class categories extends BaseModel {
+    static modelName = 'categories'
+    // Define default properties here
+    static instanceDefaults () {
+      return {
+      }
     }
   }
+  const servicePath = 'categories'
+  const vuexPlugin = makeServicePlugin({
+    Model: categories,
+    service: apiClient.service(servicePath),
+    servicePath
+  })
+
+  // Setup the client-side Feathers hooks.
+  apiClient.service(servicePath).hooks({})
+
+  return vuexPlugin
 }
-categories.modelName = 'categories'
-const servicePath = 'categories'
-const servicePlugin = makeServicePlugin({
-  Model: categories,
-  service: feathersClient.service(servicePath),
-  servicePath
-})
-
-// Setup the client-side Feathers hooks.
-feathersClient.service(servicePath).hooks({
-  before: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  },
-  after: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  },
-  error: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  }
-})
-
-export default servicePlugin

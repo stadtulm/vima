@@ -1,37 +1,34 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify/lib'
+// Styles
+import '@mdi/font/css/materialdesignicons.css'
+import 'vuetify/styles'
 import de from 'vuetify/lib/locale/de'
 import colors from 'vuetify/lib/util/colors'
-import { TiptapVuetifyPlugin } from 'tiptap-vuetify'
-import './tiptap.css'
 
-const vuetify = new Vuetify({
-  theme: {
-    options: {
-      customProperties: true
-    },
-    themes: {
-      light: {
-        customGrey: colors.blueGrey.darken2,
-        customGreyMedium: colors.blueGrey.lighten2,
-        customGreyLight: colors.blueGrey.lighten4,
-        customGreyUltraLight: colors.blueGrey.lighten5
+// Vuetify
+import { createVuetify } from 'vuetify'
+
+export default createVuetify(
+  {
+    theme: {
+      options: {
+        customProperties: true
+      },
+      themes: {
+        light: {
+          customGrey: colors.blueGrey.darken2,
+          customGreyMedium: colors.blueGrey.lighten2,
+          customGreyLight: colors.blueGrey.lighten4,
+          customGreyUltraLight: colors.blueGrey.lighten5
+        }
       }
+    },
+    lang: {
+      locales: { de },
+      current: 'de'
+    },
+    icons: {
+      iconfont: 'fa'
     }
-  },
-  lang: {
-    locales: { de },
-    current: 'de'
-  },
-  icons: {
-    iconfont: 'fa'
   }
-})
-
-Vue.use(Vuetify)
-Vue.use(TiptapVuetifyPlugin, {
-  vuetify,
-  iconsGroup: 'fa'
-})
-
-export default vuetify
+  // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
+)

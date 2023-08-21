@@ -95,14 +95,14 @@
           <v-col
             v-if="adProp"
             class="shrink align-self-center"
-            :class="$vuetify.breakpoint.smAndUp ? 'text-right' : ''"
+            :class="$vuetify.display.smAndUp ? 'text-right' : ''"
             cols="12"
             sm="6"
           >
             <!-- View more button -->
             <v-btn
               :style="'color:' + $settings.modules.ads.color"
-              :class="$vuetify.breakpoint.mdAndUp ? '' : 'mx-4 mb-4'"
+              :class="$vuetify.display.mdAndUp ? '' : 'mx-4 mb-4'"
               :to="{ name: 'Ad', params: { id: computedAd._id } }"
             >
               {{$t('viewButton')}}
@@ -214,7 +214,7 @@
         md="4"
         :order="1"
         :order-md="2"
-        :class="adProp ? 'py-0' : $vuetify.breakpoint.mdAndUp ? 'pr-6' : 'pt-0'"
+        :class="adProp ? 'py-0' : $vuetify.display.mdAndUp ? 'pr-6' : 'pt-0'"
       >
         <!-- Carousel -->
         <v-carousel

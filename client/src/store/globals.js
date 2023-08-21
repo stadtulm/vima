@@ -1,9 +1,9 @@
 import i18n from '@/i18n.js'
 import Store from '@/store'
-import Vue from 'vue'
 import Cookies from 'js-cookie'
-const appMode = process.env.VUE_APP_MODE
-const serverDomain = process.env.VUE_APP_SERVER_DOMAIN
+import app from '@/main'
+const appMode = import.meta.env.VITE_MODE
+const serverDomain = import.meta.env.VITE_SERVER_DOMAIN
 
 const state = {
   hasMatomo: false,
@@ -20,14 +20,14 @@ const state = {
     ua: 'uk'
   },
   isModuleActiveOrDependency (moduleKey) {
-    if (!Vue.prototype.$settings) {
+    if (!app.config.globalProperties.$settings) {
       return false
     }
     if (
-      Vue.prototype.$settings.modules[moduleKey].isActive ||
+      app.config.globalProperties.$settings.modules[moduleKey].isActive ||
       (
-        Vue.prototype.$settings.modules[moduleKey].dependents && Vue.prototype.$settings.modules[moduleKey].dependents.length > 0 &&
-        Vue.prototype.$settings.modules[moduleKey].dependents.map(depKey => Vue.prototype.$settings.modules[depKey]).find(dependent => dependent.isActive)
+        app.config.globalProperties.$settings.modules[moduleKey].dependents && app.config.globalProperties.$settings.modules[moduleKey].dependents.length > 0 &&
+        app.config.globalProperties.$settings.modules[moduleKey].dependents.map(depKey => app.config.globalProperties.$settings.modules[depKey]).find(dependent => dependent.isActive)
       )
     ) {
       return true
@@ -148,7 +148,7 @@ const state = {
           data[property] = data[property].find(translation => translation && translation.type === 'default')
         } else {
           data[property] = {
-            value: i18n.t('noDefaultValue'),
+            value: i18n.global.t('noDefaultValue'),
             type: 'error'
           }
         }
@@ -161,7 +161,7 @@ const state = {
     if (!Array.isArray(tmpLanguages)) {
       tmpLanguages = [tmpLanguages]
     }
-    for (const language of Vue.prototype.$settings.languages) {
+    for (const language of app.config.globalProperties.$settings.languages) {
       if (!tmpLanguages.find(obj => obj.lang === language)) {
         tmpLanguages.push({
           type: i18n.fallbackLocale === language ? 'default' : 'author',
@@ -173,20 +173,20 @@ const state = {
     return tmpLanguages
   },
   rules: {
-    required: value => !!value || i18n.t('rulesRequired'),
-    tiptapRequired: value => (value && value.replaceAll('<p>', '').replaceAll('</p>', '') !== '') || i18n.t('rulesRequired'),
-    radio: value => value !== null || i18n.t('rulesRequired'),
-    content: value => (!value || value.length < 0) || i18n.t('rulesRequired'),
-    tagText: value => (!value || value.length <= 50) || i18n.t('rulesMaxLength', { msg: 40 }),
-    shortText: value => (!value || value.length <= 150) || i18n.t('rulesMaxLength', { msg: 150 }),
-    longText: value => (!value || value.length <= 500) || i18n.t('rulesMaxLength', { msg: 500 }),
+    required: value => !!value || i18n.global.t('rulesRequired'),
+    tiptapRequired: value => (value && value.replaceAll('<p>', '').replaceAll('</p>', '') !== '') || i18n.global.t('rulesRequired'),
+    radio: value => value !== null || i18n.global.t('rulesRequired'),
+    content: value => (!value || value.length < 0) || i18n.global.t('rulesRequired'),
+    tagText: value => (!value || value.length <= 50) || i18n.global.t('rulesMaxLength', { msg: 40 }),
+    shortText: value => (!value || value.length <= 150) || i18n.global.t('rulesMaxLength', { msg: 150 }),
+    longText: value => (!value || value.length <= 500) || i18n.global.t('rulesMaxLength', { msg: 500 }),
     email: value => {
       const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      return (!value || pattern.test(value)) || i18n.t('rulesEmail')
+      return (!value || pattern.test(value)) || i18n.global.t('rulesEmail')
     },
-    minOneCategory: v => v.length > 0 || i18n.t('rulesMinOneCategory'),
-    maxThreeCategories: v => v.length <= 3 || i18n.t('rulesMaxThreeCategories'),
-    password: value => (value && value.length >= 8 && value.length <= 16) || i18n.t('rulesPassword'),
+    minOneCategory: v => v.length > 0 || i18n.global.t('rulesMinOneCategory'),
+    maxThreeCategories: v => v.length <= 3 || i18n.global.t('rulesMaxThreeCategories'),
+    password: value => (value && value.length >= 8 && value.length <= 16) || i18n.global.t('rulesPassword'),
     passwordOptional: value => {
       if (!value || value === '') {
         return true
@@ -195,14 +195,14 @@ const state = {
           return true
         }
       }
-      return i18n.t('rulesPassword')
+      return i18n.global.t('rulesPassword')
     },
-    userNameLength: v => (!v || v.length < 20) || i18n.t('rulesMaxLength', { msg: 20 }),
-    noBlanks: v => !(/[ ]/.test(v)) || i18n.t('noBlanksError'),
-    webLink: v => ((!v || v.startsWith('http://') || v.startsWith('https://')) || i18n.t('linkMustStartWithHttp'))
+    userNameLength: v => (!v || v.length < 20) || i18n.global.t('rulesMaxLength', { msg: 20 }),
+    noBlanks: v => !(/[ ]/.test(v)) || i18n.global.t('noBlanksError'),
+    webLink: v => ((!v || v.startsWith('http://') || v.startsWith('https://')) || i18n.global.t('linkMustStartWithHttp'))
   },
-  s3: process.env.VUE_APP_S3_URL,
-  server: process.env.VUE_APP_SERVER_URL,
+  s3: import.meta.env.VITE_S3_URL,
+  server: import.meta.env.VITE_SERVER_URL,
   videoTypeItems: [
     { textKey: 'youtube', value: 'youtube' },
     { textKey: 'vimeo', value: 'vimeo' }

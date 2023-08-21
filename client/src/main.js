@@ -1,26 +1,37 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import './plugins/asyncComputed'
-import './plugins/moment'
-import './plugins/sanitize'
-import './plugins/youtube'
-import './plugins/vimeo'
-import './plugins/tour'
-import './plugins/matomo'
-import './plugins/flags'
+import { vuetifyProTipTap } from './plugins/tiptap'
+import sanitizeOptions from './plugins/sanitize'
+import VueSanitize from 'vue-3-sanitize'
+import VueYoutube from 'vue3-youtube'
+import VueVimeoPlayer from 'vue-vimeo-player'
+import VueTour from 'vue3-tour'
+import matomoOptions from './plugins/matomo'
+import VueMatomo from 'vue-matomo'
+import CountryFlag from 'vue-country-flag-next'
 import i18n from './i18n'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@fortawesome/fontawesome-free/css/all.css'
+import moment from 'moment'
 
-Vue.config.productionTip = false
+const app = createApp(App).use(i18n)
+  .use(router)
+  .use(store)
+  .use(vuetify)
+  .use(vuetifyProTipTap)
+  .use(i18n)
+  .use(VueSanitize, sanitizeOptions)
+  .use(VueYoutube)
+  .use(VueVimeoPlayer)
+  .use(VueTour)
+  .use(VueMatomo, matomoOptions)
 
-new Vue({
-  router,
-  store,
-  vuetify,
-  i18n,
-  render: h => h(App)
-}).$mount('#app')
+app.component('country-flag', CountryFlag)
+app.mount('#app')
+
+app.config.globalProperties.$moment = moment
+
+export default app

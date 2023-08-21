@@ -165,7 +165,7 @@
 <script>
 
 import { mapActions, mapGetters } from 'vuex'
-import Jimp from 'jimp'
+import 'jimp/browser/lib/jimp'
 
 export default {
   name: 'FileUpload',

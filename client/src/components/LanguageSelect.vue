@@ -5,9 +5,9 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
-        :text="!isMainSwitch || !$vuetify.breakpoint.smAndUp"
-        :small="!isMainSwitch || !$vuetify.breakpoint.smAndUp"
-        :large="isMainSwitch && $vuetify.breakpoint.mdAndUp"
+        :text="!isMainSwitch || !$vuetify.display.smAndUp"
+        :small="!isMainSwitch || !$vuetify.display.smAndUp"
+        :large="isMainSwitch && $vuetify.display.mdAndUp"
         v-bind="attrs"
         v-on="on"
         :class="!isMainSwitch ? 'px-0' : 'pl-0 pr-1 rounded-tl-xl rounded-r-xl'"
@@ -18,7 +18,7 @@
         >
         </country-flag>
         <v-icon
-          v-if="$vuetify.breakpoint.smAndUp"
+          v-if="$vuetify.display.smAndUp"
           color="customGrey"
           class="ml-1"
           size="14"

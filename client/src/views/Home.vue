@@ -229,7 +229,7 @@
 import { mapGetters } from 'vuex'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 
-const showHelpButtons = process.env.VUE_APP_SHOW_HELP_BUTTON
+const showHelpButtons = import.meta.env.VITE_SHOW_HELP_BUTTON
 
 export default {
   name: 'Home',

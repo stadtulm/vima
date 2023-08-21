@@ -1,68 +1,46 @@
-import feathersClient, { makeServicePlugin, BaseModel } from '../../feathers-client'
-import Vue from 'vue'
+import app from '@/main'
 import Store from '@/store'
-class settings extends BaseModel {
-  // eslint-disable-next-line no-useless-constructor
-  constructor (data, options) {
-    super(data, options)
-  }
 
-  // Define default properties here
-  static instanceDefaults () {
-    return {
+// TODO: Check if app stuff works
+
+export function settings ({ feathers }) {
+  const { apiClient, apiVuex } = feathers
+  const { BaseModel, makeServicePlugin } = apiVuex
+
+  class settings extends BaseModel {
+    static modelName = 'settings'
+    // Define default properties here
+    static instanceDefaults () {
+      return {
+      }
     }
   }
+  const servicePath = 'settings'
+  const vuexPlugin = makeServicePlugin({
+    Model: settings,
+    service: apiClient.service(servicePath),
+    servicePath
+  })
+
+  // Setup the client-side Feathers hooks.
+  apiClient.service(servicePath).hooks({
+    after: {
+      all: [context => {
+        if (context.method !== 'remove') {
+          if (Array.isArray(context.result)) {
+            app.config.globalProperties.$settings = context.result[0]
+          } else {
+            app.config.globalProperties.$settings = context.result
+          }
+          const tmpVisibilities = {}
+          for (const key of Object.keys(app.config.globalProperties.$settings.modules)) {
+            tmpVisibilities[key] = Store.getters.isModuleActiveOrDependency(key)
+          }
+          Store.commit('SET_MODULE_VISIBILITIES', tmpVisibilities)
+        }
+      }]
+    }
+  })
+
+  return vuexPlugin
 }
-settings.modelName = 'settings'
-const servicePath = 'settings'
-const servicePlugin = makeServicePlugin({
-  Model: settings,
-  service: feathersClient.service(servicePath),
-  servicePath
-})
-
-// Setup the client-side Feathers hooks.
-feathersClient.service(servicePath).hooks({
-  before: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  },
-  after: {
-    all: [context => {
-      if (context.method !== 'remove') {
-        if (Array.isArray(context.result)) {
-          Vue.prototype.$settings = context.result[0]
-        } else {
-          Vue.prototype.$settings = context.result
-        }
-        const tmpVisibilities = {}
-        for (const key of Object.keys(Vue.prototype.$settings.modules)) {
-          Vue.prototype.$set(tmpVisibilities, key, Store.getters.isModuleActiveOrDependency(key))
-        }
-        Store.commit('SET_MODULE_VISIBILITIES', tmpVisibilities)
-      }
-    }],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  },
-  error: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  }
-})
-
-export default servicePlugin

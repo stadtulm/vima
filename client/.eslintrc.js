@@ -1,24 +1,18 @@
 module.exports = {
+  root: true,
   env: {
-    browser: true,
-    es2021: true
+    node: true
   },
   extends: [
     'plugin:vue/vue3-essential',
-    'standard'
-  ],
-  overrides: [
+    '@vue/standard'
   ],
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module'
+    parser: '@babel/eslint-parser'
   },
-  plugins: [
-    'vue'
-  ],
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-console': import.meta.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': import.meta.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'vue/multi-word-component-names': 'off',
     'no-empty': 'off',
     'vue/no-deprecated-slot-attribute': 'off',

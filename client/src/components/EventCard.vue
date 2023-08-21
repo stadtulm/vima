@@ -35,7 +35,7 @@
           <v-col
             v-if="eventProp"
             class="shrink align-self-center"
-            :class="$vuetify.breakpoint.smAndUp ? 'text-right' : ''"
+            :class="$vuetify.display.smAndUp ? 'text-right' : ''"
             cols="12"
             sm="6"
           >
@@ -108,7 +108,7 @@
         :md="eventProp ? 12 : 4"
         :order="1"
         :order-md="eventProp ? 1 : 2"
-        :class="eventProp ? 'py-0' : $vuetify.breakpoint.mdAndUp ? 'pr-6' : 'pt-0'"
+        :class="eventProp ? 'py-0' : $vuetify.display.mdAndUp ? 'pr-6' : 'pt-0'"
       >
           <v-carousel
             v-if="computedEvent.pics.length > 0"

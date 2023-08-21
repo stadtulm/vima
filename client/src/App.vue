@@ -19,9 +19,9 @@
           ></v-img>
         </template>
         <img
-          v-if="$vuetify.breakpoint.smAndUp && $settings.headerLogo"
+          v-if="$vuetify.display.smAndUp && $settings.headerLogo"
           class="py-2 mr-3 pointer"
-          :height="$vuetify.breakpoint.mdAndUp ? '50px' : ($vuetify.breakpoint.smAndUp ? '30px': '30px')"
+          :height="$vuetify.display.mdAndUp ? '50px' : ($vuetify.display.smAndUp ? '30px': '30px')"
           :src="$settings && $settings.headerLogo ? s3 + $settings.headerLogo.url : ''"
           @click="$router.push({ name: 'Home' })"
           style="margin-bottom: -1px"
@@ -36,7 +36,7 @@
           {{$settings.name}}
         </span>
         <v-toolbar-title
-          v-if="$vuetify.breakpoint.lgAndUp"
+          v-if="$vuetify.display.lgAndUp"
           class="text-h4 font-weight-bold pointer align-self-center pt-3"
           @click="$router.push({ name: 'Home' })"
         >
@@ -47,7 +47,7 @@
 
         <v-sheet
           class="pt-1"
-          :class="$vuetify.breakpoint.smAndUp ? 'pr-2' : ''"
+          :class="$vuetify.display.smAndUp ? 'pr-2' : ''"
           color="transparent"
         >
 
@@ -65,10 +65,10 @@
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               class="customGrey--text"
-              :class="!$vuetify.breakpoint.smAndUp ? 'ml-2': 'ml-1'"
-              :large="$vuetify.breakpoint.mdAndUp"
-              :small="!$vuetify.breakpoint.smAndUp"
-              :icon="!$vuetify.breakpoint.smAndUp"
+              :class="!$vuetify.display.smAndUp ? 'ml-2': 'ml-1'"
+              :large="$vuetify.display.mdAndUp"
+              :small="!$vuetify.display.smAndUp"
+              :icon="!$vuetify.display.smAndUp"
               v-bind="attrs"
               v-on="on"
               :title="$t('infoButton')"
@@ -77,17 +77,17 @@
               <v-icon
                 color="customGrey"
                 class="mr-1"
-                :size="$vuetify.breakpoint.smAndUp ? 18: 24"
+                :size="$vuetify.display.smAndUp ? 18: 24"
               >
                 fa fa-question-circle
               </v-icon>
               <template
-                v-if="$vuetify.breakpoint.mdAndUp"
+                v-if="$vuetify.display.mdAndUp"
               >
                 {{$t('infoButton')}}
               </template>
               <v-icon
-                v-if="$vuetify.breakpoint.smAndUp"
+                v-if="$vuetify.display.smAndUp"
                 color="customGrey"
                 class="ml-1"
                 size="18"
@@ -162,10 +162,10 @@
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               class="customGrey--text"
-              :class="!$vuetify.breakpoint.smAndUp ? 'ml-4': 'ml-3'"
-              :large="$vuetify.breakpoint.mdAndUp"
-              :small="!$vuetify.breakpoint.smAndUp"
-              :icon="!$vuetify.breakpoint.smAndUp"
+              :class="!$vuetify.display.smAndUp ? 'ml-4': 'ml-3'"
+              :large="$vuetify.display.mdAndUp"
+              :small="!$vuetify.display.smAndUp"
+              :icon="!$vuetify.display.smAndUp"
               v-bind="attrs"
               v-on="on"
               :title="$t('participate')"
@@ -173,17 +173,17 @@
               <v-icon
                 color="customGrey"
                 class="mr-1"
-                :size="$vuetify.breakpoint.smAndUp ? 18: 24"
+                :size="$vuetify.display.smAndUp ? 18: 24"
               >
                 fa fa-list
               </v-icon>
               <template
-                v-if="$vuetify.breakpoint.mdAndUp"
+                v-if="$vuetify.display.mdAndUp"
               >
                 {{$t('participate')}}
               </template>
               <v-icon
-                v-if="$vuetify.breakpoint.smAndUp"
+                v-if="$vuetify.display.smAndUp"
                 color="customGrey"
                 class="ml-1"
                 size="18"
@@ -305,17 +305,17 @@
         <v-btn
           v-if="!user"
           class="ml-3 elevation-1"
-          :text="$vuetify.breakpoint.smAndUp"
-          :icon="!$vuetify.breakpoint.smAndUp"
-          :large="$vuetify.breakpoint.mdAndUp"
+          :text="$vuetify.display.smAndUp"
+          :icon="!$vuetify.display.smAndUp"
+          :large="$vuetify.display.mdAndUp"
           color="customGrey"
           :to="{ name: 'Signup' }"
           tour-step="5"
           :title="$t('createProfileButton')"
         >
-          {{$vuetify.breakpoint.smAndUp ? $t('createProfileButton') : ''}}
+          {{$vuetify.display.smAndUp ? $t('createProfileButton') : ''}}
           <v-icon
-            :class="$vuetify.breakpoint.smAndUp ? 'ml-3' : ''"
+            :class="$vuetify.display.smAndUp ? 'ml-3' : ''"
             size="18"
           >
             fa fa-user-plus
@@ -324,17 +324,17 @@
         <v-btn
           v-if="!user"
           class="ml-3 elevation-1"
-          :text="$vuetify.breakpoint.smAndUp"
-          :icon="!$vuetify.breakpoint.smAndUp"
-          :large="$vuetify.breakpoint.mdAndUp"
+          :text="$vuetify.display.smAndUp"
+          :icon="!$vuetify.display.smAndUp"
+          :large="$vuetify.display.mdAndUp"
           color="customGrey"
           :to="{ name: 'Login' }"
           tour-step="6"
           :title="$t('login')"
         >
-          {{$vuetify.breakpoint.smAndUp ? $t('login') : ''}}
+          {{$vuetify.display.smAndUp ? $t('login') : ''}}
           <v-icon
-            :class="$vuetify.breakpoint.smAndUp ? 'ml-3' : ''"
+            :class="$vuetify.display.smAndUp ? 'ml-3' : ''"
             size="18"
           >
             fa fa-sign-in-alt
@@ -358,19 +358,19 @@
             class="ml-3 elevation-1"
             color="customGrey"
             text
-            :large="$vuetify.breakpoint.mdAndUp"
+            :large="$vuetify.display.mdAndUp"
             tour-step="5"
             @click=" isNavigationDrawer = !isNavigationDrawer"
             :title="isNavigationDrawer ? $t('myVimaToggleClose') : $t('myVimaToggleOpen')"
           >
             <v-icon
               size="18"
-              :class="$vuetify.breakpoint.mdAndUp ? 'mr-3' : ''"
+              :class="$vuetify.display.mdAndUp ? 'mr-3' : ''"
             >
               {{ isNavigationDrawer ? 'fas fa-times' : 'fas fa-user' }}
             </v-icon>
             <template
-              v-if="$vuetify.breakpoint.mdAndUp"
+              v-if="$vuetify.display.mdAndUp"
             >
               {{isNavigationDrawer ? $t('myVimaToggleClose'): $t('myVimaToggleOpen')}}
             </template>
@@ -1566,7 +1566,7 @@
                   <v-row>
                     <v-col
                       class="body-2 align-self-center"
-                      :class="$vuetify.breakpoint.smAndUp ? 'mb-3' : 'pb-0'"
+                      :class="$vuetify.display.smAndUp ? 'mb-3' : 'pb-0'"
                       cols="12"
                       sm="2"
                     >
@@ -2049,7 +2049,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { Tween } from '@createjs/tweenjs'
 import NewsletterDialog from '@/components/NewsletterDialog.vue'
 import LanguageSelect from '@/components/LanguageSelect.vue'
-const showHelpButton = process.env.VUE_APP_SHOW_HELP_BUTTON
+const showHelpButton = import.meta.env.VITE_SHOW_HELP_BUTTON
 
 export default {
   name: 'App',

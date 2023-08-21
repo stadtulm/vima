@@ -174,7 +174,7 @@
                           width="100%"
                         >
                           <template slot="default">
-                            <tiptap-vuetify
+                            <VuetifyTiptap
                               :editor-properties="{
                                 disableInputRules: true,
                                 disablePasteRules: true
@@ -186,7 +186,7 @@
                               :placeholder="$t('enterText')"
                               style="border: 1px solid #aaa"
                             >
-                            </tiptap-vuetify>
+                            </VuetifyTiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -327,14 +327,12 @@
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FileUpload from '@/components/FileUpload.vue'
-import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TagProposalDialog from '@/components/TagProposalDialog.vue'
 
 export default {
   name: 'DiscussionEditor',
 
   components: {
-    TiptapVuetify,
     TagProposalDialog,
     FileUpload
   },
@@ -351,17 +349,7 @@ export default {
     isValid: false,
     title: undefined,
     description: undefined,
-    pics: [],
-    extensions: [
-      Bold,
-      Italic,
-      Underline,
-      Strike,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link
-    ]
+    pics: []
   }),
 
   async mounted () {

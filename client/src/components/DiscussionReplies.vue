@@ -356,7 +356,7 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
+import { makeFindMixin } from '@feathersjs/vuex'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'

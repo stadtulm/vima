@@ -356,7 +356,7 @@
                   v-slot:[`item.pic.url`]="{ item }"
                 >
                   <v-avatar
-                    :class="$vuetify.breakpoint.smAndUp ? 'ma-3' : ''"
+                    :class="$vuetify.display.smAndUp ? 'ma-3' : ''"
                     color="customGreyLight"
                   >
                     <v-img
@@ -502,7 +502,7 @@
           </v-row>
           <v-row>
             <v-col>
-              <tiptap-vuetify
+              <VuetifyTiptap
                 :editor-properties="{
                   disableInputRules: true,
                   disablePasteRules: true
@@ -515,7 +515,7 @@
                 :placeholder="$t('enterText')"
                 id="messageInput"
               >
-              </tiptap-vuetify>
+              </VuetifyTiptap>
             </v-col>
           </v-row>
           <v-row>
@@ -591,9 +591,8 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
+import { makeFindMixin } from '@feathersjs/vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TranslatableText from '@/components/TranslatableText.vue'
 
 export default {
@@ -602,7 +601,6 @@ export default {
   mixins: [makeFindMixin({ service: 'ads', watch: true })],
 
   components: {
-    TiptapVuetify,
     TranslatableText
   },
 
@@ -625,15 +623,7 @@ export default {
     total: 0,
     itemsPerPage: 25,
     sortBy: ['createdAt'],
-    sortDesc: [true],
-    extensions: [
-      Bold,
-      Blockquote,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link
-    ]
+    sortDesc: [true]
   }),
 
   async mounted () {

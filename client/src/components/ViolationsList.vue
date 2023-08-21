@@ -205,7 +205,7 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
+import { makeFindMixin } from '@feathersjs/vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import ViolationDialog from '@/components/ViolationDialog.vue'
 

@@ -119,7 +119,7 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
+import { makeFindMixin } from '@feathersjs/vuex'
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {

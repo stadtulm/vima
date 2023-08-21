@@ -617,7 +617,7 @@
                             ></LanguageSelect>
                           </template>
                           <template slot="default">
-                            <tiptap-vuetify
+                            <VuetifyTiptap
                               :editor-properties="{
                                 disableInputRules: true,
                                 disablePasteRules: true
@@ -629,7 +629,7 @@
                               :extensions="extensions"
                               :placeholder="$t('enterText')"
                             >
-                            </tiptap-vuetify>
+                            </VuetifyTiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -662,19 +662,17 @@
 
 <script>
 
-import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FileUpload from '@/components/FileUpload.vue'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 
-const appName = process.env.VUE_APP_NAME
+const appName = import.meta.env.VITE_NAME
 
 export default {
   name: 'SettingsEditor',
 
   components: {
     FileUpload,
-    TiptapVuetify,
     LanguageSelect
   },
 
@@ -695,17 +693,7 @@ export default {
     tmpOtherVimaLinks: [],
     linkName: undefined,
     linkUrl: undefined,
-    currentLanguage: 'en',
-    extensions: [
-      Bold,
-      Italic,
-      Underline,
-      Strike,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link
-    ]
+    currentLanguage: 'en'
   }),
 
   async mounted () {

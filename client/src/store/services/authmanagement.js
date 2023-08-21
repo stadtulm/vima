@@ -1,44 +1,23 @@
-import feathersClient, { makeServicePlugin, BaseModel } from '@/feathers-client'
+export function authmanagement ({ feathers }) {
+  const { apiClient, apiVuex } = feathers
+  const { BaseModel, makeServicePlugin } = apiVuex
 
-class AuthManagement extends BaseModel {
-}
-AuthManagement.modelName = 'AuthManagement'
-const servicePath = 'authManagement'
-const servicePlugin = makeServicePlugin({
-  Model: AuthManagement,
-  service: feathersClient.service(servicePath),
-  servicePath
-})
-
-// Setup the client-side Feathers hooks.
-feathersClient.service(servicePath).hooks({
-  before: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  },
-  after: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  },
-  error: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
+  class AuthManagement extends BaseModel {
+  static modelName = 'AuthManagement'
+  static instanceDefaults () {
+    return {
+    }
   }
-})
+  }
+  const servicePath = 'authManagement'
+  const vuexPlugin = makeServicePlugin({
+    Model: AuthManagement,
+    service: apiClient.service(servicePath),
+    servicePath
+  })
 
-export default servicePlugin
+  // Setup the client-side Feathers hooks.
+  apiClient.service(servicePath).hooks({})
+
+  return vuexPlugin
+}

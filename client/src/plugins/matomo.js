@@ -1,8 +1,6 @@
-import Vue from 'vue'
-import VueMatomo from 'vue-matomo'
 import router from '@/router'
 
-Vue.use(VueMatomo, {
+export default {
   // Configure your matomo server and site by providing
   host: 'https://statistik.vima-ulm.de',
   siteId: 2,
@@ -84,4 +82,4 @@ Vue.use(VueMatomo, {
   //   }
   // }
   trackSiteSearch: false
-})
+}

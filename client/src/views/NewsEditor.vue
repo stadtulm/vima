@@ -152,7 +152,7 @@
                             ></LanguageSelect>
                           </template>
                           <template slot="default">
-                            <tiptap-vuetify
+                            <VuetifyTiptap
                               :editor-properties="{
                                 disableInputRules: true,
                                 disablePasteRules: true
@@ -164,7 +164,7 @@
                               :extensions="extensions"
                               :placeholder="$t('enterText')"
                             >
-                            </tiptap-vuetify>
+                            </VuetifyTiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -419,7 +419,6 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link, Heading } from 'tiptap-vuetify'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 import FileUpload from '@/components/FileUpload.vue'
 
@@ -428,7 +427,6 @@ export default {
 
   components: {
     FileUpload,
-    TiptapVuetify,
     LanguageSelect
   },
 
@@ -446,22 +444,7 @@ export default {
     videos: [],
     tmpVideos: [],
     pics: [],
-    currentLanguage: 'en',
-    extensions: [
-      Bold,
-      Italic,
-      Underline,
-      Strike,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link,
-      [Heading, {
-        options: {
-          levels: [1, 2, 3]
-        }
-      }]
-    ]
+    currentLanguage: 'en'
   }),
 
   async mounted () {

@@ -1,54 +1,24 @@
-import feathersClient, { makeServicePlugin, BaseModel } from '../../feathers-client'
+export function sendstats ({ feathers }) {
+  const { apiClient, apiVuex } = feathers
+  const { BaseModel, makeServicePlugin } = apiVuex
 
-class sendstats extends BaseModel {
-  // eslint-disable-next-line no-useless-constructor
-  constructor (data, options) {
-    super(data, options)
-  }
-
-  // Define default properties here
-  static instanceDefaults () {
-    return {
+  class sendstats extends BaseModel {
+    static modelName = 'sendstats'
+    // Define default properties here
+    static instanceDefaults () {
+      return {
+      }
     }
   }
+  const servicePath = 'sendstats'
+  const vuexPlugin = makeServicePlugin({
+    Model: sendstats,
+    service: apiClient.service(servicePath),
+    servicePath
+  })
+
+  // Setup the client-side Feathers hooks.
+  apiClient.service(servicePath).hooks({})
+
+  return vuexPlugin
 }
-sendstats.modelName = 'sendstats'
-const servicePath = 'sendstats'
-const servicePlugin = makeServicePlugin({
-  Model: sendstats,
-  service: feathersClient.service(servicePath),
-  servicePath
-})
-
-// Setup the client-side Feathers hooks.
-feathersClient.service(servicePath).hooks({
-  before: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  },
-  after: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  },
-  error: {
-    all: [],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
-  }
-})
-
-export default servicePlugin

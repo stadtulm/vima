@@ -20,8 +20,8 @@
     "config": "config/"
   },
   "engines": {
-    "node": "^15.0.0",
-    "npm": ">= 3.0.0"
+    "node": "^16.0.0",
+    "npm": ">= 6.0.0"
   },
   "scripts": {
     "test": "npm run lint && npm run mocha",
@@ -37,14 +37,14 @@
     "ignore": []
   },
   "dependencies": {
-    "@feathersjs/authentication": "^4.5.16",
-    "@feathersjs/authentication-local": "^4.5.16",
-    "@feathersjs/authentication-oauth": "^4.5.16",
-    "@feathersjs/configuration": "^4.5.16",
-    "@feathersjs/errors": "^4.5.16",
-    "@feathersjs/express": "^4.5.16",
-    "@feathersjs/feathers": "^4.5.16",
-    "@feathersjs/socketio": "^4.5.15",
+    "@feathersjs/authentication": "^5.0.8",
+    "@feathersjs/authentication-local": "^5.0.8",
+    "@feathersjs/authentication-oauth": "^5.0.8",
+    "@feathersjs/configuration": "^5.0.8",
+    "@feathersjs/errors": "^5.0.8",
+    "@feathersjs/express": "^5.0.8",
+    "@feathersjs/feathers": "^5.0.8",
+    "@feathersjs/socketio": "^5.0.8",
     "@feathersjs/transport-commons": "^5.0.0",
     "@google-cloud/translate": "^7.2.2",
     "aws-sdk": "^2.1414.0",
@@ -67,7 +67,6 @@
     "nodemailer": "^6.9.3",
     "s3-blob-store": "^4.1.1",
     "sanitize-html": "^2.11.0",
-    "serve-favicon": "^2.5.0",
     "winston": "^3.10.0"
   },
   "devDependencies": {

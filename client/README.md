@@ -27,21 +27,21 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### The project expects a .env file with the following variables
 
-* VUE_APP_NAME - the title of the page
-* VUE_APP_SERVER_URL - the url of the server api
-* VUE_APP_S3_URL - the base url of the image bucket / server
-* VUE_APP_DEBUG - debug mode on (1) or off (0)
-* VUE_APP_MODE - sets the matching cookie sameSite attribute (production ? None : Lax)
-* VUE_APP_SERVER_DOMAIN - the domain of the api server
-* VUE_APP_SHOW_HELP_BUTTON - is a temporary fix for displaying (1) or not displaying (0) a special header row
+* VITE_NAME - the title of the page
+* VITE_SERVER_URL - the url of the server api
+* VITE_S3_URL - the base url of the image bucket / server
+* VITE_DEBUG - debug mode on (1) or off (0)
+* VITE_MODE - sets the matching cookie sameSite attribute (production ? None : Lax)
+* VITE_SERVER_DOMAIN - the domain of the api server
+* VITE_SHOW_HELP_BUTTON - is a temporary fix for displaying (1) or not displaying (0) a special header row
 
 Example:
 ```
-VUE_APP_NAME=A site title
-VUE_APP_SERVER_URL=http://localhost:8080/
-VUE_APP_S3_URL=https://your-bucket.s3.eu-central-1.amazonaws.com/
-VUE_APP_DEBUG=0
-VUE_APP_MODE=production
-VUE_APP_SERVER_DOMAIN=localhost
-VUE_APP_SHOW_HELP_BUTTON=1
+VITE_NAME=A site title
+VITE_SERVER_URL=http://localhost:8080/
+VITE_S3_URL=https://your-bucket.s3.eu-central-1.amazonaws.com/
+VITE_DEBUG=0
+VITE_MODE=production
+VITE_SERVER_DOMAIN=localhost
+VITE_SHOW_HELP_BUTTON=1
 ```

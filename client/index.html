@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title><%= process.env.VUE_APP_NAME %></title>
+    <title><%= VITE_NAME %></title>
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -15,8 +15,8 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
     <!-- Tags -->
-    <meta name="description" content="<%= process.env.VUE_APP_DESC %>"/>
-    <meta name="keywords" content="<%= process.env.VUE_APP_KEYS %>" />
+    <meta name="description" content="<%= VITE_DESC %>"/>
+    <meta name="keywords" content="<%= VITE_KEYS %>" />
     <meta name="author" content="ILEU e.V." />
     <meta name="copyright" content="ILEU e.V." />
     <meta name="robots" content="index, follow" />
@@ -25,6 +25,7 @@
     <noscript>
       <strong>Bitte aktivieren Sie JavaScript.</strong>
     </noscript>
+    <script type="module" src="/src/main.js"></script>
     <div id="app">
       <div style="font-family: sans-serif; margin: 50px; max-width: 600px;" id="ie"></div>
     </div>

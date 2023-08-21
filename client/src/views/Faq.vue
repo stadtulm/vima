@@ -106,11 +106,11 @@
           </div>
         </v-col>
       </v-row>
-      <template
+      <div
         v-for="(el, i) in computedFaq"
+        :key="i + '_title'"
       >
         <v-row
-          :key="i + '_title'"
         >
           <v-col
             class="title customGrey--text"
@@ -149,7 +149,7 @@
             </v-card
           ></v-col>
         </v-row>
-      </template>
+      </div>
     </v-card-text>
   </v-card>
 </template>

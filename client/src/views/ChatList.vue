@@ -44,13 +44,13 @@
             v-slot:[`item.pic`]="{ item }"
             v-if="computedOtherStatusContainers"
           >
-            <template
+            <div
               v-for="user in computedOtherStatusContainers.filter(obj => obj.reference === item._id).map(obj => getUser(obj.user))"
+              :key="user._id"
             >
               <v-avatar
                 class="ma-3"
                 color="customGreyLight"
-                :key="user._id"
               >
                 <v-img
                   v-if="user.pic"
@@ -66,7 +66,7 @@
                   fas fa-user
                 </v-icon>
               </v-avatar>
-            </template>
+            </div>
           </template>
           <template
             v-slot:[`item.userName`]="{ item }"
@@ -166,7 +166,7 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
+import { makeFindMixin } from '@feathersjs/vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {

@@ -266,7 +266,7 @@
                             ></LanguageSelect>
                           </template>
                           <template slot="default">
-                            <tiptap-vuetify
+                            <VuetifyTiptap
                               :editor-properties="{
                                 disableInputRules: true,
                                 disablePasteRules: true
@@ -278,7 +278,7 @@
                               :extensions="extensions"
                               :placeholder="$t('enterText')"
                             >
-                            </tiptap-vuetify>
+                            </VuetifyTiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -419,7 +419,6 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import TagProposalDialog from '@/components/TagProposalDialog.vue'
 import DatetimePicker from '@/components/DatetimePicker.vue'
 import LanguageSelect from '@/components/LanguageSelect.vue'
@@ -430,7 +429,6 @@ export default {
 
   components: {
     FileUpload,
-    TiptapVuetify,
     TagProposalDialog,
     DatetimePicker,
     LanguageSelect
@@ -451,17 +449,7 @@ export default {
     organisation: undefined,
     pics: [],
     isActive: true,
-    currentLanguage: 'en',
-    extensions: [
-      Bold,
-      Italic,
-      Underline,
-      Strike,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link
-    ]
+    currentLanguage: 'en'
   }),
 
   async mounted () {

@@ -90,7 +90,7 @@
                             ></LanguageSelect>
                           </template>
                           <template slot="default">
-                            <tiptap-vuetify
+                            <VuetifyTiptap
                               :editor-properties="{
                                 disableInputRules: true,
                                 disablePasteRules: true
@@ -102,7 +102,7 @@
                               :extensions="extensions"
                               :placeholder="$t('enterText')"
                             >
-                            </tiptap-vuetify>
+                            </VuetifyTiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -315,14 +315,12 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { TiptapVuetify, Bold, Italic, Strike, Underline, BulletList, OrderedList, ListItem, Link, Heading, Image } from 'tiptap-vuetify'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 
 export default {
   name: 'SiteEditor',
 
   components: {
-    TiptapVuetify,
     LanguageSelect
   },
 
@@ -336,23 +334,7 @@ export default {
     videoId: undefined,
     videoType: undefined,
     videos: [],
-    tmpVideos: [],
-    extensions: [
-      Bold,
-      Italic,
-      Underline,
-      Strike,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link,
-      [Heading, {
-        options: {
-          levels: [1, 2, 3]
-        }
-      }],
-      Image
-    ]
+    tmpVideos: []
   }),
 
   async mounted () {

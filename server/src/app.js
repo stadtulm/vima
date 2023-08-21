@@ -1,7 +1,6 @@
 const path = require('path')
 const dotenv = require('dotenv')
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
-const favicon = require('serve-favicon')
 const compress = require('compression')
 const helmet = require('helmet')
 const cors = require('cors')
@@ -30,7 +29,7 @@ app.i18n = new I18n()
 
 // Load app configuration
 app.configure(configuration())
-// Enable security, CORS, compression, favicon and body parsing
+// Enable security, CORS, compression and body parsing
 app.use(helmet({
   contentSecurityPolicy: false
 }))
@@ -49,7 +48,6 @@ app.use(cors(corsOptions))
 app.use(compress())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 // Host the public folder
 app.use('/', express.static(app.get('public')))
 
@@ -58,9 +56,11 @@ app.configure(express.rest())
 
 app.configure(
   socketio(
-    { maxHttpBufferSize: 1e8 },
+    {
+      maxHttpBufferSize: 1e8,
+      transports: ["websocket"]
+    },
     io => {
-      io.set('transports', ['websocket'])
       io.use((socket, next) => {
         socket.feathers.clientId = socket.client.id
         next()
@@ -97,17 +97,6 @@ app.use(express.notFound())
 app.use(express.errorHandler({ logger }))
 
 app.hooks(appHooks)
-
-const port = app.get('port')
-const server = app.listen(port)
-
-process.on('unhandledRejection', (reason, p) =>
-  logger.error('Unhandled Rejection at: Promise ', p, reason)
-)
-
-server.on('listening', () =>
-  logger.info('Server application started on http://' + app.get('host') + ':' + port + ', PID: ' + process.pid)
-)
 
 // Create settings if not existant
 initSettings()

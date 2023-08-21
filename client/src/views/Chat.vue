@@ -487,7 +487,7 @@
                     <v-col
                       class="grow pr-1"
                     >
-                      <tiptap-vuetify
+                      <VuetifyTiptap
                         :editor-properties="{
                           disableInputRules: true,
                           disablePasteRules: true
@@ -500,7 +500,7 @@
                         :placeholder="$t('writeNewMessage')"
                         id="messageInput"
                       >
-                      </tiptap-vuetify>
+                      </VuetifyTiptap>
                       <v-row class="mt-3">
                         <v-col
                           cols="12"
@@ -570,10 +570,9 @@
 
 <script>
 
-import { makeFindMixin } from 'feathers-vuex'
+import { makeFindMixin } from '@feathersjs/vuex'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChatReplies from '@/views/ChatReplies.vue'
-import { TiptapVuetify, Bold, Blockquote, BulletList, OrderedList, ListItem, Link } from 'tiptap-vuetify'
 import ViolationDialog from '@/components/ViolationDialog.vue'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
@@ -587,7 +586,6 @@ export default {
 
   components: {
     ChatReplies,
-    TiptapVuetify,
     ViolationDialog,
     TranslatableText,
     TranslatableTextInfo,
@@ -620,15 +618,7 @@ export default {
       root: null,
       rootMargin: '0px 0px 0px 0px',
       threshold: [0, 1]
-    },
-    extensions: [
-      Bold,
-      Blockquote,
-      ListItem,
-      BulletList,
-      OrderedList,
-      Link
-    ]
+    }
   }),
 
   async mounted () {
@@ -676,7 +666,7 @@ export default {
     }
   },
 
-  beforeDestroy () {
+  beforeUnmount () {
     window.removeEventListener('scroll', this.checkVisibleMessages)
     if (document.querySelector('#messageContainer')) {
       document.querySelector('#messageContainer').removeEventListener('scroll', this.checkVisibleMessages)
