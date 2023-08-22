@@ -44,13 +44,19 @@
             <v-row
               class="align-self-start"
             >
-              <v-img
-                :src="module.pic ? (s3 + module.pic.url) : ''"
-                height="200px"
-                :alt="$t(module.type + 'SectionPic')"
-                :tour-step-container="i === 0 ? '3' : null"
-                :title="module.pic && module.pic.credit ? '© ' + module.pic.credit : ''"
-              ></v-img>
+              <v-col
+                cols="12"
+                class="pa-0"
+              >
+                <v-img
+                  :src="module.pic ? (s3 + module.pic.url) : ''"
+                  height="200px"
+                  cover
+                  :alt="$t(module.type + 'SectionPic')"
+                  :tour-step-container="i === 0 ? '3' : null"
+                  :title="module.pic && module.pic.credit ? '© ' + module.pic.credit : ''"
+                ></v-img>
+              </v-col>
               <v-col
                 class="px-0 pb-0"
               >
@@ -83,7 +89,7 @@
               </v-col>
               <v-col
                 cols="12"
-                class="pb-4 px-4 body-1 black--text"
+                class="pb-4 px-4 text-body-1 black--text"
               >
                 <div
                   v-html="$sanitize(pickLanguage(module))"

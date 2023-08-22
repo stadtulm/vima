@@ -21,7 +21,7 @@
             </v-row>
             <v-row>
               <v-col
-                class="body-1"
+                class="text-body-1"
               >
                 <div
                   v-html="$t('resendVerifyBody')"
@@ -46,10 +46,9 @@
                 cols="12"
               >
                 <v-text-field
-                  dense
+                  density="compact"
+                  bg-color="white"
                   outlined
-                  background-color="#fff"
-                  color="customGrey"
                   :label="$t('email')"
                   v-model="email"
                   :error-messages="emailError"
@@ -90,7 +89,7 @@
               </v-row>
               <v-row>
                 <v-col
-                  class="body-1"
+                  class="text-body-1"
                 >
                   {{$t('resendVerifyThanks')}}
                 </v-col>

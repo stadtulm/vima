@@ -33,14 +33,14 @@
                       indeterminate
                     ></v-progress-linear>
                     <v-col
-                      class="text-center customGrey--text body-1 mt-4"
+                      class="text-center customGrey--text text-body-1 mt-4"
                     >
                       {{$t('loadingMessages')}}
                     </v-col>
                   </template>
                   <v-col
                     v-else
-                    class="text-center customGrey--text body-1 mt-3"
+                    class="text-center customGrey--text text-body-1 mt-3"
                   >
                     {{$t('noMessagesYet')}}
                     <v-icon
@@ -60,14 +60,14 @@
                       indeterminate
                     ></v-progress-linear>
                     <v-col
-                      class="text-center customGrey--text body-1 mt-4"
+                      class="text-center customGrey--text text-body-1 mt-4"
                     >
                       {{$t('loadingOlderAnswers')}}
                     </v-col>
                   </v-col>
                   <v-col
                     v-else-if="selectedChat && chatMessagesPaginationData[selectedChat._id].mostRecent.total <= computedMessages.length"
-                    class="text-center customGrey--text body-1 mt-3"
+                    class="text-center customGrey--text text-body-1 mt-3"
                   >
                     {{$t('noOlderAnswers')}}
                   </v-col>
@@ -107,7 +107,7 @@
                         dense
                       >
                         <v-col
-                          class="body-1"
+                          class="text-body-1"
                           cols="12"
                         >
                           <v-row>

@@ -80,16 +80,6 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         hashPassword('password'),
-        commonHooks.preventChanges(true,
-          'isVerified.' +
-          'verifyToken.' +
-          'verifyShortToken.' +
-          'verifyExpires.' +
-          'verifyChanges.' +
-          'resetToken.' +
-          'resetShortToken.' +
-          'resetExpires'
-        ),
         // Check for registered user
         commonHooks.iff(
           (context) => !context.params.user || context.params.user.role === 'anonymous',

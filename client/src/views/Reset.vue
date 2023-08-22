@@ -21,7 +21,7 @@
           >
             <v-row>
               <v-col
-                class="body-1"
+                class="text-body-1"
               >
                 {{$t('forgotPasswordBody')}}
               </v-col>
@@ -36,10 +36,8 @@
                   cols="12"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    background-color="#fff"
-                    color="customGrey"
+                    density="compact"
+                    bg-color="white"
                     v-model="email"
                     :error-messages="emailError"
                     :label="$t('email')"
@@ -74,7 +72,7 @@
           >
             <v-col
               cols="12"
-              class="body-1"
+              class="text-body-1"
             >
               <div
                 v-html="$t('resetPasswordThanks')"

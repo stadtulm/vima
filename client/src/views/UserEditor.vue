@@ -259,7 +259,7 @@
                   >
                     <v-row>
                       <v-col
-                        class="subtitle-1"
+                        class="text-subtitle-1"
                         cols="12"
                       >
                         {{$t('userPic')}} {{$t('optionalLabelExtension')}}
@@ -354,7 +354,7 @@
           </v-row>
           <v-row>
             <v-col
-              class="body-1 font-weight-bold"
+              class="text-body-1 font-weight-bold"
             >
               <div
                 v-html="$t('deleteAccountWarningBody')"
@@ -420,7 +420,7 @@
           </v-row>
           <v-row>
             <v-col
-              class="body-1 font-weight-bold"
+              class="text-body-1 font-weight-bold"
             >
               <div
                 v-html="$t('changePasswordBody')"

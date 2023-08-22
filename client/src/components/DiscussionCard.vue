@@ -158,7 +158,7 @@
                         v-slot:defaultLang="{ computedText, translateText }"
                       >
                         <v-col
-                          class="body-1 mx-4"
+                          class="text-body-1 mx-4"
                         >
                           <span
                             v-html="discussionProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
@@ -187,7 +187,7 @@
                               @translateText="(data) => { translateText(data) }"
                             ></TranslatableTextInfo>
                             <span
-                              class="body-1"
+                              class="text-body-1"
                               v-html="discussionProp ?
                                 truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
                                 $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))

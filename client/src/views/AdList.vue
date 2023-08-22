@@ -557,7 +557,7 @@
           </v-row>
           <v-row>
             <v-col
-              class="body-1 font-weight-bold"
+              class="text-body-1 font-weight-bold"
             >
               <div
                 v-html="$t('deleteWarningBody')"

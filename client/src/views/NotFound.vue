@@ -6,7 +6,7 @@
         flat
       >
         <v-card-text
-          class="body-1"
+          class="text-body-1"
         >
           <v-row>
             <v-col

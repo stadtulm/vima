@@ -42,7 +42,7 @@
                   v-if="computedOrganisation.description"
                 >
                   <v-col
-                    class="body-1"
+                    class="text-body-1"
                   >
                     <div
                       v-html="organisationProp ? truncatedDescription(newTab(computedOrganisation.description)) : $sanitize(newTab(computedOrganisation.description))"
@@ -55,7 +55,7 @@
                   v-if="computedOrganisation.website"
                 >
                   <v-col
-                    class="body-1"
+                    class="text-body-1"
                   >
                     {{$t('website')}}: <a :href="computedOrganisation.website">{{computedOrganisation.website}}</a>
                   </v-col>

@@ -13,7 +13,7 @@
       </v-row>
       <v-row>
         <v-col
-          class="body-1 customGrey--text"
+          class="text-body-1 customGrey--text"
         >
           <div
             v-html="$sanitize(newTab(computedSite.text.value))"

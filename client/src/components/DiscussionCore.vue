@@ -47,14 +47,14 @@
                 indeterminate
               ></v-progress-linear>
               <v-col
-                class="text-center customGrey--text body-1 mt-4"
+                class="text-center customGrey--text text-body-1 mt-4"
               >
                 {{$t('loadingPosts')}}
               </v-col>
             </template>
             <v-col
               v-else
-              class="text-center customGrey--text body-1 mt-3"
+              class="text-center customGrey--text text-body-1 mt-3"
             >
               {{$t('noPostsYet')}}
               <v-icon
@@ -135,7 +135,7 @@
                 <!-- Message and ellipsis-button -->
                 <v-row
                   dense
-                  class="align-center body-1"
+                  class="align-center text-body-1"
                 >
                   <v-col
                     cols="12"

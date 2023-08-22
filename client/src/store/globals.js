@@ -47,7 +47,7 @@ const state = {
     // Update user language
     const user = Store.getters['auth/user']
     if (user && user._id) {
-      Store.dispatch('users/patch', [
+      await Store.dispatch('users/patch', [
         user._id,
         {
           language: languageCode

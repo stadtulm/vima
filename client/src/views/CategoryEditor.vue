@@ -88,7 +88,7 @@
                 >
                   <v-row>
                     <v-col
-                      class="subtitle-1"
+                      class="text-subtitle-1"
                       cols="12"
                     >
                       {{$t('pic')}} {{$t('optionalLabelExtension')}}

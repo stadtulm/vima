@@ -8,30 +8,29 @@
     >
       <v-app-bar
         v-if="$route.name && $route.name !== 'Home'"
-        app
-        clipped-right
-        height="80px"
+        height="80"
+        class="pr-4"
       >
-        <template v-slot:img="{ props }">
+        <template v-slot:image>
           <v-img
-            v-bind="props"
             :gradient="'to right, ' + $settings.headerColor + ', ' + $settings.headerColor.substr(0, $settings.headerColor.length - 2) + '0.2)'"
           ></v-img>
         </template>
-        <img
+        <v-icon
+        ></v-icon>
+        <v-img
           v-if="$vuetify.display.smAndUp && $settings.headerLogo"
-          class="py-2 mr-3 pointer"
-          :height="$vuetify.display.mdAndUp ? '50px' : ($vuetify.display.smAndUp ? '30px': '30px')"
+          class="py-2 pointer"
+          height="50px"
           :src="$settings && $settings.headerLogo ? s3 + $settings.headerLogo.url : ''"
           @click="$router.push({ name: 'Home' })"
-          style="margin-bottom: -1px"
           alt="Vima Logo"
           :title="$settings && $settings.headerLogo ? $settings.headerLogo.credit : ''"
         />
         <span
           v-else
           @click="$router.push({ name: 'Home' })"
-          class="pointer subtitle-2"
+          class="pointer text-subtitle-2"
         >
           {{$settings.name}}
         </span>
@@ -44,39 +43,30 @@
         </v-toolbar-title>
 
         <v-spacer></v-spacer>
-
-        <v-sheet
-          class="pt-1"
-          :class="$vuetify.display.smAndUp ? 'pr-2' : ''"
-          color="transparent"
-        >
-
-          <LanguageSelect
-            :isMainSwitch="true"
-            :currentLanguage="$i18n.locale"
-            @setLanguage="setLanguage"
-          ></LanguageSelect>
-        </v-sheet>
-
+        <LanguageSelect
+          :isMainSwitch="true"
+          :currentLanguage="$i18n.locale"
+          @setLanguage="setLanguage"
+        ></LanguageSelect>
         <v-menu
           open-on-hover
           offset-y
         >
-          <template v-slot:activator="{ on, attrs }">
+          <template v-slot:activator="{ props }">
             <v-btn
+              variant="elevated"
               class="customGrey--text"
               :class="!$vuetify.display.smAndUp ? 'ml-2': 'ml-1'"
               :large="$vuetify.display.mdAndUp"
               :small="!$vuetify.display.smAndUp"
               :icon="!$vuetify.display.smAndUp"
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
               :title="$t('infoButton')"
               tour-step="7"
             >
               <v-icon
                 color="customGrey"
-                class="mr-1"
+                :class="$vuetify.display.smAndUp ? 'mr-1': ''"
                 :size="$vuetify.display.smAndUp ? 18: 24"
               >
                 fa fa-question-circle
@@ -159,15 +149,15 @@
           open-on-hover
           offset-y
         >
-          <template v-slot:activator="{ on, attrs }">
+          <template v-slot:activator="{ props }">
             <v-btn
+              variant="elevated"
               class="customGrey--text"
               :class="!$vuetify.display.smAndUp ? 'ml-4': 'ml-3'"
               :large="$vuetify.display.mdAndUp"
               :small="!$vuetify.display.smAndUp"
               :icon="!$vuetify.display.smAndUp"
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
               :title="$t('participate')"
             >
               <v-icon
@@ -305,7 +295,7 @@
         <v-btn
           v-if="!user"
           class="ml-3 elevation-1"
-          :text="$vuetify.display.smAndUp"
+          :text="$vuetify.display.smAndUp ? 'true': 'false'"
           :icon="!$vuetify.display.smAndUp"
           :large="$vuetify.display.mdAndUp"
           color="customGrey"
@@ -324,7 +314,7 @@
         <v-btn
           v-if="!user"
           class="ml-3 elevation-1"
-          :text="$vuetify.display.smAndUp"
+          :text="$vuetify.display.smAndUp ? 'true': 'false'"
           :icon="!$vuetify.display.smAndUp"
           :large="$vuetify.display.mdAndUp"
           color="customGrey"
@@ -342,10 +332,9 @@
         </v-btn>
         <v-badge
           color="customGrey"
-          :value="computedUnreadNotifications"
-          overlap
+          v-model="computedUnreadNotifications"
         >
-          <template slot="badge">
+          <template v-slot:badge>
             <v-icon
               size="12"
               :color="$settings.indicatorColor"
@@ -378,30 +367,34 @@
         </v-badge>
 
       </v-app-bar>
-
+      
       <v-navigation-drawer
         v-if="user"
         v-model="isNavigationDrawer"
-        right
+        location="right"
         app
         clipped
         fixed
-        width="290"
+        width="auto"
         temporary
         class="elevation-3"
         color="rgba(240, 244, 195, 1)"
         style="top: 80px; overflow-y: auto; max-height: calc(100% - 80px)"
       >
-        <v-img
-          height="100%"
-          slot="img"
-          :gradient="'to right, ' + $settings.headerColor.substr(0, $settings.headerColor.length - 2) + '0.2), rgba(255, 255, 255, 1)'"
-        ></v-img>
+        <template
+          v-slot:image
+        >
+          <v-img
+            height="100%"
+            :gradient="'to right, ' + $settings.headerColor.substr(0, $settings.headerColor.length - 2) + '0.2), rgba(255, 255, 255, 1)'"
+          ></v-img>
+        </template>
         <v-list
           class="pt-0"
+          v-model:opened="open"
         >
           <v-list-item
-            class="justify-center"
+            class="justify-center pa-0"
             v-if="user && user.pic && user.pic.url"
           >
             <v-badge
@@ -449,7 +442,7 @@
             :to="{ name: 'UserEditor', params: { user: user._id } }"
           >
             <v-list-item-title
-            class="font-weight-bold customGrey--text"
+              class="font-weight-bold customGrey--text"
             >
               {{$t('myProfileButton')}}
             </v-list-item-title>
@@ -471,79 +464,59 @@
               class="font-weight-bold customGrey--text"
             >
               {{$t('myChatsButton')}}
-            </v-list-item-title>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadChats > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
-                    <span
-                      class="customGrey--text font-weight-bold"
-                    >
-                      {{computedUnreadChats}}
-                    </span>
-                  </template>
-                  <v-list-item-avatar
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadChats > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
                     color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
                   >
-                    <v-icon
-                      size="18"
-                      color="white"
+                    <span
+                      class="mr-1"
                     >
+                        {{computedUnreadChats}}
+                    </span>
+                    <v-icon>
                       fas fa-comments
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newChats')}}
-            </v-tooltip>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadChatMessages > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
-                    <span
-                      class="customGrey--text font-weight-bold"
-                    >
-                      {{computedUnreadChatMessages}}
-                    </span>
-                  </template>
-                  <v-list-item-avatar
+                  </v-btn>
+                </template>
+                {{$t('newChats')}}
+              </v-tooltip>
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadChatMessages > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
                     color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
+                    rounded="xl"
+                    size="small"
                   >
-                    <v-icon
-                      size="18"
-                      color="white"
+                    <span
+                      class="mr-1"
                     >
-                      fas fa-envelope
-                    </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newChatMessages')}}
-            </v-tooltip>
+                        {{computedUnreadChatMessages}}
+                    </span>
+                      <v-icon
+                      >
+                        fas fa-envelope
+                      </v-icon>
+                  </v-btn>
+                </template>
+                {{$t('newChatMessages')}}
+              </v-tooltip>
+            </v-list-item-title>
           </v-list-item>
           <v-list-item
             v-if="moduleVisibilities.ads"
@@ -552,80 +525,60 @@
             <v-list-item-title
               class="font-weight-bold customGrey--text"
             >
-            {{$t('myAds')}}
-            </v-list-item-title>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadAdAccepts > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+              {{$t('myAds')}}
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadAdAccepts > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadAdAccepts}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-lock-open
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newAcceptedAds')}}
-            </v-tooltip>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadAdMessages > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+                  </v-btn>
+                </template>
+                {{$t('newAcceptedAds')}}
+              </v-tooltip>
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadAdMessages > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadAdMessages}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-user
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newAdApplicants')}}
-            </v-tooltip>
+                  </v-btn>
+                </template>
+                {{$t('newAdApplicants')}}
+              </v-tooltip>
+            </v-list-item-title>
           </v-list-item>
           <v-list-item
             v-if="moduleVisibilities.discussions"
@@ -635,115 +588,87 @@
               class="font-weight-bold customGrey--text"
             >
               {{$t('myDiscussions')}}
-            </v-list-item-title>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadDiscussionAccepts > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadDiscussionAccepts > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadDiscussionAccepts}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-lock-open
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newAcceptedDiscussions')}}
-            </v-tooltip>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadDiscussionModerator > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+                  </v-btn>
+                </template>
+                {{$t('newAcceptedDiscussions')}}
+              </v-tooltip>
+
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadDiscussionModerator > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadDiscussionModerator}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-users
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newModeratorRole')}}
-            </v-tooltip>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadDiscussionMessages > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+                  </v-btn>
+                </template>
+                {{$t('newModeratorRole')}}
+              </v-tooltip>
+
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadDiscussionMessages > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadDiscussionMessages}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-comment-dots
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newDiscussionMessages')}}
-            </v-tooltip>
+                  </v-btn>
+                </template>
+                {{$t('newDiscussionMessages')}}
+              </v-tooltip>
+            </v-list-item-title>
           </v-list-item>
           <v-list-item
             v-if="moduleVisibilities.groups"
@@ -753,259 +678,195 @@
               class="font-weight-bold customGrey--text"
             >
               {{$t('myInterestGroups')}}
-            </v-list-item-title>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadGroupAccepts > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadGroupAccepts > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadGroupAccepts}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-lock-open
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newAcceptedGroups')}}
-            </v-tooltip>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadGroupModerator > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+                  </v-btn>
+                </template>
+                {{$t('newAcceptedGroups')}}
+              </v-tooltip>
+
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadGroupModerator > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadGroupModerator}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-users
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newModeratorRole')}}
-            </v-tooltip>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadGroupApplications > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+                  </v-btn>
+                </template>
+                {{$t('newModeratorRole')}}
+              </v-tooltip>
+
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadGroupApplications > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadGroupApplications}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-users
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newGroupApplications')}}
-            </v-tooltip>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadGroupDiscussionsToAccept > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+                  </v-btn>
+                </template>
+                {{$t('newGroupApplications')}}
+              </v-tooltip>
+
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadGroupDiscussionsToAccept > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadGroupDiscussionsToAccept}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-comments
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newGroupDiscussionsToAccept')}}
-            </v-tooltip>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadGroupMemberships > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+                  </v-btn>
+                </template>
+                {{$t('newGroupDiscussionsToAccept')}}
+              </v-tooltip>
+
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadGroupMemberships > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadGroupMemberships}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-user-plus
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newGroupMemberships')}}
-            </v-tooltip>
-            <v-tooltip
-              left
-              color="customGrey"
-              v-if="computedUnreadGroupInvitations > 0"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-badge
-                  :color="$settings.indicatorColor"
-                  offset-x="15"
-                  offset-y="15"
-                >
-                  <template slot="badge">
+                  </v-btn>
+                </template>
+                {{$t('newGroupMemberships')}}
+              </v-tooltip>
+
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadGroupInvitations > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
                     <span
-                      class="customGrey--text font-weight-bold"
+                      class="mr-1"
                     >
                       {{computedUnreadGroupInvitations}}
                     </span>
-                  </template>
-                  <v-list-item-avatar
-                    color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
-                    size="34"
-                    class="ma-1"
-                  >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-door-open
                     </v-icon>
-                  </v-list-item-avatar>
-                </v-badge>
-              </template>
-              {{$t('newGroupInvitations')}}
-            </v-tooltip>
-            <v-tooltip
+                  </v-btn>
+                </template>
+                {{$t('newGroupInvitations')}}
+              </v-tooltip>
+
+              <v-tooltip
                 left
                 color="customGrey"
                 v-if="computedUnreadGroupViolationsToAccept > 0"
               >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-badge
-                    :color="$settings.indicatorColor"
-                    offset-x="15"
-                    offset-y="15"
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
                   >
-                    <template slot="badge">
-                      <span
-                        class="customGrey--text font-weight-bold"
-                      >
-                        {{computedUnreadGroupViolationsToAccept}}
-                      </span>
-                    </template>
-                    <v-list-item-avatar
-                      color="customGrey"
-                      v-bind="attrs"
-                      v-on="on"
-                      size="34"
-                      class="ma-1"
+                    <span
+                      class="mr-1"
                     >
-                      <v-icon
-                        size="18"
-                        color="white"
-                      >
-                        fas fa-ban
-                      </v-icon>
-                    </v-list-item-avatar>
-                  </v-badge>
+                      {{computedUnreadGroupViolationsToAccept}}
+                    </span>
+                    <v-icon>
+                      fas fa-ban
+                    </v-icon>
+                  </v-btn>
                 </template>
                 {{$t('newViolationsToAccept')}}
               </v-tooltip>
+            </v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item
@@ -1029,19 +890,13 @@
           >
             <v-divider></v-divider>
             <v-list-group
-              :value="false"
-              sub-group
+              value="partnerlist"
               color="customGrey"
             >
-              <template v-slot:activator>
-                <v-badge
-                  color="customGrey"
-                  :value="false"
-                  inline
-                >
+              <template v-slot:activator="{ props }">
                   <v-list-item
-                    class="pl-0"
                     color="customGrey"
+                    v-bind="props"
                   >
                     <v-list-item-title
                       class="font-weight-bold customGrey--text"
@@ -1050,7 +905,6 @@
                       {{$t('partnerFunctionsButton')}}
                     </v-list-item-title>
                   </v-list-item>
-                </v-badge>
               </template>
 
               <v-list-item
@@ -1098,36 +952,38 @@
           <v-divider></v-divider>
           <v-list-group
             v-if="user.role === 'admins'"
-            :value="false"
-            sub-group
+            value="adminlist"
             color="customGrey"
           >
-            <template v-slot:activator>
-              <v-badge
+            <template v-slot:activator="{ props }">
+              <v-list-item
                 color="customGrey"
-                :value="computedUnreadAdminNotifications"
-                inline
+                v-bind="props"
               >
-                <template slot="badge">
-                  <v-icon
-                    size="12"
-                    :color="$settings.indicatorColor"
-                  >
-                    fas fa-exclamation
-                  </v-icon>
-                </template>
-                <v-list-item
+                <v-list-item-title
+                  class="font-weight-bold customGrey--text"
                   color="customGrey"
-                  class="pl-0"
                 >
-                  <v-list-item-title
-                    class="font-weight-bold customGrey--text"
+                  {{$t('adminFunctionsButton')}}
+                  <v-btn
+                    v-if="computedUnreadAdminNotifications"
+                    variant="flat"
                     color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
                   >
-                    {{$t('adminFunctionsButton')}}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-badge>
+                    <span
+                      class="mr-1"
+                    >
+                      {{computedUnreadAdminNotifications}}
+                    </span>
+                    <v-icon>
+                      fas fa-exclamation
+                    </v-icon>
+                  </v-btn>
+                </v-list-item-title>
+              </v-list-item>
             </template>
 
             <v-list-item
@@ -1206,43 +1062,33 @@
                 class="font-weight-bold customGrey--text"
               >
                 {{$t('ads')}}
-              </v-list-item-title>
-              <v-tooltip
-                left
-                color="customGrey"
-                v-if="computedUnreadAdsToAccept > 0"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-badge
-                    :color="$settings.indicatorColor"
-                    offset-x="15"
-                    offset-y="15"
-                  >
-                    <template slot="badge">
+                <v-tooltip
+                  left
+                  color="customGrey"
+                  v-if="computedUnreadAdsToAccept > 0"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      variant="flat"
+                      color="customGrey"
+                      rounded="xl"
+                      size="small"
+                      class="mx-1"
+                    >
                       <span
-                        class="customGrey--text font-weight-bold"
+                        class="mr-1"
                       >
                         {{computedUnreadAdsToAccept}}
                       </span>
-                    </template>
-                    <v-list-item-avatar
-                      color="customGrey"
-                      v-bind="attrs"
-                      v-on="on"
-                      size="34"
-                      class="ma-1"
-                    >
-                      <v-icon
-                        size="18"
-                        color="white"
-                      >
+                      <v-icon>
                         fas fa-lock
                       </v-icon>
-                    </v-list-item-avatar>
-                  </v-badge>
-                </template>
-                {{$t('newAdsToAccept')}}
-              </v-tooltip>
+                    </v-btn>
+                  </template>
+                  {{$t('newAdsToAccept')}}
+                </v-tooltip>
+              </v-list-item-title>
             </v-list-item>
             <v-list-item
               v-if="moduleVisibilities.discussions"
@@ -1252,43 +1098,33 @@
                 class="font-weight-bold customGrey--text"
               >
                 {{$t('discussionForums')}}
-              </v-list-item-title>
-              <v-tooltip
-                left
-                color="customGrey"
-                v-if="computedUnreadDiscussionsToAccept > 0"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-badge
-                    :color="$settings.indicatorColor"
-                    offset-x="15"
-                    offset-y="15"
-                  >
-                    <template slot="badge">
+                <v-tooltip
+                  left
+                  color="customGrey"
+                  v-if="computedUnreadDiscussionsToAccept > 0"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      variant="flat"
+                      color="customGrey"
+                      rounded="xl"
+                      size="small"
+                      class="mx-1"
+                    >
                       <span
-                        class="customGrey--text font-weight-bold"
+                        class="mr-1"
                       >
                         {{computedUnreadDiscussionsToAccept}}
                       </span>
-                    </template>
-                    <v-list-item-avatar
-                      color="customGrey"
-                      v-bind="attrs"
-                      v-on="on"
-                      size="34"
-                      class="ma-1"
-                    >
-                      <v-icon
-                        size="18"
-                        color="white"
-                      >
+                      <v-icon>
                         fas fa-lock
                       </v-icon>
-                    </v-list-item-avatar>
-                  </v-badge>
-                </template>
-                {{$t('newDiscussionsToAccept')}}
-              </v-tooltip>
+                    </v-btn>
+                  </template>
+                  {{$t('newDiscussionsToAccept')}}
+                </v-tooltip>
+              </v-list-item-title>
             </v-list-item>
             <v-list-item
               v-if="moduleVisibilities.groups"
@@ -1298,43 +1134,33 @@
                 class="font-weight-bold customGrey--text"
               >
                 {{$t('interestGroups')}}
-              </v-list-item-title>
-              <v-tooltip
-                left
-                color="customGrey"
-                v-if="computedUnreadGroupsToAccept > 0"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-badge
-                    :color="$settings.indicatorColor"
-                    offset-x="15"
-                    offset-y="15"
-                  >
-                    <template slot="badge">
+                <v-tooltip
+                  left
+                  color="customGrey"
+                  v-if="computedUnreadGroupsToAccept > 0"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      variant="flat"
+                      color="customGrey"
+                      rounded="xl"
+                      size="small"
+                      class="mx-1"
+                    >
                       <span
-                        class="customGrey--text font-weight-bold"
+                        class="mr-1"
                       >
                         {{computedUnreadGroupsToAccept}}
                       </span>
-                    </template>
-                    <v-list-item-avatar
-                      color="customGrey"
-                      v-bind="attrs"
-                      v-on="on"
-                      size="34"
-                      class="ma-1"
-                    >
-                      <v-icon
-                        size="18"
-                        color="white"
-                      >
+                      <v-icon>
                         fas fa-lock
                       </v-icon>
-                    </v-list-item-avatar>
-                  </v-badge>
-                </template>
-                {{$t('newGroupsToAccept')}}
-              </v-tooltip>
+                    </v-btn>
+                  </template>
+                  {{$t('newGroupsToAccept')}}
+                </v-tooltip>
+              </v-list-item-title>
             </v-list-item>
             <v-list-item
               :to="{ name: 'CategoryListAdmin' }"
@@ -1352,43 +1178,33 @@
                 class="font-weight-bold customGrey--text"
               >
                 {{$t('tags')}}
-              </v-list-item-title>
-              <v-tooltip
-                left
-                color="customGrey"
-                v-if="computedUnreadTagsToAccept > 0"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-badge
-                    :color="$settings.indicatorColor"
-                    offset-x="15"
-                    offset-y="15"
-                  >
-                    <template slot="badge">
+                <v-tooltip
+                  left
+                  color="customGrey"
+                  v-if="computedUnreadTagsToAccept > 0"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      variant="flat"
+                      color="customGrey"
+                      rounded="xl"
+                      size="small"
+                      class="mx-1"
+                    >
                       <span
-                        class="customGrey--text font-weight-bold"
+                        class="mr-1"
                       >
                         {{computedUnreadTagsToAccept}}
                       </span>
-                    </template>
-                    <v-list-item-avatar
-                      color="customGrey"
-                      v-bind="attrs"
-                      v-on="on"
-                      size="34"
-                      class="ma-1"
-                    >
-                      <v-icon
-                        size="18"
-                        color="white"
-                      >
+                      <v-icon>
                         fas fa-hashtag
                       </v-icon>
-                    </v-list-item-avatar>
-                  </v-badge>
-                </template>
-                {{$t('newTagsToAccept')}}
-              </v-tooltip>
+                    </v-btn>
+                  </template>
+                  {{$t('newTagsToAccept')}}
+                </v-tooltip>
+              </v-list-item-title>
             </v-list-item>
 
             <v-list-item
@@ -1398,45 +1214,34 @@
                 class="font-weight-bold customGrey--text"
               >
                 {{$t('violations')}}
-              </v-list-item-title>
-              <v-tooltip
-                left
-                color="customGrey"
-                v-if="computedUnreadViolationsToAccept > 0"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-badge
-                    :color="$settings.indicatorColor"
-                    offset-x="15"
-                    offset-y="15"
-                  >
-                    <template slot="badge">
+                <v-tooltip
+                  left
+                  color="customGrey"
+                  v-if="computedUnreadViolationsToAccept > 0"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      variant="flat"
+                      color="customGrey"
+                      rounded="xl"
+                      size="small"
+                      class="mx-1"
+                    >
                       <span
-                        class="customGrey--text font-weight-bold"
+                        class="mr-1"
                       >
                         {{computedUnreadViolationsToAccept}}
                       </span>
-                    </template>
-                    <v-list-item-avatar
-                      color="customGrey"
-                      v-bind="attrs"
-                      v-on="on"
-                      size="34"
-                      class="ma-1"
-                    >
-                      <v-icon
-                        size="18"
-                        color="white"
-                      >
+                      <v-icon>
                         fas fa-ban
                       </v-icon>
-                    </v-list-item-avatar>
-                  </v-badge>
-                </template>
-                {{$t('newViolationsToAccept')}}
-              </v-tooltip>
+                    </v-btn>
+                  </template>
+                  {{$t('newViolationsToAccept')}}
+                </v-tooltip>
+              </v-list-item-title>
             </v-list-item>
-
             <v-list-item
               :to="{ name: 'SettingsEditor' }"
             >
@@ -1472,22 +1277,22 @@
             v-if="$route.name && $route.name !== 'Home'"
           >
             <v-alert
-              dismissible
-              class="mb-9 pl-0 pr-2"
+              closable
+              close-icon="fa fa-times fa-2x"
+              class="mb-9 px-0"
               color="transparent"
               v-if="computedShowHelpButton"
             >
               <v-row>
                 <v-col
-                  class="py-1 text-h5 font-weight-bold blue--text text-right"
+                  class="text-h5 font-weight-bold blue--text text-right"
                 >
                   <v-menu offset-y>
-                    <template v-slot:activator="{ on, attrs }">
+                    <template v-slot:activator="{ props }">
                       <v-btn
-                        v-bind="attrs"
-                        v-on="on"
+                        v-bind="props"
                         block
-                        outlined
+                        variant="outlined"
                       >
                         {{$t("help_title")}}
                         <v-icon
@@ -1502,55 +1307,52 @@
                       <v-list-item
                         :to="{ name: 'Group', params: { group: '622094013b8ba8046b7ab23c' } }"
                       >
-                        <v-list-item-content>
-                        <v-list-item-title>{{$t("help_vima_title")}}</v-list-item-title>
-                        <v-list-item-subtitle>{{$t("help_vima_subtitle")}}</v-list-item-subtitle>
-                        </v-list-item-content>
-                        <v-list-item-action>
+                          <v-list-item-title>{{$t("help_vima_title")}}</v-list-item-title>
+                          <v-list-item-subtitle>{{$t("help_vima_subtitle")}}</v-list-item-subtitle>
+                        <template v-slot:append>
                           <v-btn
                             icon
+                            variant="flat"
                           >
                             <v-icon>
                               fas fa-arrow-right
                             </v-icon>
                           </v-btn>
-                        </v-list-item-action>
+                        </template>
                       </v-list-item>
                       <v-list-item
                         target="_blank"
                         href="https://www.engagiert-in-ulm.de"
                       >
-                        <v-list-item-content>
                         <v-list-item-title>{{$t("help_eiu_title")}}</v-list-item-title>
                         <v-list-item-subtitle>{{$t("help_eiu_subtitle")}}</v-list-item-subtitle>
-                        </v-list-item-content>
-                        <v-list-item-action>
+                        <template v-slot:append>
                           <v-btn
                             icon
+                            variant="flat"
                           >
                             <v-icon>
                               fas fa-arrow-right
                             </v-icon>
                           </v-btn>
-                        </v-list-item-action>
+                        </template>
                       </v-list-item>
                       <v-list-item
                         target="_blank"
                         href="https://www.ulm.de/leben-in-ulm/ukraine"
                       >
-                        <v-list-item-content>
                         <v-list-item-title>{{$t("help_ulm_title")}}</v-list-item-title>
                         <v-list-item-subtitle>{{$t("help_ulm_subtitle")}}</v-list-item-subtitle>
-                        </v-list-item-content>
-                        <v-list-item-action>
+                        <template v-slot:append>
                           <v-btn
                             icon
+                            variant="flat"
                           >
                             <v-icon>
                               fas fa-arrow-right
                             </v-icon>
                           </v-btn>
-                        </v-list-item-action>
+                        </template>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -1565,23 +1367,19 @@
                 >
                   <v-row>
                     <v-col
-                      class="body-2 align-self-center"
-                      :class="$vuetify.display.smAndUp ? 'mb-3' : 'pb-0'"
-                      cols="12"
-                      sm="2"
-                    >
-                      {{$t('youAreHere')}}:
-                    </v-col>
-                    <v-col
                       class="align-self-center"
                     >
+                      <span
+                        class="d-inline-flex"
+                      >
+                        {{$t('youAreHere')}}:
+                      </span>
                       <v-chip
                         v-for="(item, i) in computedBreadcrumbItems"
                         :key="i"
                         :disabled="i >= computedBreadcrumbItems.length - 1"
                         @click="$router.push({ name: item.to, params: item.params })"
-                        color="rgba(255, 255, 255, 0.7)"
-                        class="mx-1 black--text mb-3"
+                        class="mx-1 black--text mb-1"
                         :tour-step="i === 0 ? 2 : -1"
                       >
                         <template
@@ -1639,44 +1437,49 @@
                           :key="i"
                           :to="helpItem.linkName ? { name: helpItem.linkName } : ''"
                         >
-                          <v-list-item-avatar
-                            color="customGreyLight"
-                            size="34"
+                          <template
+                            v-slot:prepend
                           >
-                            <v-icon
-                              color="white"
-                              size="18"
+                            <v-avatar
+                              color="customGreyLight"
+                              size="34"
                             >
-                              fa fa-question
-                            </v-icon>
-                          </v-list-item-avatar>
-                          <v-list-item-content>
+                              <v-icon
+                                color="white"
+                                size="18"
+                              >
+                                fa fa-question
+                              </v-icon>
+                            </v-avatar>
+                          </template>
+                          <v-list-item-title>
                             <div
-                              class="body-1 font-weight-bold"
+                              class="text-body-1 font-weight-bold"
                             >
                               {{$t(helpItem.title)}}
                             </div>
-                            <div class="body-2">
+                            <div class="text-body-2">
                               {{$t(helpItem.subTitle)}}
                             </div>
-                          </v-list-item-content>
-                          <v-list-item-action
+                          </v-list-item-title>
+                          <template
+                            v-slot:append
                             v-if="helpItem.linkName"
                           >
                             <v-btn
-                              fab
-                              small
+                              icon
+                              size="x-small"
                               color="customGrey"
                               :title="$t('viewButton')"
                             >
-                            <v-icon
-                              size="18"
-                              color="white"
-                            >
-                              fas fa-chevron-right
-                            </v-icon>
+                              <v-icon
+                                size="18"
+                                color="white"
+                              >
+                                fas fa-chevron-right
+                              </v-icon>
                             </v-btn>
-                          </v-list-item-action>
+                          </template>
                         </v-list-item>
                       </v-list>
                     </v-col>
@@ -1688,9 +1491,9 @@
         </v-container>
       </v-main>
       <v-footer
+        theme="dark"
         v-if="$route.name && $route.name !== 'Home'"
-        dark
-        color="secondary"
+        color="customGreyMedium"
       >
         <v-container
           fluid
@@ -1703,6 +1506,7 @@
             >
               <v-btn
                 class="mx-4"
+                color="customGrey"
                 icon
                 target="_blank"
                 v-if="$settings.socialMediaUrls.fb"
@@ -1714,6 +1518,7 @@
               </v-btn>
               <v-btn
                 class="mx-4"
+                color="customGrey"
                 icon
                 target="_blank"
                 v-if="$settings.socialMediaUrls.instagram"
@@ -1725,6 +1530,7 @@
               </v-btn>
               <v-btn
                 class="mx-4"
+                color="customGrey"
                 icon
                 target="_blank"
                 v-if="$settings.socialMediaUrls.twitter"
@@ -1793,7 +1599,7 @@
                   <v-col>
                     <v-btn
                       tour-step="4"
-                      text
+                      variant="text"
                       @click="showNewsletterDialog = true"
                     >
                       {{$t('receiveNewsletterLabel')}}
@@ -1805,7 +1611,7 @@
                 >
                   <v-col>
                     <v-btn
-                      text
+                      variant="text"
                       @click="showMatomoConsent = true"
                     >
                       {{$t('manageCookies')}}
@@ -1828,7 +1634,7 @@
                   <v-col>
                     <v-btn
                       :to="{ name: 'Imprint' }"
-                      text
+                      variant="text"
                     >
                       {{$t('imprint')}}
                     </v-btn>
@@ -1840,7 +1646,7 @@
                   <v-col>
                     <v-btn
                       :to="{ name: 'Privacy' }"
-                      text
+                      variant="text"
                     >
                       {{$t('privacy')}}
                     </v-btn>
@@ -1852,7 +1658,7 @@
                   <v-col>
                     <v-btn
                       :to="{ name: 'Contact' }"
-                      text
+                      variant="text"
                       tour-step="8"
                     >
                       {{$t('contact')}}
@@ -1870,11 +1676,11 @@
         multi-line
         :timeout="3000"
         @input="resetSnackbar()"
+        :close-on-content-click="true"
       >
-        <template v-slot:action="{ attrs }">
+        <template v-slot:actions>
           <v-btn
             icon
-            v-bind="attrs"
             @click="showSnackbar = false"
             :title="$t('closeButton')"
           >
@@ -1884,14 +1690,18 @@
         <v-list-item
           class="pl-0"
         >
-          <v-list-item-avatar>
-            <v-icon>
-              {{ snackbar.color === 'error' ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle' }}
-            </v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
+          <template v-slot:prepend>
+            <v-avatar>
+              <v-icon
+                color="white"
+              >
+                {{ snackbar.color === 'error' ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle' }}
+              </v-icon>
+            </v-avatar>
+          </template>
+          <v-list-item-title>
             {{snackbar.text}}
-          </v-list-item-content>
+          </v-list-item-title>
         </v-list-item>
       </v-snackbar>
       <!-- Newsletter dialog -->
@@ -1916,7 +1726,7 @@
           <v-card-text>
             <v-row>
               <v-col
-                class="body-1 white--text font-weight-bold"
+                class="text-body-1 white--text font-weight-bold"
               >
                 {{$t('tourDescription')}}
               </v-col>
@@ -1990,7 +1800,7 @@
       >
         <v-row>
           <v-col
-            class="body-1 black--text"
+            class="text-body-1 black--text"
           >
             <div
               v-html="$t('adBlockerHint')"
@@ -2015,7 +1825,7 @@
       >
         <v-row>
           <v-col
-            class="body-1 black--text"
+            class="text-body-1 black--text"
           >
             <div
               v-html="$t('askForConsent')"
@@ -2060,6 +1870,7 @@ export default {
   },
 
   data: () => ({
+    open: [],
     showMatomoConsent: false,
     tourOptions: {
       labels: {
@@ -2774,6 +2585,10 @@ export default {
 
 <style>
 
+  .customGrey-badge {
+    color: #455A64 !important;
+  }
+
   .v-chip--disabled {
     opacity: 0.8 !important;
   }
@@ -2782,6 +2597,7 @@ export default {
     width: 100%
   }
 
+/*
   .v-list-item__icon.v-list-group__header__prepend-icon * {
     color: #455A64 !important;
   }
@@ -2790,6 +2606,7 @@ export default {
     margin-left: 0px !important;
     padding-left: 0px !important;
   }
+  */
 
   p {
     margin-bottom: 10px !important;

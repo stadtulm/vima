@@ -87,7 +87,7 @@
           >
             <v-row>
               <v-col
-                class="body-1"
+                class="text-body-1"
                 cols="12"
               >
                 {{$t('renewThanks')}}

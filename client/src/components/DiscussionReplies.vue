@@ -73,7 +73,7 @@
                   <v-row>
                     <v-col
                       cols="12"
-                      class="subtitle-1 pb-0"
+                      class="text-subtitle-1 pb-0"
                       style="line-height:20px"
                       @click="!isOwnMessage(message) ? $router.push({name: 'User', params: { user: message.author}}) : ''"
                       :class="!isOwnMessage(message) ? 'pointer' : ''"
@@ -101,7 +101,7 @@
             class="mb-2"
           >
             <v-col
-              class="body-1"
+              class="text-body-1"
               cols="12"
             >
               <v-row>

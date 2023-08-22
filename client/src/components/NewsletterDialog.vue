@@ -23,7 +23,7 @@
           </v-row>
           <v-row>
             <v-col
-              class="body-1"
+              class="text-body-1"
             >
               {{$t('newsletterBody')}}
             </v-col>
@@ -32,7 +32,7 @@
             class="mb-4"
           >
             <v-col
-              class="body-1 font-weight-bold"
+              class="text-body-1 font-weight-bold"
             >
              {{$t('newsletterBodyUserInstructions')}}
             </v-col>

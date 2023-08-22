@@ -61,8 +61,11 @@ module.exports = function (app) {
     app.channel('anonymous').join(connection)
     app.channel(connection.clientId).join(connection)
     // Expose user language
-    // TODO
-    app.io.sockets.connected[connection.clientId].feathers.language = Cookie.parse(connection.headers.cookie).clientLanguage
+    const connectedSockets = await app.io.fetchSockets()
+    const foundSocket = connectedSockets.find(socket => socket.feathers.clientId === connection.clientId)
+    if (foundSocket) {
+      foundSocket.feathers.language = Cookie.parse(connection.headers.cookie).clientLanguage
+    }
   })
 
   app.on('disconnect', async (connection) => {

@@ -1,33 +1,47 @@
 // Styles
-import '@mdi/font/css/materialdesignicons.css'
+import '@fortawesome/fontawesome-free/css/all.css'
 import 'vuetify/styles'
-import de from 'vuetify/lib/locale/de'
 import colors from 'vuetify/lib/util/colors'
+import { aliases, fa } from 'vuetify/iconsets/fa'
+import { mdi } from 'vuetify/iconsets/mdi'
+
 
 // Vuetify
 import { createVuetify } from 'vuetify'
+import * as labs from "vuetify/labs/components";
+import { en, de, bg, ro } from 'vuetify/locale'
 
 export default createVuetify(
   {
+    components: {
+      ...labs
+    },
     theme: {
-      options: {
-        customProperties: true
-      },
+      defaultTheme: 'customTheme',
       themes: {
-        light: {
-          customGrey: colors.blueGrey.darken2,
-          customGreyMedium: colors.blueGrey.lighten2,
-          customGreyLight: colors.blueGrey.lighten4,
-          customGreyUltraLight: colors.blueGrey.lighten5
+        customTheme: {
+          dark: false,
+          colors: {
+            customGrey: colors.blueGrey.darken2,
+            customGreyMedium: colors.blueGrey.lighten2,
+            customGreyLight: colors.blueGrey.lighten4,
+            customGreyUltraLight: colors.blueGrey.lighten5
+          }
         }
       }
     },
-    lang: {
-      locales: { de },
-      current: 'de'
+    locale: {
+      locale: 'en',
+      fallback: 'en',
+      messages: { de, en, bg, ro },
     },
     icons: {
-      iconfont: 'fa'
+      defaultSet: 'fa',
+      aliases,
+      sets: {
+        fa,
+        mdi,
+      },
     }
   }
   // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides

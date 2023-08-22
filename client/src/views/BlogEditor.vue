@@ -180,7 +180,7 @@
                   >
                     <v-row>
                       <v-col
-                        class="subtitle-1"
+                        class="text-subtitle-1"
                         cols="12"
                       >
                         {{$t('text')}}
@@ -249,7 +249,7 @@
                     <v-row>
                       <v-col
                         cols="12"
-                        class="subtitle-1"
+                        class="text-subtitle-1"
                       >
                         {{$t('videos')}} {{$t('optionalLabelExtension')}}
                       </v-col>
@@ -428,7 +428,7 @@
                   >
                     <v-row>
                       <v-col
-                        class="subtitle-1"
+                        class="text-subtitle-1"
                         cols="12"
                       >
                         {{$t('pics')}} {{$t('optionalLabelExtension')}}

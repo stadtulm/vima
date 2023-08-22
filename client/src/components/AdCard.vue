@@ -168,7 +168,7 @@
               v-slot:defaultLang="{ computedText, translateText }"
             >
               <v-col
-                class="body-1 mx-4"
+                class="text-body-1 mx-4"
               >
                 <span
                   v-html="adProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"

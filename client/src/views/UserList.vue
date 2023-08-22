@@ -14,44 +14,32 @@
         <v-text-field
           v-model="search"
           :label="$t('filterByUserNameLabel')"
-          outlined
-          dense
+          density="compact"
           hide-details
-          color="black"
         ></v-text-field>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          v-if="initialView === false"
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
+          :items-length="total"
           :items="computedUsers"
           :loading="loading"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          :server-items-length="total"
-          must-sort
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          mobile-breakpoint="0"
-          :footer-props="{
-            itemsPerPageText: '',
-            itemsPerPageOptions
-          }"
+          :search="search"
+          class="pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          show-current-page=true
+          :showCurrentPage="true"
+          :must-sort="true"
         >
-          <template
-            v-slot:progress
-          >
-            <v-progress-linear
-              indeterminate
-              color="customGrey"
-            ></v-progress-linear>
-          </template>
           <template
             v-slot:[`item.pic.url`]="{ item }"
           >
@@ -60,10 +48,10 @@
               color="customGreyLight"
             >
               <v-img
-                v-if="item.pic"
-                :src="s3 + item.pic.url"
+                v-if="item.raw.pic"
+                :src="s3 + item.raw.pic.url"
                 :alt="$t('userPic')"
-                :title="item.pic.credit ? '© ' + item.pic.credit : ''"
+                :title="item.raw.pic.credit ? '© ' + item.raw.pic.credit : ''"
               >
               </v-img>
               <v-icon
@@ -80,23 +68,21 @@
             <v-list-item
               class="pa-0"
             >
-              <v-list-item-content>
-                <v-list-item-title
-                  class="font-weight-bold"
+              <v-list-item-title
+                class="font-weight-bold"
+              >
+                <span
+                  class="pointer"
+                  @click="$router.push({name: 'User', params: { user: item.raw._id}})"
                 >
-                  <span
-                    class="pointer"
-                    @click="$router.push({name: 'User', params: { user: item._id}})"
-                  >
-                    {{item.userName}}
-                  </span>
-                </v-list-item-title>
-                <v-list-item-subtitle
-                  v-if="item.description && item.description !== ''"
-                >
-                  {{item.description}}
-                </v-list-item-subtitle>
-              </v-list-item-content>
+                  {{item.raw.userName}}
+                </span>
+              </v-list-item-title>
+              <v-list-item-subtitle
+                v-if="item.raw.description"
+              >
+                {{item.raw.description}}
+              </v-list-item-subtitle>
             </v-list-item>
           </template>
           <template
@@ -116,7 +102,7 @@
               </v-icon>
             </v-btn>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
   </div>
@@ -133,124 +119,130 @@ export default {
   },
 
   data: () => ({
+    initialView: true,
     search: '',
-    page: 1,
     loading: true,
-    itemsPerPage: 25,
-    sortBy: ['userName'],
-    sortDesc: [true]
+    usersResponse: undefined,
+    queryObject: {
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'userName', order: 'desc' }]
+    }
   }),
 
   async mounted () {
     // Save current query
     this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    await this.adaptQuery()
   },
 
   methods: {
+    async updateParams(e) {
+        this.queryObject = {
+          ...e
+        }
+        // this.skip = e.itemsPerPage * (e.page - 1)
+        this.updateQueryPage(e.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+            this.updateQuerySortBy(e.sortBy[0].key)
+            this.updateQuerySortOrder(e.sortBy[0].order)
+        }
+        await this.loadUsers()
+    },
     ...mapActions('chats', {
       removeChat: 'remove'
     }),
     ...mapActions('users', {
       findUsers: 'find'
     }),
-    initQuery () {
-      // Process query
+    async adaptQuery () {
+      // Process existing query
+      const tmpQueryObject = {}
       if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
+        tmpQueryObject.itemsPerPage = parseInt(this.$route.query.i)
       }
       if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
+        tmpQueryObject.page = parseInt(this.$route.query.p)
       }
       if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
+        const tmpSortObject = {}
+        tmpSortObject.key = this.$route.query.s
+        if (this.$route.query.o) {
+          tmpSortObject.order = this.$route.query.o
         }
-        this.sortDesc = tmpDesc
+        tmpQueryObject.sortBy = [tmpSortObject]
       }
+      this.queryObject = tmpQueryObject
+      await this.loadUsers()
+      this.initialView = false
     },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
+    updateQueryPage (data) {
       if (parseInt(this.$route.query.p) !== data) {
         this.$router.replace(
           {
             query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
+              p: this.queryObject.page,
+              i: this.queryObject.itemsPerPage,
+              s: this.queryObject.sortBy[0].key,
+              o: this.queryObject.sortBy[0].order
             }
           }
         )
       }
     },
-    updateItemsPerPage (data) {
+    updateQueryItemsPerPage (data) {
       if (parseInt(this.$route.query.i) !== data) {
         this.$router.replace(
           {
             query: {
-              p: this.page,
+              p: this.queryObject.page,
               i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
+              s: this.queryObject.sortBy[0].key,
+              o: this.queryObject.sortBy[0].order
             }
           }
         )
       }
     },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
+    updateQuerySortBy (data) {
+      if (data && this.$route.query.s !== data) {
         this.$router.replace({
           query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            s: data,
+            o: this.queryObject.sortBy[0].order
           }
         })
       } else if (!data) {
         this.$router.replace({
           query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            o: this.queryObject.sortBy[0].order
           }
         })
       }
     },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
+    updateQuerySortOrder (data) {
+      if (data && this.$route.query.d !== data) {
         this.$router.replace({
           query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            s: this.queryObject.sortBy[0].key,
+            o: data
           }
         })
       }
+    },
+    async loadUsers () {
+      this.loading = true
+      this.usersResponse = await this.findUsers(
+        this.usersParams
+      )
+      this.loading = false
     }
   },
 
@@ -263,9 +255,24 @@ export default {
     }),
     headers () {
       return [
-        { text: '', value: 'pic.url', width: 50, sortable: false },
-        { text: this.$t('userName'), value: 'userName' },
-        { text: this.$t('goToChat'), value: 'goToChat', sortable: false, align: 'center' }
+        {
+          title: '',
+          key: 'pic.url',
+          align: 'start',
+          sortable: false
+        },
+        {
+          title: this.$t('userName'),
+          key: 'userName',
+          align: 'start',
+          sortable: true
+        },
+        {
+          title: this.$t('goToChat'),
+          key: 'goToChat',
+          align: 'center',
+          sortable: false
+        }
       ]
     },
     computedUsers () {
@@ -291,42 +298,31 @@ export default {
           isActive: true,
           userName: { $regex: this.search, $options: 'i' },
           $limit: this.computedLimit,
-          $skip: (this.page - 1) * this.computedSkip,
-          $sort: { [this.sortBy]: this.computedSortDesc }
+          $skip: (this.queryObject.page - 1) * this.computedSkip,
+          $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder}
         }
       }
     },
     computedLimit () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 1000000
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
     computedSkip () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 0
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
       } else {
         return -1
       }
-    }
-  },
-
-  asyncComputed: {
-    async usersResponse () {
-      this.loading = true
-      const users = await this.findUsers(
-        this.usersParams
-      )
-      this.loading = false
-      return users
     }
   }
 }

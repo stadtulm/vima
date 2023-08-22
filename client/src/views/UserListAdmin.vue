@@ -276,7 +276,7 @@
           </v-row>
           <v-row>
             <v-col
-              class="body-1"
+              class="text-body-1"
             >
               <div
                 v-html="$t('deactivateUserWarningBody')"

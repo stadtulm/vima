@@ -483,7 +483,7 @@
                           <v-card-text>
                             <v-row>
                               <v-col
-                                class="subtitle-2"
+                                class="text-subtitle-2"
                                 cols="12"
                               >
                                 {{$t('color')}}
@@ -517,7 +517,7 @@
                           <v-card-text>
                             <v-row>
                               <v-col
-                                class="subtitle-2"
+                                class="text-subtitle-2"
                                 cols="12"
                               >
                                 {{$t('bgColor')}}
@@ -551,7 +551,7 @@
                           <v-card-text>
                             <v-row>
                               <v-col
-                                class="subtitle-2"
+                                class="text-subtitle-2"
                                 cols="12"
                               >
                                 {{$t('gradientColor')}}
@@ -593,7 +593,7 @@
                     </v-row>
                     <v-row>
                       <v-col
-                        class="subtitle-1"
+                        class="text-subtitle-1"
                         cols="12"
                       >
                         {{$t('description')}}

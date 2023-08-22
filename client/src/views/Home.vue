@@ -1,18 +1,17 @@
 <template>
   <div>
     <v-dialog
-      :value="true"
+      v-model="showHome"
       fullscreen
       no-click-animation
       persistent
       :transition="false"
     >
-      <div style="position:fixed">
-      <v-row
-        no-gutters
-      >
+      <div style="position:absolute;width:100%">
+      <v-row>
         <v-col
-          v-for="(i, j) in computedPics"
+          class="pa-0"
+          v-for="(i, j) in pics"
           :key="j"
           cols="12"
           sm="6"
@@ -25,6 +24,7 @@
             :alt="$t('welcomePic')"
             title="© ILEU e.V."
             class="bordered fill-height"
+            cover
           >
           </v-img>
         </v-col>
@@ -58,7 +58,7 @@
                             @setLanguage="setLanguageAtHome"
                           ></LanguageSelect>
                           <span
-                            class="ml-4 pointer body-2"
+                            class="ml-4 pointer text-body-2"
                             @click="$router.push({name: 'Faq'})"
                           >
                             <v-icon
@@ -85,14 +85,14 @@
                           {{$t('welcomeHeadline')}}
                           <img
                             :src="$settings && $settings.headerLogo ? s3 + $settings.headerLogo.url : '/pics/vima.svg'"
-                            height="35px"
+                            height="35"
                             style="margin-bottom: -1px"
                             alt="Vima Logo"
                           />
                         </v-col>
                         <v-col
                           cols="12"
-                          class="title customGrey--text font-weight-bold"
+                          class="text-h6 customGrey--text font-weight-bold"
                         >
                           {{$t('sloganHome')}}
                         </v-col>
@@ -105,7 +105,7 @@
                     <v-col>
                       <v-row>
                         <v-col
-                          class="subtitle-1 customGrey--text"
+                          class="text-subtitle-1 customGrey--text"
                         >
                           <p>
                             <span
@@ -197,6 +197,7 @@
                             dark
                             text
                             class="mr-1 px-1"
+                            variant="text"
                             :to="{name: 'Signup'}"
                           >
                             {{$t('createProfileButton')}}
@@ -207,6 +208,7 @@
                             dark
                             text
                             class="px-1"
+                            variant="text"
                             :to="{name: 'Login'}"
                           >
                             {{$t('login')}}
@@ -239,9 +241,19 @@ export default {
   },
 
   data: () => ({
+    showHome: true,
+    picLength: 0,
+    pics: []
   }),
 
-  mounted () {
+  async mounted () {
+    this.picLength = await this.calculatePicLength()
+    const picSet = this.shuffle()
+    let tmpPics = []
+    for (let i = 0; i < this.picLength; ++i) {
+      tmpPics = tmpPics.concat(picSet)
+    }
+    this.pics = tmpPics
   },
 
   methods: {
@@ -259,7 +271,7 @@ export default {
     },
     shuffle () {
       const array = []
-      for (let i = 0; i < this.computedPicLength; ++i) {
+      for (let i = 0; i < this.picLength; ++i) {
         array[i] = i + 1
       }
       let tmp
@@ -279,6 +291,20 @@ export default {
       return arrayIn.every(function (element, index) {
         return !index || element !== arrayIn[index - 1]
       })
+    },
+    async calculatePicLength () {
+      let i = 0
+      while (i < 100) {
+        i++
+        try {
+          console.log(i)
+          await this.getImageSrc('/pics/people/' + i + '.jpeg')
+        } catch (e) {
+          break
+        }
+      }
+      console.log("UU", i)
+      return i - 1
     }
   },
 
@@ -290,33 +316,6 @@ export default {
     ]),
     computedShowHelpButton () {
       return showHelpButtons
-    },
-    computedPics () {
-      const picSet = this.shuffle()
-      let pics = []
-      for (let i = 0; i < this.computedPicLength; ++i) {
-        pics = pics.concat(picSet)
-      }
-      return pics
-    },
-    computedPicLength () {
-      return this.asyncComputedPicLength || 0
-    }
-  },
-  asyncComputed: {
-    async asyncComputedPicLength () {
-      let i = 0
-      await (async () => {
-        while (i < 100) {
-          i++
-          try {
-            await this.getImageSrc('/pics/people/' + i + '.jpeg')
-          } catch (e) {
-            break
-          }
-        }
-      })()
-      return i - 1
     }
   }
 }

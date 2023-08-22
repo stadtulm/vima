@@ -23,7 +23,7 @@
             >
               <v-row>
                 <v-col
-                  class="body-1"
+                  class="text-body-1"
                   cols="12"
                 >
                   <v-progress-circular
@@ -42,7 +42,7 @@
               <v-row>
                 <v-col
                   cols="12"
-                  class="body-1"
+                  class="text-body-1"
                 >
                   {{showError}}
                 </v-col>
@@ -55,7 +55,7 @@
             <v-row>
               <v-col
                 cols="12"
-                class="body-1"
+                class="text-body-1"
               >
                 {{$t('emailConfirmationThanks')}}
               </v-col>

@@ -105,7 +105,7 @@
         >
           <v-row dense>
             <v-col
-              class="font-weight-bold pb-0 pt-3 body-1 black--text"
+              class="font-weight-bold pb-0 pt-3 text-body-1 black--text"
               cols="12"
             >
               {{ message ? (isEditMessage ? $t('editAnswerTitle') : $t('writeNewAnswer')) : (isEditMessage ? $t('editPostTitle') : $t('writeNewPostTitle'))}}

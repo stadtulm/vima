@@ -221,7 +221,7 @@
                       v-slot:defaultLang="{ computedText, translateText }"
                     >
                       <v-col
-                        class="body-1 mx-4"
+                        class="text-body-1 mx-4"
                       >
                         <span
                           v-html="groupProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
@@ -250,7 +250,7 @@
                             @translateText="(data) => { translateText(data) }"
                           ></TranslatableTextInfo>
                           <span
-                            class="body-1"
+                            class="text-body-1"
                             v-html="groupProp ?
                               truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
                               $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
@@ -265,7 +265,7 @@
                   v-else-if="computedCategory.description && computedCategory.description.value"
                 >
                   <v-col
-                    class="body-1"
+                    class="text-body-1"
                   >
                     {{computedCategory.description.value}}
                   </v-col>
@@ -433,7 +433,7 @@
                           <v-col
                             v-if="cat.description && cat.description.value"
                             cols="12"
-                            class="pb-4 px-4 body-1 black--text"
+                            class="pb-4 px-4 text-body-1 black--text"
                           >
                             {{cat.description.value}}
                           </v-col>
@@ -591,7 +591,7 @@
             </v-row>
             <v-row>
               <v-col
-                class="body-1"
+                class="text-body-1"
               >
                 {{$t('applyMessageDialogBody')}}
               </v-col>
@@ -644,7 +644,7 @@
             </v-row>
             <v-row>
               <v-col
-                class="body-1"
+                class="text-body-1"
               >
                 {{$t('applyDialogBody')}}
               </v-col>

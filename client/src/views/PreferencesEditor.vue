@@ -43,7 +43,7 @@
                       <v-col
                         cols="12"
                         sm="6"
-                        class="body-1 align-self-center"
+                        class="text-body-1 align-self-center"
                       >
                           {{$t('publishAgeLabel')}}
                       </v-col>
@@ -68,7 +68,7 @@
                       <v-col
                         cols="12"
                         sm="6"
-                        class="body-1 align-self-center"
+                        class="text-body-1 align-self-center"
                       >
                           {{$t('publishGenderLabel')}}
                       </v-col>
@@ -93,7 +93,7 @@
                       <v-col
                         cols="12"
                         sm="6"
-                        class="body-1 align-self-center"
+                        class="text-body-1 align-self-center"
                       >
                           {{$t('publishResidenceLabel')}}
                       </v-col>
@@ -139,7 +139,7 @@
                       <v-col
                         cols="12"
                         sm="6"
-                        class="body-1 align-self-center"
+                        class="text-body-1 align-self-center"
                       >
                         {{$t('receiveNewsletterLabel')}}
                       </v-col>
@@ -181,7 +181,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newChatPreferencesLabel')}}
                     </v-col>
@@ -206,7 +206,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newChatMessagePreferencesLabel')}}
                     </v-col>
@@ -231,7 +231,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newDiscussionMessagePreferencesLabel')}}
                     </v-col>
@@ -256,7 +256,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newGroupInvitationPreferencesLabel')}}
                     </v-col>
@@ -279,7 +279,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newGroupMembershipPreferencesLabel')}}
                     </v-col>
@@ -304,7 +304,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newGroupModeratorRolePreferencesLabel')}}
                     </v-col>
@@ -329,7 +329,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newAcceptedAdPreferencesLabel')}}
                     </v-col>
@@ -354,7 +354,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newAcceptedGroupPreferencesLabel')}}
                     </v-col>
@@ -379,7 +379,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newAcceptedDiscussionPreferencesLabel')}}
                     </v-col>
@@ -404,7 +404,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newAdApplicantPreferencesLabel')}}
                     </v-col>
@@ -429,7 +429,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newGroupApplicantPreferencesLabel')}}
                     </v-col>
@@ -454,7 +454,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newGroupDiscussionToAcceptPreferencesLabel')}}
                     </v-col>
@@ -479,7 +479,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newAcceptedGroupDiscussionsPreferencesLabel')}}
                     </v-col>
@@ -504,7 +504,7 @@
                     <v-col
                       cols="12"
                       sm="6"
-                      class="body-1 align-self-center"
+                      class="text-body-1 align-self-center"
                     >
                       {{$t('newGroupViolationsToProvePreferencesLabel')}}
                     </v-col>
@@ -554,7 +554,7 @@
                         <v-col
                           cols="12"
                           sm="6"
-                          class="body-1 align-self-center"
+                          class="text-body-1 align-self-center"
                         >
                           {{$t('newAdToAcceptPreferencesLabel')}}
                         </v-col>
@@ -579,7 +579,7 @@
                         <v-col
                           cols="12"
                           sm="6"
-                          class="body-1 align-self-center"
+                          class="text-body-1 align-self-center"
                         >
                           {{$t('newDiscussionToAcceptPreferencesLabel')}}
                         </v-col>
@@ -604,7 +604,7 @@
                         <v-col
                           cols="12"
                           sm="6"
-                          class="body-1 align-self-center"
+                          class="text-body-1 align-self-center"
                         >
                           {{$t('newGroupToAcceptPreferencesLabel')}}
                         </v-col>
@@ -629,7 +629,7 @@
                         <v-col
                           cols="12"
                           sm="6"
-                          class="body-1 align-self-center"
+                          class="text-body-1 align-self-center"
                         >
                           {{$t('newTagsToAcceptPreferencesLabel')}}
                         </v-col>
@@ -654,7 +654,7 @@
                         <v-col
                           cols="12"
                           sm="6"
-                          class="body-1 align-self-center"
+                          class="text-body-1 align-self-center"
                         >
                           {{$t('newViolationsToProvePreferencesLabel')}}
                         </v-col>
@@ -679,7 +679,7 @@
                         <v-col
                           cols="12"
                           sm="6"
-                          class="body-1 align-self-center"
+                          class="text-body-1 align-self-center"
                         >
                           {{$t('newUserLabel')}}
                         </v-col>

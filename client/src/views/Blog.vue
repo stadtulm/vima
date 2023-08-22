@@ -178,7 +178,7 @@
     >
       <v-row>
         <v-col
-          class="text-center customGrey--text body-1"
+          class="text-center customGrey--text text-body-1"
         >
           <v-alert
             color="customGreyLight"

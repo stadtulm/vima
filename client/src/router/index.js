@@ -1336,8 +1336,8 @@ router.beforeEach(async (to, from, next) => {
     await init(to, from, next)
   } else {
     init(to, from, next)
-    next()
   }
+  next()
 })
 
 async function init (to, from, next) {
@@ -1380,22 +1380,22 @@ async function init (to, from, next) {
     // Set language
     const langCookie = Cookies.get('clientLanguage', { path: '/' })
     if (Store.getters['auth/user'] && Store.getters['auth/user'].language) {
-      i18n.locale = Store.getters['auth/user'].language
+      i18n.global.locale.value = Store.getters['auth/user'].language
     } else if (langCookie) {
-      i18n.locale = langCookie
+      i18n.global.locale.value = langCookie
     }
-    document.cookie = Cookies.set('clientLanguage', i18n.locale, {
+    document.cookie = Cookies.set('clientLanguage', i18n.global.locale.value, {
       domain: serverDomain,
       path: '/',
       sameSite: appMode === 'production' ? 'None' : 'Lax',
       secure: appMode === 'production',
       expires: 365 * 100
     })
-    Vuetify.locale.current = Store.getters.i18nMap[i18n.locale] || i18n.locale
+    Vuetify.locale.current.value = Store.getters.i18nMap[i18n.global.locale.value] || i18n.global.locale.value
     // Load stuff
     const settings = await Store.dispatch('settings/find')
     if (settings.length === 1) {
-      i18n.fallbackLocale = settings[0].defaultLanguage
+      i18n.global.fallbackLocale.value = settings[0].defaultLanguage
     } else {
       throw Error('No settings available on server')
     }
@@ -1411,8 +1411,6 @@ async function init (to, from, next) {
     }
     Store.commit('SET_FIRST_LOAD', false)
   }
-  // Go
-  next()
 }
 
 function checkModuleActiveOrDependency (to, from, next) {

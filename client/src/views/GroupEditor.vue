@@ -152,7 +152,7 @@
                   >
                     <v-row>
                       <v-col
-                        class="subtitle-1"
+                        class="text-subtitle-1"
                         cols="12"
                       >
                         {{$t('description')}}
@@ -236,7 +236,7 @@
                   >
                     <v-row>
                       <v-col
-                        class="subtitle-1"
+                        class="text-subtitle-1"
                         cols="12"
                       >
                         {{$t('pics')}} {{$t('optionalLabelExtension')}}
@@ -308,7 +308,7 @@
           </v-row>
           <v-row>
             <v-col
-              class="body-1 font-weight-bold"
+              class="text-body-1 font-weight-bold"
             >
               <div
                 v-html="$t('acceptGroupWarningBody', { type: $t('group') })"

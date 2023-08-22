@@ -156,7 +156,7 @@
                   >
                     <v-row>
                       <v-col
-                        class="subtitle-1"
+                        class="text-subtitle-1"
                         cols="12"
                       >
                         {{$t('description')}}
@@ -206,7 +206,7 @@
                   >
                     <v-row>
                       <v-col
-                        class="subtitle-1"
+                        class="text-subtitle-1"
                         cols="12"
                       >
                         {{$t('pics')}} {{$t('optionalLabelExtension')}}
@@ -279,7 +279,7 @@
           <v-row>
             <v-col
               v-if="group"
-              class="body-1 font-weight-bold"
+              class="text-body-1 font-weight-bold"
             >
               <div
                 v-html="$t('acceptWarningBodyInternal', { type: $t('discussion') })"
@@ -288,7 +288,7 @@
             </v-col>
             <v-col
               v-else
-              class="body-1 font-weight-bold"
+              class="text-body-1 font-weight-bold"
             >
               <div
                 v-html="$t('acceptWarningBody', { type: $t('discussion') })"

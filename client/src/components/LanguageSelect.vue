@@ -3,35 +3,36 @@
     offset-y
     open-on-hover
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template v-slot:activator="{ props }">
       <v-btn
-        :text="!isMainSwitch || !$vuetify.display.smAndUp"
+        :text="!isMainSwitch || !$vuetify.display.smAndUp ? 'true' : 'false'"
         :small="!isMainSwitch || !$vuetify.display.smAndUp"
         :large="isMainSwitch && $vuetify.display.mdAndUp"
-        v-bind="attrs"
-        v-on="on"
-        :class="!isMainSwitch ? 'px-0' : 'pl-0 pr-1 rounded-tl-xl rounded-r-xl'"
+        v-bind="props"
+        :icon="!$vuetify.display.smAndUp"
+        class="mr-2"
+        :class="!isMainSwitch ? 'px-0' : 'rounded-ts-xl rounded-e-xl'"
+        variant="elevated"
       >
         <country-flag
-          :class="!isMainSwitch ? 'my-0' : 'mb-1'"
+          :class="!isMainSwitch ? 'my-0' : ($vuetify.display.smAndUp ? 'mb-1': 'mb-0 ml-1 mr-1')"
           :country="currentLanguage === 'en' ? 'gb': currentLanguage"
         >
         </country-flag>
         <v-icon
           v-if="$vuetify.display.smAndUp"
           color="customGrey"
-          class="ml-1"
-          size="14"
+          class="ml-1 mb-1"
+          size="18"
+          icon="fa fa-chevron-down"
         >
-          fa fa-chevron-down
         </v-icon>
       </v-btn>
     </template>
 
-    <v-list>
-    <v-list-item-group
+    <v-list
       v-model="selectedLanguage"
-      @change="$emit('setLanguage', selectedLanguage)"
+      @click:select="selectLanguage"
     >
       <v-list-item
         dense
@@ -39,13 +40,13 @@
         :key="language"
         :value="language"
       >
-        <v-list-item-avatar>
+        <template v-slot:prepend>
           <country-flag
-            class="my-0"
+            class="my-0 mr-3"
             :country="language === 'en' ? 'gb' : language"
           >
           </country-flag>
-        </v-list-item-avatar>
+        </template>
         <v-list-item-title>
           {{$t(language)}}
           {{ language === computedDefaultLanguage ? '(' + $t('defaultLanguage') + ')' : ''}}
@@ -61,7 +62,6 @@
           </v-icon>
         </v-list-item-action>
       </v-list-item>
-    </v-list-item-group>
     </v-list>
   </v-menu>
 </template>
@@ -86,6 +86,9 @@ export default {
   },
 
   methods: {
+    selectLanguage (e) {
+      this.$emit('setLanguage', e.id)
+    }
   },
 
   computed: {

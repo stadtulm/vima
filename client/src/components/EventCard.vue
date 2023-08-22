@@ -21,13 +21,13 @@
               {{computedEvent.title.value}}
             </v-card-title>
             <v-card-subtitle
-              class="body-1 pb-0"
+              class="text-body-1 pb-0"
               v-if="computedEvent.location"
             >
               {{computedEvent.location}}
             </v-card-subtitle>
             <v-card-subtitle
-              class="body-1"
+              class="text-body-1"
             >
               {{computedDateTime}}
             </v-card-subtitle>
@@ -92,7 +92,7 @@
         <!-- Description -->
         <v-row>
           <v-col
-            class="body-1 mx-4"
+            class="text-body-1 mx-4"
           >
             <div
               v-html="eventProp ? truncatedDescription(newTab(computedEvent.text.value)) : $sanitize(newTab(computedEvent.text.value))"

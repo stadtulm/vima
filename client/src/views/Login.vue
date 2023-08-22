@@ -20,7 +20,7 @@
               v-if="$route.query.redirect"
             >
               <v-col
-                class="body-1"
+                class="text-body-1"
               >
                 {{$t('redirect403')}}
               </v-col>
@@ -32,10 +32,8 @@
                 cols="12"
               >
                 <v-text-field
-                  dense
-                  outlined
-                  background-color="#fff"
-                  color="customGrey"
+                  density="compact"
+                  bg-color="#fff"
                   :error-messages="loginError"
                   :label="$t('email')"
                   v-model="email"
@@ -51,13 +49,11 @@
                 cols="12"
               >
                 <v-text-field
-                  dense
-                  outlined
-                  background-color="#fff"
-                  color="customGrey"
+                  density="compact"
+                  bg-color="#fff"
                   :type="isPasswordVisible ? '' : 'password'"
-                  :append-icon="isPasswordVisible ? 'fas fa-eye': 'fas fa-eye-slash'"
-                  @click:append="isPasswordVisible = !isPasswordVisible"
+                  :append-inner-icon="isPasswordVisible ? 'fas fa-eye': 'fas fa-eye-slash'"
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   :label="$t('password')"
                   v-model="pw"
                   @keydown.enter="email && pw ? onLogin(): ''"

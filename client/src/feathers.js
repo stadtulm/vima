@@ -12,9 +12,10 @@ import { decode } from 'he'
 const appMode = import.meta.env.VITE_MODE
 const serverDomain = import.meta.env.VITE_SERVER_DOMAIN
 
-export function setupFeathers ({ storage }) {
-  if (!Cookies.get('clientLanguage', { path: '/' })) {
-    document.cookie = Cookies.set('clientLanguage', i18n.locale, {
+export function setupFeathers () {
+  const currentLangCookie = Cookies.get('clientLanguage', { path: '/' })
+  if (!currentLangCookie || currentLangCookie === 'undefined') {
+    document.cookie = Cookies.set('clientLanguage', i18n.global.locale.value, {
       domain: serverDomain,
       path: '/',
       sameSite: appMode === 'production' ? 'None' : 'Lax',

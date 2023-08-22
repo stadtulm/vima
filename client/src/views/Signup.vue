@@ -20,7 +20,7 @@
               v-if="!showThanks"
             >
               <v-col
-                class="body-1"
+                class="text-body-1"
               >
                 <div
                   v-html="$t('registerBody')"
@@ -41,10 +41,8 @@
                   sm="6"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    background-color="#fff"
-                    color="customGrey"
+                    bg-color="white"
+                    density="compact" 
                     :label="$t('firstName')"
                     v-model="firstName"
                     :rules="[rules.required]"
@@ -56,10 +54,8 @@
                   sm="6"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    color="customGrey"
-                    background-color="#fff"
+                    bg-color="white"
+                    density="compact" 
                     :label="$t('lastName')"
                     v-model="lastName"
                     :rules="[rules.required]"
@@ -75,10 +71,8 @@
                   sm="6"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    color="customGrey"
-                    background-color="#fff"
+                    bg-color="white"
+                    density="compact" 
                     v-model="userName"
                     :error-messages="userNameError"
                     :label="$t('userName')"
@@ -91,10 +85,8 @@
                   sm="6"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    color="customGrey"
-                    background-color="#fff"
+                    bg-color="white"
+                    density="compact" 
                     v-model="email"
                     :error-messages="emailError"
                     :label="$t('email')"
@@ -111,16 +103,14 @@
                   sm="6"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    color="customGrey"
-                    background-color="#fff"
+                    bg-color="white"
+                    density="compact" 
                     v-model="pw"
                     :label="$t('password')"
                     :rules="[rules.required, rules.password]"
                     :type="isPasswordVisible ? '' : 'password'"
-                    :append-icon="isPasswordVisible ? 'fas fa-eye': 'fas fa-eye-slash'"
-                    @click:append="isPasswordVisible = !isPasswordVisible"
+                    :append-inner-icon="isPasswordVisible ? 'fas fa-eye': 'fas fa-eye-slash'"
+                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   >
                   </v-text-field>
                 </v-col>
@@ -129,16 +119,14 @@
                   sm="6"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    color="customGrey"
-                    background-color="#fff"
+                    bg-color="white"
+                    density="compact" 
                     :rules="[pwRule]"
                     v-model="pwRepitition"
                     :label="$t('repeatPassword')"
                     :type="isPasswordVisible ? '' : 'password'"
-                    :append-icon="isPasswordVisible ? 'fas fa-eye': 'fas fa-eye-slash'"
-                    @click:append="isPasswordVisible = !isPasswordVisible"
+                    :append-inner-icon="isPasswordVisible ? 'fas fa-eye': 'fas fa-eye-slash'"
+                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   >
                   </v-text-field>
                 </v-col>
@@ -171,18 +159,19 @@
                     right
                     :max-width="400"
                   >
-                    <template v-slot:activator="{ on, attrs }">
+                    <template v-slot:activator="{ props }">
                       <span
                         class="pointer"
-                        v-bind="attrs"
+                        v-bind="props"
                         v-on="on"
                       >
                       <v-icon
-                        class="mr-1"
+                        color="customGrey"
+                        class="ma-2 mt-0"
                       >
                         fa fa-question-circle
                       </v-icon>
-                      <span class="body-1">
+                      <span class="text-body-1">
                       {{$t('audienceCheckBox')}}
                       </span>
                       </span>
@@ -220,7 +209,7 @@
               v-else
             >
               <v-col
-                class="body-1"
+                class="text-body-1"
               >
                 {{$t('signupThanks')}}
               </v-col>

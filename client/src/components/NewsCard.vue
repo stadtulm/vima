@@ -74,7 +74,7 @@
       <v-card-text>
       <v-row>
         <v-col
-          class="body-1"
+          class="text-body-1"
         >
           <div
             v-html="newsProp ? truncatedDescription(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, '')))"
