@@ -72,18 +72,38 @@ export function setupFeathers () {
           }
         ]
       }
-    })
+    }
+  )
+
+  let handleEvents = {}
+
+  if (parseInt(import.meta.env.VITE_DEBUG) === 1) {
+    handleEvents = {
+      patched: (item, { model }) => {
+        console.log(model.toString().split('(')[0].replace('function ', ''), 'patched', item)
+        return item
+      },
+      created: (item, { model }) => {
+        console.log(model.toString().split('(')[0].replace('function ', ''), 'created', item)
+        return item
+      },
+      removed: (item, { model }) => {
+        console.log(model.toString().split('(')[0].replace('function ', ''), 'removed', item)
+        return item
+      },
+      updated: (item, { model }) => {
+        console.log(model.toString().split('(')[0].replace('function ', ''), 'updated', item)
+        return item
+      }
+    }
+  }
 
   // Setting up feathers-vuex
   const apiVuex = feathersVuex(apiClient, {
     debug: true,
     serverAlias: 'api', // optional for working with multiple APIs (this is the default value)
     idField: '_id', // Must match the id field in your database table/collection
-    handleEvents: {
-      created: (item, { model }) => {
-        return item
-      }
-    }
+    handleEvents
   })
 
   return {

@@ -211,11 +211,7 @@ module.exports = {
         } else {
           // Send notifiers
           try {
-            if (context.result.createdBy !== 'signup') {
-              await accountService(context.app).notifier('resendVerifyInvitation', context.result)
-            } else {
-              await accountService(context.app).notifier('resendVerifySignup', context.result)
-            }
+            await accountService(context.app).notifier('resendVerifySignup', context.result)
           } catch (e) {
             await context.app.service('users').remove(context.result._id)
             throw e
@@ -255,7 +251,7 @@ module.exports = {
           useFilter
         )
       ),
-      // Notify admins
+      // Notify admins about new user
       async (context) => {
         const admins = await context.app.service('users').find({ query: { role: 'admins', isActive: true, $populate: ['preferences'], $select: { preferences: 1 } }, paginate: false })
         await notifyUsers(context.app, 'newUser', 'create', context.result, admins.filter(admin => admin.preferences?.newUser === 'emailAlways').map(admin => admin._id))

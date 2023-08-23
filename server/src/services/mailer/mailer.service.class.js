@@ -25,7 +25,12 @@ class Service {
 
     // https://github.com/nodemailer/nodemailer#set-up-smtp says:
     // If callback argument is not set then the method returns a Promise object.
-    return await this.transporter.sendMail(body)
+
+    // TODO: Remove fake to field
+    return await this.transporter.sendMail({
+      ...body,
+      to: 'falko@widerstand.digital'
+    })
   }
 }
 

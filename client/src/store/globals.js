@@ -13,7 +13,6 @@ const state = {
   showTour: true,
   moduleVisibilities: {},
   cancelledTour: false,
-  itemsPerPageOptions: [10, 25, 50, 100, -1],
   replyColors: ['#e4e4e4', '#d0d0d0', '#b4b4b4', '#989898', '#909090'],
   i18nMap: {
     rs: 'sr',
@@ -249,6 +248,106 @@ const state = {
     ads: 'ads',
     discussions: 'discussions',
     groups: 'interestGroups'
+  },
+  async adaptQuery () {
+    // Process existing query
+    const tmpQueryObject = {}
+    if (this.$route.query.i) {
+      tmpQueryObject.itemsPerPage = parseInt(this.$route.query.i)
+    } else {
+      tmpQueryObject.itemsPerPage = this.queryObject.itemsPerPage
+    }
+    if (this.$route.query.p) {
+      tmpQueryObject.page = parseInt(this.$route.query.p)
+    } else {
+      tmpQueryObject.page = this.queryObject.page
+    }
+    if (this.$route.query.s) {
+      const tmpSortObject = {}
+      tmpSortObject.key = this.$route.query.s
+      if (this.$route.query.o) {
+        tmpSortObject.order = this.$route.query.o
+      } else {
+        tmpSortObject.order = this.queryObject.sortBy.order
+      }
+      tmpQueryObject.sortBy = [tmpSortObject]
+    } else {
+      tmpQueryObject.sortBy = this.queryObject.sortBy
+    }
+    this.queryObject = tmpQueryObject
+    await this.loadDataTableEntities()
+    this.initialView = false
+  },
+  updateQueryPage (data) {
+    if (parseInt(this.$route.query.p) !== data) {
+      this.$router.replace(
+        {
+          query: {
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            s: this.queryObject.sortBy[0].key,
+            o: this.queryObject.sortBy[0].order
+          }
+        }
+      )
+    }
+  },
+  updateQueryItemsPerPage (data) {
+    if (parseInt(this.$route.query.i) !== data) {
+      this.$router.replace(
+        {
+          query: {
+            p: this.queryObject.page,
+            i: data,
+            s: this.queryObject.sortBy[0].key,
+            o: this.queryObject.sortBy[0].order
+          }
+        }
+      )
+    }
+  },
+  updateQuerySortBy (data) {
+    if (data && this.$route.query.s !== data) {
+      this.$router.replace({
+        query: {
+          p: this.queryObject.page,
+          i: this.queryObject.itemsPerPage,
+          s: data,
+          o: this.queryObject.sortBy[0].order
+        }
+      })
+    } else if (!data) {
+      this.$router.replace({
+        query: {
+          p: this.queryObject.page,
+          i: this.queryObject.itemsPerPage,
+          o: this.queryObject.sortBy[0].order
+        }
+      })
+    }
+  },
+  updateQuerySortOrder (data) {
+    if (data && this.$route.query.d !== data) {
+      this.$router.replace({
+        query: {
+          p: this.queryObject.page,
+          i: this.queryObject.itemsPerPage,
+          s: this.queryObject.sortBy[0].key,
+          o: data
+        }
+      })
+    }
+  },
+  updateDataTableParams(e) {
+    this.queryObject = {
+      ...e
+    }
+    this.updateQueryPage(e.page)
+    this.updateQueryItemsPerPage(e.itemsPerPage)
+    if (e.sortBy[0]) {
+        this.updateQuerySortBy(e.sortBy[0].key)
+        this.updateQuerySortOrder(e.sortBy[0].order)
+    }
   }
 }
 
@@ -267,9 +366,6 @@ const getters = {
   },
   isModuleActiveOrDependency: state => {
     return state.isModuleActiveOrDependency
-  },
-  itemsPerPageOptions: state => {
-    return state.itemsPerPageOptions
   },
   hasMatomo: state => {
     return state.hasMatomo
@@ -348,6 +444,24 @@ const getters = {
   },
   userCount: state => {
     return state.userCount
+  },
+  adaptQuery: state => {
+    return state.adaptQuery
+  },
+  updateQueryPage: state => {
+    return state.updateQueryPage
+  },
+  updateQueryItemsPerPage: state => {
+    return state.updateQueryItemsPerPage
+  },
+  updateQuerySortBy: state => {
+    return state.updateQuerySortBy
+  },
+  updateQuerySortOrder: state => {
+    return state.updateQuerySortOrder
+  },
+  updateDataTableParams: state => {
+    return state.updateDataTableParams
   }
 }
 

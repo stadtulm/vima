@@ -1,29 +1,31 @@
 <template>
   <div>
-    <v-row
-      class="mb-4"
-    >
-      <v-col
-        class="text-h5 font-weight-bold customGrey--text text-uppercase"
-      >
-        {{$t('adminView')}} {{$t('manageMembersButton')}}
-      </v-col>
-      <v-col
-        class="shrink align-self-center"
-      >
-        <v-btn
-          dark
-          :to="{ name: 'UserAdminEditor' }"
-          color="customGrey"
+    <v-row>
+      <v-col>
+        <v-toolbar
+          color="transparent"
         >
-          {{$t('newProfileButton')}}
-          <v-icon
-            class="ml-3"
-            size="18"
+          <v-toolbar-title
+            class="font-weight-bold customGrey--text text-uppercase"
           >
-            fas fa-plus
-          </v-icon>
-        </v-btn>
+            {{$t('adminView')}} {{$t('manageMembersButton')}}
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="elevated"
+            :to="{ name: 'UserAdminEditor' }"
+            dark
+            color="customGrey"
+          >
+            {{$t('newProfileButton')}}
+            <v-icon
+              class="ml-3"
+              size="18"
+            >
+              fas fa-plus
+            </v-icon>
+          </v-btn>
+        </v-toolbar>
       </v-col>
     </v-row>
     <v-row>
@@ -34,10 +36,8 @@
         <v-text-field
           v-model="search"
           :label="$t('filterByUserNamesLabel')"
-          outlined
-          dense
+          density="compact"
           hide-details
-          color="black"
         ></v-text-field>
       </v-col>
       <v-col
@@ -45,42 +45,34 @@
         sm="6"
       >
         <v-select
-          dense
-          outlined
-          color="customGrey"
-          item-color="customGrey"
-          :items="[{ textKey: 'all', value: false}].concat(roleItems)"
-          :item-text="(item) => $t(item.textKey)"
           v-model="selectedRole"
+          :items="[{ textKey: 'all', value: false}].concat(roleItems)"
+          :item-title="(roleItem) => $t(roleItem.textKey)"
           :label="$t('role')"
+          density="compact"
           hide-details
-          v-if="user.role === 'admins'"
         >
         </v-select>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          density="compact"
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
+          :items-length="total"
           :items="computedUsers"
           :loading="loading"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          :server-items-length="total"
-          must-sort
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          mobile-breakpoint="0"
-          :footer-props="{
-            itemsPerPageText: '',
-            itemsPerPageOptions
-          }"
+          class="customGreyUltraLight pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateDataTableParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          :show-current-page="true"
+          :must-sort="true"
         >
           <template
             v-slot:[`item.pic.url`]="{ item }"
@@ -90,10 +82,10 @@
               color="customGreyLight"
             >
               <v-img
-                v-if="item.pic.url"
-                :src="s3 + item.pic.url"
+                v-if="item.raw.pic"
+                :src="s3 + item.raw.pic.url"
                 :alt="$t('userPic')"
-                :title="item.pic.credit ? '© ' + item.pic.credit : ''"
+                :title="item.raw.pic?.credit ? '© ' + item.raw.pic.credit : ''"
               >
               </v-img>
               <v-icon
@@ -109,9 +101,9 @@
           >
            <span
               class="pointer font-weight-bold"
-              @click="$router.push({name: 'User', params: { user: item._id}})"
+              @click="$router.push({name: 'User', params: { user: item.raw._id}})"
             >
-              {{item.userName}}
+              {{item.raw.userName}}
             </span>
           </template>
           <template
@@ -120,36 +112,32 @@
             <v-tooltip
               top
             >
-              <template v-slot:activator="{ on, attrs }">
+              <template v-slot:activator="{ props }">
                 <v-avatar
                   size="20"
-                  v-bind="attrs"
-                  v-on="on"
-                  :color="item.status ? statusItems[item.status].color : ''"
+                  v-bind="props"
+                  :color="item.raw.status ? statusItems[item.raw.status].color : ''"
                 >
                 </v-avatar>
               </template>
-              <span>{{item.status ? $t(statusItems[item.status].textKey) : ''}}</span>
+              <span>{{item.raw.status ? $t(statusItems[item.raw.status].textKey) : ''}}</span>
             </v-tooltip>
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.createdAt).format('DD.MM.YYYY')}}
+            {{$moment(item.raw.createdAt).format('DD.MM.YYYY')}}
           </template>
           <template
             v-slot:[`item.role`]="{ item }"
           >
             <v-select
-              v-model="roles[item._id]"
+              v-model="roles[item.raw._id]"
               :items="roleItems"
-              :item-text="(item) => $t(item.textKey)"
+              :item-title="(item) => $t(item.textKey)"
               hide-details
-              flat
-              dense
-              item-color="customGrey"
-              color="customGrey"
-              @change="setProperty('role', item._id, roles[item._id])"
+              density="compact"
+              @update:modelValue="setProperty('role', item.raw._id, roles[item.raw._id])"
             >
             </v-select>
           </template>
@@ -158,10 +146,11 @@
           >
             <v-btn
               icon
-              @click="setProperty('isVerified', item._id, !item.isVerified)"
+              variant="flat"
+              @click="setProperty('isVerified', item.raw._id, !item.raw.isVerified)"
             >
               <template
-                slot="loader"
+                v-slot:loader
               >
                 <v-progress-circular
                   color="white"
@@ -170,7 +159,7 @@
                 ></v-progress-circular>
               </template>
               <v-icon>
-                {{item.isVerified ? 'far fa-check-square' : 'far fa-square'}}
+                {{item.raw.isVerified ? 'far fa-check-square' : 'far fa-square'}}
               </v-icon>
             </v-btn>
           </template>
@@ -179,10 +168,11 @@
           >
             <v-btn
               icon
-              @click="item.isActive ? (setActiveItem = item) : setProperty('isActive', item._id, !item.isActive)"
+              variant="flat"
+              @click="item.raw.isActive ? (setActiveItem = item.raw) : setProperty('isActive', item.raw._id, !item.raw.isActive)"
             >
               <template
-                slot="loader"
+                v-slot:loader
               >
                 <v-progress-circular
                   color="white"
@@ -191,7 +181,7 @@
                 ></v-progress-circular>
               </template>
               <v-icon>
-                {{item.isActive ? 'far fa-check-square' : 'far fa-square'}}
+                {{item.raw.isActive ? 'far fa-check-square' : 'far fa-square'}}
               </v-icon>
             </v-btn>
           </template>
@@ -199,16 +189,13 @@
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon
+              size="small"
               color="customGrey"
               class="my-3"
-              :to="{ name: 'UserAdminEditor', params: { user: item._id } }"
+              :to="{ name: 'UserAdminEditor', params: { user: item.raw._id } }"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
+              <v-icon>
                 fa fa-pen
               </v-icon>
             </v-btn>
@@ -217,16 +204,13 @@
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon
+              size="small"
               color="customGrey"
               class="my-4"
-              @click="deleteUser(item)"
+              @click="deleteUser(item.raw)"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
+              <v-icon>
                 fa fa-trash
               </v-icon>
             </v-btn>
@@ -235,26 +219,18 @@
             v-slot:[`item.resend`]="{ item }"
           >
             <template
-              v-if="!item.isVerified"
+              v-if="!item.raw.isVerified"
             >
               <v-btn
-                v-if="item.createdBy === 'invitation'"
-                small
-                @click="resendInvitation(item)"
+                size="small"
+                color="customGrey"
+                @click="resendVerify(item.raw)"
               >
-                {{$t('invitation')}}
-              </v-btn>
-              <v-btn
-                small
-                outlined
-                @click="resendVerify(item)"
-                v-else
-              >
-                {{$t('verificationLink')}}
+                {{item.raw.createdBy === 'invitation' ? $t('invitation') : $t('verificationLink')}}
               </v-btn>
             </template>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
     <v-dialog
@@ -285,21 +261,24 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions
-          class="pb-4"
+        <v-toolbar
+          class="mt-4 pa-3"
         >
           <v-btn
+            variant="elevated"
             @click="setActiveItem = undefined"
           >
             {{$t('cancelButton')}}
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
+            variant="elevated"
+            dark
             color="error"
             @click="setProperty('isActive', setActiveItem._id, !setActiveItem.isActive)"
           >
             <template
-              slot="loader"
+              v-slot:loader
             >
               <v-progress-circular
                 color="white"
@@ -309,7 +288,7 @@
             </template>
             {{$t('deactivateButton')}}
           </v-btn>
-        </v-card-actions>
+        </v-toolbar>
       </v-card>
     </v-dialog>
   </div>
@@ -319,27 +298,28 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
-  name: 'Users',
+  name: 'UserListAdmin',
 
   data: () => ({
+    initialView: true,
     selectedRole: false,
     search: '',
+    loading: true,
+    usersResponse: undefined,
     roles: {},
     setActiveItem: undefined,
     showSetActiveDialog: false,
     loaders: {},
-    page: 1,
-    loading: true,
-    itemsPerPage: 25,
-    sortBy: ['userName'],
-    sortDesc: [true],
-    triggerReload: 1
+    queryObject: {
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'userName', order: 'desc' }]
+    }
   }),
 
   async mounted () {
+    await this.adaptQuery()
     this.fillObjects()
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
   },
 
   methods: {
@@ -353,8 +333,26 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
+    async updateDataTableParams(e) {
+        this.queryObject = {
+          ...e
+        }
+        this.updateQueryPage(e.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+            this.updateQuerySortBy(e.sortBy[0].key)
+            this.updateQuerySortOrder(e.sortBy[0].order)
+        }
+    },
+    async loadDataTableEntities () {
+      this.loading = true
+      this.usersResponse = await this.findUsers(
+        this.usersParams
+      )
+      this.loading = false
+    },
     async deleteUser (user) {
-      this.$set(this.loaders, user._id + 'delete', true)
+      this.loaders[user._id + 'delete'] = true
       const map = {
         email: null,
         password: user._id,
@@ -385,27 +383,29 @@ export default {
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
       }
-      this.$set(this.loaders, user._id + 'delete', undefined)
-      await this.findUsers()
+      this.loaders[user._id + 'delete'] = undefined
+      this.usersResponse = undefined
+      await this.$nextTick()
+      // TODO: Remove deleted entity / Check channels
+      await this.loadDataTableEntities()
     },
     async setProperty (property, id, state) {
-      this.$set(this.loaders, id + 'property', true)
+      this.loaders[id + 'property'] = true
       const patchObject = {}
       patchObject[property] = state
       try {
         await this.patchUser([id, patchObject])
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-        this.$set(this.loaders, id + 'property', undefined)
+        this.loaders[id + 'property'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        this.$set(this.loaders, id + 'property', undefined)
+        this.loaders[id + 'property'] = undefined
         this.roles[id] = undefined
         this.$nextTick(() => {
           this.roles[id] = this.computedUsers.find(obj => obj._id === id).role
         })
       }
       this.setActiveItem = undefined
-      this.triggerReload = Date.now()
     },
     fillObjects () {
       const tmpRoles = {}
@@ -424,115 +424,6 @@ export default {
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
       }
-    },
-    async resendInvitation (user) {
-      try {
-        await this.createAuth({
-          action: 'resendVerifyInvitation',
-          value: user
-        })
-        this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
-      } catch (e) {
-        this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
-      }
-    },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
-        }
-        this.sortDesc = tmpDesc
-      }
-    },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
-      if (parseInt(this.$route.query.p) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateItemsPerPage (data) {
-      if (parseInt(this.$route.query.i) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
-          }
-        })
-      } else if (!data) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
-          }
-        })
-      }
-    },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
-          }
-        })
-      }
     }
   },
 
@@ -541,7 +432,11 @@ export default {
       'roleItems',
       'statusItems',
       's3',
-      'itemsPerPageOptions'
+      'adaptQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -550,44 +445,37 @@ export default {
       booths: 'list',
       getBooth: 'get'
     }),
-    computedUsers () {
-      if (this.usersResponse) {
-        return this.usersResponse.data
-      } else {
-        return []
-      }
-    },
-    total () {
-      if (this.usersResponse) {
-        return this.usersResponse.total
-      } else {
-        return 0
-      }
-    },
     headers () {
       return [
-        { text: this.$t('userName'), value: 'userName' },
-        { text: this.$t('firstName'), value: 'firstName' },
-        { text: this.$t('lastName'), value: 'lastName' },
-        { text: this.$t('email'), value: 'email' },
         {
-          text: this.$t('state'),
-          value: 'status',
+          title: '',
+          key: 'pic.url',
+          align: 'start',
+          sortable: false,
+          width: 50
+        },
+        { title: this.$t('userName'), key: 'userName' },
+        { title: this.$t('firstName'), key: 'firstName' },
+        { title: this.$t('lastName'), key: 'lastName' },
+        { title: this.$t('email'), key: 'email' },
+        {
+          title: this.$t('state'),
+          key: 'status',
           align: 'center'
         },
         {
-          text: this.$t('dt'),
-          value: 'createdAt',
+          title: this.$t('dt'),
+          key: 'createdAt',
           align: 'center'
         },
-        { text: this.$t('role'), width: 150, value: 'role' },
-        { text: this.$t('verified'), value: 'isVerified', align: 'center' },
-        { text: this.$t('active'), value: 'isActive', align: 'center' },
-        { text: this.$t('editButton'), value: 'edit', align: 'center', sortable: false },
-        { text: this.$t('deleteButton'), value: 'delete', align: 'center', sortable: false },
+        { title: this.$t('role'), width: 150, key: 'role' },
+        { title: this.$t('verified'), key: 'isVerified', align: 'center' },
+        { title: this.$t('active'), key: 'isActive', align: 'center' },
+        { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },
+        { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
         {
-          text: this.$t('service'),
-          value: 'resend',
+          title: this.$t('service'),
+          key: 'resend',
           sortable: false,
           align: 'center'
         }
@@ -596,8 +484,10 @@ export default {
     usersParams () {
       const query = {
         $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc }
+        $skip: this.computedSkip,
+        $sort: {
+          [this.queryObject.sortBy[0].key]: this.computedSortOrder
+        }
       }
       if (this.selectedRole) {
         query.role = this.selectedRole
@@ -615,22 +505,36 @@ export default {
         query
       }
     },
+    computedUsers () {
+      if (this.usersResponse) {
+        return this.usersResponse.data
+      } else {
+        return []
+      }
+    },
+    total () {
+      if (this.usersResponse) {
+        return this.usersResponse.total
+      } else {
+        return 0
+      }
+    },
     computedLimit () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 1000000
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
     computedSkip () {
-      if (this.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.itemsPerPage
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
       }
+      return (this.queryObject.page - 1) * tmpSkip
     },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
       } else {
         return -1
@@ -638,23 +542,10 @@ export default {
     }
   },
 
-  asyncComputed: {
-    async usersResponse () {
-      if (this.triggerReload) {
-        this.loading = true
-        const users = await this.findUsers(
-          this.usersParams
-        )
-        this.loading = false
-        return users
-      }
-    }
-  },
-
   watch: {
     computedUsers: {
       deep: true,
-      handler (newValue, oldValue) {
+      handler () {
         this.fillObjects()
       }
     },
@@ -663,6 +554,17 @@ export default {
         this.showSetActiveDialog = true
       } else {
         this.showSetActiveDialog = false
+      }
+    },
+    usersParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
       }
     }
   }

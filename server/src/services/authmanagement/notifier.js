@@ -37,6 +37,7 @@ module.exports = function (app) {
         { text: app.i18n.__({ phrase: 'admin', locale: user.language || app.customSettings.defaultLanguage }), value: 'admins' }
       ]
       switch (type) {
+        // TODO: Will not work anymore
         case 'verifySubscriberSignup':
           tokenLink = getLink('bestaetigen', user._id + '/' + user.verifyToken)
           email = {
@@ -50,53 +51,58 @@ module.exports = function (app) {
           emailResult = await sendEmail(email)
           return emailResult
 
+        // Verify reset request
         case 'resendVerifySignup':
-          tokenLink = getLink('verifizieren', user.verifyToken)
-          email = {
-            from: process.env.FROM_EMAIL,
-            to: user.email,
-            subject: app.i18n.__({ phrase: 'vimaProfileRequested', locale: user.language || app.customSettings.defaultLanguage }),
-            html: app.i18n.__({ phrase: 'hello', locale: user.language || app.customSettings.defaultLanguage }) +
-              ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
-              app.i18n.__({ phrase: 'confirmRegistration', locale: user.language || app.customSettings.defaultLanguage }) +
-              '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-              app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
-          }
-          emailResult = await sendEmail(email)
-          return emailResult
-
-        case 'resendVerifyInvitation':
-          if (user.firstName) {
-            greeting += ' ' + user.firstName
-          }
-          if (user.lastName) {
-            greeting += ' ' + user.lastName
-          }
-          try {
-            role = roles.find(obj => obj.value === user.role).text
-          } catch (e) {
-            app.logger.error(e)
+          if (user.createdBy === 'invitation') {
+            if (user.firstName) {
+              greeting += ' ' + user.firstName
+            }
+            if (user.lastName) {
+              greeting += ' ' + user.lastName
+            }
+            try {
+              role = roles.find(obj => obj.value === user.role).text
+            } catch (e) {
+              app.logger.error(e)
+              return
+            }
+            tokenLink = getLink('verifizieren', user.verifyToken)
+            email = {
+              from: process.env.FROM_EMAIL,
+              to: user.email,
+              subject: app.i18n.__({ phrase: 'getAccessToVima', locale: user.language || app.customSettings.defaultLanguage }),
+              html: app.i18n.__({ phrase: 'hello', locale: user.language || app.customSettings.defaultLanguage }) +
+                greeting + '!<br><br>' +
+                app.i18n.__({ phrase: 'confirmInvitation1', locale: user.language || app.customSettings.defaultLanguage }) +
+                role + app.i18n.__({ phrase: 'confirmInvitation2', locale: user.language || app.customSettings.defaultLanguage }) +
+                '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
+                app.i18n.__({ phrase: 'privacyAcceptanceNote', locale: user.language || app.customSettings.defaultLanguage }) +
+                '<a href="' + process.env.CLIENT_URL + '/datenschutz">' +
+                app.i18n.__({ phrase: 'privacy', locale: user.language || app.customSettings.defaultLanguage }) + '</a>. ' +
+                app.i18n.__({ phrase: 'contactForQuestion', locale: user.language || app.customSettings.defaultLanguage }) +
+                app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
+            }
+            emailResult = await sendEmail(email)
+            return emailResult
+          } else if (user.createdBy === 'signup') {
+            tokenLink = getLink('verifizieren', user.verifyToken)
+            email = {
+              from: process.env.FROM_EMAIL,
+              to: user.email,
+              subject: app.i18n.__({ phrase: 'vimaProfileRequested', locale: user.language || app.customSettings.defaultLanguage }),
+              html: app.i18n.__({ phrase: 'hello', locale: user.language || app.customSettings.defaultLanguage }) +
+                ' ' + user.firstName + ' ' + user.lastName + '!<br><br>' +
+                app.i18n.__({ phrase: 'confirmRegistration', locale: user.language || app.customSettings.defaultLanguage }) +
+                '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
+                app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
+            }
+            emailResult = await sendEmail(email)
+            return emailResult
+          } else {
             return
           }
-          tokenLink = getLink('verifizieren', user.verifyToken)
-          email = {
-            from: process.env.FROM_EMAIL,
-            to: user.email,
-            subject: app.i18n.__({ phrase: 'getAccessToVima', locale: user.language || app.customSettings.defaultLanguage }),
-            html: app.i18n.__({ phrase: 'hello', locale: user.language || app.customSettings.defaultLanguage }) +
-              greeting + '!<br><br>' +
-              app.i18n.__({ phrase: 'confirmInvitation1', locale: user.language || app.customSettings.defaultLanguage }) +
-              role + app.i18n.__({ phrase: 'confirmInvitation2', locale: user.language || app.customSettings.defaultLanguage }) +
-              '<a href="' + tokenLink + '">' + tokenLink + '</a><br><br>' +
-              app.i18n.__({ phrase: 'privacyAcceptanceNote', locale: user.language || app.customSettings.defaultLanguage }) +
-              '<a href="' + process.env.CLIENT_URL + '/datenschutz">' +
-              app.i18n.__({ phrase: 'privacy', locale: user.language || app.customSettings.defaultLanguage }) + '</a>. ' +
-              app.i18n.__({ phrase: 'contactForQuestion', locale: user.language || app.customSettings.defaultLanguage }) +
-              app.i18n.__({ phrase: 'bestRegards', locale: user.language || app.customSettings.defaultLanguage })
-          }
-          emailResult = await sendEmail(email)
-          return emailResult
 
+        // Signup success confirmation
         case 'verifySignup':
           if (user.createdBy === 'signup') {
             email = {
@@ -114,6 +120,7 @@ module.exports = function (app) {
             return
           }
 
+        // PW reset request
         case 'sendResetPwd':
           if (notifierOptions?.isInvitationProcess) {
             app['_tmpuser_' + user._id] = user.resetToken
@@ -134,6 +141,7 @@ module.exports = function (app) {
             return emailResult
           }
 
+        // PW reset success confirmation
         case 'resetPwd':
           if (notifierOptions.isInvitationProcess) {
             return

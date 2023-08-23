@@ -274,7 +274,7 @@
                 </v-col>
               </v-row>
               <v-toolbar
-                class="pa-0"
+                class="mt-4"
                 color="transparent"
               >
                 <v-btn
@@ -381,9 +381,7 @@
         color="customGreyBg"
         tile
       >
-        <v-card-text
-          class="pa-8"
-        >
+        <v-card-text>
           <v-row>
             <v-col
               class="text-h5 font-weight-bold"
@@ -415,25 +413,26 @@
               </v-text-field>
             </v-col>
           </v-row>
-          <v-card-actions
-            class="mt-6 pa-0"
-          >
-            <v-btn
-              @click="showPasswordDialog = false"
-            >
-              {{$t('cancelButton')}}
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn
-              :disabled="!oldPw"
-              @click="saveUser()"
-              :dark="oldPw ? true : false"
-              color="customGrey"
-            >
-              {{$t('saveDataButton')}}
-            </v-btn>
-          </v-card-actions>
         </v-card-text>
+        <v-toolbar
+          class="mt-2 pa-3"
+        >
+          <v-btn
+            variant="elevated"
+            @click="showPasswordDialog = false"
+          >
+            {{$t('cancelButton')}}
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="elevated"
+            :disabled="!oldPw"
+            @click="saveUser()"
+            color="customGrey"
+          >
+            {{$t('saveDataButton')}}
+          </v-btn>
+        </v-toolbar>
       </v-card>
     </v-dialog>
   </div>
