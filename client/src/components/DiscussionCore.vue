@@ -484,7 +484,7 @@ export default {
     })
   },
 
-  beforeDestroy () {
+  beforeUnmout () {
     window.removeEventListener('scroll', this.checkVisibleMessages)
     if (document.querySelector('#messageContainer')) {
       document.querySelector('#messageContainer').removeEventListener('scroll', this.checkVisibleMessages)

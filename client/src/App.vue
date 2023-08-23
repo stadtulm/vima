@@ -2669,5 +2669,10 @@ export default {
   .no-pointer {
     cursor: default !important;
   }
+  /* TODO */
+  .mention {
+    font-weight: bold;
+    color: green;
+  }
 
 </style>

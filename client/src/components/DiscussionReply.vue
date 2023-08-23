@@ -128,6 +128,8 @@
               class="text-left"
               cols="11"
             >
+              <!-- TODO: This belongs into tiptap - is from mention stash -->
+              <!-- :mention="slug" ref="main_test" -->
               <VuetifyTiptap
                 :editor-properties="{
                   disableInputRules: true,
@@ -140,8 +142,32 @@
                 :extensions="extensions"
                 :placeholder="$t('writeNewAnswer') + ' ...'"
                 :id="'messageInput_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
+                :ref="'messageInput_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
               >
               </VuetifyTiptap>
+              <v-col
+                :id="'mentionAchor_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
+              ></v-col  >
+              <v-menu
+                v-model="showSuggestions"
+                :attach="'#mentionAchor_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
+                bottom
+                :position-x="18"
+                :position-y="168"
+                :max-height="200"
+              >
+                <v-list>
+                  <v-list-item
+                    v-for="(item, i) in computedUsers"
+                    :key="i"
+                    @click="mention(item, $event)"
+                    tabindex="1"
+                  >
+                    <v-list-item-title>{{ item.userName }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+>>>>>>> Stashed changes
               <v-row class="mt-3">
                 <v-col
                   cols="12"
@@ -160,7 +186,8 @@
                     bgColor="transparent"
                     :scaleToFit="[1080, 1080]"
                     :resizeQuality="50"
-                  ></FileUpload>
+                  >
+                  </FileUpload>
                 </v-col>
               </v-row>
             </v-col>
@@ -177,8 +204,9 @@
                 @click="sendMessage()"
                 :color="$settings.modules.discussions.color"
               >
+                <!-- TODO: Test -->
                 <template
-                  slot="loader"
+                  v-slot:loader
                 >
                   <v-progress-circular
                     color="white"
@@ -223,22 +251,35 @@ export default {
   },
 
   data: () => ({
+    slug: undefined,
+    skipUsers: 0,
+    users: [],
+    showSuggestions: false,
     pics: [],
     isValid: false,
     isSending: false,
     messageText: undefined
   }),
 
-  async mounted () {
-  },
-
   methods: {
+    async mention (e, a) {
+      if (a.type === 'click') {
+        this.slug = this.messageText.replaceAll('@' + this.search, '<span data-type="mention" data-label="' + e.userName + '" data-id="' + e._id + '"></span>&nbsp;')
+        await this.$nextTick()
+        this.messageText = this.slug
+        // TODO: Set focus
+        // document.querySelector('#messageInput_main').childNodes[2].childNodes[3].childNodes[0].focus()
+      }
+    },
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
     ...mapActions('discussion-messages', {
       createMessage: 'create',
       patchMessage: 'patch'
+    }),
+    ...mapActions('users', {
+      findUsers: 'find'
     }),
     async patchFileRemove (file) {
       this.isLoading = true
@@ -332,6 +373,40 @@ export default {
   },
 
   computed: {
+    search () {
+      if (!this.showSuggestions) return
+      if (!this.messageText) return
+      const pattern = /\B@[a-z0-9_-]+/gi
+      // TODO: Solve problem which @ to check ...
+      // Maybe compare old vs new?
+      const grep = this.messageText.match(pattern)
+      if (grep && grep.length > 0) {
+        return grep[0].slice(1)
+      } else {
+        return ''
+      }
+    },
+    usersParams () {
+      return {
+        query: {
+          _id: { $ne: this.user._id },
+          role: { $ne: 'deleted' },
+          isVerified: true,
+          isActive: true,
+          $limit: 480,
+          $skip: this.skipUsers,
+          $sort: { userName: 1 }
+        }
+      }
+    },
+    computedUsers () {
+      if (!this.users) return
+      let tmpUsers = JSON.parse(JSON.stringify(this.users))
+      if (this.search) {
+        tmpUsers = this.users.filter(user => user.userName.includes(this.search))
+      }
+      return tmpUsers.map(user => ({ _id: user._id, userName: user.userName }))
+    }
   },
 
   watch: {
@@ -354,10 +429,32 @@ export default {
         }
       }
     },
-    messageText () {
+    async messageText () {
       if (this.messageText) {
         this.messageText = this.$sanitize(this.messageText)
         this.messageText = this.messageText.replaceAll('<blockquote>', '<blockquote class="blockquote">')
+        if (this.messageText.includes('@')) {
+          this.showSuggestions = true
+        }
+      }
+    },
+    async showSuggestions () {
+      if (this.showSuggestions) {
+        console.log('call to server for users')
+        const result = await this.findUsers(
+          this.usersParams
+        )
+        let tmpUsers = result.data
+        let reloads = 0
+        while (tmpUsers.length < result.total) {
+          reloads += 1
+          this.skipUsers = reloads * result.limit
+          tmpUsers = tmpUsers.concat((await this.findUsers(
+            this.usersParams
+          )).data)
+        }
+        this.users = tmpUsers
+        this.skipUsers = 0
       }
     }
   }
