@@ -52,12 +52,14 @@
                         sm="6"
                       >
                         <v-select
-                          color="customGrey"
-                          item-color="customGrey"
+                          density="compact"
                           :label="$t('visibility')"
-                          single
                           class="min-width"
-                          :items="[{ text: $t('administrators'), value: 'none' }, { text: $t('registratedUsers'), value: 'users' } /*, { text: $t('publicly'), value: 'all' }*/]"
+                          :items="[
+                            { title: $t('administrators'), value: 'none' },
+                            { title: $t('registratedUsers'), value: 'users' }
+                            /*, { text: $t('publicly'), value: 'all' }*/
+                          ]"
                           v-model="publishAge"
                         ></v-select>
                       </v-col>
@@ -77,12 +79,14 @@
                         sm="6"
                       >
                         <v-select
-                          color="customGrey"
-                          item-color="customGrey"
+                          density="compact"
                           :label="$t('visibility')"
-                          single
                           class="min-width"
-                          :items="[{ text: $t('administrators'), value: 'none' }, { text: $t('registratedUsers'), value: 'users' } /*, { text: $t('publicly'), value: 'all' }*/]"
+                          :items="[
+                            { title: $t('administrators'), value: 'none' },
+                            { title: $t('registratedUsers'), value: 'users' }
+                            /*, { text: $t('publicly'), value: 'all' }*/
+                          ]"
                           v-model="publishGender"
                         ></v-select>
                       </v-col>
@@ -102,12 +106,14 @@
                         sm="6"
                       >
                         <v-select
-                          color="customGrey"
-                          item-color="customGrey"
+                          density="compact"
                           :label="$t('visibility')"
-                          single
                           class="min-width"
-                          :items="[{ text: $t('administrators'), value: 'none' }, { text: $t('registratedUsers'), value: 'users' } /*, { text: $t('publicly'), value: 'all' }*/]"
+                          :items="[
+                            { title: $t('administrators'), value: 'none' },
+                            { title: $t('registratedUsers'), value: 'users'}
+                            /*, { text: $t('publicly'), value: 'all' }*/
+                          ]"
                           v-model="publishResidence"
                         ></v-select>
                       </v-col>
@@ -148,12 +154,13 @@
                         sm="6"
                       >
                         <v-select
-                          color="customGrey"
-                          item-color="customGrey"
+                          density="compact"
                           :label="$t('notification')"
-                          single
                           class="min-width"
-                          :items="[{ text: $t('yes'), value: true }, { text: $t('no'), value: false }]"
+                          :items="[
+                            { title: $t('yes'), value: true },
+                            { title: $t('no'), value: false }
+                          ]"
                           v-model="receiveNewsletter"
                         ></v-select>
                       </v-col>
@@ -190,10 +197,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newChats"
@@ -215,10 +220,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newChatMessages"
@@ -240,10 +243,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newDiscussionMessages"
@@ -265,10 +266,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newAcceptedGroupInvitations"
@@ -288,10 +287,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newAcceptedGroupMemberships"
@@ -313,10 +310,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newAcceptedGroupModeratorRoles"
@@ -338,10 +333,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newAcceptedAds"
@@ -363,10 +356,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newAcceptedGroups"
@@ -388,10 +379,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newAcceptedDiscussions"
@@ -413,10 +402,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newAdApplicants"
@@ -438,10 +425,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newGroupApplicants"
@@ -463,10 +448,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newGroupDiscussionsToAccept"
@@ -488,10 +471,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newAcceptedGroupDiscussions"
@@ -513,10 +494,8 @@
                       sm="6"
                     >
                       <v-select
-                        color="customGrey"
-                        item-color="customGrey"
                         :label="$t('notification')"
-                        single
+                        density="compact"
                         class="min-width"
                         :items="items"
                         v-model="newGroupViolationsToProve"
@@ -563,10 +542,8 @@
                           sm="6"
                         >
                           <v-select
-                            color="customGrey"
-                            item-color="customGrey"
                             :label="$t('notification')"
-                            single
+                            density="compact"
                             class="min-width"
                             :items="items"
                             v-model="newAdsToAccept"
@@ -588,10 +565,8 @@
                           sm="6"
                         >
                           <v-select
-                            color="customGrey"
-                            item-color="customGrey"
                             :label="$t('notification')"
-                            single
+                            density="compact"
                             class="min-width"
                             :items="items"
                             v-model="newDiscussionsToAccept"
@@ -613,10 +588,8 @@
                           sm="6"
                         >
                           <v-select
-                            color="customGrey"
-                            item-color="customGrey"
                             :label="$t('notification')"
-                            single
+                            density="compact"
                             class="min-width"
                             :items="items"
                             v-model="newGroupsToAccept"
@@ -638,10 +611,8 @@
                           sm="6"
                         >
                           <v-select
-                            color="customGrey"
-                            item-color="customGrey"
                             :label="$t('notification')"
-                            single
+                            density="compact"
                             class="min-width"
                             :items="items"
                             v-model="newTagsToAccept"
@@ -663,10 +634,8 @@
                           sm="6"
                         >
                           <v-select
-                            color="customGrey"
-                            item-color="customGrey"
                             :label="$t('notification')"
-                            single
+                            density="compact"
                             class="min-width"
                             :items="items"
                             v-model="newViolationsToProve"
@@ -688,10 +657,8 @@
                           sm="6"
                         >
                           <v-select
-                            color="customGrey"
-                            item-color="customGrey"
                             :label="$t('notification')"
-                            single
+                            density="compact"
                             class="min-width"
                             :items="items.filter(item => item.value !== 'emailOffline')"
                             v-model="newUser"
@@ -707,13 +674,13 @@
           <v-divider
             class="my-9 mb-6"
           ></v-divider>
-          <v-card-actions
-            class="px-0"
+          <v-toolbar
+            class="pa-0"
           >
             <v-btn
               block
-              large
-              :dark="isValid && $route.params.user ? true : false"
+              size="large"
+              variant="elevated"
               color="customGrey"
               :loading="isLoading"
               :disabled="!isValid || !$route.params.user"
@@ -721,7 +688,7 @@
             >
               {{$t('saveDataButton')}}
             </v-btn>
-          </v-card-actions>
+          </v-toolbar>
         </v-card-text>
       </v-card>
     </v-col>
@@ -888,9 +855,9 @@ export default {
     }),
     items () {
       return [
-        { text: this.$t('always'), value: 'emailAlways' },
-        { text: this.$t('whenOffline'), value: 'emailOffline' },
-        { text: this.$t('never'), value: 'emailOff' }
+        { title: this.$t('always'), value: 'emailAlways' },
+        { title: this.$t('whenOffline'), value: 'emailOffline' },
+        { title: this.$t('never'), value: 'emailOff' }
       ]
     }
   }

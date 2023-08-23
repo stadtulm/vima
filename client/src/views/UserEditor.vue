@@ -33,11 +33,8 @@
                 >
                   <v-text-field
                     ref="tabStart"
-                    dense
-                    outlined
-                    color="customGrey"
+                    density="compact"
                     :label="$t('firstName')"
-                    background-color="#fff"
                     v-model="firstName"
                     :rules="[rules.required]"
                   >
@@ -48,10 +45,7 @@
                   sm="6"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    background-color="#fff"
-                    color="customGrey"
+                    density="compact"
                     :label="$t('lastName')"
                     v-model="lastName"
                     :rules="[rules.required]"
@@ -66,10 +60,7 @@
                   cols="12"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    background-color="#fff"
-                    color="customGrey"
+                    density="compact"
                     :label="$t('userName')"
                     v-model="userName"
                     :error-messages="userNameError"
@@ -85,10 +76,7 @@
                   cols="12"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    background-color="#fff"
-                    color="customGrey"
+                    density="compact"
                     v-model="email"
                     :error-messages="emailError"
                     :label="$t('email')"
@@ -105,10 +93,7 @@
                   cols="12"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    color="customGrey"
-                    background-color="#fff"
+                    density="compact"
                     v-model="pw"
                     :rules="[rules.passwordOptional]"
                     :label="$t('password')"
@@ -124,13 +109,8 @@
                   cols="12"
                 >
                   <v-select
-                    dense
-                    outlined
-                    background-color="#fff"
-                    color="customGrey"
-                    item-color="customGrey"
+                    density="compact"
                     :items="computedRoles"
-                    :item-text="(item) => $t(item.textKey)"
                     v-model="role"
                     :label="$t('role')"
                     :rules="[rules.required]"
@@ -146,10 +126,7 @@
                   cols="12"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    color="customGrey"
-                    background-color="#fff"
+                    density="compact"
                     v-model="description"
                     :label="$t('aboutMe') + ' ' + $t('optionalLabelExtension')"
                   >
@@ -159,9 +136,11 @@
               <v-row
                 v-if="selectedUser"
               >
-                <v-col>
+                <v-col
+                  class="mb-4"
+                >
                   <v-alert
-                    outlined
+                    variant="outlined"
                     color="customGrey"
                     icon="fas fa-info-circle"
                   >
@@ -191,22 +170,18 @@
                   cols="12"
                 >
                   <v-select
-                    dense
-                    outlined
-                    color="customGrey"
-                    item-color="customGrey"
-                    background-color="#fff"
+                    density="compact"
                     v-model="age"
                     :label="$t('age') + ' ' + $t('optionalLabelExtension')"
                     :items="[
-                      { text: $t('notSpecified') , value: null },
-                      { text: '<21' , value: 0 },
-                      { text: '21-30' , value: 1 },
-                      { text: '31-40' , value: 2 },
-                      { text: '41-50' , value: 3 },
-                      { text: '51-60' , value: 4 },
-                      { text: '61-70' , value: 5 },
-                      { text: '>70' , value: 6 }
+                      { title: $t('notSpecified') , value: null },
+                      { title: '<21' , value: 0 },
+                      { title: '21-30' , value: 1 },
+                      { title: '31-40' , value: 2 },
+                      { title: '41-50' , value: 3 },
+                      { title: '51-60' , value: 4 },
+                      { title: '61-70' , value: 5 },
+                      { title: '>70' , value: 6 }
                     ]"
                   >
                   </v-select>
@@ -215,18 +190,14 @@
                   cols="12"
                 >
                   <v-select
-                    dense
-                    outlined
-                    color="customGrey"
-                    item-color="customGrey"
-                    background-color="#fff"
+                    density="compact"
                     v-model="gender"
                     :label="$t('genderLabel') + ' ' + $t('optionalLabelExtension')"
                     :items="[
-                      { text: $t('notSpecified') , value: null },
-                      { text: $t('male') , value: 'm' },
-                      { text: $t('female') , value: 'f' },
-                      { text: $t('diverse') , value: 'd' },
+                      { title: $t('notSpecified') , value: null },
+                      { title: $t('male') , value: 'm' },
+                      { title: $t('female') , value: 'f' },
+                      { title: $t('diverse') , value: 'd' },
                     ]"
                   >
                   </v-select>
@@ -235,10 +206,7 @@
                   cols="12"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    color="customGrey"
-                    background-color="#fff"
+                    density="compact"
                     v-model="residence"
                     :label="$t('residence') + ' ' + $t('optionalLabelExtension')"
                     :rules="[rules.shortText]"
@@ -290,6 +258,9 @@
                   </v-card>
                 </v-col>
               </v-row>
+              <v-divider
+                class="mb-6 mt-9"
+              ></v-divider>
               <v-row
                 v-if="!selectedUser"
               >
@@ -302,14 +273,15 @@
                   </v-alert>
                 </v-col>
               </v-row>
-              <v-card-actions
-                class="px-0"
+              <v-toolbar
+                class="pa-0"
+                color="transparent"
               >
                 <v-btn
                   v-if="selectedUser"
-                  large
+                  variant="tonal"
+                  size="large"
                   color="error"
-                  :dark="isValid && !isLoading"
                   :loading="isDeleting"
                   :disabled="isLoading"
                   @click="showDeleteDialog = true"
@@ -318,8 +290,9 @@
                 </v-btn>
                 <v-spacer></v-spacer>
                 <v-btn
-                  large
-                  :dark="isValid"
+                  size="large"
+                  dark
+                  variant="elevated"
                   color="customGrey"
                   :loading="isLoading"
                   :disabled="!isValid"
@@ -327,7 +300,7 @@
                 >
                   {{$t('saveDataButton')}}
                 </v-btn>
-              </v-card-actions>
+              </v-toolbar>
             </v-form>
           </v-card-text>
         </v-card>
@@ -676,7 +649,7 @@ export default {
       return v => (!!v && v) === this.pw || this.$t('passwordsDoNotMatchError')
     },
     computedRoles () {
-      const tmpRoleItems = JSON.parse(JSON.stringify(this.roleItems))
+      const tmpRoleItems = JSON.parse(JSON.stringify(this.roleItems)).map(item => ({ title: this.$t(item.textKey), value: item.value}))
       if (this.user.role === 'admins' || this.user.role === 'hosts') {
         return tmpRoleItems
       } else {
