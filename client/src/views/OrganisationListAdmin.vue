@@ -40,6 +40,7 @@
     <v-row>
       <v-col>
         <v-data-table-server
+          v-if="!initialView"
           v-model:items-per-page="queryObject.itemsPerPage"
           v-model:page="queryObject.page"
           :sort-by="queryObject.sortBy"
@@ -58,15 +59,11 @@
           <template
             v-slot:[`item.name`]="{ item }"
           >
-            <v-list-item
-              class="pa-0"
+            <v-list-item-title
+              class="font-weight-bold"
             >
-              <v-list-item-title
-                class="font-weight-bold"
-              >
-                {{item.raw.name}}
-              </v-list-item-title>
-            </v-list-item>
+              {{item.raw.name}}
+            </v-list-item-title>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
@@ -82,79 +79,46 @@
             v-slot:[`item.members`]="{ item }"
           >
             <v-btn
-              icon
+              icon="fas fa-list"
               size="small"
               color="customGrey"
               @click="membersDialogItem = item.raw"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fas fa-list
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              icon
+              icon="fa fa-pen"
               size="small"
               color="customGrey"
               :to="{ name: 'OrganisationAdminEditor', params: { organisation: item.raw._id } }"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-pen
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              icon
+              icon="fa fa-trash"
               size="small"
               color="customGrey"
               :loading="loaders[item.raw._id + 'delete'] === true"
               @click="deleteOrganisation(item.raw._id)"
             >
-              <template
-                v-slot:loader
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-trash
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
             <v-btn
-              icon
+              icon="fa fa-arrow-right"
               size="small"
               color="customGrey"
               class="my-3"
               :to="{name: 'Organisation', params: { organisation: item.raw._id } }"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-arrow-right
-              </v-icon>
             </v-btn>
           </template>
         </v-data-table-server>
@@ -236,15 +200,10 @@
                           <template v-slot:append>
                             <v-btn
                               @click="removeMember(member)"
-                              icon
+                              icon="fas fa-times"
                               size="small"
                               color="customGrey"
                             >
-                              <v-icon
-                                size="18"
-                              >
-                                fas fa-times
-                              </v-icon>
                             </v-btn>
                           </template>
                         </v-list-item>
@@ -392,6 +351,7 @@ export default {
       this.loaders[id + 'delete'] = true
       try {
         await this.removeOrganisation(id)
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
         this.loaders[id + 'delete'] = undefined
       } catch (e) {

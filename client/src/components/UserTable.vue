@@ -15,6 +15,7 @@
     <v-row>
       <v-col>
         <v-data-table-server
+          v-if="!initialView"
           v-model:items-per-page="queryObject.itemsPerPage"
           v-model:page="queryObject.page"
           :sort-by="queryObject.sortBy"
@@ -56,48 +57,32 @@
           <template
             v-slot:[`item.userName`]="{ item }"
           >
-            <v-list-item
-              class="pa-0"
+            <v-list-item-title
+              class="font-weight-bold"
             >
-              <v-list-item-title
-                class="font-weight-bold"
-              >
-                {{item.raw.userName}}
-              </v-list-item-title>
-            </v-list-item>
+              {{item.raw.userName}}
+            </v-list-item-title>
           </template>
           <template
             v-slot:[`item.customAction`]="{ item }"
           >
             <v-btn
-              icon
+              :icon="customActionIcon"
               size="small"
               :color="customColor"
               @click="$emit('customAction', item.raw)"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                {{customActionIcon}}
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.customSecondaryAction`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              :icon="customSecondaryActionIcon"
+              size="small"
               :color="customColor"
               @click="$emit('customSecondaryAction', item.raw)"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                {{customSecondaryActionIcon}}
-              </v-icon>
             </v-btn>
           </template>
         </v-data-table-server>

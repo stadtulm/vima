@@ -147,11 +147,11 @@
                         <template
                           v-if="video.type === 'youtube'"
                         >
-                          <youtube
+                          <YouTube
                             width="100%"
                             :video-id="video.id"
                             nocookie
-                          ></youtube>
+                          ></YouTube>
                         </template>
                         <template
                           v-else-if="video.type === 'vimeo'"

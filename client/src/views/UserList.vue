@@ -22,7 +22,7 @@
     <v-row>
       <v-col>
         <v-data-table-server
-          v-if="initialView === false"
+          v-if="!initialView"
           v-model:items-per-page="queryObject.itemsPerPage"
           v-model:page="queryObject.page"
           :sort-by="queryObject.sortBy"
@@ -87,15 +87,12 @@
             v-slot:[`item.goToChat`]="{ item }"
           >
             <v-btn
-              icon
+              icon="fa fa-comments"
               size="small"
               class="pr-1 pb-1"
               color="customGrey"
               :to="{ name: 'UserNameChat', params: { user: item._id, username: item.userName } }"
             >
-              <v-icon>
-                fa fa-comments
-              </v-icon>
             </v-btn>
           </template>
         </v-data-table-server>

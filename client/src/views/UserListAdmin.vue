@@ -57,6 +57,7 @@
     <v-row>
       <v-col>
         <v-data-table-server
+          v-if="!initialView"
           v-model:items-per-page="queryObject.itemsPerPage"
           v-model:page="queryObject.page"
           :sort-by="queryObject.sortBy"
@@ -143,74 +144,44 @@
             v-slot:[`item.isVerified`]="{ item }"
           >
             <v-btn
-              icon
+              :icon="item.raw.isVerified ? 'far fa-check-square' : 'far fa-square'"
               variant="flat"
               @click="setProperty('isVerified', item.raw._id, !item.raw.isVerified)"
             >
-              <template
-                v-slot:loader
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon>
-                {{item.raw.isVerified ? 'far fa-check-square' : 'far fa-square'}}
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
             <v-btn
-              icon
+              :icon="item.raw.isActive ? 'far fa-check-square' : 'far fa-square'"
               variant="flat"
               @click="item.raw.isActive ? (setActiveItem = item.raw) : setProperty('isActive', item.raw._id, !item.raw.isActive)"
             >
-              <template
-                v-slot:loader
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon>
-                {{item.raw.isActive ? 'far fa-check-square' : 'far fa-square'}}
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              icon
+              icon="fa fa-pen"
               size="small"
               color="customGrey"
               class="my-3"
               :to="{ name: 'UserAdminEditor', params: { user: item.raw._id } }"
             >
-              <v-icon>
-                fa fa-pen
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              icon
+              icon="fa fa-trash"
               size="small"
               color="customGrey"
               class="my-4"
               @click="deleteUser(item.raw)"
             >
-              <v-icon>
-                fa fa-trash
-              </v-icon>
             </v-btn>
           </template>
           <template
@@ -274,16 +245,7 @@
             dark
             color="error"
             @click="setProperty('isActive', setActiveItem._id, !setActiveItem.isActive)"
-          >
-            <template
-              v-slot:loader
-            >
-              <v-progress-circular
-                color="white"
-                width="3"
-                indeterminate
-              ></v-progress-circular>
-            </template>
+          >         
             {{$t('deactivateButton')}}
           </v-btn>
         </v-toolbar>
@@ -383,15 +345,12 @@ export default {
             map
           ]
         )
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
       }
       this.loaders[user._id + 'delete'] = undefined
-      this.usersResponse = undefined
-      await this.$nextTick()
-      // TODO: Remove deleted entity / Check channels
-      await this.loadDataTableEntities()
     },
     async setProperty (property, id, state) {
       this.loaders[id + 'property'] = true

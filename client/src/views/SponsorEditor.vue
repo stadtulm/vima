@@ -54,14 +54,12 @@
                   </v-text-field>
                 </v-col>
               </v-row>
-              <v-row>
+              <v-row
+                dense
+              >
                 <v-col>
                   <v-select
-                    dense
-                    color="customGrey"
-                    item-color="customGrey"
-                    background-color="#fff"
-                    outlined
+                    density="compact"
                     v-model="position"
                     :label="$t('position')"
                     :items="Array.from({length: 1000}, (_, i) => i + 1)"
@@ -111,8 +109,11 @@
                 </v-col>
               </v-row>
             </v-form>
+            <v-divider
+              class="my-9 mb-6"
+            ></v-divider>
             <v-toolbar
-              class="mt-2 pa-3"
+              class="pa-0"
               color="transparent"
             >
               <v-btn

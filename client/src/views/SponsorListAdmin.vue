@@ -39,6 +39,7 @@
     <v-row>
       <v-col>
         <v-data-table-server
+          v-if="!initialView"
           v-model:items-per-page="queryObject.itemsPerPage"
           v-model:page="queryObject.page"
           :sort-by="queryObject.sortBy"
@@ -77,46 +78,25 @@
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              icon
+              icon="fa fa-pen"
               size="small"
               color="customGrey"
               class="my-3"
               :to="{ name: 'SponsorEditor', params: { sponsor: item.raw._id } }"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-pen
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              icon
+              icon="fa fa-trash"
               size="small"
               color="customGrey"
               class="my-3"
               :loading="loaders[item.raw._id + 'delete'] === true"
               @click="deleteSponsor(item.raw._id)"
-            >
-              <template
-                v-slot:loader
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-trash
-              </v-icon>
+            >             
             </v-btn>
           </template>
         </v-data-table-server>
@@ -165,13 +145,13 @@ export default {
       this.loaders[id + 'delete'] = true
       try {
         await this.removeSponsor(id)
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
         this.loaders[id + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
         this.loaders[id + 'delete'] = undefined
       }
-      // TODO: Update list
     },
     async updateDataTableParams(e) {
       if (!this.initialView) {
