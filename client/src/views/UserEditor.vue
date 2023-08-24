@@ -1,25 +1,24 @@
 <template>
   <div>
     <v-row
+      class="d-flex mx-0 mb-4"
+    >
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
+      >
+        {{$t('account')}} {{ selectedUser ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+      </span>
+    </v-row>
+    <v-row
       v-if="selectedUser || !$route.params.user"
     >
       <v-col
         cols="12"
       >
         <v-card
-          color="customGreyBg"
           tile
         >
           <v-card-text>
-            <v-row
-              class="mb-3"
-            >
-              <v-col
-                class="text-h5 font-weight-bold"
-              >
-                {{$t('account')}} {{ selectedUser ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
-              </v-col>
-            </v-row>
             <v-form
               v-model="isValid"
               ref="userEditorForm"
@@ -223,7 +222,6 @@
                 >
                   <v-card
                     flat
-                    color="customGreyBg"
                   >
                     <v-row>
                       <v-col
@@ -312,7 +310,6 @@
       max-width="600"
     >
       <v-card
-        color="customGreyBg"
         tile
       >
         <v-card-text
@@ -378,7 +375,6 @@
       max-width="600"
     >
       <v-card
-        color="customGreyBg"
         tile
       >
         <v-card-text>

@@ -1,19 +1,20 @@
 <template>
   <div>
     <v-row
-      class="mb-4"
+      class="d-flex mx-0 mb-4"
     >
-      <v-col
-        class="text-h5 font-weight-bold customGrey--text text-uppercase"
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
         {{$t('adminView')}} {{$t('manageOrganisationsButton')}}
-      </v-col>
-      <v-col
-        class="shrink align-self-center"
+      </span>
+      <span
+        class="my-3"
       >
         <v-btn
-          dark
+          variant="elevated"
           :to="{ name: 'OrganisationAdminEditor' }"
+          dark
           color="customGrey"
         >
           {{$t('newOrganisationButton')}}
@@ -24,89 +25,67 @@
             fas fa-plus
           </v-icon>
         </v-btn>
-      </v-col>
+      </span>
     </v-row>
     <v-row>
       <v-col>
         <v-text-field
-          v-model="search"
+          v-model="queryObject.query"
           :label="$t('filterByOrganisationNameLabel')"
-          outlined
-          dense
+          density="compact"
           hide-details
-          color="black"
         ></v-text-field>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
-          :items="organisations"
+          :items-length="computedTotal"
+          :items="computedOrganisations"
           :loading="loading"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          :server-items-length="total"
-          must-sort
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          mobile-breakpoint="0"
-          :footer-props="{
-            itemsPerPageText: '',
-            itemsPerPageOptions
-          }"
+          class="customGreyUltraLight pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateDataTableParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          :show-current-page="true"
+          :must-sort="true"
         >
-          <template
-            v-slot:progress
-          >
-            <v-progress-linear
-              indeterminate
-              color="customGrey"
-            ></v-progress-linear>
-          </template>
           <template
             v-slot:[`item.name`]="{ item }"
           >
             <v-list-item
               class="pa-0"
             >
-              <v-list-item-content>
-                <v-list-item-title
-                  class="font-weight-bold"
-                >
-                  {{item.name}}
-                </v-list-item-title>
-                <v-list-item-subtitle
-                  v-if="item.subTitle && item.description !== ''"
-                >
-                  {{item.description}}
-                </v-list-item-subtitle>
-              </v-list-item-content>
+              <v-list-item-title
+                class="font-weight-bold"
+              >
+                {{item.raw.name}}
+              </v-list-item-title>
             </v-list-item>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
-            {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.members`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon
+              size="small"
               color="customGrey"
-              @click="membersDialogItem = item"
+              @click="membersDialogItem = item.raw"
             >
               <v-icon
                 color="white"
@@ -120,11 +99,10 @@
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon
+              size="small"
               color="customGrey"
-              class="my-3"
-              :to="{ name: 'OrganisationAdminEditor', params: { organisation: item._id } }"
+              :to="{ name: 'OrganisationAdminEditor', params: { organisation: item.raw._id } }"
             >
               <v-icon
                 color="white"
@@ -138,15 +116,14 @@
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon
+              size="small"
               color="customGrey"
-              class="my-3"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteOrganisation(item._id)"
+              :loading="loaders[item.raw._id + 'delete'] === true"
+              @click="deleteOrganisation(item.raw._id)"
             >
               <template
-                slot="loader"
+                v-slot:loader
               >
                 <v-progress-circular
                   color="white"
@@ -166,11 +143,11 @@
             v-slot:[`item.link`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon
+              size="small"
               color="customGrey"
-              class="my-4"
-              :to="{name: 'Organisation', params: { organisation: item._id } }"
+              class="my-3"
+              :to="{name: 'Organisation', params: { organisation: item.raw._id } }"
             >
               <v-icon
                 color="white"
@@ -180,7 +157,7 @@
               </v-icon>
             </v-btn>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
     <!-- Members dialog -->
@@ -220,48 +197,47 @@
                 </v-tab>
               </v-tabs>
               </v-toolbar>
-              <v-tabs-items v-model="membersTab">
-                <v-tab-item>
+              <v-window v-model="membersTab">
+                <v-window-item>
                   <v-card flat>
                     <v-card-text>
                       <v-list
-                        v-if="computedMemberStatusContainers"
+                        v-if="memberStatusContainers"
                       >
                         <v-list-item
-                          v-for="member in computedMemberStatusContainers.filter(obj => obj.relation === 'member').map(obj => getUser(obj.user))"
+                          v-for="member in memberStatusContainers.filter(obj => obj.relation === 'member').map(obj => getUser(obj.user))"
                           :key="member._id"
                         >
-                          <v-list-item-avatar
-                            class="my-2"
-                            color="customGreyLight"
-                            size="40"
-                          >
-                            <v-img
-                              v-if="member.pic"
-                              :src="s3 + member.pic.url"
-                              :alt="$t('userPic')"
-                              :title="member.pic.credit ? '© ' + member.pic.credit : ''"
+                          <template v-slot:prepend>
+                            <v-avatar
+                              class="my-2"
+                              color="customGreyLight"
+                              size="40"
                             >
-                            </v-img>
-                            <v-icon
-                              v-else
-                              color="white"
-                              size="18"
-                            >
-                              fas fa-user
-                            </v-icon>
-                          </v-list-item-avatar>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              {{member.userName}}
-                            </v-list-item-title>
-                          </v-list-item-content>
-                          <v-list-item-action>
+                              <v-img
+                                v-if="member.pic"
+                                :src="s3 + member.pic.url"
+                                :alt="$t('userPic')"
+                                :title="member.pic.credit ? '© ' + member.pic.credit : ''"
+                              >
+                              </v-img>
+                              <v-icon
+                                v-else
+                                color="white"
+                                size="18"
+                              >
+                                fas fa-user
+                              </v-icon>
+                            </v-avatar>
+                          </template>
+                          <v-list-item-title>
+                            {{member.userName}}
+                          </v-list-item-title>
+                          <template v-slot:append>
                             <v-btn
                               @click="removeMember(member)"
-                              fab
-                              small
-                              dark
+                              icon
+                              size="small"
                               color="customGrey"
                             >
                               <v-icon
@@ -270,13 +246,13 @@
                                 fas fa-times
                               </v-icon>
                             </v-btn>
-                          </v-list-item-action>
+                          </template>
                         </v-list-item>
                       </v-list>
                     </v-card-text>
                   </v-card>
-                </v-tab-item>
-                <v-tab-item>
+                </v-window-item>
+                <v-window-item>
                   <v-card
                     flat
                     color="transparent"
@@ -287,17 +263,18 @@
                         :customActionText="$t('add')"
                         customActionIcon="fas fa-plus"
                         customColor="customGrey"
-                        :customQuery="{
+                        :customQuery="
+                        {
                           role: { $nin: ['users', 'deleted'] },
-                          _id: { $nin: computedMemberStatusContainers ? computedMemberStatusContainers.map(obj => obj.user) : [] }
+                          _id: { $nin: memberStatusContainers ? memberStatusContainers.map(obj => obj.user) : [] }
                         }
                         "
                         @customAction="addMember"
                       ></UserTable>
                     </v-card-text>
                   </v-card>
-                </v-tab-item>
-              </v-tabs-items>
+                </v-window-item>
+              </v-window>
             </v-col>
           </v-row>
         </v-card-text>
@@ -308,38 +285,36 @@
 
 <script>
 
-import { makeFindMixin } from '@feathersjs/vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import UserTable from '@/components/UserTable.vue'
 
 export default {
   name: 'OrganisationListAdmin',
 
-  mixins: [makeFindMixin({ service: 'organisations', watch: true })],
-
   components: {
     UserTable
   },
 
   data: () => ({
+    memberStatusContainers: undefined,
+    initialView: true,
     membersTab: 0,
     membersTrigger: 1,
     membersDialogItem: undefined,
     showMembersDialog: false,
+    organisationsResponse: undefined,
     loaders: {},
-    search: '',
-    page: 1,
     loading: true,
-    total: 0,
-    itemsPerPage: 25,
-    sortBy: ['name'],
-    sortDesc: [true]
+    queryObject: {
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'name', order: 'desc' }],
+      query: ''
+    }
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    await this.adaptQuery()
   },
 
   methods: {
@@ -347,6 +322,7 @@ export default {
       setSnackbar: 'SET_SNACKBAR'
     }),
     ...mapActions('organisations', {
+      findOrganisations: 'find',
       removeOrganisation: 'remove'
     }),
     ...mapActions('status-containers', {
@@ -356,6 +332,28 @@ export default {
       createOrganisationMembership: 'create',
       removeOrganisationMembership: 'remove'
     }),
+    async updateDataTableParams(e) {
+      if (!this.initialView) {
+        this.queryObject = {
+          ...e,
+          query: this.queryObject.query
+        }
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryPage(e.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+            this.updateQuerySortBy(e.sortBy[0].key)
+            this.updateQuerySortOrder(e.sortBy[0].order)
+        }
+      }
+    },
+    async loadDataTableEntities () {
+      this.loading = true
+      this.organisationsResponse = await this.findOrganisations(
+        this.organisationsParams
+      )
+      this.loading = false
+    },
     async addMember (user) {
       try {
         await this.createOrganisationMembership(
@@ -391,112 +389,14 @@ export default {
       }
     },
     async deleteOrganisation (id) {
-      this.$set(this.loaders, id + 'delete', true)
+      this.loaders[id + 'delete'] = true
       try {
         await this.removeOrganisation(id)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.$set(this.loaders, id + 'delete', undefined)
-      }
-    },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
-        }
-        this.sortDesc = tmpDesc
-      }
-    },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
-      if (parseInt(this.$route.query.p) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateItemsPerPage (data) {
-      if (parseInt(this.$route.query.i) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
-          }
-        })
-      } else if (!data) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
-          }
-        })
-      }
-    },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
-          }
-        })
+        this.loaders[id + 'delete'] = undefined
       }
     }
   },
@@ -504,7 +404,12 @@ export default {
   computed: {
     ...mapGetters([
       's3',
-      'itemsPerPageOptions'
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
     ]),
     ...mapGetters('users', {
       getUser: 'get'
@@ -514,44 +419,58 @@ export default {
     }),
     headers () {
       return [
-        { text: this.$t('name'), value: 'name' },
-        { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
-        { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
-        { text: this.$t('position'), value: 'position', width: 170 },
-        { text: this.$t('manageMembersButton'), value: 'members', align: 'center', sortable: false },
-        { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
-        { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
-        { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
+        { title: this.$t('name'), key: 'name', width: 350 },
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('updatedAt'), key: 'updatedAt' },
+        { title: this.$t('position'), key: 'position'},
+        { title: this.$t('manageMembersButton'), key: 'members', align: 'center', sortable: false },
+        { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
+        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
+        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
       ]
     },
     organisationsParams () {
       return {
         query: {
-          name: { $regex: this.search, $options: 'i' },
+          name: { $regex: this.queryObject.query, $options: 'i' },
           $limit: this.computedLimit,
-          $skip: (this.page - 1) * this.computedSkip,
-          $sort: { [this.sortBy]: this.computedSortDesc }
-        },
-        debounce: 1000,
-        qid: 'admin'
+          $skip: this.computedSkip,
+          $sort: {
+            [this.queryObject.sortBy[0].key]: this.computedSortOrder
+          }
+        }
+      }
+    },
+    computedOrganisations () {
+      if (this.organisationsResponse) {
+        return this.organisationsResponse.data
+      } else {
+        return []
+      }
+    },
+    computedTotal () {
+      if (this.organisationsResponse) {
+        return this.organisationsResponse.total
+      } else {
+        return 0
       }
     },
     computedLimit () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 1000000
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
     computedSkip () {
-      if (this.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.itemsPerPage
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
       }
+      return (this.queryObject.page - 1) * tmpSkip
     },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
       } else {
         return -1
@@ -559,32 +478,34 @@ export default {
     }
   },
 
-  asyncComputed: {
-    async computedMemberStatusContainers () {
+  watch: {
+    ['queryObject.query'] () {
+      this.updateQueryQuery(this.queryObject.query)
+    },
+    async membersTrigger () {
       if (this.membersDialogItem && this.membersTrigger) {
-        return await this.findStatusContainers({
-          query: {
-            reference: this.membersDialogItem._id,
-            relation: { $in: ['owner', 'member'] }
-          }
-        })
+        this.memberStatusContainers = await this.findStatusContainers({
+            query: {
+              reference: this.membersDialogItem._id,
+              relation: { $in: ['owner', 'member'] }
+            }
+          })
       } else {
         return []
       }
-    }
-  },
-
-  watch: {
-    isFindOrganisationsPending () {
-      if (!this.isFindOrganisationsPending) {
-        this.loading = false
-        this.total = this.organisationsPaginationData.admin.mostRecent.total
-      } else {
-        this.loading = true
-      }
     },
-    membersDialogItem () {
+    async membersDialogItem () {
       if (this.membersDialogItem) {
+        if (this.membersDialogItem && this.membersTrigger) {
+          this.memberStatusContainers = await this.findStatusContainers({
+              query: {
+                reference: this.membersDialogItem._id,
+                relation: { $in: ['owner', 'member'] }
+              }
+            })
+        } else {
+          return []
+        }
         this.showMembersDialog = true
       } else {
         this.showMembersDialog = false
@@ -593,6 +514,17 @@ export default {
     showMembersDialog () {
       if (!this.showMembersDialog) {
         this.membersDialogItem = undefined
+      }
+    },
+    organisationsParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
       }
     }
   }

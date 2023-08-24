@@ -1,142 +1,137 @@
 <template>
-  <v-row
-    v-if="selectedSponsor || !$route.params.sponsor"
-  >
-    <v-col
-      cols="12"
+  <div>
+    <v-row
+      class="d-flex mx-0 mb-4"
     >
-      <v-card
-        color="customGreyUltraLight"
-        tile
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
-        <v-card-text>
-          <v-row
-            class="mb-3"
-          >
-            <v-col
-              class="text-h5 font-weight-bold"
+        {{$t('sponsor')}} {{ selectedSponsor ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+      </span>
+    </v-row>
+    <v-row
+      v-if="selectedSponsor || !$route.params.sponsor"
+    >
+      <v-col
+        cols="12"
+      >
+        <v-card
+          tile
+        >
+          <v-card-text>
+            <v-form
+              v-model="isValid"
+              ref="sponsorsEditorForm"
             >
-              {{$t('sponsor')}} {{ selectedSponsor ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
-            </v-col>
-          </v-row>
-          <v-form
-            v-model="isValid"
-            ref="sponsorsEditorForm"
-          >
-            <v-row
-              dense
-            >
-              <v-col
-                cols="12"
+              <v-row
+                dense
               >
-                <v-text-field
-                  ref="tabStart"
-                  dense
-                  outlined
-                  color="customGrey"
-                  :label="$t('name')"
-                  background-color="#fff"
-                  v-model="name"
-                  :rules="[rules.required]"
+                <v-col
+                  cols="12"
                 >
-                </v-text-field>
-              </v-col>
-            </v-row>
-            <v-row
-              dense
-            >
-              <v-col
-                cols="12"
-              >
-                <v-text-field
-                  dense
-                  outlined
-                  color="customGrey"
-                  v-model="link"
-                  background-color="#fff"
-                  :label="$t('website') + ' ' + $t('optionalLabelExtension')"
-                  :rules="[rules.shortText, rules.webLink]"
-                >
-                </v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-select
-                  dense
-                  color="customGrey"
-                  item-color="customGrey"
-                  background-color="#fff"
-                  outlined
-                  v-model="position"
-                  :label="$t('position')"
-                  :items="Array.from({length: 1000}, (_, i) => i + 1)"
-                  :rules="[rules.required]"
-                >
-                </v-select>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                cols="12"
-              >
-                <v-card
-                  flat
-                  color="customGreyUltraLight"
-                >
-                  <v-row>
-                    <v-col
-                      class="text-subtitle-1"
-                      cols="12"
-                    >
-                      {{$t('pic')}} {{$t('optionalLabelExtension')}}
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
+                  <v-text-field
+                    ref="tabStart"
+                    density="compact"
+                    :label="$t('name')"
+                    v-model="name"
+                    :rules="[rules.required]"
                   >
-                    <v-col
-                      cols="12"
-                      tabIndex="0"
-                      @keypress="$refs.sponsorUpload.fakeClick()"
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-row
+                dense
+              >
+                <v-col
+                  cols="12"
+                >
+                  <v-text-field
+                    density="compact"
+                    v-model="link"
+                    :label="$t('website') + ' ' + $t('optionalLabelExtension')"
+                    :rules="[rules.shortText, rules.webLink]"
+                  >
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-select
+                    dense
+                    color="customGrey"
+                    item-color="customGrey"
+                    background-color="#fff"
+                    outlined
+                    v-model="position"
+                    :label="$t('position')"
+                    :items="Array.from({length: 1000}, (_, i) => i + 1)"
+                    :rules="[rules.required]"
+                  >
+                  </v-select>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                >
+                  <v-card
+                    flat
+                  >
+                    <v-row>
+                      <v-col
+                        class="text-subtitle-1"
+                        cols="12"
+                      >
+                        {{$t('pic')}} {{$t('optionalLabelExtension')}}
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
                     >
-                      <FileUpload
-                        ref="sponsorUpload"
-                        v-model="pic"
-                        @fileRemove="patchFileRemove"
-                        @fileAdd="$nextTick(() => { $refs.sponsorsEditorForm.validate() })"
-                        :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg', 'image/svg+xml']"
-                        :maxFileSize="0.5"
-                        :maxFiles="1"
-                        bgColor="white"
-                        :scaleToFit="[400, 400]"
-                        :resizeQuality="75"
-                      ></FileUpload>
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-form>
-          <v-card-actions
-            class="px-0"
-          >
-            <v-btn
-              block
-              large
-              :dark="isValid"
-              color="customGrey"
-              :loading="isLoading"
-              :disabled="!isValid"
-              @click="saveSponsor()"
+                      <v-col
+                        cols="12"
+                        tabIndex="0"
+                        @keypress="$refs.sponsorUpload.fakeClick()"
+                      >
+                        <FileUpload
+                          ref="sponsorUpload"
+                          v-model="pic"
+                          @fileRemove="patchFileRemove"
+                          @fileAdd="$nextTick(() => { $refs.sponsorsEditorForm.validate() })"
+                          :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg', 'image/svg+xml']"
+                          :maxFileSize="0.5"
+                          :maxFiles="1"
+                          bgColor="customGreyUltraLight"
+                          :scaleToFit="[400, 400]"
+                          :resizeQuality="75"
+                        ></FileUpload>
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-form>
+            <v-toolbar
+              class="mt-2 pa-3"
+              color="transparent"
             >
-              {{$t('saveDataButton')}}
-            </v-btn>
-          </v-card-actions>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+              <v-btn
+                block
+                size="large"
+                variant="elevated"
+                color="customGrey"
+                :loading="isLoading"
+                :disabled="!isValid"
+                @click="saveSponsor()"
+              >
+                {{$t('saveDataButton')}}
+              </v-btn>
+            </v-toolbar>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>

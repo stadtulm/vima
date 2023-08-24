@@ -1,514 +1,25 @@
 <template>
-  <v-row>
-    <v-col
-      cols="12"
+  <div>
+    <v-row
+      class="d-flex mx-0 mb-4"
     >
-      <v-card
-        color="customGreyUltraLight"
-        tile
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
-        <v-card-text>
-          <v-row
-            class="mb-3"
-          >
-            <v-col
-              class="text-h5 font-weight-bold text-uppercase"
-            >
-              {{$t('preferences')}}
-            </v-col>
-          </v-row>
-          <v-form
-            v-model="isValid"
-          >
-            <v-row
-              class="mt-8"
-            >
-              <v-col
-                class="text-h6 font-weight-bold"
-              >
-                {{$t('privateInformation')}}
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-card
-                  flat
-                  tile
-                  color="white"
-                >
-                  <v-card-text>
-                    <v-row
-                      dense
-                    >
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        class="text-body-1 align-self-center"
-                      >
-                          {{$t('publishAgeLabel')}}
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-select
-                          density="compact"
-                          :label="$t('visibility')"
-                          class="min-width"
-                          :items="[
-                            { title: $t('administrators'), value: 'none' },
-                            { title: $t('registratedUsers'), value: 'users' }
-                            /*, { text: $t('publicly'), value: 'all' }*/
-                          ]"
-                          v-model="publishAge"
-                        ></v-select>
-                      </v-col>
-                    </v-row>
-                    <v-row
-                      dense
-                    >
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        class="text-body-1 align-self-center"
-                      >
-                          {{$t('publishGenderLabel')}}
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-select
-                          density="compact"
-                          :label="$t('visibility')"
-                          class="min-width"
-                          :items="[
-                            { title: $t('administrators'), value: 'none' },
-                            { title: $t('registratedUsers'), value: 'users' }
-                            /*, { text: $t('publicly'), value: 'all' }*/
-                          ]"
-                          v-model="publishGender"
-                        ></v-select>
-                      </v-col>
-                    </v-row>
-                    <v-row
-                      dense
-                    >
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        class="text-body-1 align-self-center"
-                      >
-                          {{$t('publishResidenceLabel')}}
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-select
-                          density="compact"
-                          :label="$t('visibility')"
-                          class="min-width"
-                          :items="[
-                            { title: $t('administrators'), value: 'none' },
-                            { title: $t('registratedUsers'), value: 'users'}
-                            /*, { text: $t('publicly'), value: 'all' }*/
-                          ]"
-                          v-model="publishResidence"
-                        ></v-select>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-row
-              class="mt-8"
-            >
-              <v-col
-                class="text-h6 font-weight-bold"
-              >
-                {{$t('newsletter')}}
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-card
-                  flat
-                  tile
-                  color="white"
-                >
-                  <v-card-text>
-                    <v-row
-                      dense
-                    >
-                      <v-col
-                        cols="12"
-                        sm="6"
-                        class="text-body-1 align-self-center"
-                      >
-                        {{$t('receiveNewsletterLabel')}}
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        sm="6"
-                      >
-                        <v-select
-                          density="compact"
-                          :label="$t('notification')"
-                          class="min-width"
-                          :items="[
-                            { title: $t('yes'), value: true },
-                            { title: $t('no'), value: false }
-                          ]"
-                          v-model="receiveNewsletter"
-                        ></v-select>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-row
-              class="mt-8"
-            >
-              <v-col
-                class="text-h6 font-weight-bold"
-              >
-                {{$t('notifications')}}
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-               <v-card>
-                 <v-card-text>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newChatPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newChats"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newChatMessagePreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newChatMessages"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newDiscussionMessagePreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newDiscussionMessages"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newGroupInvitationPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newAcceptedGroupInvitations"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newGroupMembershipPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newAcceptedGroupMemberships"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newGroupModeratorRolePreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newAcceptedGroupModeratorRoles"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newAcceptedAdPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newAcceptedAds"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newAcceptedGroupPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newAcceptedGroups"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newAcceptedDiscussionPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newAcceptedDiscussions"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newAdApplicantPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newAdApplicants"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newGroupApplicantPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newGroupApplicants"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newGroupDiscussionToAcceptPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newGroupDiscussionsToAccept"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newAcceptedGroupDiscussionsPreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newAcceptedGroupDiscussions"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
-                  >
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      class="text-body-1 align-self-center"
-                    >
-                      {{$t('newGroupViolationsToProvePreferencesLabel')}}
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                    >
-                      <v-select
-                        :label="$t('notification')"
-                        density="compact"
-                        class="min-width"
-                        :items="items"
-                        v-model="newGroupViolationsToProve"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                 </v-card-text>
-               </v-card>
-              </v-col>
-            </v-row>
-            <!-- -->
-            <template
-              v-if="user.role === 'admins'"
+        {{$t('preferences')}}
+      </span>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+      >
+        <v-card
+          color="customGreyUltraLight"
+          tile
+        >
+          <v-card-text>
+            <v-form
+              v-model="isValid"
             >
               <v-row
                 class="mt-8"
@@ -516,15 +27,15 @@
                 <v-col
                   class="text-h6 font-weight-bold"
                 >
-                  {{$t('notifications')}} {{$t('forAdministrators')[0].toLowerCase() + $t('forAdministrators').substr(1)}}
+                  {{$t('privateInformation')}}
                 </v-col>
               </v-row>
               <v-row>
                 <v-col>
                   <v-card
                     flat
-                    color="white"
                     tile
+                    color="white"
                   >
                     <v-card-text>
                       <v-row
@@ -535,18 +46,22 @@
                           sm="6"
                           class="text-body-1 align-self-center"
                         >
-                          {{$t('newAdToAcceptPreferencesLabel')}}
+                            {{$t('publishAgeLabel')}}
                         </v-col>
                         <v-col
                           cols="12"
                           sm="6"
                         >
                           <v-select
-                            :label="$t('notification')"
                             density="compact"
+                            :label="$t('visibility')"
                             class="min-width"
-                            :items="items"
-                            v-model="newAdsToAccept"
+                            :items="[
+                              { title: $t('administrators'), value: 'none' },
+                              { title: $t('registratedUsers'), value: 'users' }
+                              /*, { text: $t('publicly'), value: 'all' }*/
+                            ]"
+                            v-model="publishAge"
                           ></v-select>
                         </v-col>
                       </v-row>
@@ -558,18 +73,22 @@
                           sm="6"
                           class="text-body-1 align-self-center"
                         >
-                          {{$t('newDiscussionToAcceptPreferencesLabel')}}
+                            {{$t('publishGenderLabel')}}
                         </v-col>
                         <v-col
                           cols="12"
                           sm="6"
                         >
                           <v-select
-                            :label="$t('notification')"
                             density="compact"
+                            :label="$t('visibility')"
                             class="min-width"
-                            :items="items"
-                            v-model="newDiscussionsToAccept"
+                            :items="[
+                              { title: $t('administrators'), value: 'none' },
+                              { title: $t('registratedUsers'), value: 'users' }
+                              /*, { text: $t('publicly'), value: 'all' }*/
+                            ]"
+                            v-model="publishGender"
                           ></v-select>
                         </v-col>
                       </v-row>
@@ -581,87 +100,22 @@
                           sm="6"
                           class="text-body-1 align-self-center"
                         >
-                          {{$t('newGroupToAcceptPreferencesLabel')}}
+                            {{$t('publishResidenceLabel')}}
                         </v-col>
                         <v-col
                           cols="12"
                           sm="6"
                         >
                           <v-select
-                            :label="$t('notification')"
                             density="compact"
+                            :label="$t('visibility')"
                             class="min-width"
-                            :items="items"
-                            v-model="newGroupsToAccept"
-                          ></v-select>
-                        </v-col>
-                      </v-row>
-                      <v-row
-                        dense
-                      >
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          class="text-body-1 align-self-center"
-                        >
-                          {{$t('newTagsToAcceptPreferencesLabel')}}
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                        >
-                          <v-select
-                            :label="$t('notification')"
-                            density="compact"
-                            class="min-width"
-                            :items="items"
-                            v-model="newTagsToAccept"
-                          ></v-select>
-                        </v-col>
-                      </v-row>
-                      <v-row
-                        dense
-                      >
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          class="text-body-1 align-self-center"
-                        >
-                          {{$t('newViolationsToProvePreferencesLabel')}}
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                        >
-                          <v-select
-                            :label="$t('notification')"
-                            density="compact"
-                            class="min-width"
-                            :items="items"
-                            v-model="newViolationsToProve"
-                          ></v-select>
-                        </v-col>
-                      </v-row>
-                      <v-row
-                        dense
-                      >
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          class="text-body-1 align-self-center"
-                        >
-                          {{$t('newUserLabel')}}
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                        >
-                          <v-select
-                            :label="$t('notification')"
-                            density="compact"
-                            class="min-width"
-                            :items="items.filter(item => item.value !== 'emailOffline')"
-                            v-model="newUser"
+                            :items="[
+                              { title: $t('administrators'), value: 'none' },
+                              { title: $t('registratedUsers'), value: 'users'}
+                              /*, { text: $t('publicly'), value: 'all' }*/
+                            ]"
+                            v-model="publishResidence"
                           ></v-select>
                         </v-col>
                       </v-row>
@@ -669,30 +123,578 @@
                   </v-card>
                 </v-col>
               </v-row>
-            </template>
-          </v-form>
-          <v-divider
-            class="my-9 mb-6"
-          ></v-divider>
-          <v-toolbar
-            class="pa-0"
-          >
-            <v-btn
-              block
-              size="large"
-              variant="elevated"
-              color="customGrey"
-              :loading="isLoading"
-              :disabled="!isValid || !$route.params.user"
-              @click="savePreferences()"
+              <v-row
+                class="mt-8"
+              >
+                <v-col
+                  class="text-h6 font-weight-bold"
+                >
+                  {{$t('newsletter')}}
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-card
+                    flat
+                    tile
+                    color="white"
+                  >
+                    <v-card-text>
+                      <v-row
+                        dense
+                      >
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          class="text-body-1 align-self-center"
+                        >
+                          {{$t('receiveNewsletterLabel')}}
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                        >
+                          <v-select
+                            density="compact"
+                            :label="$t('notification')"
+                            class="min-width"
+                            :items="[
+                              { title: $t('yes'), value: true },
+                              { title: $t('no'), value: false }
+                            ]"
+                            v-model="receiveNewsletter"
+                          ></v-select>
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-row
+                class="mt-8"
+              >
+                <v-col
+                  class="text-h6 font-weight-bold"
+                >
+                  {{$t('notifications')}}
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                <v-card>
+                  <v-card-text>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newChatPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newChats"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newChatMessagePreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newChatMessages"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newDiscussionMessagePreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newDiscussionMessages"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newGroupInvitationPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newAcceptedGroupInvitations"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newGroupMembershipPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newAcceptedGroupMemberships"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newGroupModeratorRolePreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newAcceptedGroupModeratorRoles"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newAcceptedAdPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newAcceptedAds"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newAcceptedGroupPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newAcceptedGroups"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newAcceptedDiscussionPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newAcceptedDiscussions"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newAdApplicantPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newAdApplicants"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newGroupApplicantPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newGroupApplicants"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newGroupDiscussionToAcceptPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newGroupDiscussionsToAccept"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newAcceptedGroupDiscussionsPreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newAcceptedGroupDiscussions"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newGroupViolationsToProvePreferencesLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newGroupViolationsToProve"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+                </v-col>
+              </v-row>
+              <!-- -->
+              <template
+                v-if="user.role === 'admins'"
+              >
+                <v-row
+                  class="mt-8"
+                >
+                  <v-col
+                    class="text-h6 font-weight-bold"
+                  >
+                    {{$t('notifications')}} {{$t('forAdministrators')[0].toLowerCase() + $t('forAdministrators').substr(1)}}
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-card
+                      flat
+                      color="white"
+                      tile
+                    >
+                      <v-card-text>
+                        <v-row
+                          dense
+                        >
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            class="text-body-1 align-self-center"
+                          >
+                            {{$t('newAdToAcceptPreferencesLabel')}}
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                          >
+                            <v-select
+                              :label="$t('notification')"
+                              density="compact"
+                              class="min-width"
+                              :items="items"
+                              v-model="newAdsToAccept"
+                            ></v-select>
+                          </v-col>
+                        </v-row>
+                        <v-row
+                          dense
+                        >
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            class="text-body-1 align-self-center"
+                          >
+                            {{$t('newDiscussionToAcceptPreferencesLabel')}}
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                          >
+                            <v-select
+                              :label="$t('notification')"
+                              density="compact"
+                              class="min-width"
+                              :items="items"
+                              v-model="newDiscussionsToAccept"
+                            ></v-select>
+                          </v-col>
+                        </v-row>
+                        <v-row
+                          dense
+                        >
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            class="text-body-1 align-self-center"
+                          >
+                            {{$t('newGroupToAcceptPreferencesLabel')}}
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                          >
+                            <v-select
+                              :label="$t('notification')"
+                              density="compact"
+                              class="min-width"
+                              :items="items"
+                              v-model="newGroupsToAccept"
+                            ></v-select>
+                          </v-col>
+                        </v-row>
+                        <v-row
+                          dense
+                        >
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            class="text-body-1 align-self-center"
+                          >
+                            {{$t('newTagsToAcceptPreferencesLabel')}}
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                          >
+                            <v-select
+                              :label="$t('notification')"
+                              density="compact"
+                              class="min-width"
+                              :items="items"
+                              v-model="newTagsToAccept"
+                            ></v-select>
+                          </v-col>
+                        </v-row>
+                        <v-row
+                          dense
+                        >
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            class="text-body-1 align-self-center"
+                          >
+                            {{$t('newViolationsToProvePreferencesLabel')}}
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                          >
+                            <v-select
+                              :label="$t('notification')"
+                              density="compact"
+                              class="min-width"
+                              :items="items"
+                              v-model="newViolationsToProve"
+                            ></v-select>
+                          </v-col>
+                        </v-row>
+                        <v-row
+                          dense
+                        >
+                          <v-col
+                            cols="12"
+                            sm="6"
+                            class="text-body-1 align-self-center"
+                          >
+                            {{$t('newUserLabel')}}
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            sm="6"
+                          >
+                            <v-select
+                              :label="$t('notification')"
+                              density="compact"
+                              class="min-width"
+                              :items="items.filter(item => item.value !== 'emailOffline')"
+                              v-model="newUser"
+                            ></v-select>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </template>
+            </v-form>
+            <v-divider
+              class="my-9 mb-6"
+            ></v-divider>
+            <v-toolbar
+              class="pa-0"
             >
-              {{$t('saveDataButton')}}
-            </v-btn>
-          </v-toolbar>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+              <v-btn
+                block
+                size="large"
+                variant="elevated"
+                color="customGrey"
+                :loading="isLoading"
+                :disabled="!isValid || !$route.params.user"
+                @click="savePreferences()"
+              >
+                {{$t('saveDataButton')}}
+              </v-btn>
+            </v-toolbar>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>

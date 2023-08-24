@@ -1,15 +1,15 @@
 <template>
   <div>
     <v-row
-      class="mb-4"
+      class="d-flex mx-0 mb-4"
     >
-      <v-col
-        class="text-h5 font-weight-bold customGrey--text text-uppercase"
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
         {{$t('adminView')}} {{$t('sponsors')}}
-      </v-col>
-      <v-col
-        class="shrink align-self-center"
+      </span>
+      <span
+        class="my-3"
       >
         <v-btn
           dark
@@ -24,90 +24,64 @@
             fas fa-plus
           </v-icon>
         </v-btn>
-      </v-col>
+      </span>
     </v-row>
     <v-row>
       <v-col>
         <v-text-field
-          v-model="search"
+          v-model="queryObject.query"
           :label="$t('filterByTitleLabel')"
-          outlined
-          dense
+          density="compact"
           hide-details
-          color="black"
         ></v-text-field>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
+          :items-length="computedTotal"
           :items="computedSponsors"
-          :loading="isFindSponsorsPending"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          :server-items-length="total"
-          must-sort
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          mobile-breakpoint="0"
-          :footer-props="{
-            itemsPerPageOptions,
-            itemsPerPageText: ''
-          }"
+          :loading="loading"
+          class="customGreyUltraLight pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateDataTableParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          :show-current-page="true"
+          :must-sort="true"
         >
           <template
-            v-slot:progress
+            v-slot:[`item.name`]="{ item }"
           >
-            <v-progress-linear
-              indeterminate
-              color="customGrey"
-            ></v-progress-linear>
-          </template>
-          <template
-            v-slot:[`item.title.value`]="{ item }"
-          >
-            <v-list-item
-              class="pa-0"
+            <v-list-item-title
+              class="font-weight-bold"
             >
-              <v-list-item-content>
-                <v-list-item-title
-                  class="font-weight-bold"
-                >
-                  {{item.title.value}}
-                </v-list-item-title>
-                <v-list-item-subtitle
-                  v-if="item.subTitle && item.subTitle !== ''"
-                >
-                  {{item.subTitle.value}}
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
+              {{item.raw.name}}
+            </v-list-item-title>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
-            {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon
+              size="small"
               color="customGrey"
               class="my-3"
-              :to="{ name: 'SponsorEditor', params: { sponsor: item._id } }"
+              :to="{ name: 'SponsorEditor', params: { sponsor: item.raw._id } }"
             >
               <v-icon
                 color="white"
@@ -121,15 +95,15 @@
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon
+              size="small"
               color="customGrey"
               class="my-3"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteSponsor(item._id)"
+              :loading="loaders[item.raw._id + 'delete'] === true"
+              @click="deleteSponsor(item.raw._id)"
             >
               <template
-                slot="loader"
+                v-slot:loader
               >
                 <v-progress-circular
                   color="white"
@@ -145,7 +119,7 @@
               </v-icon>
             </v-btn>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
   </div>
@@ -162,21 +136,21 @@ export default {
   },
 
   data: () => ({
-    isFindSponsorsPending: false,
+    initialView: true,
+    loading: true,
     loaders: {},
+    sponsorsResponse: undefined,
     search: '',
-    page: 1,
-    total: 0,
-    itemsPerPage: 5,
-    sortBy: ['updatedAt'],
-    sortDesc: [true],
-    triggerReload: 1
+    queryObject: {
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'name', order: 'desc' }],
+      query: ''
+    }
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    await this.adaptQuery()
   },
 
   methods: {
@@ -188,212 +162,124 @@ export default {
       findSponsors: 'find'
     }),
     async deleteSponsor (id) {
-      this.$set(this.loaders, id + 'delete', true)
+      this.loaders[id + 'delete'] = true
       try {
         await this.removeSponsor(id)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
       }
+      // TODO: Update list
     },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
+    async updateDataTableParams(e) {
+      if (!this.initialView) {
+        this.queryObject = {
+          ...e,
+          query: this.queryObject.query,
         }
-        this.sortDesc = tmpDesc
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryPage(e.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+            this.updateQuerySortBy(e.sortBy[0].key)
+            this.updateQuerySortOrder(e.sortBy[0].order)
+        }
       }
     },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
-      if (parseInt(this.$route.query.p) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateItemsPerPage (data) {
-      if (parseInt(this.$route.query.i) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
-          }
-        })
-      } else if (!data) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
-          }
-        })
-      }
-    },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
-          }
-        })
-      }
+    async loadDataTableEntities () {
+      this.loading = true
+      this.sponsorsResponse = await this.findSponsors(
+        this.sponsorsParams
+      )
+      this.loading = false
     }
   },
 
   computed: {
     ...mapGetters([
-      'itemsPerPageOptions'
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
     ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
-    ...mapGetters('sponsors', {
-      sponsors: 'list'
-    }),
     headers () {
       return [
-        { text: this.$t('name'), value: 'name' },
-        { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
-        { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
-        { text: this.$t('position'), value: 'position', width: 170 },
-        { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
-        { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' }
+        { title: this.$t('name'), key: 'name' },
+        { title: this.$t('createdAt'), key: 'createdAt', width: 170 },
+        { title: this.$t('updatedAt'), key: 'updatedAt', width: 170 },
+        { title: this.$t('position'), key: 'position', width: 170 },
+        { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
+        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' }
       ]
     },
+    sponsorsParams () {
+      return {
+        query: {
+          name: { $regex: this.queryObject.query, $options: 'i' },
+          $limit: this.computedLimit,
+          $skip: this.computedSkip,
+          $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder },
+        }
+      }
+    },
+    computedSponsors () {
+      if (this.sponsorsResponse && this.sponsorsResponse.data) {
+        return this.sponsorsResponse.data
+      } else {
+        return []
+      }
+    },
+    computedTotal () {
+      if (this.sponsorsResponse) {
+        return this.sponsorsResponse.total
+      } else {
+        return 0
+      }
+    },
     computedLimit () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 1000000
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
     computedSkip () {
-      if (this.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.itemsPerPage
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
       }
+      return (this.queryObject.page - 1) * tmpSkip
     },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
       } else {
         return -1
       }
-    },
-    computedSponsors () {
-      if (this.computedSponsorsData && this.computedSponsorsData.data) {
-        return this.computedSponsorsData.data
-      } else {
-        return []
-      }
-    }
-  },
-
-  asyncComputed: {
-    async computedSponsorsData () {
-      if (this.triggerReload) {}
-      this.isFindSponsorsPending = true
-      const query = {
-        $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc }
-      }
-      if (this.search && this.search !== '') {
-        query.title = {
-          $elemMatch: {
-            $and: [
-              { value: { $regex: this.search, $options: 'i' } },
-              {
-                $or: [
-                  { lang: this.$i18n.locale },
-                  { type: 'default' }
-                ]
-              }
-            ]
-          }
-        }
-      }
-      const tmpSponsors = await this.findSponsors(
-        {
-          query
-        }
-      )
-      return tmpSponsors
     }
   },
 
   watch: {
-    sponsors () {
-      this.triggerReload = Date.now()
+    ['queryObject.query'] () {
+      this.updateQueryQuery(this.queryObject.query)
     },
-    computedSponsors (newValue, oldValue) {
-      //
-      this.total = this.computedSponsorsData.total
-      //
-      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
-        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
+    sponsorsParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
       }
-      //
-      this.isFindSponsorsPending = false
     }
   }
 }

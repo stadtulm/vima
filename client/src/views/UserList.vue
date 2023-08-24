@@ -1,18 +1,18 @@
 <template>
   <div>
     <v-row
-      class="mb-4"
+      class="d-flex mx-0 mb-4"
     >
-      <v-col
-        class="text-h5 font-weight-bold customGrey--text text-uppercase"
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
         {{$t('manageMembersButton')}}
-      </v-col>
+      </span>
     </v-row>
     <v-row>
       <v-col>
         <v-text-field
-          v-model="search"
+          v-model="queryObject.query"
           :label="$t('filterByUserNameLabel')"
           density="compact"
           hide-details
@@ -23,15 +23,13 @@
       <v-col>
         <v-data-table-server
           v-if="initialView === false"
-          density="compact"
           v-model:items-per-page="queryObject.itemsPerPage"
           v-model:page="queryObject.page"
           :sort-by="queryObject.sortBy"
           :headers="headers"
-          :items-length="total"
+          :items-length="computedTotal"
           :items="computedUsers"
           :loading="loading"
-          :search="search"
           class="pb-3 elevation-3"
           item-value="_id"
           @update:options="updateDataTableParams"
@@ -115,13 +113,13 @@ export default {
 
   data: () => ({
     initialView: true,
-    search: '',
     loading: true,
     usersResponse: undefined,
     queryObject: {
       page: 1,
       itemsPerPage: 25,
-      sortBy: [{ key: 'userName', order: 'desc' }]
+      sortBy: [{ key: 'userName', order: 'desc' }],
+      query: ''
     }
   }),
 
@@ -138,16 +136,19 @@ export default {
     }),
     // Can not be externalized
     async updateDataTableParams(e) {
+      if (!this.initialView) {
         this.queryObject = {
-          ...e
+          ...e,
+          query: this.queryObject.query
         }
+        this.updateQueryQuery(this.queryObject.query)
         this.updateQueryPage(e.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
             this.updateQuerySortBy(e.sortBy[0].key)
             this.updateQuerySortOrder(e.sortBy[0].order)
         }
-        await this.loadDataTableEntities()
+      }
     },
     async loadDataTableEntities () {
       this.loading = true
@@ -163,6 +164,7 @@ export default {
       's3',
       'adaptQuery',
       'updateQueryPage',
+      'updateQueryQuery',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
       'updateQuerySortOrder'
@@ -200,10 +202,10 @@ export default {
           role: { $ne: 'deleted' },
           isVerified: true,
           isActive: true,
-          userName: { $regex: this.search, $options: 'i' },
+          userName: { $regex: this.queryObject.query, $options: 'i' },
           $limit: this.computedLimit,
-          $skip: (this.queryObject.page - 1) * this.computedSkip,
-          $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder}
+          $skip: this.computedSkip,
+          $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
         }
       }
     },
@@ -214,7 +216,7 @@ export default {
         return []
       }
     },
-    total () {
+    computedTotal () {
       if (this.usersResponse) {
         return this.usersResponse.total
       } else {
@@ -229,11 +231,11 @@ export default {
       }
     },
     computedSkip () {
-      if (this.queryObject.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.queryObject.itemsPerPage
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
       }
+      return (this.queryObject.page - 1) * tmpSkip
     },
     computedSortOrder () {
       if (this.queryObject.sortBy[0].order === 'desc') {
@@ -244,6 +246,9 @@ export default {
     }
   },
   watch: {
+    ['queryObject.query'] () {
+      this.updateQueryQuery(this.queryObject.query)
+    },
     usersParams: {
       deep: true,
       async handler (newValue, oldValue) {

@@ -252,6 +252,16 @@ const state = {
   async adaptQuery () {
     // Process existing query
     const tmpQueryObject = {}
+    if (this.$route.query.r) {
+      tmpQueryObject.role = this.$route.query.r
+    } else {
+      tmpQueryObject.role = this.queryObject.role
+    }
+    if (this.$route.query.q) {
+      tmpQueryObject.query = this.$route.query.q
+    } else {
+      tmpQueryObject.query = this.queryObject.query
+    }
     if (this.$route.query.i) {
       tmpQueryObject.itemsPerPage = parseInt(this.$route.query.i)
     } else {
@@ -278,11 +288,45 @@ const state = {
     await this.loadDataTableEntities()
     this.initialView = false
   },
+  updateQueryRole (data) {
+    if (this.$route.query.r !== data) {
+      this.$router.replace(
+        {
+          query: {
+            r: data,
+            q: this.queryObject.query,
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            s: this.queryObject.sortBy[0].key,
+            o: this.queryObject.sortBy[0].order
+          }
+        }
+      )
+    }
+  },
+  updateQueryQuery (data) {
+    if (this.$route.query.q !== data) {
+      this.$router.replace(
+        {
+          query: {
+            r: this.queryObject.role,
+            q: data,
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            s: this.queryObject.sortBy[0].key,
+            o: this.queryObject.sortBy[0].order
+          }
+        }
+      )
+    }
+  },
   updateQueryPage (data) {
     if (parseInt(this.$route.query.p) !== data) {
       this.$router.replace(
         {
           query: {
+            r: this.queryObject.role,
+            q: this.queryObject.query,
             p: this.queryObject.page,
             i: this.queryObject.itemsPerPage,
             s: this.queryObject.sortBy[0].key,
@@ -297,6 +341,8 @@ const state = {
       this.$router.replace(
         {
           query: {
+            r: this.queryObject.role,
+            q: this.queryObject.query,
             p: this.queryObject.page,
             i: data,
             s: this.queryObject.sortBy[0].key,
@@ -310,6 +356,8 @@ const state = {
     if (data && this.$route.query.s !== data) {
       this.$router.replace({
         query: {
+          r: this.queryObject.role,
+          q: this.queryObject.query,
           p: this.queryObject.page,
           i: this.queryObject.itemsPerPage,
           s: data,
@@ -319,6 +367,8 @@ const state = {
     } else if (!data) {
       this.$router.replace({
         query: {
+          r: this.queryObject.role,
+          q: this.queryObject.query,
           p: this.queryObject.page,
           i: this.queryObject.itemsPerPage,
           o: this.queryObject.sortBy[0].order
@@ -330,23 +380,14 @@ const state = {
     if (data && this.$route.query.d !== data) {
       this.$router.replace({
         query: {
+          r: this.queryObject.role,
+          q: this.queryObject.query,
           p: this.queryObject.page,
           i: this.queryObject.itemsPerPage,
           s: this.queryObject.sortBy[0].key,
           o: data
         }
       })
-    }
-  },
-  updateDataTableParams(e) {
-    this.queryObject = {
-      ...e
-    }
-    this.updateQueryPage(e.page)
-    this.updateQueryItemsPerPage(e.itemsPerPage)
-    if (e.sortBy[0]) {
-        this.updateQuerySortBy(e.sortBy[0].key)
-        this.updateQuerySortOrder(e.sortBy[0].order)
     }
   }
 }
@@ -447,6 +488,12 @@ const getters = {
   },
   adaptQuery: state => {
     return state.adaptQuery
+  },
+  updateQueryRole: state => {
+    return state.updateQueryRole
+  },
+  updateQueryQuery: state => {
+    return state.updateQueryQuery
   },
   updateQueryPage: state => {
     return state.updateQueryPage

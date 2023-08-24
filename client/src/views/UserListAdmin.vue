@@ -1,32 +1,31 @@
 <template>
   <div>
-    <v-row>
-      <v-col>
-        <v-toolbar
-          color="transparent"
+    <v-row
+      class="d-flex mx-0 mb-4"
+    >
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
+      >
+        {{$t('adminView')}} {{$t('manageMembersButton')}}
+      </span>
+      <span
+        class="my-3"
+      >
+        <v-btn
+          variant="elevated"
+          :to="{ name: 'UserAdminEditor' }"
+          dark
+          color="customGrey"
         >
-          <v-toolbar-title
-            class="font-weight-bold customGrey--text text-uppercase"
+          {{$t('newProfileButton')}}
+          <v-icon
+            class="ml-3"
+            size="18"
           >
-            {{$t('adminView')}} {{$t('manageMembersButton')}}
-          </v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn
-            variant="elevated"
-            :to="{ name: 'UserAdminEditor' }"
-            dark
-            color="customGrey"
-          >
-            {{$t('newProfileButton')}}
-            <v-icon
-              class="ml-3"
-              size="18"
-            >
-              fas fa-plus
-            </v-icon>
-          </v-btn>
-        </v-toolbar>
-      </v-col>
+            fas fa-plus
+          </v-icon>
+        </v-btn>
+      </span>
     </v-row>
     <v-row>
       <v-col
@@ -34,7 +33,7 @@
         sm="6"
       >
         <v-text-field
-          v-model="search"
+          v-model="queryObject.query"
           :label="$t('filterByUserNamesLabel')"
           density="compact"
           hide-details
@@ -43,10 +42,10 @@
       <v-col
         cols="12"
         sm="6"
-      >
+      > 
         <v-select
-          v-model="selectedRole"
-          :items="[{ textKey: 'all', value: false}].concat(roleItems)"
+          v-model="queryObject.role"
+          :items="[{ textKey: 'all', value: 'all'}].concat(roleItems)"
           :item-title="(roleItem) => $t(roleItem.textKey)"
           :label="$t('role')"
           density="compact"
@@ -58,12 +57,11 @@
     <v-row>
       <v-col>
         <v-data-table-server
-          density="compact"
           v-model:items-per-page="queryObject.itemsPerPage"
           v-model:page="queryObject.page"
           :sort-by="queryObject.sortBy"
           :headers="headers"
-          :items-length="total"
+          :items-length="computedTotal"
           :items="computedUsers"
           :loading="loading"
           class="customGreyUltraLight pb-3 elevation-3"
@@ -302,8 +300,6 @@ export default {
 
   data: () => ({
     initialView: true,
-    selectedRole: false,
-    search: '',
     loading: true,
     usersResponse: undefined,
     roles: {},
@@ -311,9 +307,11 @@ export default {
     showSetActiveDialog: false,
     loaders: {},
     queryObject: {
+      query: '',
       page: 1,
       itemsPerPage: 25,
-      sortBy: [{ key: 'userName', order: 'desc' }]
+      sortBy: [{ key: 'userName', order: 'desc' }],
+      role: 'all'
     }
   }),
 
@@ -334,15 +332,21 @@ export default {
       setSnackbar: 'SET_SNACKBAR'
     }),
     async updateDataTableParams(e) {
+      if (!this.initialView) {
         this.queryObject = {
-          ...e
+          ...e,
+          query: this.queryObject.query,
+          role: this.queryObject.role
         }
-        this.updateQueryPage(e.page)
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryRole(this.queryObject.role)
+        this.updateQueryPage(this.queryObject.query)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
             this.updateQuerySortBy(e.sortBy[0].key)
             this.updateQuerySortOrder(e.sortBy[0].order)
         }
+      }
     },
     async loadDataTableEntities () {
       this.loading = true
@@ -433,6 +437,8 @@ export default {
       'statusItems',
       's3',
       'adaptQuery',
+      'updateQueryRole',
+      'updateQueryQuery',
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
@@ -440,10 +446,6 @@ export default {
     ]),
     ...mapGetters('auth', {
       user: 'user'
-    }),
-    ...mapGetters('booths', {
-      booths: 'list',
-      getBooth: 'get'
     }),
     headers () {
       return [
@@ -489,16 +491,16 @@ export default {
           [this.queryObject.sortBy[0].key]: this.computedSortOrder
         }
       }
-      if (this.selectedRole) {
-        query.role = this.selectedRole
+      if (this.queryObject.role && this.queryObject.role !== 'all') {
+        query.role = this.queryObject.role
       } else {
         query.role = { $ne: 'deleted' }
       }
-      if (this.search && this.search.trim() !== '') {
+      if (this.queryObject.query && this.queryObject.query.trim() !== '') {
         query.$or = [
-          { userName: { $regex: this.search, $options: 'i' } },
-          { firstName: { $regex: this.search, $options: 'i' } },
-          { lastName: { $regex: this.search, $options: 'i' } }
+          { userName: { $regex: this.queryObject.query, $options: 'i' } },
+          { firstName: { $regex: this.queryObject.query, $options: 'i' } },
+          { lastName: { $regex: this.queryObject.query, $options: 'i' } }
         ]
       }
       return {
@@ -512,7 +514,7 @@ export default {
         return []
       }
     },
-    total () {
+    computedTotal () {
       if (this.usersResponse) {
         return this.usersResponse.total
       } else {
@@ -543,6 +545,12 @@ export default {
   },
 
   watch: {
+    ['queryObject.query'] () {
+      this.updateQueryQuery(this.queryObject.query)
+    },
+    ['queryObject.role'] () {
+      this.updateQueryRole(this.queryObject.role)
+    },
     computedUsers: {
       deep: true,
       handler () {
