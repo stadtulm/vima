@@ -57,8 +57,7 @@
               variant="elevated"
               class="customGrey--text"
               :class="!$vuetify.display.smAndUp ? 'ml-2': 'ml-1'"
-              :large="$vuetify.display.mdAndUp"
-              :small="!$vuetify.display.smAndUp"
+              :size="!$vuetify.display.smAndUp ? 'small' : 'large'"
               :icon="!$vuetify.display.smAndUp"
               v-bind="props"
               :title="$t('infoButton')"
@@ -154,8 +153,7 @@
               variant="elevated"
               class="customGrey--text"
               :class="!$vuetify.display.smAndUp ? 'ml-4': 'ml-3'"
-              :large="$vuetify.display.mdAndUp"
-              :small="!$vuetify.display.smAndUp"
+              :size="!$vuetify.display.smAndUp ? 'small' : 'large'"
               :icon="!$vuetify.display.smAndUp"
               v-bind="props"
               :title="$t('participate')"
@@ -295,9 +293,8 @@
         <v-btn
           v-if="!user"
           class="ml-3 elevation-1"
-          :text="$vuetify.display.smAndUp ? 'true': 'false'"
           :icon="!$vuetify.display.smAndUp"
-          :large="$vuetify.display.mdAndUp"
+          :size="!$vuetify.display.smAndUp ? 'small' : 'large'"
           color="customGrey"
           :to="{ name: 'Signup' }"
           tour-step="5"
@@ -314,9 +311,8 @@
         <v-btn
           v-if="!user"
           class="ml-3 elevation-1"
-          :text="$vuetify.display.smAndUp ? 'true': 'false'"
           :icon="!$vuetify.display.smAndUp"
-          :large="$vuetify.display.mdAndUp"
+          :size="!$vuetify.display.smAndUp ? 'small' : 'large'"
           color="customGrey"
           :to="{ name: 'Login' }"
           tour-step="6"
@@ -346,8 +342,9 @@
             v-if="user"
             class="ml-3 elevation-1"
             color="customGrey"
-            text
-            :large="$vuetify.display.mdAndUp"
+            variant="text"
+            :icon="!$vuetify.display.smAndUp"
+            :size="!$vuetify.display.smAndUp ? 'small' : 'large'"
             tour-step="5"
             @click=" isNavigationDrawer = !isNavigationDrawer"
             :title="isNavigationDrawer ? $t('myVimaToggleClose') : $t('myVimaToggleOpen')"
@@ -1037,7 +1034,7 @@
             </v-list-item>
             <v-list-item
               v-if="moduleVisibilities.events"
-              :to="{ name: 'EventListAdmin' }"
+              :to="{ name: 'EventListAdmin', params: {} }"
             >
               <v-list-item-title
                 class="font-weight-bold customGrey--text"
@@ -2593,8 +2590,12 @@ export default {
     opacity: 0.8 !important;
   }
 
-  .tiptap-vuetify-editor {
-    width: 100%
+  .tiptap.ProseMirror.ProseMirror-focused:focus-visible {
+    outline: none !important;
+  }
+
+  .tiptap ol, .tiptap ul, ol, ul {
+    margin-left: 30px;
   }
 
 /*

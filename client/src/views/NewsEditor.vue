@@ -1,6 +1,15 @@
 <template>
   <div>
     <v-row
+      class="d-flex mx-0 mb-4"
+    >
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
+      >
+        {{$t('newsEntry')}} {{ selectedNews ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+      </span>
+    </v-row>
+    <v-row
       v-if="selectedNews || !$route.params.id"
     >
       <v-col
@@ -11,15 +20,6 @@
           tile
         >
           <v-card-text>
-            <v-row
-              class="mb-3"
-            >
-              <v-col
-                class="text-h5 font-weight-bold"
-              >
-                {{$t('newsEntry')}} {{ selectedNews ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
-              </v-col>
-            </v-row>
             <v-form
               v-model="isValid"
               ref="newsEditorForm"
@@ -33,11 +33,8 @@
                 >
                   <v-text-field
                     ref="tabStart"
-                    dense
-                    outlined
+                    density="compact"
                     :label="$t('headline')"
-                    color="customGrey"
-                    background-color="#fff"
                     v-model="title.find(obj => obj.lang === currentLanguage).value"
                     :rules="[v => title.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
                   >
@@ -59,10 +56,7 @@
                   cols="12"
                 >
                   <v-text-field
-                    dense
-                    outlined
-                    color="customGrey"
-                    background-color="#fff"
+                    density="compact"
                     :label="$t('subHeadline') + ' ' + $t('optionalLabelExtension')"
                     v-model="subTitle.find(obj => obj.lang === currentLanguage).value"
                   >
@@ -128,6 +122,8 @@
                         cols="12"
                       >
                         <v-alert
+                          variant="outlined"
+                          color="customGrey"
                           icon="fas fa-info-circle"
                         >
                           <span
@@ -136,6 +132,8 @@
                           </span>
                         </v-alert>
                       </v-col>
+                    </v-row>
+                    <v-row>
                       <v-col
                         cols="12"
                       >
@@ -151,20 +149,10 @@
                               @setLanguage="(l) => { currentLanguage = l }"
                             ></LanguageSelect>
                           </template>
-                          <template slot="default">
-                            <VuetifyTiptap
-                              :editor-properties="{
-                                disableInputRules: true,
-                                disablePasteRules: true
-                              }"
-                              color="customGreyUltraLight"
+                          <template v-slot:default>
+                            <custom-tiptap
                               v-model="text.find(obj => obj.lang === currentLanguage).value"
-                              :card-props="{ tile: true, flat: true }"
-                              style="border: 1px solid #aaa;"
-                              :extensions="extensions"
-                              :placeholder="$t('enterText')"
-                            >
-                            </VuetifyTiptap>
+                            ></custom-tiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -395,20 +383,27 @@
                 </v-col>
               </v-row>
             </v-form>
-            <v-card-actions
-              class="px-0"
+            <v-divider
+              class="mb-6 mt-9"
+            ></v-divider>
+            <v-toolbar
+              class="mt-4"
+              color="transparent"
             >
               <v-btn
                 block
-                :dark="isValid"
+                size="large"
+                dark
+                variant="elevated"
                 color="customGrey"
                 :loading="isLoading"
                 :disabled="!isValid"
                 @click="saveNews()"
+                class="mx-0"
               >
                 {{$t('saveDataButton')}}
               </v-btn>
-            </v-card-actions>
+            </v-toolbar>
           </v-card-text>
         </v-card>
       </v-col>
@@ -421,13 +416,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 import FileUpload from '@/components/FileUpload.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 export default {
   name: 'NewsEditor',
 
   components: {
     FileUpload,
-    LanguageSelect
+    LanguageSelect,
+    CustomTiptap
   },
 
   data: () => ({

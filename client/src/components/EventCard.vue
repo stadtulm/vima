@@ -1,8 +1,8 @@
 <template>
   <v-card
     color="customGreyUltraLight"
-    v-if="computedEvent"
-    :to="eventProp ? { name: 'Event', params: { event: computedEvent._id } } : ''"
+    v-if="event"
+    :to="eventProp ? { name: 'Event', params: { event: event._id } } : ''"
   >
     <v-row>
       <v-col
@@ -18,13 +18,13 @@
             <v-card-title
               class="word-wrap mb-3"
             >
-              {{computedEvent.title.value}}
+              {{event.title.value}}
             </v-card-title>
             <v-card-subtitle
               class="text-body-1 pb-0"
-              v-if="computedEvent.location"
+              v-if="event.location"
             >
-              {{computedEvent.location}}
+              {{event.location}}
             </v-card-subtitle>
             <v-card-subtitle
               class="text-body-1"
@@ -42,7 +42,7 @@
             <!-- View more button -->
             <v-btn
               class="customGrey--text mx-4"
-              :to="{ name: 'Event', params: { event: computedEvent._id }}"
+              :to="{ name: 'Event', params: { event: event._id }}"
             >
               {{$t('viewButton')}}
               <v-icon
@@ -59,12 +59,12 @@
         <v-row
           dense
           class="mx-1"
-          v-if="computedEvent.categories && computedEvent.categories.length > 0"
+          v-if="event.categories && event.categories.length > 0"
         >
           <v-col>
             <v-chip
               outlined
-              v-for="category in getCategories(computedEvent.categories)"
+              v-for="category in getCategories(event.categories)"
               :key="category._id"
               class="mr-1"
               disabled
@@ -76,11 +76,11 @@
         <!-- Tags -->
         <v-row
           class="mx-1"
-          v-if="computedEvent.tags && computedEvent.tags.length > 0"
+          v-if="event.tags && event.tags.length > 0"
         >
           <v-col>
             <v-chip
-              v-for="tag in getTags(computedEvent.tags)"
+              v-for="tag in getTags(event.tags)"
               :key="tag._id"
               class="mr-1"
               disabled
@@ -95,7 +95,7 @@
             class="text-body-1 mx-4"
           >
             <div
-              v-html="eventProp ? truncatedDescription(newTab(computedEvent.text.value)) : $sanitize(newTab(computedEvent.text.value))"
+              v-html="eventProp ? truncatedDescription(newTab(event.text.value)) : $sanitize(newTab(event.text.value))"
             >
             </div>
           </v-col>
@@ -111,11 +111,11 @@
         :class="eventProp ? 'py-0' : $vuetify.display.mdAndUp ? 'pr-6' : 'pt-0'"
       >
           <v-carousel
-            v-if="computedEvent.pics.length > 0"
+            v-if="event.pics.length > 0"
             v-model="picsCarousel"
             hide-delimiters
-            :show-arrows="computedEvent.pics.length > 1"
-            :show-arrows-on-hover="computedEvent.pics.length > 1"
+            :show-arrows="event.pics.length > 1"
+            :show-arrows-on-hover="event.pics.length > 1"
             height="100%"
             max-height="200px"
             class="white"
@@ -147,7 +147,7 @@
             </v-btn>
             </template>
             <v-carousel-item
-              v-for="pic in computedEvent.pics"
+              v-for="pic in event.pics"
               :key="pic.url"
             >
               <v-img
@@ -179,10 +179,12 @@ export default {
   ],
 
   data: () => ({
-    picsCarousel: 0
+    picsCarousel: 0,
+    event: undefined
   }),
 
   async mounted () {
+    await this.loadEvent()
   },
 
   methods: {
@@ -204,6 +206,21 @@ export default {
         tmpStr = tmpStr.substr(0, len) + ' [...]'
       }
       return tmpStr
+    },
+    async loadEvent () {
+      if (this.eventProp) {
+        this.event = this.eventProp
+      } else {
+        if (this.$route.name === 'Event' && this.$route.params.event && !this.eventProp) {
+          let selectedEvent = this.getEvent(this.$route.params.event)
+          if (!selectedEvent) {
+            selectedEvent = await this.requestEvent([
+              this.$route.params.event
+            ])
+          }
+          this.event = selectedEvent
+        }
+      }
     }
   },
 
@@ -224,30 +241,12 @@ export default {
       categories: 'list'
     }),
     computedDateTime () {
-      if (this.$moment(this.computedEvent.duration.start).isSame(this.$moment(this.computedEvent.duration.end))) {
-        return this.$moment(this.computedEvent.duration.start).format('DD.MM.YYYY, HH:mm') + ' ' + this.$t('oClock')
-      } else if (this.$moment(this.computedEvent.duration.start).isSame(this.$moment(this.computedEvent.duration.end), 'day')) {
-        return this.$moment(this.computedEvent.duration.start).format('DD.MM.YYYY, HH:mm') + '-' + this.$moment(this.computedEvent.duration.end).format('HH:mm') + ' ' + this.$t('oClock')
+      if (this.$moment(this.event.duration.start).isSame(this.$moment(this.event.duration.end))) {
+        return this.$moment(this.event.duration.start).format('DD.MM.YYYY, HH:mm') + ' ' + this.$t('oClock')
+      } else if (this.$moment(this.event.duration.start).isSame(this.$moment(this.event.duration.end), 'day')) {
+        return this.$moment(this.event.duration.start).format('DD.MM.YYYY, HH:mm') + '-' + this.$moment(this.event.duration.end).format('HH:mm') + ' ' + this.$t('oClock')
       } else {
-        return this.$moment(this.computedEvent.duration.start).format('DD.MM.YYYY, HH:mm') + ' ' + this.$t('oClock') + ' - ' + this.$moment(this.computedEvent.duration.end).format('DD.MM.YYYY, HH:mm') + ' ' + this.$t('oClock')
-      }
-    }
-  },
-
-  asyncComputed: {
-    async computedEvent () {
-      if (this.eventProp) {
-        return this.eventProp
-      } else {
-        if (this.$route.name === 'Event' && this.$route.params.event && !this.eventProp) {
-          let selectedEvent = this.getEvent(this.$route.params.event)
-          if (!selectedEvent) {
-            selectedEvent = await this.requestEvent([
-              this.$route.params.event
-            ])
-          }
-          return selectedEvent
-        }
+        return this.$moment(this.event.duration.start).format('DD.MM.YYYY, HH:mm') + ' ' + this.$t('oClock') + ' - ' + this.$moment(this.event.duration.end).format('DD.MM.YYYY, HH:mm') + ' ' + this.$t('oClock')
       }
     }
   }

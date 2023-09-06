@@ -5,24 +5,21 @@
   >
     <template v-slot:activator="{ props }">
       <v-btn
-        :text="!isMainSwitch || !$vuetify.display.smAndUp ? 'true' : 'false'"
-        :small="!isMainSwitch || !$vuetify.display.smAndUp"
-        :large="isMainSwitch && $vuetify.display.mdAndUp"
+        :variant="!isMainSwitch || !$vuetify.display.smAndUp ? 'text' : 'elevated'"
+        size="large"
         v-bind="props"
         :icon="!$vuetify.display.smAndUp"
-        class="mr-2"
-        :class="!isMainSwitch ? 'px-0' : 'rounded-ts-xl rounded-e-xl'"
-        variant="elevated"
+        class="'rounded-ts-xl rounded-e-xl'"
       >
         <country-flag
-          :class="!isMainSwitch ? 'my-0' : ($vuetify.display.smAndUp ? 'mb-1': 'mb-0 ml-1 mr-1')"
+          :class="$vuetify.display.smAndUp ? 'mb-1': 'mb-0 ml-1 mr-1'"
           :country="currentLanguage === 'en' ? 'gb': currentLanguage"
         >
         </country-flag>
         <v-icon
           v-if="$vuetify.display.smAndUp"
           color="customGrey"
-          class="ml-1 mb-1"
+          class="ml-2 mb-1"
           size="18"
           icon="fa fa-chevron-down"
         >
@@ -51,7 +48,8 @@
           {{$t(language)}}
           {{ language === computedDefaultLanguage ? '(' + $t('defaultLanguage') + ')' : ''}}
         </v-list-item-title>
-        <v-list-item-action
+        <template
+          v-slot:append
           v-if="computedExistingLanguages"
         >
           <v-icon
@@ -60,7 +58,7 @@
           >
             {{ computedExistingLanguages.includes(language) ? 'fas fa-check' : 'fas fa-exclamation-triangle'}}
           </v-icon>
-        </v-list-item-action>
+        </template>
       </v-list-item>
     </v-list>
   </v-menu>

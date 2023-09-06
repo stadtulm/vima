@@ -1,6 +1,15 @@
 <template>
   <div>
     <v-row
+      class="d-flex mx-0 mb-4"
+    >
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
+      >
+        {{$t('event')}} {{ selectedEvent ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+      </span>
+    </v-row>
+    <v-row
       v-if="selectedEvent || !$route.params.event"
     >
       <v-col
@@ -11,15 +20,6 @@
           tile
         >
           <v-card-text>
-            <v-row
-              class="mb-3"
-            >
-              <v-col
-                class="text-h5 font-weight-bold"
-              >
-                {{$t('event')}} {{ selectedEvent ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
-              </v-col>
-            </v-row>
             <v-form
               v-model="isValid"
               ref="eventEditorForm"
@@ -33,11 +33,8 @@
                 >
                   <v-text-field
                     ref="tabStart"
-                    dense
-                    outlined
+                    density="compact"
                     :label="$t('title')"
-                    color="customGrey"
-                    background-color="#fff"
                     v-model="title.find(obj => obj.lang === currentLanguage).value"
                     :rules="[v => title.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
                   >

@@ -152,27 +152,27 @@
                 color="customGreyUltraLight"
                 flat
               >
-              <v-tabs
-                color="customGrey"
-                v-model="newsletterTab"
-              >
-                <v-tab>
-                  {{$t('sendButton')}}
-                </v-tab>
-                <v-tab
-                  :disabled="sendStats ? false : true"
+                <v-tabs
+                  color="customGrey"
+                  v-model="newsletterTab"
                 >
-                  {{$t('alreadySent')}}
-                </v-tab>
-                <v-tab
-                  :disabled="sendStats ? false : true"
-                >
-                  {{$t('sendErrors')}}
-                </v-tab>
-                <v-tab>
-                  {{$t('overview')}} {{$t('recipients')}}
-                </v-tab>
-              </v-tabs>
+                  <v-tab>
+                    {{$t('sendButton')}}
+                  </v-tab>
+                  <v-tab
+                    :disabled="sendStats ? false : true"
+                  >
+                    {{$t('alreadySent')}}
+                  </v-tab>
+                  <v-tab
+                    :disabled="sendStats ? false : true"
+                  >
+                    {{$t('sendErrors')}}
+                  </v-tab>
+                  <v-tab>
+                    {{$t('overview')}} {{$t('recipients')}}
+                  </v-tab>
+                </v-tabs>
               </v-toolbar>
               <v-window
                 v-model="newsletterTab"
@@ -231,7 +231,7 @@
                   </v-card>
                 </v-window-item>
                 <v-window-item>
-                  <v-data-table-server
+                  <v-data-table
                     v-if="sendStats"
                     :headers="[
                       { title: this.$t('id'), key: 'id' },
@@ -240,18 +240,26 @@
                       { title: this.$t('dt'), key: 'dt' },
                     ]"
                     :items="sendStats.sent"
+                    class="customGreyUltraLight pb-3 elevation-3"
+                    item-value="_id"
+                    sort-asc-icon="fas fa-caret-down"
+                    sort-desc-icon="fas fa-caret-up"
+                    :show-current-page="true"
+                    :must-sort="true"
+                    :sort-by="sendStatsQueryObject.sortBy"
+                    :items-per-page="sendStatsQueryObject.itemsPerPage"
                   >
                     <template
                       v-slot:[`item.type`]="{ item }"
                     >
-                      {{newsletterTypes[item.type]}}
+                      {{newsletterTypes[item.raw.type]}}
                     </template>
                     <template
                       v-slot:[`item.dt`]="{ item }"
                     >
-                      {{$moment(item.dt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+                      {{$moment(item.dt).format('DD.MM.YYYY, HH:mm:ss:SSS')}}
                     </template>
-                  </v-data-table-server>
+                  </v-data-table>
                 </v-window-item>
                 <v-window-item>
                   <v-data-table
@@ -264,10 +272,14 @@
                       { title: this.$t('errorMessage'), key: 'message' },
                     ]"
                     :items="sendStats.error"
-                    :footer-props="{
-                      itemsPerPageText: '',
-                      itemsPerPageOptions
-                    }"
+                    class="customGreyUltraLight pb-3 elevation-3"
+                    item-value="_id"
+                    sort-asc-icon="fas fa-caret-down"
+                    sort-desc-icon="fas fa-caret-up"
+                    :show-current-page="true"
+                    :must-sort="true"
+                    :sort-by="sendStatsQueryObject.sortBy"
+                    :items-per-page="sendStatsQueryObject.itemsPerPage"
                   >
                     <template
                       v-slot:[`item.type`]="{ item }"
@@ -277,7 +289,7 @@
                     <template
                       v-slot:[`item.dt`]="{ item }"
                     >
-                      {{$moment(item.raw.dt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+                      {{$moment(item.raw.dt).format('DD.MM.YYYY, HH:mm:ss:SSS')}}
                     </template>
                   </v-data-table>
                 </v-window-item>
@@ -296,20 +308,28 @@
                       </v-row>
                       <v-row>
                         <v-col>
-                          <v-data-table-server
+                          <v-data-table
                             :headers="[
                               { title: this.$t('id'), key: 'id' },
                               { title: this.$t('email'), key: 'email' },
                               { title: this.$t('type'), key: 'type' },
                             ]"
-                            :items="computedRecievers"
+                            :items="computedRecipients"
+                            class="customGreyUltraLight pb-3 elevation-3"
+                            item-value="_id"
+                            sort-asc-icon="fas fa-caret-down"
+                            sort-desc-icon="fas fa-caret-up"
+                            :show-current-page="true"
+                            :must-sort="true"
+                            :sort-by="sendStatsQueryObject.sortBy"
+                            :items-per-page="sendStatsQueryObject.itemsPerPage"
                           >
                             <template
                               v-slot:[`item.type`]="{ item }"
                             >
-                              {{newsletterTypes[item.type]}}
+                              {{newsletterTypes[item.raw.type]}}
                             </template>
-                          </v-data-table-server>
+                          </v-data-table>
                         </v-col>
                       </v-row>
                     </v-card-text>
@@ -339,7 +359,7 @@ export default {
       users: 'Mitglied',
       subscribers: 'Abonnent'
     },
-    triggerStats: 1,
+    sendStats: undefined,
     isSending: false,
     newsletterTab: 0,
     newsletterDialogItem: undefined,
@@ -352,7 +372,13 @@ export default {
       itemsPerPage: 25,
       sortBy: [{ key: 'title.value', order: 'desc' }],
       role: 'all'
-    }
+    },
+    sendStatsQueryObject: {
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'email', order: 'asc' }]
+    },
+    recipients: undefined
   }),
 
   async mounted () {
@@ -383,7 +409,7 @@ export default {
           query: this.queryObject.query,
         }
         this.updateQueryQuery(this.queryObject.query)
-        this.updateQueryPage(this.queryObject.query)
+        this.updateQueryPage(this.queryObject.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
             this.updateQuerySortBy(e.sortBy[0].key)
@@ -397,6 +423,23 @@ export default {
         this.newsParams
       )
       this.loading = false
+    },
+    async loadSendStats () {
+      const tmpSendStats = await this.findSendstats(this.sendStatsParams)
+      if (tmpSendStats && tmpSendStats.data) {
+        this.sendStats = tmpSendStats.data[0]
+      } else {
+        this.sendStats = undefined
+      }
+    },
+    async loadRecipients () {
+      const tmpRecipients = await this.findRecipients()
+      if (tmpRecipients) {
+        this.recipients = tmpRecipients
+      } else {
+        this.recipients = undefined
+      }
+      return tmpRecipients
     },
     async sendTestNewsletter () {
       try {
@@ -441,18 +484,18 @@ export default {
           this.isSending = false
         }
       }
-      this.triggerStats = Date.now()
       this.isSending = false
     },
     async deleteNews (id) {
-      this.$set(this.loaders, id + 'delete', true)
+      this.loaders[id + 'delete'] = true
       try {
         await this.removeNews(id)
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
       }
     }
   },
@@ -481,6 +524,14 @@ export default {
         { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
       ]
     },
+    sendStatsParams () {
+      return {
+        query: {
+          reference: this.newsletterDialogItem?._id,
+          type: 'news'
+        }
+      }
+    },
     newsParams () {
       const query = {
         $limit: this.computedLimit,
@@ -506,7 +557,7 @@ export default {
         query
       }
     },
-    computedRecievers () {
+    computedRecipients () {
       if (this.recipients) {
         if (this.searchRecipients) {
           return this.recipients.filter(obj => obj.email.includes(this.searchRecipients))
@@ -554,28 +605,6 @@ export default {
     }
   },
 
-  asyncComputed: {
-    async sendStats () {
-      if (this.newsletterDialogItem && this.triggerStats) {
-        const tmpSendStats = await this.findSendstats(
-          {
-            query: {
-              reference: this.newsletterDialogItem._id,
-              type: 'news'
-            }
-          }
-        )
-        if (tmpSendStats && tmpSendStats.data) {
-          return tmpSendStats.data[0]
-        }
-      }
-    },
-    async recipients () {
-      const tmpRecipients = await this.findRecipients()
-      return tmpRecipients
-    }
-  },
-
   watch: {
     ['queryObject.query'] () {
       this.updateQueryQuery(this.queryObject.query)
@@ -601,6 +630,22 @@ export default {
         ) {
           await this.loadDataTableEntities()
         }
+      }
+    },
+    sendStatsParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          this.newsletterDialogItem &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadSendStats()
+        }
+      }
+    },
+    async newsletterTab () {
+      if (this.newsletterTab === 3) {
+        await this.loadRecipients()
       }
     }
   }

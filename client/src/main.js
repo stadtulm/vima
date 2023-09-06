@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
-import { vuetifyProTipTap } from './plugins/tiptap'
 import sanitizeOptions from './plugins/sanitize'
 import VueSanitize from 'vue-3-sanitize'
 import VueYoutube from 'vue3-youtube'
@@ -21,7 +20,6 @@ import 'vue3-tour/dist/vue3-tour.css'
 const app = createApp(App)
   .use(i18n)
   .use(vuetify)
-  .use(vuetifyProTipTap)
   .use(VueSanitize, sanitizeOptions)
   .use(VueVimeoPlayer)
   .use(VueTour)

@@ -1,17 +1,17 @@
 <template>
   <v-card
     color="customGreyUltraLight"
-    v-if="computedNewsEntry"
+    v-if="newsEntry"
   >
     <v-card-text
       :class="newsProp ? 'pa-0' : ''"
     >
       <v-carousel
-        v-if="computedNewsEntry.pics.length > 0"
+        v-if="newsEntry.pics.length > 0"
         v-model="picsCarousel"
         hide-delimiters
-        :show-arrows="computedNewsEntry.pics.length > 1"
-        :show-arrows-on-hover="computedNewsEntry.pics.length > 1"
+        :show-arrows="newsEntry.pics.length > 1"
+        :show-arrows-on-hover="newsEntry.pics.length > 1"
         :cycle="false"
         :height="newsProp ? 250 : '100%'"
         class="mb-3 white"
@@ -43,7 +43,7 @@
         </v-btn>
         </template>
         <v-carousel-item
-          v-for="pic in computedNewsEntry.pics"
+          v-for="pic in newsEntry.pics"
           :key="pic.url"
         >
           <v-img
@@ -59,17 +59,17 @@
     <v-card-subtitle
       class="pb-0"
     >
-      {{$moment(computedNewsEntry.createdAt).format('DD.MM.YYYY')}}
+      {{$moment(newsEntry.createdAt).format('DD.MM.YYYY')}}
     </v-card-subtitle>
     <v-card-title
       class="word-wrap"
     >
-      {{computedNewsEntry.title.value}}
+      {{newsEntry.title.value}}
     </v-card-title>
     <v-card-subtitle
-      v-if="computedNewsEntry.subTitle"
+      v-if="newsEntry.subTitle"
     >
-      {{computedNewsEntry.subTitle.value}}
+      {{newsEntry.subTitle.value}}
     </v-card-subtitle>
       <v-card-text>
       <v-row>
@@ -77,7 +77,7 @@
           class="text-body-1"
         >
           <div
-            v-html="newsProp ? truncatedDescription(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedNewsEntry.text.value.replace(/\{(.+?)\}/g, '')))"
+            v-html="newsProp ? truncatedDescription(newTab(newsEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(newsEntry.text.value.replace(/\{(.+?)\}/g, '')))"
           >
           </div>
         </v-col>
@@ -89,11 +89,11 @@
           cols="12"
         >
           <v-carousel
-            v-if="computedNewsEntry.videos.length > 0"
+            v-if="newsEntry.videos.length > 0"
             v-model="videosCarousel"
             hide-delimiters
-            :show-arrows="computedNewsEntry.videos.length > 1"
-            :show-arrows-on-hover="computedNewsEntry.videos.length > 1"
+            :show-arrows="newsEntry.videos.length > 1"
+            :show-arrows-on-hover="newsEntry.videos.length > 1"
             :cycle="false"
             :height="newsProp ? 250 : '100%'"
           >
@@ -124,7 +124,7 @@
             </v-btn>
             </template>
             <v-carousel-item
-              v-for="video in computedNewsEntry.videos"
+              v-for="video in newsEntry.videos"
               :key="video.id"
             >
               <v-sheet
@@ -182,7 +182,7 @@
         large
         block
         class="customGrey--text"
-        :to="{ name: 'NewsEntry', params: { id: computedNewsEntry._id }}"
+        :to="{ name: 'NewsEntry', params: { id: newsEntry._id }}"
       >
         {{$t('viewButton')}}
         <v-icon
@@ -212,12 +212,14 @@ export default {
   ],
 
   data: () => ({
+    newsEntry: undefined,
     videosCarousel: 0,
     picsCarousel: 0,
     message: undefined
   }),
 
   async mounted () {
+    await this.loadNewsEntry()
   },
 
   methods: {
@@ -236,6 +238,19 @@ export default {
         tmpStr = tmpStr.substr(0, len) + ' [...]'
       }
       return tmpStr
+    },
+    async loadNewsEntry () {
+      if (this.newsProp) {
+        this.newsEntry = this.newsProp
+      } else {
+        if (this.$route.params.id && !this.newsProp) {
+          let selectedNewsEntry = this.getNews(this.$route.params.id)
+          if (!selectedNewsEntry) {
+            selectedNewsEntry = await this.requestNews([this.$route.params.id])
+          }
+          this.newsEntry = selectedNewsEntry
+        }
+      }
     }
   },
 
@@ -250,22 +265,6 @@ export default {
     ...mapGetters('news', {
       getNews: 'get'
     })
-  },
-
-  asyncComputed: {
-    async computedNewsEntry () {
-      if (this.newsProp) {
-        return this.newsProp
-      } else {
-        if (this.$route.params.id && !this.newsProp) {
-          let selectedNewsEntry = this.getNews(this.$route.params.id)
-          if (!selectedNewsEntry) {
-            selectedNewsEntry = await this.requestNews([this.$route.params.id])
-          }
-          return selectedNewsEntry
-        }
-      }
-    }
   }
 }
 </script>

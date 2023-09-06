@@ -302,7 +302,7 @@ export default {
         }
         this.updateQueryQuery(this.queryObject.query)
         this.updateQueryRole(this.queryObject.role)
-        this.updateQueryPage(this.queryObject.query)
+        this.updateQueryPage(this.queryObject.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
             this.updateQuerySortBy(e.sortBy[0].key)

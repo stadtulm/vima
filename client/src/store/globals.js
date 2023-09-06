@@ -163,7 +163,7 @@ const state = {
     for (const language of app.config.globalProperties.$settings.languages) {
       if (!tmpLanguages.find(obj => obj.lang === language)) {
         tmpLanguages.push({
-          type: i18n.fallbackLocale === language ? 'default' : 'author',
+          type: i18n.global.fallbackLocale.value === language ? 'default' : 'author',
           lang: language,
           value: ''
         })

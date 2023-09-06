@@ -6,6 +6,8 @@ import i18n from '@/i18n'
 import Multiguard from 'vue-router-multiguard'
 import Cookies from 'js-cookie'
 import Vuetify from '@/plugins/vuetify'
+import { locale } from 'vuetify-pro-tiptap'
+import { de } from '@/plugins/tiptap/tiptap_de'
 
 import Home from '@/views/Home.vue'
 import Site from '@/views/Site.vue'
@@ -589,23 +591,6 @@ const routes = [
     ])
   },
   {
-    path: '/admin/veranstaltungen/uebersicht',
-    name: 'EventListAdmin',
-    component: EventListAdmin,
-    meta: {
-      breadCrumbTextKey: 'eventsOverview',
-      breadCrumbPredecessors: [
-        ['Participate']
-      ],
-      step: 'events'
-    },
-    beforeEnter: Multiguard([
-      checkModuleActiveOrDependency,
-      checkLoggedIn,
-      checkAdmin
-    ])
-  },
-  {
     path: '/veranstaltungen/uebersicht/:organisation',
     name: 'EventList',
     component: EventList,
@@ -621,6 +606,23 @@ const routes = [
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMember
+    ])
+  },
+  {
+    path: '/admin/veranstaltungen/uebersicht/leckmich',
+    name: 'EventListAdmin',
+    component: EventListAdmin,
+    meta: {
+      breadCrumbTextKey: 'eventsOverview',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ],
+      step: 'events'
+    },
+    beforeEnter: Multiguard([
+      checkModuleActiveOrDependency,
+      checkLoggedIn,
+      checkAdmin
     ])
   },
   {
@@ -1379,11 +1381,13 @@ async function init (to, from, next) {
     }
     // Set language
     const langCookie = Cookies.get('clientLanguage', { path: '/' })
+    // i18n
     if (Store.getters['auth/user'] && Store.getters['auth/user'].language) {
       i18n.global.locale.value = Store.getters['auth/user'].language
     } else if (langCookie) {
       i18n.global.locale.value = langCookie
     }
+    // Cookie
     document.cookie = Cookies.set('clientLanguage', i18n.global.locale.value, {
       domain: serverDomain,
       path: '/',
@@ -1391,7 +1395,11 @@ async function init (to, from, next) {
       secure: appMode === 'production',
       expires: 365 * 100
     })
+    // Vuetify
     Vuetify.locale.current.value = Store.getters.i18nMap[i18n.global.locale.value] || i18n.global.locale.value
+    // Tiptap
+    locale.setMessage('de', de)
+    locale.setLang('de')
     // Load stuff
     const settings = await Store.dispatch('settings/find')
     if (settings.length === 1) {
