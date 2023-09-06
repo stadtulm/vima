@@ -1,19 +1,20 @@
 <template>
   <div>
-    <v-row
-      class="mb-4"
+        <v-row
+      class="d-flex mx-0 mb-4"
     >
-      <v-col
-        class="text-h5 font-weight-bold customGrey--text text-uppercase"
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
         {{$t('adminView')}} {{$t('manageSitesButton')}}
-      </v-col>
-      <v-col
-        class="shrink align-self-center"
+      </span>
+      <span
+        class="my-3"
       >
         <v-btn
-          dark
+          variant="elevated"
           :to="{ name: 'SiteEditor' }"
+          dark
           color="customGrey"
         >
           {{$t('newSiteButton')}}
@@ -24,94 +25,69 @@
             fas fa-plus
           </v-icon>
         </v-btn>
-      </v-col>
+      </span>
     </v-row>
     <v-row>
       <v-col>
         <v-text-field
-          v-model="search"
+          v-model="queryObject.query"
           :label="$t('filterByTypeLabel')"
-          outlined
-          dense
+          density="compact"
           hide-details
-          color="black"
         ></v-text-field>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          v-if="!initialView"
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
-          :items="sites"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          must-sort
-          :server-items-length="total"
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          mobile-breakpoint="0"
-          :footer-props="{
-            itemsPerPageText: '',
-            itemsPerPageOptions
-          }"
+          :items-length="computedTotal"
+          :items="computedSites"
+          :loading="loading"
+          class="customGreyUltraLight pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateDataTableParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          :show-current-page="true"
+          :must-sort="true"
         >
-          <template
-            v-slot:progress
-          >
-            <v-progress-linear
-              indeterminate
-              color="customGrey"
-            ></v-progress-linear>
-          </template>
           <template
             v-slot:[`item.type`]="{ item }"
           >
-            <v-list-item
-              class="pa-0"
+            <v-list-item-title
+              class="font-weight-bold"
             >
-              <v-list-item-content>
-                <v-list-item-title
-                  class="font-weight-bold"
-                >
-                  {{$t(item.type)}}
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+              {{$t(item.raw.type)}}
+            </v-list-item-title>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
-            {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-pen"
+              size="small"
               color="customGrey"
               class="my-3"
-              :to="{ name: 'SiteEditor', params: { site: item._id } }"
+              :to="{ name: 'SiteEditor', params: { site: item.raw._id } }"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-pen
-              </v-icon>
             </v-btn>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
   </div>
@@ -119,141 +95,71 @@
 
 <script>
 
-import { makeFindMixin } from '@feathersjs/vuex'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'SiteListAdmin',
-
-  mixins: [makeFindMixin({ service: 'sites', watch: true })],
 
   components: {
   },
 
   data: () => ({
     loading: false,
-    search: '',
-    page: 1,
-    total: 0,
-    itemsPerPage: 25,
-    sortBy: ['updatedAt'],
-    sortDesc: [true]
+    initialView: true,
+    sitesResponse: undefined,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'updatedAt', order: 'desc' }],
+    },
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    await this.adaptQuery()
   },
 
   methods: {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
+    ...mapActions('sites', {
+      findSites: 'find'
+    }),
+    async updateDataTableParams(e) {
+      if (!this.initialView) {
+        this.queryObject = {
+          ...e,
+          query: this.queryObject.query,
         }
-        this.sortDesc = tmpDesc
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryPage(this.queryObject.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+            this.updateQuerySortBy(e.sortBy[0].key)
+            this.updateQuerySortOrder(e.sortBy[0].order)
+        }
       }
     },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
-      if (parseInt(this.$route.query.p) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateItemsPerPage (data) {
-      if (parseInt(this.$route.query.i) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
-          }
-        })
-      } else if (!data) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
-          }
-        })
-      }
-    },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
-          }
-        })
-      }
+    async loadDataTableEntities () {
+      this.loading = true
+      this.sitesResponse = await this.findSites(
+        this.sitesParams
+      )
+      this.loading = false
     }
   },
 
   computed: {
     ...mapGetters([
       's3',
-      'itemsPerPageOptions'
+      'adaptQuery',
+      'updateQueryRole',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -261,34 +167,46 @@ export default {
     sitesParams () {
       const query = {
         $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc }
+        $skip: this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
       }
-      if (this.search && this.search !== '') {
-        query.type = { $regex: this.search, $options: 'i' }
+      if (this.queryObject.query) {
+        query.type = { $regex: this.queryObject.query, $options: 'i' }
       }
       return {
-        query,
-        debounce: 1000,
-        qid: 'adminSites'
+        query
+      }
+    },
+    computedSites () {
+      if (this.sitesResponse && this.sitesResponse.data) {
+        return this.sitesResponse.data
+      } else {
+        return []
+      }
+    },
+    computedTotal () {
+      if (this.sitesResponse) {
+        return this.sitesResponse.total
+      } else {
+        return 0
       }
     },
     computedLimit () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 1000000
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
     computedSkip () {
-      if (this.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.itemsPerPage
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
       }
+      return (this.queryObject.page - 1) * tmpSkip
     },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
       } else {
         return -1
@@ -296,21 +214,27 @@ export default {
     },
     headers () {
       return [
-        { text: this.$t('type'), value: 'type' },
-        { text: this.$t('createdAt'), value: 'createdAt' },
-        { text: this.$t('updatedAt'), value: 'updatedAt' },
-        { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' }
+        { title: this.$t('type'), key: 'type' },
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('updatedAt'), key: 'updatedAt' },
+        { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' }
       ]
     }
   },
 
   watch: {
-    isFindSitesPending () {
-      if (!this.isFindSitesPending) {
-        this.loading = false
-        this.total = this.sitesPaginationData.adminSites.mostRecent.total
-      } else {
-        this.loading = true
+    ['queryObject.query'] () {
+      this.updateQueryQuery(this.queryObject.query)
+    },
+    sitesParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
       }
     }
   }

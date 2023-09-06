@@ -1,14 +1,14 @@
 <template>
   <v-card
     color="customGreyUltraLight"
-    v-if="computedSite"
+    v-if="site"
   >
     <v-card-text>
       <v-row>
         <v-col
           class="word-wrap text-h5 font-weight-bold customGrey--text text-uppercase"
         >
-          {{$t(computedSite.type === 'communicationrules' ? 'communicationRules' : computedSite.type)}}
+          {{$t(site.type === 'communicationrules' ? 'communicationRules' : site.type)}}
         </v-col>
       </v-row>
       <v-row>
@@ -16,13 +16,13 @@
           class="text-body-1 customGrey--text"
         >
           <div
-            v-html="$sanitize(newTab(computedSite.text.value))"
+            v-html="$sanitize(newTab(site.text.value))"
           >
           </div>
         </v-col>
       </v-row>
       <v-row
-        v-if="computedSite && computedSite.videos && computedSite.videos.length > 0"
+        v-if="site && site.videos && site.videos.length > 0"
       >
         <v-col
           cols="12"
@@ -30,8 +30,8 @@
           <v-carousel
             v-model="videosCarousel"
             hide-delimiters
-            :show-arrows="computedSite.videos.length > 1"
-            :show-arrows-on-hover="computedSite.videos.length > 1"
+            :show-arrows="site.videos.length > 1"
+            :show-arrows-on-hover="site.videos.length > 1"
             :cycle="false"
             height="100%"
           >
@@ -62,7 +62,7 @@
             </v-btn>
             </template>
             <v-carousel-item
-              v-for="video in computedSite.videos"
+              v-for="video in site.videos"
               :key="video.id"
             >
               <v-sheet
@@ -85,11 +85,11 @@
                         <template
                           v-if="video.type === 'youtube'"
                         >
-                          <youtube
+                          <YouTube
                             width="100%"
                             :video-id="video.id"
                             nocookie
-                          ></youtube>
+                          ></YouTube>
                         </template>
                         <template
                           v-else-if="video.type === 'vimeo'"
@@ -126,33 +126,19 @@ export default {
   },
 
   data: () => ({
-    videosCarousel: 0
+    videosCarousel: 0,
+    site: undefined
   }),
 
   async mounted () {
+    await this.loadSite()
   },
 
   methods: {
     ...mapActions('sites', {
       fetchSites: 'find'
-    })
-  },
-
-  computed: {
-    ...mapGetters([
-      's3',
-      'newTab'
-    ]),
-    ...mapGetters('auth', {
-      user: 'user'
     }),
-    ...mapGetters('sites', {
-      findSites: 'get'
-    })
-  },
-
-  asyncComputed: {
-    async computedSite () {
+    async loadSite () {
       let selectedSite = this.findSites(
         {
           query: {
@@ -174,7 +160,39 @@ export default {
         }
         selectedSite = selectedSite.data[0]
       }
-      return selectedSite
+      this.site = selectedSite
+    }
+  },
+
+  computed: {
+    ...mapGetters([
+      's3',
+      'newTab'
+    ]),
+    ...mapGetters('auth', {
+      user: 'user'
+    }),
+    ...mapGetters('sites', {
+      findSites: 'get'
+    })
+  },
+
+  watch: {
+    async '$route.name' () {
+      if (
+        [
+          'imprint',
+          'privacy',
+          'contact',
+          'ileu',
+          'vima',
+          'vives',
+          'communicationrules',
+          'team'
+        ].includes(this.$route.name.toLowerCase())
+      ) {
+        await this.loadSite()
+      }
     }
   }
 }

@@ -1,6 +1,15 @@
 <template>
   <div>
     <v-row
+      class="d-flex mx-0 mb-4"
+    >
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
+      >
+        {{$t('siteEntry')}} {{ selectedSite ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+      </span>
+    </v-row>
+    <v-row
       v-if="selectedSite || !$route.params.site"
     >
       <v-col
@@ -11,15 +20,6 @@
           tile
         >
           <v-card-text>
-            <v-row
-              class="mb-3"
-            >
-              <v-col
-                class="text-h5 font-weight-bold"
-              >
-                {{$t('siteEntry')}} {{ selectedSite ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
-              </v-col>
-            </v-row>
             <v-form
               v-model="isValid"
               ref="siteEditorForm"
@@ -29,24 +29,20 @@
               >
                 <v-col>
                   <v-select
-                    dense
-                    color="customGrey"
-                    item-color="customGrey"
-                    background-color="#fff"
-                    outlined
+                    density="compact"
                     v-model="type"
                     :label="$t('type')"
                     :rules="[rules.required]"
-                    :items="[
-                      { text: $t('imprint'), value: 'imprint', disabled: !computedTypes || computedTypes.includes('imprint') },
-                      { text: $t('privacy'), value: 'privacy', disabled: !computedTypes || computedTypes.includes('privacy')},
-                      { text: $t('contact'), value: 'contact', disabled: !computedTypes || computedTypes.includes('contact')},
-                      { text: $t('aboutIleu'), value: 'ileu', disabled: !computedTypes || computedTypes.includes('ileu')},
-                      { text: $t('aboutVima'), value: 'vima', disabled: !computedTypes || computedTypes.includes('vima')},
-                      { text: $t('aboutVives'), value: 'vives', disabled: !computedTypes || computedTypes.includes('vives')},
-                      { text: $t('communicationRules'), value: 'communicationrules', disabled: !computedTypes || computedTypes.includes('communicationrules')},
-                      { text: $t('teamTitle'), value: 'team', disabled: !computedTypes || computedTypes.includes('team')}
-                    ]"
+                    :items="types ? [
+                      { title: $t('imprint'), value: 'imprint', props: { disabled: types.includes('imprint') } },
+                      { title: $t('privacy'), value: 'privacy', props: { disabled: types.includes('privacy')} },
+                      { title: $t('contact'), value: 'contact', props: { disabled: types.includes('contact')} },
+                      { title: $t('aboutIleu'), value: 'ileu', props: { disabled: types.includes('ileu')} },
+                      { title: $t('aboutVima'), value: 'vima', props: { disabled: types.includes('vima')} },
+                      { title: $t('aboutVives'), value: 'vives', props: { disabled: types.includes('vives')} },
+                      { title: $t('communicationRules'), value: 'communicationrules', props: { disabled: types.includes('communicationrules')} },
+                      { title: $t('teamTitle'), value: 'team', props: { disabled: types.includes('team')} }
+                    ] : []"
                   >
                   </v-select>
                 </v-col>
@@ -89,20 +85,11 @@
                               @setLanguage="(l) => { currentLanguage = l }"
                             ></LanguageSelect>
                           </template>
-                          <template slot="default">
-                            <VuetifyTiptap
-                              :editor-properties="{
-                                disableInputRules: true,
-                                disablePasteRules: true
-                              }"
-                              color="customGreyUltraLight"
+                          <template v-slot:default>
+                            <custom-tiptap
                               v-model="text.find(obj => obj.lang === currentLanguage).value"
-                              :card-props="{ tile: true, flat: true }"
-                              style="border: 1px solid #aaa;"
-                              :extensions="extensions"
-                              :placeholder="$t('enterText')"
                             >
-                            </VuetifyTiptap>
+                            </custom-tiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -136,13 +123,10 @@
                                 cols="5"
                               >
                                 <v-text-field
-                                  dense
-                                  color="customGrey"
+                                  density="compact"
                                   v-model="video.id"
-                                  outlined
                                   :label="$t('videoIdLabel')"
                                   :rules="[rules.required]"
-                                  background-color="#fff"
                                 >
                                 </v-text-field>
                               </v-col>
@@ -150,16 +134,12 @@
                                 cols="5"
                               >
                                 <v-select
-                                  dense
-                                  color="customGrey"
-                                  item-color="customGrey"
+                                  density="compact"
                                   v-model="video.type"
                                   :label="$t('type')"
-                                  outlined
                                   :items="videoTypeItems"
                                   :item-text="(item) => $t(item.textKey)"
                                   :rules="[rules.required]"
-                                  background-color="#fff"
                                 >
                                 </v-select>
                               </v-col>
@@ -169,13 +149,10 @@
                                 class="text-right"
                               >
                                 <v-btn
-                                  icon
+                                  icon="fas fa-times"
                                   @click="videos.splice(i, 1)"
                                   class="mb-6"
                                 >
-                                  <v-icon>
-                                    fas fa-times
-                                  </v-icon>
                                 </v-btn>
                               </v-col>
                             </v-row>
@@ -189,13 +166,10 @@
                               cols="5"
                             >
                               <v-text-field
-                                dense
-                                color="customGrey"
+                                density="compact"
                                 v-model="video.id"
-                                outlined
                                 :label="$t('videoIdLabel')"
                                 :rules="[rules.required]"
-                                background-color="#fff"
                               >
                               </v-text-field>
                             </v-col>
@@ -203,16 +177,12 @@
                               cols="5"
                             >
                               <v-select
-                                dense
-                                color="customGrey"
-                                item-color="customGrey"
+                                density="compact"
                                 v-model="video.type"
                                 :label="$t('type')"
-                                outlined
                                 :items="videoTypeItems"
                                 :item-text="(item) => $t(item.textKey)"
                                 :rules="[rules.required]"
-                                background-color="#fff"
                               >
                               </v-select>
                             </v-col>
@@ -222,13 +192,10 @@
                               class="text-right"
                             >
                               <v-btn
-                                icon
+                                icon="fas fa-times"
                                 @click="tmpVideos.splice(j, 1)"
                                 class="mb-6"
                               >
-                                <v-icon>
-                                  fas fa-times
-                                </v-icon>
                               </v-btn>
                             </v-col>
                           </v-row>
@@ -239,12 +206,9 @@
                               cols="5"
                             >
                               <v-text-field
-                                dense
-                                color="customGrey"
+                                density="compact"
                                 v-model="videoId"
-                                outlined
                                 :label="$t('videoIdLabel')"
-                                background-color="#fff"
                                 :rules="videoId || videoType ? [rules.required] : []"
                               >
                               </v-text-field>
@@ -253,16 +217,12 @@
                               cols="5"
                             >
                               <v-select
-                                dense
-                                color="customGrey"
-                                item-color="customGrey"
+                                density="compact"
                                 v-model="videoType"
                                 :label="$t('type')"
-                                outlined
                                 :items="videoTypeItems"
                                 :item-text="(item) => $t(item.textKey)"
                                 :rules="videoId || videoType ? [rules.required] : []"
-                                background-color="#fff"
                               >
                               </v-select>
                             </v-col>
@@ -272,14 +232,11 @@
                               class="text-right"
                             >
                               <v-btn
-                                icon
+                                icon="fas fa-plus"
                                 :disabled="!videoId || !videoType"
                                 @click="addTmpVideo()"
                                 class="mb-6"
                               >
-                                <v-icon>
-                                  fas fa-plus
-                                </v-icon>
                               </v-btn>
                             </v-col>
                           </v-row>
@@ -289,22 +246,28 @@
                   </v-card>
                 </v-col>
               </v-row>
-              <v-divider class="my-9 mt-3"></v-divider>
             </v-form>
-            <v-card-actions
-              class="px-0"
+            <v-divider
+              class="mb-6 mt-6"
+            ></v-divider>
+            <v-toolbar
+              class="mt-4"
+              color="transparent"
             >
               <v-btn
                 block
-                :dark="isValid"
+                size="large"
+                dark
+                variant="elevated"
                 color="customGrey"
                 :loading="isLoading"
                 :disabled="!isValid"
                 @click="saveSite()"
+                class="mx-0"
               >
                 {{$t('saveDataButton')}}
               </v-btn>
-            </v-card-actions>
+            </v-toolbar>
           </v-card-text>
         </v-card>
       </v-col>
@@ -316,16 +279,19 @@
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import LanguageSelect from '@/components/LanguageSelect.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 export default {
   name: 'SiteEditor',
 
   components: {
-    LanguageSelect
+    LanguageSelect,
+    CustomTiptap
   },
 
   data: () => ({
     type: undefined,
+    types: undefined,
     selectedSite: undefined,
     isLoading: false,
     isValid: false,
@@ -339,6 +305,7 @@ export default {
 
   async mounted () {
     this.currentLanguage = this.$i18n.locale
+    await this.loadTypes()
     await this.adapt()
   },
 
@@ -366,6 +333,18 @@ export default {
       } else {
         this.text = this.hydrateTranslations()
       }
+    },
+    async loadTypes () {
+      const tmpTypes = await this.findSites(
+        [
+          {
+            query: {
+              $select: { type: 1 }
+            }
+          }
+        ]
+      )
+      this.types = tmpTypes.data.map(obj => obj.type)
     },
     async saveSite () {
       this.isLoading = true
@@ -419,21 +398,6 @@ export default {
           value: this.$sanitize(language.value)
         }
       })
-    }
-  },
-
-  asyncComputed: {
-    async computedTypes () {
-      const types = await this.findSites(
-        [
-          {
-            query: {
-              $select: { type: 1 }
-            }
-          }
-        ]
-      )
-      return types.data.map(obj => obj.type)
     }
   },
 

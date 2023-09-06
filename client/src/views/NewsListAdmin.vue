@@ -370,8 +370,7 @@ export default {
       query: '',
       page: 1,
       itemsPerPage: 25,
-      sortBy: [{ key: 'title.value', order: 'desc' }],
-      role: 'all'
+      sortBy: [{ key: 'title.value', order: 'desc' }]
     },
     sendStatsQueryObject: {
       page: 1,

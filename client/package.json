@@ -20,7 +20,10 @@
     "@intlify/unplugin-vue-i18n": "^0.12.3",
     "@intlify/vite-plugin-vue-i18n": "^7.0.0",
     "@mdi/font": "5.9.55",
+    "@tiptap/extension-link": "^2.1.8",
     "@tiptap/extension-mention": "^2.1.8",
+    "@tiptap/extension-underline": "^2.1.8",
+    "@tiptap/pm": "^2.1.8",
     "@tiptap/starter-kit": "^2.1.8",
     "@tiptap/suggestion": "^2.1.8",
     "@tiptap/vue-3": "^2.1.8",
@@ -45,8 +48,7 @@
     "vue-vimeo-player": "^0.2.2",
     "vue3-tour": "^0.3.4",
     "vue3-youtube": "^0.1.9",
-    "vuetify": "v3.4.0-alpha.0",
-    "vuetify-pro-tiptap": "^2.1.0",
+    "vuetify": "v3.4.0-alpha.1",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

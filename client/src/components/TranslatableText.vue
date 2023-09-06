@@ -32,12 +32,11 @@
         v-bind:translateText="translateText"
       >
         <v-tooltip top>
-          <template v-slot:activator="{ on, attrs }">
+          <template v-slot:activator="{ props }">
             <v-sheet
               class="pa-1 px-3"
               outlined
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <slot
                 name="translatedLangText"

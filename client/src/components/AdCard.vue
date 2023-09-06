@@ -1,8 +1,8 @@
 <template>
   <v-card
     color="customGreyUltraLight"
-    v-if="computedAd"
-    :to="adProp ? { name: 'Ad', params: { id: computedAd._id }} : ''"
+    v-if="ad"
+    :to="adProp ? { name: 'Ad', params: { id: ad._id }} : ''"
   >
     <v-row>
       <v-col
@@ -23,7 +23,7 @@
                 :allFields="['title', 'text']"
                 type="ads"
                 :allIds="allAdIds"
-                :textParent="computedAd"
+                :textParent="ad"
               >
               </TranslatableText>
               <v-tooltip
@@ -31,16 +31,15 @@
                 color="customGrey"
                 :key="computedAdStatus.value"
               >
-                <template v-slot:activator="{ on, attrs }">
+                <template v-slot:activator="{ props }">
                   <!-- Subscription buttons -->
                   <v-btn
                     v-if="computedAdStatus.value === 'subscriber' || computedAdStatus.value === 'subscribe'"
-                    v-bind="attrs"
-                    v-on="on"
+                    v-bind="props"
                     color="#fff"
-                    class="ml-3"
                     :style="'color:' + $settings.modules.ads.bgColor"
                     icon
+                    size="small"
                     :disabled="user ? false : true"
                     @click="toggleAdSubscription()"
                     :title="$t(computedAdStatus.textKey)"
@@ -54,8 +53,9 @@
                   <!-- Owner or applicant icons -->
                   <v-btn
                     icon
-                    v-bind="attrs"
-                    v-on="on"
+                    vsariant="text"
+                    size="small"
+                    v-bind="props"
                     v-else-if="computedAdStatus.value === 'owner' || computedAdStatus.value === 'applicant'"
                     :title="$t(computedAdStatus.textKey)"
                     class="ml-3"
@@ -76,8 +76,8 @@
             <v-card-subtitle
               class="pb-1"
             >
-              {{computedAd.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}}
-              {{$t('from')}} {{$moment(computedAd.createdAt).format('DD.MM.YYYY')}}
+              {{ad.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}}
+              {{$t('from')}} {{$moment(ad.createdAt).format('DD.MM.YYYY')}}
               <template
                 v-if="user"
               >
@@ -85,9 +85,9 @@
                 <v-btn
                   text
                   class="px-1"
-                  @click="$router.push({name: 'User', params: { user: computedAd.author.user._id} })"
+                  @click="$router.push({name: 'User', params: { user: ad.author.user._id} })"
                 >
-                {{computedAd.author.user.userName}}
+                {{ad.author.user.userName}}
                 </v-btn>
               </template>
             </v-card-subtitle>
@@ -103,7 +103,7 @@
             <v-btn
               :style="'color:' + $settings.modules.ads.color"
               :class="$vuetify.display.mdAndUp ? '' : 'mx-4 mb-4'"
-              :to="{ name: 'Ad', params: { id: computedAd._id } }"
+              :to="{ name: 'Ad', params: { id: ad._id } }"
             >
               {{$t('viewButton')}}
               <v-icon
@@ -119,14 +119,14 @@
         <!-- Categories -->
         <v-row
           dense
-          v-if="computedAd.categories && computedAd.categories.length > 0"
+          v-if="ad.categories && ad.categories.length > 0"
         >
           <v-col
             class="mx-4 mt-2"
           >
             <v-chip
               outlined
-              v-for="category in getCategories(computedAd.categories)"
+              v-for="category in getCategories(ad.categories)"
               :key="category._id"
               class="mr-1"
               :disabled="!adProp"
@@ -139,13 +139,13 @@
         <!-- Tags -->
         <v-row
           dense
-          v-if="computedAd.tags && computedAd.tags.length > 0"
+          v-if="ad.tags && ad.tags.length > 0"
         >
           <v-col
             class="mx-4"
           >
             <v-chip
-              v-for="tag in getTags(computedAd.tags)"
+              v-for="tag in getTags(ad.tags)"
               :key="tag._id"
               class="mr-1"
               :disabled="!adProp"
@@ -162,7 +162,7 @@
             :allFields="['title', 'text']"
             type="ads"
             :allIds="allAdIds"
-            :textParent="computedAd"
+            :textParent="ad"
           >
             <template
               v-slot:defaultLang="{ computedText, translateText }"
@@ -189,19 +189,19 @@
                 <v-sheet
                   class="ma-4 pa-1 px-3"
                 >
-                  <TranslatableTextInfo
-                    :canTranslate="false"
-                    :canShowOriginal="true"
-                    :needsUpdate="computedAd.translationSum !== computedText.translationSum"
-                    @showOriginal="(data) => { showOriginal(data) }"
-                    @translateText="(data) => { translateText(data) }"
-                  ></TranslatableTextInfo>
                   <span
                     v-html="adProp ?
                       $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
                       truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
                     "
                   ></span>
+                  <TranslatableTextInfo
+                    :canTranslate="false"
+                    :canShowOriginal="true"
+                    :needsUpdate="ad.translationSum !== computedText.translationSum"
+                    @showOriginal="(data) => { showOriginal(data) }"
+                    @translateText="(data) => { translateText(data) }"
+                  ></TranslatableTextInfo>
                 </v-sheet>
               </v-col>
             </template>
@@ -229,12 +229,11 @@
           class="white"
         >
           <template
-            v-slot:prev="{ on, attrs }"
+            v-slot:prev="{ props }"
           >
             <v-btn
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>
                 fas fa-chevron-left
@@ -242,12 +241,11 @@
             </v-btn>
           </template>
           <template
-            v-slot:next="{ on, attrs }"
+            v-slot:next="{ props }"
           >
             <v-btn
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>
                 fas fa-chevron-right
@@ -281,7 +279,7 @@
         >
           <v-alert
             class="mx-4 mb-2"
-            dark
+            theme="dark"
             icon="fas fa-info-circle"
             :color="$settings.modules.ads.color"
           >
@@ -325,13 +323,13 @@
         <!-- If answered -->
         <v-col
           v-else-if="
-            computedAd &&
+            ad &&
             computedAdStatus.value === 'applicant'
           "
         >
           <v-alert
             class="mx-4 mb-2"
-            dark
+            theme="dark"
             icon="fas fa-info-circle"
             :color="$settings.modules.ads.color"
           >
@@ -361,33 +359,28 @@
                   <v-textarea
                     :label="$t('answerAdLabel')"
                     v-model="message"
-                    outlined
-                    filled
                     auto-grow
                     multi-line
                     :rows="1"
                     hide-details
-                    background-color="#fff"
-                    color="customGrey"
                   >
                     <template
-                      slot="append-outer"
+                      v-slot:append
                       >
                       <v-row>
                         <v-col
                           class="py-0 px-3"
                         >
                           <v-btn
-                            fab
+                            icon
                             :loading="isSending"
+                            :color="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === '' ? 'customGreyMedium' : $settings.modules.ads.color"
                             :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                             @click="sendMessage()"
-                            :color="$settings.modules.ads.color"
                             class="mx-1"
-                            style="margin-top: -5px;"
                           >
                             <template
-                              slot="loader"
+                              v-slot:loader
                             >
                               <v-progress-circular
                                 color="white"
@@ -438,10 +431,12 @@ export default {
   data: () => ({
     picsCarousel: 0,
     message: undefined,
-    isSending: false
+    isSending: false,
+    ad: undefined
   }),
 
   async mounted () {
+    await this.loadAd()
   },
 
   methods: {
@@ -471,12 +466,33 @@ export default {
       }
       return tmpStr
     },
+    async loadAd () {
+      if (this.adProp) {
+        this.ad = this.adProp
+      } else {
+        if (this.$route.name === 'Ad' && this.$route.params.id && !this.adProp) {
+          let selectedAd = this.getAd(this.$route.params.id)
+          if (!selectedAd) {
+            try {
+              selectedAd = await this.requestAd(
+                this.$route.params.id
+              )
+            } catch (e) {
+              if (e.code === 403) {
+                this.$router.push({ name: 'Forbidden' })
+              }
+            }
+          }
+          this.ad = selectedAd
+        }
+      }
+    },
     async toggleAdSubscription () {
       if (this.computedAdStatus.value === 'subscriber') {
         try {
           await this.removeAdSubscription(
             [
-              this.computedAd._id,
+              this.ad._id,
               {
                 query: {
                   type: 'removeAdSubscription'
@@ -493,7 +509,7 @@ export default {
           await this.createAdSubscription(
             {
               type: 'createAdSubscription',
-              adId: this.computedAd._id
+              adId: this.ad._id
             }
           )
           this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
@@ -507,7 +523,7 @@ export default {
       try {
         await this.createAdMessage(
           {
-            ad: this.computedAd._id,
+            ad: this.ad._id,
             author: this.user._id,
             text: [{
               value: this.message,
@@ -570,44 +586,20 @@ export default {
     computedStatusContainers () {
       return this.statusContainers.filter(
         obj =>
-          obj.reference === this.computedAd._id &&
+          obj.reference === this.ad._id &&
           obj.user === this.user._id &&
           obj.type === 'ads'
       )
     },
     computedPics () {
-      if (this.computedAd) {
-        if (this.computedAd.pics && this.computedAd.pics.length > 0) {
-          return this.computedAd.pics
+      if (this.ad) {
+        if (this.ad.pics && this.ad.pics.length > 0) {
+          return this.ad.pics
         } else {
-          return this.categories.filter(obj => this.computedAd.categories.includes(obj._id) && obj.pic && obj.pic.url).map(obj => obj.pic)
+          return this.categories.filter(obj => this.ad.categories.includes(obj._id) && obj.pic && obj.pic.url).map(obj => obj.pic)
         }
       } else {
         return []
-      }
-    }
-  },
-
-  asyncComputed: {
-    async computedAd () {
-      if (this.adProp) {
-        return this.adProp
-      } else {
-        if (this.$route.name === 'Ad' && this.$route.params.id && !this.adProp) {
-          let selectedAd = this.getAd(this.$route.params.id)
-          if (!selectedAd) {
-            try {
-              selectedAd = await this.requestAd(
-                this.$route.params.id
-              )
-            } catch (e) {
-              if (e.code === 403) {
-                this.$router.push({ name: 'Forbidden' })
-              }
-            }
-          }
-          return selectedAd
-        }
       }
     }
   }

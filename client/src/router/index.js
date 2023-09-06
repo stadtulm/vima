@@ -6,8 +6,6 @@ import i18n from '@/i18n'
 import Multiguard from 'vue-router-multiguard'
 import Cookies from 'js-cookie'
 import Vuetify from '@/plugins/vuetify'
-import { locale } from 'vuetify-pro-tiptap'
-import { de } from '@/plugins/tiptap/tiptap_de'
 
 import Home from '@/views/Home.vue'
 import Site from '@/views/Site.vue'
@@ -1397,9 +1395,6 @@ async function init (to, from, next) {
     })
     // Vuetify
     Vuetify.locale.current.value = Store.getters.i18nMap[i18n.global.locale.value] || i18n.global.locale.value
-    // Tiptap
-    locale.setMessage('de', de)
-    locale.setLang('de')
     // Load stuff
     const settings = await Store.dispatch('settings/find')
     if (settings.length === 1) {

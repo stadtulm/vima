@@ -3,13 +3,12 @@
     <v-menu
       open-on-hover
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template v-slot:activator="{ props }">
         <v-btn
           icon
-          v-bind="attrs"
-          v-on="on"
-          small
-          class="ml-1"
+          v-bind="props"
+          size="small"
+          class="ml-2"
         >
           <v-icon
             size="20"
@@ -20,45 +19,40 @@
         </v-btn>
       </template>
       <v-list
-        rounded
-        dense
+        density="compact"
       >
         <v-list-item
-          dense
+          density="compact"
           disabled
           v-if="canShowOriginal"
         >
-          <v-list-item-avatar>
+          <template v-slot:prepend>
             <v-icon
               class="mb-1 mr-1"
               color="customGreyLight"
             >
               fas fa-info-circle
             </v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{$t('machineTranslationHint')}}
-            </v-list-item-title>
-          </v-list-item-content>
+          </template>
+          <v-list-item-title>
+            {{$t('machineTranslationHint')}}
+          </v-list-item-title>
         </v-list-item>
         <v-list-item
           v-if="canShowOriginal"
           @click="$emit('showOriginal')"
         >
-          <v-list-item-avatar>
+          <template v-slot:prepend>
             <v-icon
               small
               class="mb-1 mr-1"
             >
               fa fa-undo
             </v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{$t('showOriginal')}}
-            </v-list-item-title>
-          </v-list-item-content>
+          </template>
+          <v-list-item-title>
+            {{$t('showOriginal')}}
+          </v-list-item-title>
         </v-list-item>
         <v-list-item
           v-if="needsUpdate && canShowOriginal"
@@ -68,7 +62,7 @@
             force: true
           })"
         >
-          <v-list-item-avatar>
+          <template v-slot:prepend>
             <v-icon
               small
               color="error"
@@ -76,15 +70,13 @@
             >
               fas fa-sync
             </v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{$t('updateTranslation')}}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{$t('defaultLanguageEdited')}}
-            </v-list-item-subtitle>
-          </v-list-item-content>
+          </template>
+          <v-list-item-title>
+            {{$t('updateTranslation')}}
+          </v-list-item-title>
+          <v-list-item-subtitle>
+            {{$t('defaultLanguageEdited')}}
+          </v-list-item-subtitle>
         </v-list-item>
         <v-list-item
           v-if="canTranslate"
@@ -94,13 +86,15 @@
             force: false
           })"
         >
-          <v-list-item-avatar>
+          <template v-slot:prepend>
+            <v-avatar>
               <country-flag
-                class="my-0"
+                class="my-0 mr-1"
                 :country="$i18n.locale === 'en' ? 'gb': $i18n.locale"
               >
               </country-flag>
-          </v-list-item-avatar>
+            </v-avatar>
+          </template>
           <v-list-item-title>
             {{$t('translateText')}}
           </v-list-item-title>
@@ -113,13 +107,15 @@
             force: false
           })"
         >
-          <v-list-item-avatar>
+          <template v-slot:prepend>
+            <v-avatar>
               <country-flag
-                class="my-0"
+                class="my-0 mr-1"
                 :country="$i18n.locale === 'en' ? 'gb': $i18n.locale"
               >
               </country-flag>
-          </v-list-item-avatar>
+            </v-avatar>
+          </template>
           <v-list-item-title>
             {{$t('translateObject')}}
           </v-list-item-title>
@@ -133,15 +129,15 @@
             }
           )"
         >
-          <v-list-item-avatar>
+          <template v-slot:prepend>
             <country-flag
               class="my-0"
               :country="$i18n.locale === 'en' ? 'gb': $i18n.locale"
             >
             </country-flag>
-          </v-list-item-avatar>
+          </template>
           <v-list-item-title>
-              {{$t('translateAll')}}
+            {{$t('translateAll')}}
           </v-list-item-title>
         </v-list-item>
       </v-list>

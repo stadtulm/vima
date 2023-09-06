@@ -143,8 +143,7 @@ export default {
       query: '',
       page: 1,
       itemsPerPage: 25,
-      sortBy: [{ key: 'updatedAt', order: 'desc' }],
-      role: 'all'
+      sortBy: [{ key: 'updatedAt', order: 'desc' }]
     },
   }),
 
