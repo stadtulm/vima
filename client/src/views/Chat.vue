@@ -4,7 +4,7 @@
   >
     <v-row>
       <v-col
-        class="text-h5 font-weight-bold customGrey--text text-uppercase"
+        class="text-h5 font-weight-bold text-customGrey text-uppercase"
       >
         {{$t('chatWith')}} {{selectedChat && computedOtherStatusContainers && computedOtherStatusContainers.length === 1 ? users.find(obj => obj._id === computedOtherStatusContainers[0].user).userName : $route.params.username }}
       </v-col>
@@ -33,14 +33,14 @@
                       indeterminate
                     ></v-progress-linear>
                     <v-col
-                      class="text-center customGrey--text text-body-1 mt-4"
+                      class="text-center text-customGrey text-body-1 mt-4"
                     >
                       {{$t('loadingMessages')}}
                     </v-col>
                   </template>
                   <v-col
                     v-else
-                    class="text-center customGrey--text text-body-1 mt-3"
+                    class="text-center text-customGrey text-body-1 mt-3"
                   >
                     {{$t('noMessagesYet')}}
                     <v-icon
@@ -60,14 +60,14 @@
                       indeterminate
                     ></v-progress-linear>
                     <v-col
-                      class="text-center customGrey--text text-body-1 mt-4"
+                      class="text-center text-customGrey text-body-1 mt-4"
                     >
                       {{$t('loadingOlderAnswers')}}
                     </v-col>
                   </v-col>
                   <v-col
                     v-else-if="selectedChat && chatMessagesPaginationData[selectedChat._id].mostRecent.total <= computedMessages.length"
-                    class="text-center customGrey--text text-body-1 mt-3"
+                    class="text-center text-customGrey text-body-1 mt-3"
                   >
                     {{$t('noOlderAnswers')}}
                   </v-col>
@@ -91,7 +91,7 @@
                       >
                         <v-col
                           class="caption"
-                          :class="showRepliesObj[message._id] ? 'white--text' : 'grey--text'"
+                          :class="showRepliesObj[message._id] ? 'text-white' : 'text-grey'"
                         >
                           <span
                             @click="!isOwnMessage(message) ? $router.push({name: 'User', params: { user: message.author}}) : ''"

@@ -41,7 +41,7 @@
           >
             <!-- View more button -->
             <v-btn
-              class="customGrey--text mx-4"
+              class="text-customGrey mx-4"
               :to="{ name: 'Event', params: { event: event._id }}"
             >
               {{$t('viewButton')}}

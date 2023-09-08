@@ -6,7 +6,7 @@
       >
         <v-row>
           <v-col
-            class="text-h5 font-weight-bold customGrey--text text-uppercase"
+            class="text-h5 font-weight-bold text-customGrey text-uppercase"
           >
             {{$t('categories')}} {{ $route.params.type ? $t('for') + ' ' + $t(typeItems[$route.params.type]) : '' }}
           </v-col>

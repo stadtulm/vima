@@ -418,7 +418,7 @@
                             class="pb-0 shrink right-text align-self-center"
                           >
                             <v-btn
-                              class="customPurple--text"
+                              :class="'text-' + $settings.modules.groups.color"
                               @click="$router.push({ name: 'GroupSelection', params: { group: computedGroup._id, category: cat._id } })"
                             >
                               {{$t('viewButton')}}
@@ -433,7 +433,7 @@
                           <v-col
                             v-if="cat.description && cat.description.value"
                             cols="12"
-                            class="pb-4 px-4 text-body-1 black--text"
+                            class="pb-4 px-4 text-body-1 text-black"
                           >
                             {{cat.description.value}}
                           </v-col>

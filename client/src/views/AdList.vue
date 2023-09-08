@@ -4,7 +4,7 @@
       class="mb-4"
     >
       <v-col
-        class="text-h5 font-weight-bold customGrey--text text-uppercase"
+        class="text-h5 font-weight-bold text-customGrey text-uppercase"
       >
         {{$t('myAds')}}
       </v-col>
@@ -80,7 +80,7 @@
             >
               <template slot="badge">
                 <span
-                  class="customGrey--text font-weight-bold"
+                  class="text-customGrey font-weight-bold"
                 >
                   {{getOwnStatusContainerOfAd(item._id).unread.length}}
                 </span>
@@ -136,7 +136,7 @@
                     {{item.title.value}}
                   </v-card-title>
                   <v-card-text
-                    class="white--text"
+                    class="text-white"
                   >
                     <v-row>
                       <v-col

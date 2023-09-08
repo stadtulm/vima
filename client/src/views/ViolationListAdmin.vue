@@ -4,7 +4,7 @@
       class="mb-4"
     >
       <v-col
-        class="text-h5 font-weight-bold customGrey--text text-uppercase"
+        class="text-h5 font-weight-bold text-customGrey text-uppercase"
       >
         {{$t('adminView')}} {{$t('violations')}}
       </v-col>

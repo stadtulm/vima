@@ -47,14 +47,14 @@
                 indeterminate
               ></v-progress-linear>
               <v-col
-                class="text-center customGrey--text text-body-1 mt-4"
+                class="text-center text-customGrey text-body-1 mt-4"
               >
                 {{$t('loadingPosts')}}
               </v-col>
             </template>
             <v-col
               v-else
-              class="text-center customGrey--text text-body-1 mt-3"
+              class="text-center text-customGrey text-body-1 mt-3"
             >
               {{$t('noPostsYet')}}
               <v-icon
@@ -87,7 +87,7 @@
                   dense
                 >
                   <v-col
-                    :class="showRepliesObj[message._id] ? 'white--text' : 'grey--text'"
+                    :class="showRepliesObj[message._id] ? 'text-white' : 'text-grey'"
                   >
                     <v-list-item
                       class="px-0"

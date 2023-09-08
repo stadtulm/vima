@@ -80,7 +80,7 @@
                       <v-row>
                         <v-col
                           cols="12"
-                          class="text-h4 font-weight-bold mt-4 customGrey--text"
+                          class="text-h4 font-weight-bold mt-4 text-customGrey"
                         >
                           {{$t('welcomeHeadline')}}
                           <img
@@ -92,7 +92,7 @@
                         </v-col>
                         <v-col
                           cols="12"
-                          class="text-h6 customGrey--text font-weight-bold"
+                          class="text-h6 text-customGrey font-weight-bold"
                         >
                           {{$t('sloganHome')}}
                         </v-col>
@@ -105,7 +105,7 @@
                     <v-col>
                       <v-row>
                         <v-col
-                          class="text-subtitle-1 customGrey--text"
+                          class="text-subtitle-1 text-customGrey"
                         >
                           <p>
                             <span

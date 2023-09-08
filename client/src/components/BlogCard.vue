@@ -179,7 +179,7 @@
       <v-btn
         large
         block
-        class="customGrey--text"
+        class="text-customGrey"
         :to="{ name: 'BlogEntry', params: { id: computedBlogEntry._id } }"
       >
         {{$t('viewButton')}}

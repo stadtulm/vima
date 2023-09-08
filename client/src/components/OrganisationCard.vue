@@ -99,7 +99,7 @@
             <v-btn
               large
               block
-              class="customGrey--text"
+              class="text-customGrey"
               :to="{ name: 'Organisation', params: { organisation: computedOrganisation._id }}"
             >
               {{$t('viewButton')}}

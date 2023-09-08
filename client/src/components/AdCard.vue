@@ -125,7 +125,7 @@
             class="mx-4 mt-2"
           >
             <v-chip
-              outlined
+              variant="outlined"
               v-for="category in getCategories(ad.categories)"
               :key="category._id"
               class="mr-1"
@@ -291,7 +291,7 @@
             <v-row>
               <v-col>
                 <v-btn
-                  class="elevation-1 customGrey--text"
+                  class="elevation-1 text-customGrey"
                   color="white"
                   :to="{ name: 'Signup' }"
                 >
@@ -304,7 +304,7 @@
                   </v-icon>
                 </v-btn>
                 <v-btn
-                  class="elevation-1 ml-3 customGrey--text"
+                  class="elevation-1 ml-3 text-customGrey"
                   color="white"
                   :to="{ name: 'Login' }"
                 >

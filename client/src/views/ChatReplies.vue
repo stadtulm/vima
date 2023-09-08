@@ -23,14 +23,14 @@
                       indeterminate
                     ></v-progress-linear>
                     <v-col
-                      class="text-center customGrey--text text-body-1 mt-4"
+                      class="text-center text-customGrey text-body-1 mt-4"
                     >
                       {{$t('loadingAnswers')}}
                     </v-col>
                   </template>
                    <template v-else>
                     <v-col
-                      class="text-center customGrey--text text-body-1"
+                      class="text-center text-customGrey text-body-1"
                     >
                       {{$t('noAnswersYet')}}
                     </v-col>
@@ -45,14 +45,14 @@
                       indeterminate
                     ></v-progress-linear>
                     <v-col
-                      class="text-center customGrey--text text-body-1 mt-4"
+                      class="text-center text-customGrey text-body-1 mt-4"
                     >
                       {{$t('loadingOlderAnswers')}}
                     </v-col>
                   </v-col>
                   <v-col
                     v-else-if="chatMessagesPaginationData[mainMessage._id].mostRecent.total > computedMessages.length"
-                    class="text-center customGrey--text text-body-1 my-3"
+                    class="text-center text-customGrey text-body-1 my-3"
                   >
                     <v-btn
                       @click="loadMoreReplies()"
@@ -71,7 +71,7 @@
                   </v-col>
                   <v-col
                     v-else-if="chatMessagesPaginationData[mainMessage._id].mostRecent.total <= computedMessages.length"
-                    class="text-center customGrey--text text-body-1 mt-3"
+                    class="text-center text-customGrey text-body-1 mt-3"
                   >
                     {{$t('noOlderAnswers')}}
                   </v-col>
@@ -92,7 +92,7 @@
                         dense
                       >
                         <v-col
-                          class="caption grey--text"
+                          class="caption text-grey"
                         >
                           <span
                             :class="!isOwnMessage(message) ? 'pointer': ''"

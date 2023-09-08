@@ -6,7 +6,7 @@
       >
         <v-row>
           <v-col
-            class="text-h5 font-weight-bold customGrey--text text-uppercase"
+            class="text-h5 font-weight-bold text-customGrey text-uppercase"
           >
             <div
               v-html="$t('sponsorsTitle')"
@@ -129,7 +129,7 @@
     >
       <v-row>
         <v-col
-          class="text-center customGrey--text text-body-1"
+          class="text-center text-customGrey text-body-1"
         >
           <v-alert
             color="customGreyLight"

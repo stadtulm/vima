@@ -5,14 +5,14 @@
     <v-card-text>
       <v-row>
         <v-col
-          class="word-wrap text-h5 font-weight-bold customGrey--text text-uppercase"
+          class="word-wrap text-h5 font-weight-bold text-customGrey text-uppercase"
         >
           {{$t('faq')}}
         </v-col>
       </v-row>
       <v-row>
         <v-col
-          class="title customGrey--text"
+          class="title text-customGrey"
         >
           {{$t('howToSwitchLanguage')}}
         </v-col>
@@ -91,14 +91,14 @@
       </v-row>
       <v-row>
         <v-col
-          class="title customGrey--text"
+          class="title text-customGrey"
         >
           {{$t('manualTitle')}}
         </v-col>
       </v-row>
       <v-row>
         <v-col
-          class="customGrey--text"
+          class="text-customGrey"
         >
           <div
             v-html="$t('manualBody')"
@@ -113,7 +113,7 @@
         <v-row
         >
           <v-col
-            class="title customGrey--text"
+            class="title text-customGrey"
           >
             {{el.title}}
           </v-col>

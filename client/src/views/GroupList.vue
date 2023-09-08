@@ -4,7 +4,7 @@
       class="mb-4"
     >
       <v-col
-        class="text-h5 font-weight-bold customGrey--text text-uppercase"
+        class="text-h5 font-weight-bold text-customGrey text-uppercase"
       >
         {{$t('myInterestGroups')}}
       </v-col>
@@ -115,7 +115,7 @@
             >
               <template slot="badge">
                 <span
-                  class="customGrey--text font-weight-bold"
+                  class="text-customGrey font-weight-bold"
                 >
                   {{
                     statusContainers.find(
@@ -182,7 +182,7 @@
             >
               <template slot="badge">
                 <span
-                  class="customGrey--text font-weight-bold"
+                  class="text-customGrey font-weight-bold"
                 >
                   {{
                     statusContainers.find(obj =>
@@ -252,7 +252,7 @@
             >
               <template slot="badge">
                 <span
-                  class="customGrey--text font-weight-bold"
+                  class="text-customGrey font-weight-bold"
                 >
                   {{
                     statusContainers.find(obj =>

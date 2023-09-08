@@ -181,7 +181,7 @@
       <v-btn
         large
         block
-        class="customGrey--text"
+        class="text-customGrey"
         :to="{ name: 'NewsEntry', params: { id: newsEntry._id }}"
       >
         {{$t('viewButton')}}

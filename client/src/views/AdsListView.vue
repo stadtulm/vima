@@ -5,36 +5,35 @@
         class="mb-4"
       >
         <v-row>
-          <v-col
-            class="text-h5 font-weight-bold customGrey--text text-uppercase"
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
             <div
               v-html="$t('adsTitle')"
             >
             </div>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-3"
           >
             <v-btn
               v-if="computedFiltersDirty"
-              text
+              variant="text"
               :color="$settings.modules.ads.color"
               @click="resetFilters()"
             >
               {{$t('resetFilters')}}
             </v-btn>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-6"
           >
             <v-badge
-              :value="computedFiltersDirty"
+              v-model="computedFiltersDirty"
               :color="$settings.modules.ads.color"
-              overlap
             >
               <v-btn
-                outlined
+                variant="outlined"
                 :color="$settings.modules.ads.color"
                 @click="showFilters = !showFilters"
               >
@@ -47,25 +46,26 @@
                 </v-icon>
               </v-btn>
             </v-badge>
-          </v-col>
-          <v-col
+          </span>
+          <span
             v-if="user"
-            class="shrink align-self-center"
+            class="my-3 mr-3"
           >
             <v-btn
-              dark
               :to="{ name: 'AdEditor' }"
               :color="$settings.modules.ads.color"
+              class="text-white"
             >
               {{$t('newAdButton')}}
               <v-icon
                 class="ml-3"
                 size="18"
+                color="white"
               >
                 fas fa-plus
               </v-icon>
             </v-btn>
-          </v-col>
+          </span>
         </v-row>
       </v-col>
     </v-row>
@@ -81,12 +81,10 @@
           md="2"
         >
           <v-text-field
-            v-model="search"
-            color="black"
+            v-model="queryObject.query"
             :label="$t('filterByTitleLabel')"
             hide-details
-            outlined
-            dense
+            density="compact"
           ></v-text-field>
         </v-col>
         <v-col
@@ -95,17 +93,15 @@
           md="2"
         >
           <v-select
-            v-model="type"
-            color="black"
+            v-model="queryObject.type"
             :item-color="$settings.modules.ads.color"
             :label="$t('type')"
-            outlined
-            dense
+            density="compact"
             hide-details
             :items="[
-              { text: $t('all'), value: 'all'},
-              { text: $t('offer'), value: 'offer'},
-              { text: $t('wanted'), value: 'request' },
+              { title: $t('all'), value: 'all'},
+              { title: $t('offer'), value: 'offer'},
+              { title: $t('wanted'), value: 'request' },
             ]"
           ></v-select>
         </v-col>
@@ -115,18 +111,16 @@
           md="2"
         >
           <v-select
-            v-model="combinedSort"
-            color="black"
+            v-model="rawSortBy"
             :item-color="$settings.modules.ads.color"
             :label="$t('sortByLabel')"
-            outlined
-            dense
+            density="compact"
             hide-details
             :items="[
-              { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
-              { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
-              { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
-              { text: $t('sortTitleDesc'), value: [['title.value'], -1] }
+              { title: $t('sortDateAsc'), value: { key: 'createdAt', order: 'asc' } },
+              { title: $t('sortDateDesc'), value: { key: 'createdAt', order: 'desc' } },
+              { title: $t('sortTitleAsc'), value: { key: 'title.value', order: 'desc' }  },
+              { title: $t('sortTitleDesc'), value: { key: 'title.value', order: 'asc' }  }
             ]"
           ></v-select>
         </v-col>
@@ -136,17 +130,14 @@
           md="3"
         >
           <v-autocomplete
-            v-model="categoriesList"
-            color="black"
-            :item-color="$settings.modules.ads.color"
+            v-model="queryObject.categories"
             :label="$t('filterByCategoriesLabel')"
             multiple
-            outlined
             auto-select-first
-            dense
+            density="compact"
             hide-details
             :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
-            item-text="text.value"
+            item-title="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -156,19 +147,16 @@
           md="3"
         >
           <v-autocomplete
-            v-model="tagsList"
-            color="black"
-            :item-color="$settings.modules.ads.color"
+            v-model="queryObject.tags"
             :label="$t('filterByTagsLabel')"
             multiple
-            outlined
             auto-select-first
             chips
             deletable-chips
-            dense
+            density="compact"
             hide-details
             :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
-            item-text="text"
+            item-title="text"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -198,22 +186,25 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col>
+        <v-col
+          class="mx-0"
+        >
           <v-pagination
+            variant="outlined"
             :color="$settings.modules.ads.color"
-            v-model="page"
-            :length="Math.ceil(total / itemsPerPage)"
+            v-model="queryObject.page"
+            :length="Math.ceil(computedTotal / queryObject.itemsPerPage)"
             :total-visible="6"
           ></v-pagination>
         </v-col>
       </v-row>
     </template>
     <template
-      v-else-if="!isFindAdsPending"
+      v-else-if="!loading"
     >
       <v-row>
         <v-col
-          class="text-center customGrey--text text-body-1"
+          class="text-center text-customGrey text-body-1"
         >
           <v-alert
             color="customGreyLight"
@@ -256,31 +247,29 @@ export default {
   },
 
   data: () => ({
+    rawSortBy: undefined,
     type: 'all',
     showFilters: false,
-    init: true,
-    manualLoad: false,
-    isFindAdsPending: false,
-    triggerReload: 1,
-    page: 1,
     loading: true,
-    categoriesList: [],
-    tagsList: [],
-    search: '',
     categoriesListDefault: [],
     tagsListDefault: [],
     searchDefault: '',
-    total: 0,
-    itemsPerPage: 25,
-    combinedSort: [['createdAt'], -1],
-    sortBy: ['createdAt'],
-    sortDesc: -1
+    typeDefault: 'all',
+    adsResponse: undefined,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'title.value', order: 'desc' }],
+      categories: [],
+      tags: [],
+      type: 'all'
+    },
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    this.rawSortBy = { title: this.$t('sortTitleDesc'), value: this.queryObject.sortBy[0]},
+    await this.adaptQuery()
   },
 
   methods: {
@@ -288,9 +277,10 @@ export default {
       findAds: 'find'
     }),
     resetFilters () {
-      this.categoriesList = this.categoriesListDefault
-      this.tagsList = this.tagsListDefault
-      this.search = this.searchDefault
+      this.queryObject.categories = this.categoriesListDefault
+      this.queryObject.tags = this.tagsListDefault
+      this.queryObject.type = this.typeDefault
+      this.queryObject.query = this.searchDefault
     },
     areArraysEqual (array1, array2) {
       if (
@@ -302,43 +292,41 @@ export default {
       }
     },
     selectCategory (categoryId) {
-      this.tagsList = []
-      this.categoriesList = [categoryId]
+      this.queryObject.tags = []
+      this.queryObject.categories = [categoryId]
     },
     selectTag (tagId) {
-      this.categoriesList = []
-      this.tagsList = [tagId]
+      this.queryObject.categories = []
+      this.queryObject.tags = [tagId]
     },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
+    async loadDataTableEntities () {
+      this.loading = true
+      try {
+        this.adsResponse = await this.findAds(
+          this.adsParams
+        )
+      } catch (e) {
+        if (e.code === 403) {
+          this.$router.push({ name: 'Forbidden' })
+        }
+        return []
       }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        this.sortDesc = parseInt(this.$route.query.d)
-      }
-      if (this.$route.query.d || this.$route.query.s) {
-        this.combinedSort = [this.sortBy, this.sortDesc]
-      }
-      if (this.$route.query.c) {
-        this.categoriesList = this.$route.query.c.split(',')
-      }
-      if (this.$route.query.t) {
-        this.tagsList = this.$route.query.t.split(',')
-      }
-      if (this.$route.query.y) {
-        this.type = this.$route.query.y
-      }
+      this.loading = false
     }
   },
 
   computed: {
+    ...mapGetters([
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder',
+      'updateQueryCategories',
+      'updateQueryTags',
+      'updateQueryType',
+    ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -348,267 +336,117 @@ export default {
     ...mapGetters('tags', {
       tags: 'list'
     }),
-    ...mapGetters('ads', {
-      allAds: 'list'
-    }),
     computedFiltersDirty () {
       if (
-        !this.areArraysEqual(this.categoriesList, this.categoriesListDefault) ||
-        !this.areArraysEqual(this.tagsList, this.tagsListDefault) ||
-        this.search !== this.searchDefault
+        !this.areArraysEqual(this.queryObject.categories, this.categoriesListDefault) ||
+        !this.areArraysEqual(this.queryObject.tags, this.tagsListDefault) ||
+        this.queryObject.query !== this.searchDefault
       ) {
         return true
       } else {
         return false
       }
     },
-    computedAds () {
-      if (this.computedAdsData && this.computedAdsData.data) {
-        return this.computedAdsData.data
-      } else {
-        return []
-      }
-    }
-  },
-  asyncComputed: {
-    async computedAdsData () {
-      if (this.triggerReload) {}
-      this.isFindAdsPending = true
+    adsParams () {
       const query = {
         'accepted.isAccepted': true,
         isActive: true,
-        $limit: this.itemsPerPage,
-        $skip: (this.page - 1) * this.itemsPerPage,
-        $sort: { [this.sortBy]: this.sortDesc }
+        $limit: this.computedLimit,
+        $skip: (this.queryObject.query || this.queryObject.categories.length > 0 || this.queryObject.tags.length > 0) ? 0 : this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
       }
-      if (this.search && this.search !== '') {
-        query.title = {
-          $elemMatch: {
-            $and: [
-              { value: { $regex: this.search, $options: 'i' } },
-              { type: 'default' }
-            ]
-          }
+      if (this.queryObject.query) {
+        query['title.value'] = {
+          $regex: this.queryObject.query, $options: 'i'
         }
       }
-      if (this.categoriesList.length > 0) {
-        query.categories = { $in: this.categoriesList }
+      if (this.queryObject.categories.length > 0) {
+        query.categories = { $in: this.queryObject.categories }
       }
-      if (this.tagsList.length > 0) {
-        query.tags = { $in: this.tagsList }
+      if (this.queryObject.tags.length > 0) {
+        query.tags = { $in: this.queryObject.tags }
       }
-      if (this.type && this.type !== 'all') {
-        query.type = this.type
+      if (this.queryObject.type && this.queryObject.type !== 'all') {
+        query.type = this.queryObject.type
       }
-      try {
-        return await this.findAds(
-          {
-            query
-          }
-        )
-      } catch (e) {
-        if (e.code === 403) {
-          this.$router.push({ name: 'Forbidden' })
-        }
+      console.log(query.$sort)
+      return {
+        query
+      }
+    },
+    computedAds () {
+      if (this.adsResponse && this.adsResponse.data) {
+        return this.adsResponse.data
+      } else {
         return []
+      }
+    },
+    computedTotal () {
+      if (this.adsResponse) {
+        return this.adsResponse.total
+      } else {
+        return 0
+      }
+    },
+    computedLimit () {
+      if (this.queryObject.itemsPerPage === -1) {
+        return 1000000
+      } else {
+        return this.queryObject.itemsPerPage
+      }
+    },
+    computedSkip () {
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
+      }
+      return (this.queryObject.page - 1) * tmpSkip
+    },
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
+        return 1
+      } else {
+        return -1
       }
     }
   },
 
   watch: {
-    combinedSort (newValue, oldValue) {
-      if (newValue && newValue !== oldValue) {
-        this.sortBy = this.combinedSort[0]
-        this.sortDesc = this.combinedSort[1]
-      }
+    rawSortBy () {
+      this.queryObject.sortBy[0] = this.rawSortBy
+      console.log('WATCHED AND CHANGED queryObject.sortBy', this.queryObject.sortBy)
     },
-    page () {
-      if (parseInt(this.$route.query.p) !== this.page) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(','),
-              y: this.type
-            }
-          }
-        )
-      }
-    },
-    itemsPerPage () {
-      if (parseInt(this.$route.query.i) !== this.itemsPerPage) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(','),
-              y: this.type
-            }
-          }
-        )
-      }
-    },
-    sortBy () {
-      let tmpData
-      if (Array.isArray(this.sortBy)) {
-        tmpData = this.sortBy.join(',')
-      } else {
-        tmpData = this.sortBy
-      }
-      if (this.sortBy && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc,
-            c: this.categoriesList.join(','),
-            t: this.tagsList.join(','),
-            y: this.type
-          }
-        })
-      } else if (!this.sortBy) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc,
-            c: this.categoriesList.join(','),
-            t: this.tagsList.join(','),
-            y: this.type
-          }
-        })
-      }
-    },
-    categoriesList () {
-      let tmpData
-      if (Array.isArray(this.categoriesList)) {
-        tmpData = this.categoriesList.join(',')
-      } else {
-        tmpData = this.categoriesList
-      }
-      if (this.categoriesList && this.$route.query.c !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: this.sortDesc,
-            c: tmpData,
-            t: this.tagsList.join(','),
-            y: this.type
-          }
-        })
-      } else if (!this.sortBy) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc,
-            y: this.type
-          }
-        })
-      }
-    },
-    tagsList () {
-      let tmpData
-      if (Array.isArray(this.tagsList)) {
-        tmpData = this.tagsList.join(',')
-      } else {
-        tmpData = this.tagsList
-      }
-      if (this.tagsList && this.$route.query.t !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: this.sortDesc,
-            c: this.categoriesList.join(','),
-            t: tmpData,
-            y: this.type
-          }
-        })
-      } else if (!this.sortBy) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc,
-            y: this.type
-          }
-        })
-      }
-    },
-    sortDesc () {
-      if (parseInt(this.$route.query.d) !== this.sortDesc) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(','),
-              y: this.type
-            }
-          }
-        )
-      }
-    },
-    type () {
-      if (this.type && this.$route.query.y !== this.type) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: this.sortDesc,
-            c: this.categoriesList.join(','),
-            t: this.tagsList.join(','),
-            y: this.type
-          }
-        })
-      } else if (!this.sortBy) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc,
-            t: this.tagsList.join(',')
-          }
-        })
-      }
-    },
-    allAds: {
+    ['queryObject.sortBy']: {
       deep: true,
-      handler (newValue, oldValue) {
-        if (!this.init && !this.manualLoad) {
-          this.triggerReload = Date.now()
-          this.manualLoad = true
-        }
+      async handler () {
+        this.updateQuerySortBy(this.queryObject.sortBy[0].key)
+        this.updateQuerySortOrder(this.queryObject.sortBy[0].order)    
+        await this.loadDataTableEntities()
       }
     },
-    computedAds (newValue, oldValue) {
-      //
-      this.total = this.computedAdsData.total
-      //
-      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
-        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
-      }
-      //
-      this.isFindAdsPending = false
-      this.init = false
-      this.manualLoad = false
+    async ['queryObject.query'] () {
+      this.updateQueryQuery(this.queryObject.query)
+      await this.loadDataTableEntities()
+    },
+    async ['queryObject.categories'] () {
+      this.updateQueryCategories(this.queryObject.categories)
+      await this.loadDataTableEntities()
+    },
+    async ['queryObject.tags'] () {
+      this.updateQueryTags(this.queryObject.tags)
+      await this.loadDataTableEntities()
+    },
+    async ['queryObject.type'] () {
+      this.updateQueryType(this.queryObject.type)
+      await this.loadDataTableEntities()
+    },
+    async ['queryObject.page'] () {
+      this.updateQueryPage(this.queryObject.page)
+      await this.loadDataTableEntities()
+    },
+    async ['queryObject.itemsPerPage'] () {
+      this.updateQueryItemsPerPage(this.queryObject.itemsPerPage)
+      await this.loadDataTableEntities()
     }
   }
 }

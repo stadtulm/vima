@@ -278,7 +278,7 @@
               <v-btn
                 large
                 block
-                class="red--text"
+                class="text-red"
                 :to="{ name: 'Discussion', params: { id: computedDiscussion._id }}"
               >
                 {{$t('viewButton')}}

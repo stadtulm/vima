@@ -55,7 +55,7 @@
           <template v-slot:activator="{ props }">
             <v-btn
               variant="elevated"
-              class="customGrey--text"
+              class="text-customGrey"
               :class="!$vuetify.display.smAndUp ? 'ml-2': 'ml-1'"
               :size="!$vuetify.display.smAndUp ? 'small' : 'large'"
               :icon="!$vuetify.display.smAndUp"
@@ -151,7 +151,7 @@
           <template v-slot:activator="{ props }">
             <v-btn
               variant="elevated"
-              class="customGrey--text"
+              class="text-customGrey"
               :class="!$vuetify.display.smAndUp ? 'ml-4': 'ml-3'"
               :size="!$vuetify.display.smAndUp ? 'small' : 'large'"
               :icon="!$vuetify.display.smAndUp"
@@ -439,7 +439,7 @@
             :to="{ name: 'UserEditor', params: { user: user._id } }"
           >
             <v-list-item-title
-              class="font-weight-bold customGrey--text"
+              class="font-weight-bold text-customGrey"
             >
               {{$t('myProfileButton')}}
             </v-list-item-title>
@@ -448,7 +448,7 @@
             :to="{ name: 'PreferencesEditor', params: { user: user._id } }"
           >
             <v-list-item-title
-            class="font-weight-bold customGrey--text"
+            class="font-weight-bold text-customGrey"
             >
               {{$t('myPreferencesButton')}}
             </v-list-item-title>
@@ -458,7 +458,7 @@
             :to="{ name: 'ChatList', params: { id: user._id } }"
           >
             <v-list-item-title
-              class="font-weight-bold customGrey--text"
+              class="font-weight-bold text-customGrey"
             >
               {{$t('myChatsButton')}}
               <v-tooltip
@@ -520,7 +520,7 @@
             :to="{ name: 'AdList', params: { id: user._id } }"
           >
             <v-list-item-title
-              class="font-weight-bold customGrey--text"
+              class="font-weight-bold text-customGrey"
             >
               {{$t('myAds')}}
               <v-tooltip
@@ -582,7 +582,7 @@
             :to="{ name: 'DiscussionList', params: { id: user._id } }"
           >
             <v-list-item-title
-              class="font-weight-bold customGrey--text"
+              class="font-weight-bold text-customGrey"
             >
               {{$t('myDiscussions')}}
               <v-tooltip
@@ -672,7 +672,7 @@
             :to="{ name: 'GroupList', params: { id: user._id } }"
           >
             <v-list-item-title
-              class="font-weight-bold customGrey--text"
+              class="font-weight-bold text-customGrey"
             >
               {{$t('myInterestGroups')}}
               <v-tooltip
@@ -870,7 +870,7 @@
             :to="{ name: 'UserList' }"
           >
             <v-list-item-title
-              class="font-weight-bold customGrey--text"
+              class="font-weight-bold text-customGrey"
             >
               {{$t('findMembersButton')}}
             </v-list-item-title>
@@ -896,7 +896,7 @@
                     v-bind="props"
                   >
                     <v-list-item-title
-                      class="font-weight-bold customGrey--text"
+                      class="font-weight-bold text-customGrey"
                       color="customGrey"
                     >
                       {{$t('partnerFunctionsButton')}}
@@ -914,7 +914,7 @@
                 }"
               >
                 <v-list-item-title
-                  class="font-weight-bold customGrey--text"
+                  class="font-weight-bold text-customGrey"
                 >
                   {{$t('myOrganisationButton')}}
                 </v-list-item-title>
@@ -924,7 +924,7 @@
                 :to="{ name: 'EventList', params: { organisation: computedUserOrganisationId } }"
               >
                 <v-list-item-title
-                  class="font-weight-bold customGrey--text"
+                  class="font-weight-bold text-customGrey"
                 >
                   {{$t('myEventsButton')}}
                 </v-list-item-title>
@@ -939,7 +939,7 @@
                 }"
               >
                 <v-list-item-title
-                  class="font-weight-bold customGrey--text"
+                  class="font-weight-bold text-customGrey"
                 >
                   {{$t('myApiKey')}}
                 </v-list-item-title>
@@ -958,7 +958,7 @@
                 v-bind="props"
               >
                 <v-list-item-title
-                  class="font-weight-bold customGrey--text"
+                  class="font-weight-bold text-customGrey"
                   color="customGrey"
                 >
                   {{$t('adminFunctionsButton')}}
@@ -987,7 +987,7 @@
               :to="{ name: 'UserListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('manageMembersButton')}}
               </v-list-item-title>
@@ -997,7 +997,7 @@
               :to="{ name: 'OrganisationListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('manageOrganisationsButton')}}
               </v-list-item-title>
@@ -1007,7 +1007,7 @@
               :to="{ name: 'SponsorListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('manageSponsorsButton')}}
               </v-list-item-title>
@@ -1017,7 +1017,7 @@
               :to="{ name: 'BlogListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('blog')}}
               </v-list-item-title>
@@ -1027,7 +1027,7 @@
               :to="{ name: 'NewsListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('news')}}
               </v-list-item-title>
@@ -1037,7 +1037,7 @@
               :to="{ name: 'EventListAdmin', params: {} }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('manageEventsButton')}}
               </v-list-item-title>
@@ -1046,7 +1046,7 @@
               :to="{ name: 'SiteListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('manageSitesButton')}}
               </v-list-item-title>
@@ -1056,7 +1056,7 @@
               :to="{ name: 'AdListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('ads')}}
                 <v-tooltip
@@ -1092,7 +1092,7 @@
               :to="{ name: 'DiscussionListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('discussionForums')}}
                 <v-tooltip
@@ -1128,7 +1128,7 @@
               :to="{ name: 'GroupListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('interestGroups')}}
                 <v-tooltip
@@ -1163,7 +1163,7 @@
               :to="{ name: 'CategoryListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('categories')}}
               </v-list-item-title>
@@ -1172,7 +1172,7 @@
               :to="{ name: 'TagListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('tags')}}
                 <v-tooltip
@@ -1208,7 +1208,7 @@
               :to="{ name: 'ViolationListAdmin' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('violations')}}
                 <v-tooltip
@@ -1243,7 +1243,7 @@
               :to="{ name: 'SettingsEditor' }"
             >
               <v-list-item-title
-                class="font-weight-bold customGrey--text"
+                class="font-weight-bold text-customGrey"
               >
                 {{$t('settings')}}
               </v-list-item-title>
@@ -1254,7 +1254,7 @@
             @click="triggerLogout()"
           >
             <v-list-item-title
-              class="font-weight-bold customGrey--text"
+              class="font-weight-bold text-customGrey"
             >
               {{$t('logout')}}
             </v-list-item-title>
@@ -1282,7 +1282,7 @@
             >
               <v-row>
                 <v-col
-                  class="text-h5 font-weight-bold blue--text text-right"
+                  class="text-h5 font-weight-bold text-customGrey text-right"
                 >
                   <v-menu offset-y>
                     <template v-slot:activator="{ props }">
@@ -1376,7 +1376,7 @@
                         :key="i"
                         :disabled="i >= computedBreadcrumbItems.length - 1"
                         @click="$router.push({ name: item.to, params: item.params })"
-                        class="mx-1 black--text mb-1"
+                        class="mx-1 text-black mb-1"
                         :tour-step="i === 0 ? 2 : -1"
                       >
                         <template
@@ -1565,7 +1565,7 @@
                       <a
                         :href="link.url"
                         target="_blank"
-                        class="white--text"
+                        class="text-white"
                         style="text-decoration: none"
                       >
                         <v-icon
@@ -1723,7 +1723,7 @@
           <v-card-text>
             <v-row>
               <v-col
-                class="text-body-1 white--text font-weight-bold"
+                class="text-body-1 text-white font-weight-bold"
               >
                 {{$t('tourDescription')}}
               </v-col>
@@ -1797,7 +1797,7 @@
       >
         <v-row>
           <v-col
-            class="text-body-1 black--text"
+            class="text-body-1 text-black"
           >
             <div
               v-html="$t('adBlockerHint')"
@@ -1822,7 +1822,7 @@
       >
         <v-row>
           <v-col
-            class="text-body-1 black--text"
+            class="text-body-1 text-black"
           >
             <div
               v-html="$t('askForConsent')"
@@ -2596,6 +2596,10 @@ export default {
 
   .tiptap ol, .tiptap ul, ol, ul {
     margin-left: 30px;
+  }
+
+  .v-pagination > ul {
+    margin-left: 0px;
   }
 
 /*

@@ -23,14 +23,13 @@
             </v-col>
           </v-row>
           <v-row
-            v-if="$route.query.redirect"
-            class="mt-8"
+            v-if="$route.query.redirect || true"
+            class="mt-3"
           >
             <v-col>
               <v-btn
-                dark
-                large
-                class="elevation-0 custom--text"
+                size="large"
+                color="customGrey"
                 :to="$route.query.redirect"
               >
                 {{$t('back')}}

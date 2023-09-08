@@ -15,7 +15,7 @@
       <v-row>
         <v-col>
           <v-btn
-            class="elevation-1 customGrey--text"
+            class="elevation-1 text-customGrey"
             color="white"
             :to="{ name: 'Signup' }"
           >
@@ -28,7 +28,7 @@
             </v-icon>
           </v-btn>
           <v-btn
-            class="elevation-1 ml-3 customGrey--text"
+            class="elevation-1 ml-3 text-customGrey"
             color="white"
             :to="{ name: 'Login' }"
           >
@@ -60,7 +60,7 @@
       <v-row>
         <v-col>
           <v-btn
-            class="elevation-1 customGrey--text"
+            class="elevation-1 text-customGrey"
             color="white"
             :to="{ name: 'Group',  params: { group: discussion.group } }"
           >
@@ -105,7 +105,7 @@
         >
           <v-row dense>
             <v-col
-              class="font-weight-bold pb-0 pt-3 text-body-1 black--text"
+              class="font-weight-bold pb-0 pt-3 text-body-1 text-black"
               cols="12"
             >
               {{ message ? (isEditMessage ? $t('editAnswerTitle') : $t('writeNewAnswer')) : (isEditMessage ? $t('editPostTitle') : $t('writeNewPostTitle'))}}

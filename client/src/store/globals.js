@@ -284,9 +284,81 @@ const state = {
     } else {
       tmpQueryObject.sortBy = this.queryObject.sortBy
     }
+    if (this.$route.query.c) {
+      tmpQueryObject.categories = this.$route.query.c.split(',')
+    } else {
+      tmpQueryObject.categories = this.queryObject.categories
+    }
+    if (this.$route.query.t) {
+      tmpQueryObject.tags = this.$route.query.t.split(',')
+    } else {
+      tmpQueryObject.tags = this.queryObject.tags
+    }
+    if (this.$route.query.y) {
+      tmpQueryObject.type = this.$route.query.y
+    } else {
+      tmpQueryObject.type = this.queryObject.type
+    }
     this.queryObject = tmpQueryObject
     await this.loadDataTableEntities()
     this.initialView = false
+  },
+  updateQueryType (data) {
+    if (this.$route.query.y !== data) {
+      this.$router.replace(
+        {
+          query: {
+            c: this.queryObject.categories?.join(','),
+            t: this.queryObject.tags?.join(','),
+            y: data,
+            r: this.queryObject.role,
+            q: this.queryObject.query,
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            s: this.queryObject.sortBy[0].key,
+            o: this.queryObject.sortBy[0].order
+          }
+        }
+      )
+    }
+  },
+  updateQueryTags (data) {
+    if (this.$route.query.t !== data) {
+      this.$router.replace(
+        {
+          query: {
+            c: this.queryObject.categories?.join(','),
+            t: data,
+            y: this.queryObject.type,
+            r: this.queryObject.role,
+            q: this.queryObject.query,
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            s: this.queryObject.sortBy[0].key,
+            o: this.queryObject.sortBy[0].order
+          }
+        }
+      )
+    }
+  },
+  updateQueryCategories (data) {
+    if (this.$route.query.c !== data) {
+      this.$router.replace(
+        {
+          query: {
+            c: data,
+            t: this.queryObject.tags?.join(','),
+            y: this.queryObject.type,
+            r: this.queryObject.role,
+            q: this.queryObject.query,
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            s: this.queryObject.sortBy[0].key,
+            o: this.queryObject.sortBy[0].order
+          }
+        }
+      )
+    }
   },
   updateQueryRole (data) {
     if (this.$route.query.r !== data) {
@@ -488,6 +560,15 @@ const getters = {
   },
   adaptQuery: state => {
     return state.adaptQuery
+  },
+  updateQueryType: state => {
+    return state.updateQueryType
+  },
+  updateQueryCategories: state => {
+    return state.updateQueryCategories
+  },
+  updateQueryTags: state => {
+    return state.updateQueryTags
   },
   updateQueryRole: state => {
     return state.updateQueryRole

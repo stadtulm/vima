@@ -6,14 +6,14 @@
     <v-card-text>
       <v-row>
         <v-col
-          class="word-wrap text-h5 font-weight-bold customGrey--text text-uppercase"
+          class="word-wrap text-h5 font-weight-bold text-customGrey text-uppercase"
         >
           {{$t(site.type === 'communicationrules' ? 'communicationRules' : site.type)}}
         </v-col>
       </v-row>
       <v-row>
         <v-col
-          class="text-body-1 customGrey--text"
+          class="text-body-1 text-customGrey"
         >
           <div
             v-html="$sanitize(newTab(site.text.value))"

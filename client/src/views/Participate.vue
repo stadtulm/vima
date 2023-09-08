@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col
-        class="text-h5 font-weight-bold customGrey--text"
+        class="text-h5 font-weight-bold text-customGrey"
       >
         <span
           class="text-uppercase"
@@ -89,7 +89,7 @@
               </v-col>
               <v-col
                 cols="12"
-                class="pb-4 px-4 text-body-1 black--text"
+                class="pb-4 px-4 text-body-1 text-black"
               >
                 <div
                   v-html="$sanitize(pickLanguage(module))"
