@@ -5,50 +5,75 @@
         class="mb-4"
       >
         <v-row>
-          <v-col
-            class="text-h5 font-weight-bold text-customGrey text-uppercase"
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
-            {{$t('categories')}} {{ $route.params.type ? $t('for') + ' ' + $t(typeItems[$route.params.type]) : '' }}
-          </v-col>
+            <div
+              v-html="
+                $t('categories') + ' ' +
+                $route.params.type ?
+                  $t('for') + ' ' + $t(typeItems[$route.params.type]) :
+                  ''
+              "
+            >
+            </div>
+          </span>
+          <span
+            class="my-3 mr-3"
+          >
+            <v-btn
+              v-if="computedFiltersDirty"
+              variant="text"
+              :color="computedColor"
+              @click="resetFilters()"
+            >
+              {{$t('resetFilters')}}
+            </v-btn>
+          </span>
+          <span
+            class="my-3 mr-6"
+          >
+            <v-badge
+              v-model="computedFiltersDirty"
+              :color="computedColor"
+            >
+              <v-btn
+                variant="outlined"
+                :color="computedColor"
+                @click="showFilters = !showFilters"
+              >
+                {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
+                <v-icon
+                  size="18"
+                  class="ml-3"
+                >
+                  {{showFilters ? 'fas fa-chevron-up': 'fas fa-chevron-down'}}
+                </v-icon>
+              </v-btn>
+            </v-badge>
+          </span>
+          <span
+            v-if="user"
+            class="my-3 mr-3"
+          >
+            <v-btn
+              :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1, $route.params.type.length - 2) + 'Editor' }"
+              :color="computedColor"
+              class="text-white"
+            >
+              {{$t('new' + $route.params.type[0].toUpperCase() + $route.params.type.substr(1, $route.params.type.length - 2) + 'Button')}}
+              <v-icon
+                class="ml-3"
+                size="18"
+                color="white"
+              >
+                fas fa-plus
+              </v-icon>
+            </v-btn>
+          </span>
         </v-row>
       </v-col>
-      <v-col
-        class="shrink align-self-center"
-      >
-        <v-btn
-          outlined
-          :color="computedColor"
-          @click="showFilters = !showFilters"
-        >
-          {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
-          <v-icon
-            size="18"
-            class="ml-3"
-          >
-            {{showFilters ? 'fas fa-chevron-up': 'fas fa-chevron-down'}}
-          </v-icon>
-        </v-btn>
-      </v-col>
-      <v-col
-        v-if="user"
-        class="shrink align-self-center"
-      >
-        <v-btn
-          dark
-          :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1, $route.params.type.length - 2) + 'Editor' }"
-          :color="computedColor"
-        >
-          {{$t('new' + $route.params.type[0].toUpperCase() + $route.params.type.substr(1, $route.params.type.length - 2) + 'Button')}}
-          <v-icon
-            class="ml-3"
-            size="18"
-          >
-            fas fa-plus
-          </v-icon>
-        </v-btn>
-      </v-col>
     </v-row>
-
     <v-expand-transition
       mode="in-out"
     >
@@ -57,37 +82,25 @@
       >
         <v-col
           cols="12"
-          class="pt-0"
         >
-          <v-card
-            color="transparent"
-            flat
-            class="my-3"
-          >
-            <v-row>
-              <v-col>
-                <v-text-field
-                  v-model="search"
-                  color="black"
-                  :label="$t('filterByCategoryNameLabel')"
-                  hide-details
-                  outlined
-                  dense
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-card>
+          <v-text-field
+            v-model="queryObject.query"
+            :label="$t('filterByCategoryNameLabel')"
+            hide-details
+            density="compact"
+          ></v-text-field>
         </v-col>
       </v-row>
     </v-expand-transition>
+
     <v-row>
       <v-col
         cols="12"
       >
         <v-btn
           block
-          dark
           :color="computedColor"
+          class="text-white"
           :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView' }"
         >
           {{$t('buttonShowAllEntries')}}
@@ -96,85 +109,86 @@
       <v-col
         cols="12"
       >
-        <v-data-table
-          item-class="pointer"
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          v-if="!initialView"
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
-          :items="computedCategories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          must-sort
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :footer-props="{
-            itemsPerPageText: '',
-            itemsPerPageOptions
-          }"
+          :items-length="computedTotal"
+          :items="computedCategories"
+          :loading="loading"
+          class="customGreyUltraLight pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateDataTableParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          :show-current-page="true"
+          :must-sort="true"
         >
           <template
             v-slot:[`item.pic`]="{ item }"
           >
             <v-img
-              v-if="item.pic"
-              :src="s3 + item.pic.url"
+              v-if="item.raw.pic"
+              :src="s3 + item.raw.pic.url"
               contain
               max-height="100"
               max-width="100"
               :alt="$t('categoryPic')"
-              :title="item.pic.credit ? '© ' + item.pic.credit : ''"
+              :title="item.raw.pic.credit ? '© ' + item.raw.pic.credit : ''"
             >
             </v-img>
           </template>
           <template
-            v-slot:[`item.text`]="{ item }"
+            v-slot:[`item.text.value`]="{ item }"
           >
-            <div
+            <v-list-item-title
               class="pointer font-weight-bold"
-              @click="$router.push({ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id }})"
+              @click="$router.push({ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item.raw._id }})"
             >
-              {{item.text.value}}
-            </div>
+              {{item.raw.text.value}}
+            </v-list-item-title>
           </template>
           <template
             v-slot:[`item.entries`]="{ item }"
           >
-            <span
-              class="font-weight-bold pointer"
-            >
-              {{item[$route.params.type]}}
-            </span>
+            {{item.raw[$route.params.type]}}
           </template>
 
           <template
             v-slot:[`item.tags`]="{ item }"
           >
-            <v-chip
-              v-for="tag in getTags(item)"
-              :key="tag._id"
-              class="ma-1"
-              :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id, t: tag._id } }"
+            <template
+              v-if="getTags(item.raw).length > 0"
             >
-              {{tag.text}}
-            </v-chip>
+              <v-chip
+                v-for="tag in getTags(item.raw)"
+                :key="tag._id"
+                class="ma-1"
+                :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item.raw._id, t: tag._id } }"
+              >
+                {{tag.text}}
+              </v-chip>
+            </template>
+            <template v-else>
+              -
+            </template>
           </template>
           <template
             v-slot:[`item.description`]="{ item }"
           >
-              {{item.description ? item.description.value : '-'}}
+              {{item.raw.description ? item.raw.description.value : '-'}}
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
       <v-col
         cols="12"
       >
         <v-btn
           block
-          dark
           :color="computedColor"
+          class="text-white"
           :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView' }"
         >
           {{$t('buttonShowAllEntries')}}
@@ -195,13 +209,17 @@ export default {
   },
 
   data: () => ({
-    search: '',
     showFilters: false,
-    page: 1,
-    total: 0,
-    itemsPerPage: -1,
-    sortBy: ['name'],
-    sortDesc: [false]
+    initialView: true,
+    loading: true,
+    searchDefault: '',
+    categoriesResponse: undefined,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'text.value', order: 'desc' }]
+    }
   }),
 
   async mounted () {
@@ -212,7 +230,7 @@ export default {
         this.$router.push({ name: type })
       }
     }
-    this.initQuery()
+    await this.adaptQuery()
   },
 
   methods: {
@@ -222,103 +240,27 @@ export default {
     ...mapActions('logging', {
       createLog: 'create'
     }),
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
+    async updateDataTableParams(e) {
+      if (!this.initialView) {
+        this.queryObject = {
+          ...e,
+          query: this.queryObject.query,
         }
-        this.sortDesc = tmpDesc
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryPage(this.queryObject.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+            this.updateQuerySortBy(e.sortBy[0].key)
+            this.updateQuerySortOrder(e.sortBy[0].order)
+        }
       }
     },
-    updatePage (data) {
-      if (parseInt(this.$route.query.p) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateItemsPerPage (data) {
-      if (parseInt(this.$route.query.i) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
-          }
-        })
-      } else if (!data) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
-          }
-        })
-      }
-    },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
-          }
-        })
-      }
+    async loadDataTableEntities () {
+      this.loading = true
+      this.categoriesResponse = await this.findCategories(
+        this.categoriesParams
+      )
+      this.loading = false
     },
     getTags (category) {
       if (category[this.$route.params.type + 'Tags']) {
@@ -352,7 +294,12 @@ export default {
   computed: {
     ...mapGetters([
       's3',
-      'itemsPerPageOptions'
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
     ]),
     ...mapGetters([
       'typeItems'
@@ -366,13 +313,22 @@ export default {
     ...mapGetters('auth', {
       user: 'user'
     }),
+    computedFiltersDirty () {
+      if (
+        this.queryObject.query !== this.searchDefault
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     headers () {
       return [
-        { text: '', value: 'pic' },
-        { text: this.$t('name'), value: 'text', width: '30%' },
-        { text: this.$t('tags'), value: 'tags', sortable: false },
-        { text: this.$t('description'), value: 'description', width: '50%' },
-        { text: this.$t('entries'), value: 'entries', align: 'center' }
+        { title: '', key: 'pic', sortable: false },
+        { title: this.$t('name'), key: 'text.value', width: '30%' },
+        { title: this.$t('tags'), key: 'tags', sortable: false },
+        { title: this.$t('description'), key: 'description', width: '50%', sortable: false },
+        { title: this.$t('entries'), key: 'entries', align: 'center' }
       ]
     },
     computedColor () {
@@ -382,31 +338,83 @@ export default {
         return 'customGrey'
       }
     },
-    computedCategories () {
-      if (this.computedCategoriesWithCount) {
-        if (this.search && this.search.trim() !== '') {
-          return this.categories.filter(obj => obj.text.value.toLowerCase().includes(this.search.toLowerCase()))
-        } else {
-          return this.categories
+    categoriesParams () {
+      const query = {
+        $limit: this.computedLimit,
+        $skip: this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder },
+        $populate: [this.$route.params.type, this.$route.params.type + 'Tags']
+      }
+      if (this.queryObject.query) {
+        query.text = {
+          $elemMatch: {
+            $and: [
+              { value: { $regex: this.queryObject.query, $options: 'i' } },
+              {
+                $or: [
+                  { lang: this.$i18n.locale },
+                  { type: 'default' }
+                ]
+              }
+            ]
+          }
         }
+      }
+      return {
+        query
+      }
+    },
+    computedCategories () {
+      if (this.categoriesResponse && this.categoriesResponse.data) {
+        return this.categoriesResponse.data
       } else {
         return []
+      }
+    },
+    computedTotal () {
+      if (this.categoriesResponse) {
+        return this.categoriesResponse.total
+      } else {
+        return 0
+      }
+    },
+    computedLimit () {
+      if (this.queryObject.itemsPerPage === -1) {
+        return 1000000
+      } else {
+        return this.queryObject.itemsPerPage
+      }
+    },
+    computedSkip () {
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
+      }
+      return (this.queryObject.page - 1) * tmpSkip
+    },
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
+        return 1
+      } else {
+        return -1
       }
     }
   },
-
-  asyncComputed: {
-    async computedCategoriesWithCount () {
-      if (this.$route.params.type) {
-        return await this.findCategories({
-          query: {
-            $populate: [this.$route.params.type, this.$route.params.type + 'Tags']
-          }
-        })
-      } else {
-        return []
+  watch: {
+    ['queryObject.query'] () {
+      this.updateQueryQuery(this.queryObject.query)
+    },
+    categoriesParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
       }
-    }
+    },
   }
 }
 </script>

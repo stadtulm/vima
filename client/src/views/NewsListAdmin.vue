@@ -502,7 +502,6 @@ export default {
   computed: {
     ...mapGetters([
       'adaptQuery',
-      'updateQueryRole',
       'updateQueryQuery',
       'updateQueryPage',
       'updateQueryItemsPerPage',

@@ -154,7 +154,6 @@ export default {
     ...mapGetters([
       's3',
       'adaptQuery',
-      'updateQueryRole',
       'updateQueryQuery',
       'updateQueryPage',
       'updateQueryItemsPerPage',

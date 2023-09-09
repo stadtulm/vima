@@ -130,15 +130,13 @@ export default {
     initialView: true,
     loaders: {},
     loading: true,
-    total: 0,
-    itemsPerPage: 25,
     eventsResponse: undefined,
     queryObject: {
       query: '',
       page: 1,
       itemsPerPage: 25,
       sortBy: [{ key: 'updatedAt', order: 'desc' }]
-    },
+    }
   }),
 
   async mounted () {
@@ -193,7 +191,6 @@ export default {
     ...mapGetters([
       's3',
       'adaptQuery',
-      'updateQueryRole',
       'updateQueryQuery',
       'updateQueryPage',
       'updateQueryItemsPerPage',

@@ -340,7 +340,6 @@ export default {
       'getTags',
       'getCategories',
       'adaptQuery',
-      'updateQueryRole',
       'updateQueryQuery',
       'updateQueryPage',
       'updateQueryItemsPerPage',
