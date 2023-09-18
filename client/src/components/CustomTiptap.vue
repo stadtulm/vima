@@ -1,116 +1,120 @@
 <template>
-  <div style="width:100%" v-if="editor">
+  <div
+  	class="mx-1"
+	style="width:100%"
+	v-if="editor"
+  >
     <v-row>
-			<v-col
-				class="pa-0"
-			>
-				<v-toolbar>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="editor.chain().focus().toggleBold().run()"
-						:disabled="!editor.can().chain().focus().toggleBold().run()"
-						:active="editor.isActive('bold')"
-					>
-						<v-icon>
-							fas fa-bold
-						</v-icon>
-					</v-btn>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="editor.chain().focus().toggleItalic().run()"
-						:disabled="!editor.can().chain().focus().toggleItalic().run()"
-						:active="editor.isActive('italic')"
-					>
-						<v-icon>
-							fas fa-italic
-						</v-icon>
-					</v-btn>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="editor.chain().focus().toggleUnderline().run()"
-						:disabled="!editor.can().chain().focus().toggleUnderline().run()"
-						:active="editor.isActive('underline')"
-					>
-						<v-icon>
-							fas fa-underline
-						</v-icon>
-					</v-btn>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="editor.chain().focus().toggleStrike().run()"
-						:disabled="!editor.can().chain().focus().toggleStrike().run()"
-						:active="editor.isActive('strike')"
-					>
-						<v-icon>
-							fas fa-strikethrough
-						</v-icon>
-					</v-btn>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="editor.chain().focus().toggleBulletList().run()"
-						:disabled="!editor.can().chain().focus().toggleBulletList().run()"
-						:active="editor.isActive('bulletList')"
-					>
-						<v-icon>
-							fas fa-list
-						</v-icon>
-					</v-btn>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="editor.chain().focus().toggleOrderedList().run()"
-						:disabled="!editor.can().chain().focus().toggleOrderedList().run()"
-						:active="editor.isActive('orderedList')"
-					>
-						<v-icon>
-							fas fa-list-ol
-						</v-icon>
-					</v-btn>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="setLink"
-						:disabled="!editor.can().chain().focus().toggleLink({ href: 'https://example.com', target: '_blank' }).run()"
-						:active="editor.isActive('link')"
-					>
-						<v-icon>
-							fas fa-link
-						</v-icon>
-					</v-btn>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-						:disabled="!editor.can().chain().focus().toggleHeading({ level: 1 }).run()"
-						:active="editor.isActive('heading', { level: 1 })"
-					>
-						H1
-					</v-btn>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-						:disabled="!editor.can().chain().focus().toggleHeading({ level: 2 }).run()"
-						:active="editor.isActive('heading', { level: 2 })"
-					>
-						H2
-					</v-btn>
-					<v-btn
-						size="small"
-						variant="outlined"
-						@click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-						:disabled="!editor.can().chain().focus().toggleHeading({ level: 3 }).run()"
-						:active="editor.isActive('heading', { level: 3 })"
-					>
-						H3
-					</v-btn>
-				</v-toolbar>
-			</v-col>
+		<v-col
+			class="pa-0"
+		>
+			<v-toolbar>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="editor.chain().focus().toggleBold().run()"
+					:disabled="!editor.can().chain().focus().toggleBold().run()"
+					:active="editor.isActive('bold')"
+				>
+					<v-icon>
+						fas fa-bold
+					</v-icon>
+				</v-btn>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="editor.chain().focus().toggleItalic().run()"
+					:disabled="!editor.can().chain().focus().toggleItalic().run()"
+					:active="editor.isActive('italic')"
+				>
+					<v-icon>
+						fas fa-italic
+					</v-icon>
+				</v-btn>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="editor.chain().focus().toggleUnderline().run()"
+					:disabled="!editor.can().chain().focus().toggleUnderline().run()"
+					:active="editor.isActive('underline')"
+				>
+					<v-icon>
+						fas fa-underline
+					</v-icon>
+				</v-btn>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="editor.chain().focus().toggleStrike().run()"
+					:disabled="!editor.can().chain().focus().toggleStrike().run()"
+					:active="editor.isActive('strike')"
+				>
+					<v-icon>
+						fas fa-strikethrough
+					</v-icon>
+				</v-btn>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="editor.chain().focus().toggleBulletList().run()"
+					:disabled="!editor.can().chain().focus().toggleBulletList().run()"
+					:active="editor.isActive('bulletList')"
+				>
+					<v-icon>
+						fas fa-list
+					</v-icon>
+				</v-btn>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="editor.chain().focus().toggleOrderedList().run()"
+					:disabled="!editor.can().chain().focus().toggleOrderedList().run()"
+					:active="editor.isActive('orderedList')"
+				>
+					<v-icon>
+						fas fa-list-ol
+					</v-icon>
+				</v-btn>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="setLink"
+					:disabled="!editor.can().chain().focus().toggleLink({ href: 'https://example.com', target: '_blank' }).run()"
+					:active="editor.isActive('link')"
+				>
+					<v-icon>
+						fas fa-link
+					</v-icon>
+				</v-btn>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
+					:disabled="!editor.can().chain().focus().toggleHeading({ level: 1 }).run()"
+					:active="editor.isActive('heading', { level: 1 })"
+				>
+					H1
+				</v-btn>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
+					:disabled="!editor.can().chain().focus().toggleHeading({ level: 2 }).run()"
+					:active="editor.isActive('heading', { level: 2 })"
+				>
+					H2
+				</v-btn>
+				<v-btn
+					size="small"
+					variant="outlined"
+					@click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+					:disabled="!editor.can().chain().focus().toggleHeading({ level: 3 }).run()"
+					:active="editor.isActive('heading', { level: 3 })"
+				>
+					H3
+				</v-btn>
+			</v-toolbar>
+		</v-col>
     </v-row>
     <v-row>
 			<v-col
@@ -186,6 +190,7 @@ export default {
 
   emits: ['update:modelValue'],
 
+  // TODO: Check for "insert" Properties
   data() {
     return {
       editor: null,

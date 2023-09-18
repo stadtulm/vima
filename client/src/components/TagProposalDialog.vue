@@ -4,8 +4,7 @@
     <v-dialog
       max-width="600"
       persistent
-      :value="showTagProposalDialog"
-      @click:outside="$emit('closeTagProposalDialog')"
+      :model-value="showTagProposalDialog"
     >
       <v-card
         color="customGreyUltraLight"
@@ -32,11 +31,8 @@
                 cols="12"
               >
                 <v-text-field
-                  dense
-                  outlined
-                  color="customGrey"
+                  density="compact"
                   :label="$t('name')"
-                  background-color="#fff"
                   v-model="tagProposal"
                   :rules="[
                     rules.required,
@@ -48,22 +44,27 @@
               </v-col>
             </v-row>
           </v-form>
-          <v-card-actions
-            class="px-0"
-          >
-            <v-btn
-              block
-              large
-              :dark="isValidTagProposal"
-              color="customGrey"
-              :loading="isTagLoading"
-              :disabled="!isValidTagProposal"
-              @click="saveTag()"
-            >
-              {{$t('tag')}} {{$t('send')}}
-            </v-btn>
-          </v-card-actions>
         </v-card-text>
+        <v-toolbar
+          class="mt-2 pa-3"
+        >
+          <v-btn
+            variant="elevated"
+            @click="$emit('closeTagProposalDialog')"
+          >
+            {{$t('cancelButton')}}
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="elevated"
+            color="customGrey"
+            :loading="isTagLoading"
+            :disabled="!isValidTagProposal"
+            @click="saveTag()"
+          >
+            {{$t('tag')}} {{$t('send')}}
+          </v-btn>
+        </v-toolbar>
       </v-card>
     </v-dialog>
   </div>
@@ -123,12 +124,6 @@ export default {
     ...mapGetters([
       'rules'
     ]),
-    ...mapGetters('auth', [
-      'user'
-    ]),
-    ...mapGetters('tags', {
-      tags: 'list'
-    }),
     show: {
       get () {
         return this.value

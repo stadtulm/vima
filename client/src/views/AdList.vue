@@ -1,107 +1,96 @@
 <template>
   <div>
-    <v-row
-      class="mb-4"
-    >
+    <v-row>
       <v-col
-        class="text-h5 font-weight-bold text-customGrey text-uppercase"
+        class="d-flex mx-3 mb-4"
       >
-        {{$t('myAds')}}
-      </v-col>
-      <v-col
-        class="shrink align-self-center"
-      >
-        <v-btn
-          dark
-          :to="{ name: 'AdEditor' }"
-          :color="$settings.modules.ads.color"
-        >
-          {{$t('newAdButton')}}
-          <v-icon
-            class="ml-3"
-            size="18"
+        <v-row>
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
-            fas fa-plus
-          </v-icon>
-        </v-btn>
+            {{$t('myAds')}}
+          </span>
+          <span
+            v-if="user"
+            class="my-3 mr-3"
+          >
+            <v-btn
+              :to="{ name: 'AdEditor' }"
+              :color="$settings.modules.ads.color"
+              class="text-white"
+            >
+              {{$t('newAdButton')}}
+              <v-icon
+                class="ml-3"
+                size="18"
+                color="white"
+              >
+                fas fa-plus
+              </v-icon>
+            </v-btn>
+          </span>
+        </v-row>
       </v-col>
     </v-row>
     <v-row>
-      <v-col>
+      <v-col
+        cols="12"
+      >
         <v-text-field
-          v-model="search"
+          v-model="queryObject.query"
           :label="$t('filterByTitleLabel')"
-          outlined
-          dense
           hide-details
-          color="black"
+          density="compact"
         ></v-text-field>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          :item-class="itemRowBackground"
-          item-key="_id"
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          v-if="!initialView"
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
+          :items-length="computedTotal"
           :items="computedAds"
-          :loading="loading"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          :server-items-length="total"
-          must-sort
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :footer-props="{
-            itemsPerPageText: '',
-            itemsPerPageOptions
-          }"
+          :loading="isLoading"
+          class="customGreyUltraLight pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateDataTableParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          :show-current-page="true"
+          :must-sort="true"
+          :item-class="itemRowBackground"
         >
-          <template
-            v-slot:progress
-          >
-            <v-progress-linear
-              indeterminate
-              :color="$settings.modules.ads.color"
-            ></v-progress-linear>
-          </template>
           <template
             v-slot:[`item.applicants`]="{ item }"
           >
             <v-badge
-              :value="isOwnAd(item._id) && getOwnStatusContainerOfAd(item._id).unread.length > 0"
+              :model-value="isOwnAd(item.raw._id) && getOwnStatusContainerOfAd(item.raw._id).unread.length > 0"
               :color="$settings.indicatorColor"
-              overlap
             >
-              <template slot="badge">
+              <template v-slot:badge>
                 <span
                   class="text-customGrey font-weight-bold"
                 >
-                  {{getOwnStatusContainerOfAd(item._id).unread.length}}
+                  {{getOwnStatusContainerOfAd(item.raw._id).unread.length}}
                 </span>
               </template>
+              <!-- TODO: Remove loader template and icon from buttons - add text-white -->
               <v-btn
-                fab
-                small
+                icon="fas fa-list"
+                size="small"
+                class="text-white"
                 :color="$settings.modules.ads.color"
-                @click="applicantsDialogItem = item"
+                @click="applicantsDialogItem = item.raw"
                 :disabled="
-                  !isOwnAd(item._id) ||
-                  !item.accepted ||
-                  !item.accepted.isAccepted
+                  !isOwnAd(item.raw._id) ||
+                  !item.raw.accepted ||
+                  !item.raw.accepted.isAccepted
                 "
               >
-                <v-icon
-                  color="white"
-                  size="18"
-                >
-                  fas fa-list
-                </v-icon>
               </v-btn>
             </v-badge>
           </template>
@@ -111,17 +100,16 @@
             <span
               class="font-weight-bold"
             >
-              {{item.title.value}}
+              {{item.raw.title.value}}
               <v-tooltip
                 right
                 color="customGrey"
                 max-width="800"
               >
-                <template v-slot:activator="{ on, attrs }">
+                <template v-slot:activator="{ props }">
                   <v-icon
                     color="customGrey"
-                    v-bind="attrs"
-                    v-on="on"
+                    v-bind="props"
                     class="ml-3"
                   >
                     fas fa-info-circle
@@ -133,7 +121,7 @@
                   dark
                 >
                   <v-card-title>
-                    {{item.title.value}}
+                    {{item.raw.title.value}}
                   </v-card-title>
                   <v-card-text
                     class="text-white"
@@ -143,7 +131,7 @@
                         cols="12"
                       >
                         <div
-                          v-html="item.text"
+                          v-html="item.raw.text.value"
                         >
                         </div>
                       </v-col>
@@ -156,150 +144,101 @@
           <template
             v-slot:[`item.relation`]="{ item }"
           >
-            {{statusContainers.find(obj => obj.reference === item._id)
-              ? $t(relationItems[statusContainers.find(obj => obj.user === user._id && obj.reference === item._id).relation].textKey)
+            {{statusContainers.find(obj => obj.reference === item.raw._id)
+              ? $t(relationItems[statusContainers.find(obj => obj.user === user._id && obj.reference === item.raw._id).relation].textKey)
               : '-'}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+            {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
             <v-btn
-              icon
+              variant="text"
+              :icon="item.raw.isActive ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.ads.color"
-              :loading="loaders[item._id + 'isActive'] === true"
-              :disabled="!isOwnAd(item._id)"
+              :loading="loaders[item.raw._id + 'isActive'] === true"
+              :disabled="!isOwnAd(item.raw._id)"
               @click="changeAdProperty(
-                item._id,
+                item.raw._id,
                 'isActive',
-                !item.isActive
+                !item.raw.isActive
               )"
             >
-              <template
-                slot="loader"
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon>
-                {{item.isActive ? 'fas fa-check-square' : 'far fa-square'}}
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.accepted.isAccepted`]="{ item }"
           >
             <v-btn
-              icon
+              variant="text"
+              :icon="item.raw.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.ads.color"
               disabled
-              :loading="loaders[item._id + 'accepted'] === true"
+              :loading="loaders[item.raw._id + 'accepted'] === true"
               @click="changeAdProperty(
-                item._id,
+                item.raw._id,
                 'accepted',
                 {
-                  isAccepted: !item.accepted.isAccepted,
+                  isAccepted: !item.raw.accepted.isAccepted,
                   dt: new Date(),
                   user: user._id
                 }
               )"
             >
-              <template
-                slot="loader"
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon>
-                {{item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'}}
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-pen"
+              size="small"
               :color="$settings.modules.ads.color"
-              class="my-4"
-              :to="{name: 'AdEditor', params: { id: item._id } }"
-              :disabled="!isOwnAd(item._id)"
+              class="my-4 text-white"
+              :to="{name: 'AdEditor', params: { id: item.raw._id } }"
+              :disabled="!isOwnAd(item.raw._id)"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-pen
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-trash"
+              size="small"
               :color="$settings.modules.ads.color"
-              class="my-4"
-              :disabled="!isOwnAd(item._id)"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteItem = item._id"
+              class="my-4 text-white"
+              :disabled="!isOwnAd(item.raw._id)"
+              :loading="loaders[item.raw._id + 'delete'] === true"
+              @click="deleteItem = item.raw._id"
             >
-              <template
-                slot="loader"
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-trash
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-arrow-right"
+              size="small"
               :color="$settings.modules.ads.color"
-              class="my-4"
+              class="my-4 text-white"
               :disabled="
-                !statusContainers.find(obj => obj.reference === item._id && obj.user === user._id && obj.relation === 'owner') &&
+                !statusContainers.find(obj => obj.reference === item.raw._id && obj.user === user._id && obj.relation === 'owner') &&
                 (
-                  !item.isActive ||
-                  !item.accepted ||
-                  !item.accepted.isAccepted
+                  !item.raw.isActive ||
+                  !item.raw.accepted ||
+                  !item.raw.accepted.isAccepted
                 )
               "
-              :to="{name: 'Ad', params: { id: item._id } }"
+              :to="{name: 'Ad', params: { id: item.raw._id } }"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-arrow-right
-              </v-icon>
             </v-btn>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
     <v-dialog
@@ -311,9 +250,7 @@
         tile
         v-if="applicantsDialogItem"
       >
-        <v-card-text
-          class="pa-8"
-        >
+        <v-card-text>
           <v-row>
             <v-col
               class="text-h5 font-weight-bold"
@@ -340,17 +277,18 @@
                 :item-class="adItemRowBackground"
                 :items="computedAdMessages.filter(obj => !obj.repliesTo)"
                 :headers="[
-                  { text: '', value: 'pic.url', width: 50, sortable: false },
-                  { text: this.$t('userName'), value: 'userName' },
-                  { text: this.$t('createdAt'), value: 'createdAt' },
-                  { text: this.$t('message'), value: 'message' },
-                  { text: this.$t('answer'), value: 'answer' },
-                  { text: this.$t('goToChat'), value: 'goToChat', sortable: false, align: 'center' }
+                  { title: '', key: 'pic.url', width: 50, sortable: false },
+                  { title: this.$t('userName'), key: 'userName' },
+                  { title: this.$t('createdAt'), key: 'createdAt' },
+                  { title: this.$t('message'), key: 'message', sortable: false },
+                  { title: this.$t('answer'), key: 'answer' },
+                  { title: this.$t('goToChat'), key: 'goToChat', sortable: false, align: 'center' }
                 ]"
-                :footer-props="{
-                  itemsPerPageText: '',
-                  itemsPerPageOptions
-                }"
+                sort-asc-icon="fas fa-caret-up"
+                sort-desc-icon="fas fa-caret-down"
+                :show-current-page="true"
+                :must-sort="true"
+                :sort-by="[{ key: 'createdAt', order: 'desc' }]"
               >
                 <template
                   v-slot:[`item.pic.url`]="{ item }"
@@ -360,10 +298,10 @@
                     color="customGreyLight"
                   >
                     <v-img
-                      v-if="getUser(item.author) && getUser(item.author).pic"
-                      :src="s3 + getUser(item.author).pic.url"
+                      v-if="getUser(item.raw.author) && getUser(item.raw.author).pic"
+                      :src="s3 + getUser(item.raw.author).pic.url"
                       :alt="$t('userPic')"
-                      :title="getUser(item.author).pic.credit ? '© ' + getUser(item.author).pic.credit : ''"
+                      :title="getUser(item.raw.author).pic.credit ? '© ' + getUser(item.raw.author).pic.credit : ''"
                     >
                     </v-img>
                     <v-icon
@@ -378,17 +316,17 @@
                   v-slot:[`item.userName`]="{ item }"
                 >
                   <span
-                    v-if="getUser(item.author)"
+                    v-if="getUser(item.raw.author)"
                     class="font-weight-bold pointer"
-                    @click="$router.push({name: 'User', params: { user: getUser(item.author)._id}})"
+                    @click="$router.push({name: 'User', params: { user: getUser(item.raw.author)._id}})"
                   >
-                    {{getUser(item.author).userName}}
+                    {{getUser(item.raw.author).userName}}
                   </span>
                 </template>
                 <template
                   v-slot:[`item.createdAt`]="{ item }"
                 >
-                  {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+                  {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
                 </template>
                 <template
                   v-slot:[`item.message`]="{ item }"
@@ -397,7 +335,7 @@
                     ownField="text"
                     :allFields="['text']"
                     type="ad-messages"
-                    :textParent="item"
+                    :textParent="item.raw"
                   >
                     <template
                       v-slot:defaultLangText="{ computedText }"
@@ -421,10 +359,10 @@
                   v-slot:[`item.answer`]="{ item }"
                 >
                     <v-btn
-                      v-if="!item.replies || item.replies.length === 0"
-                      @click="answerDialogItem = item"
+                      v-if="!item.raw.replies || item.raw.replies.length === 0"
+                      @click="answerDialogItem = item.raw"
                       :color="$settings.modules.ads.color"
-                      dark
+                      class="text-white"
                     >
                       {{$t('writeAnswer')}}
                     </v-btn>
@@ -432,11 +370,11 @@
                       v-else
                     >
                       <TranslatableText
-                        v-if="getAdMessage(item.replies[0])"
+                        v-if="getAdMessage(item.raw.replies[0])"
                         ownField="text"
                         :allFields="['text']"
                         type="ad-messages"
-                        :textParent="getAdMessage(item.replies[0])"
+                        :textParent="getAdMessage(item.raw.replies[0])"
                       >
                         <template
                           v-slot:defaultLangText="{ computedText }"
@@ -460,17 +398,16 @@
                 <template
                   v-slot:[`item.goToChat`]="{ item }"
                 >
+                  <!-- Refresh so that chat field is included in add message -->
                   <v-btn
-                    fab
-                    v-if="item.chat"
-                    :to="{ name: 'IdChat', params: { chat: item.chat } }"
+                    icon
+                    class="pr-1 text-white"
+                    v-if="item.raw.chat"
+                    :to="{ name: 'IdChat', params: { chat: item.raw.chat } }"
                     :color="$settings.modules.ads.color"
-                    small
+                    size="small"
                   >
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
+                    <v-icon>
                       fas fa-comments
                     </v-icon>
                   </v-btn>
@@ -490,9 +427,7 @@
         color="customGreyUltraLight"
         tile
       >
-        <v-card-text
-          class="pa-8"
-        >
+        <v-card-text>
           <v-row>
             <v-col
               class="text-h5 font-weight-bold"
@@ -502,37 +437,33 @@
           </v-row>
           <v-row>
             <v-col>
-              <VuetifyTiptap
-                :editor-properties="{
-                  disableInputRules: true,
-                  disablePasteRules: true
-                }"
-                color="customGreyUltraLight"
-                v-model="message"
-                :card-props="{ tile: true, flat: true }"
-                style="border: 1px solid #aaa;"
-                :extensions="extensions"
-                :placeholder="$t('enterText')"
+              <custom-tiptap
                 id="messageInput"
-              >
-              </VuetifyTiptap>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-btn
-                block
-                :loading="isSending"
-                :dark="!(!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === '')"
-                :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
-                @click="sendMessage(answerDialogItem)"
-                :color="$settings.modules.ads.color"
-              >
-                {{$t('sendAnswer')}}
-              </v-btn>
+                v-model="message"
+              ></custom-tiptap>
             </v-col>
           </v-row>
         </v-card-text>
+        <v-toolbar
+          class="mt-2 pa-3"
+        >
+          <v-btn
+            variant="elevated"
+            @click="() => { showAnswerDialog = false; message = '' }"
+          >
+            {{$t('cancelButton')}}
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="elevated"
+            :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
+            @click="sendMessage(answerDialogItem)"
+            :color="$settings.modules.ads.color"
+            class="text-white"
+          >
+            {{$t('sendAnswer')}}
+          </v-btn>
+        </v-toolbar>
       </v-card>
     </v-dialog>
     <!-- Delete dialog -->
@@ -542,12 +473,9 @@
       max-width="600"
     >
       <v-card
-        color="customGreyUltraLight"
         tile
       >
-        <v-card-text
-          class="pa-8"
-        >
+        <v-card-text>
           <v-row>
             <v-col
               class="text-h5 font-weight-bold"
@@ -565,25 +493,25 @@
               </div>
             </v-col>
           </v-row>
-          <v-card-actions
-            class="mt-6 pa-0"
-          >
-            <v-btn
-              @click="showDeleteDialog = false"
-            >
-              {{$t('cancelDeleteButton')}}
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn
-              @click="deleteAd(deleteItem)"
-              dark
-              color="error"
-              :loading="isDeleting"
-            >
-              {{$t('acceptDeleteButton')}}
-            </v-btn>
-          </v-card-actions>
         </v-card-text>
+        <v-toolbar
+          class="mt-2 pa-3"
+        >
+          <v-btn
+            variant="elevated"
+            @click="showDeleteDialog = false"
+          >
+            {{$t('cancelDeleteButton')}}
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="elevated"
+            @click="deleteAd(deleteItem)"
+            color="error"
+          >
+            {{$t('acceptDeleteButton')}}
+          </v-btn>
+        </v-toolbar>
       </v-card>
     </v-dialog>
   </div>
@@ -591,20 +519,20 @@
 
 <script>
 
-import { makeFindMixin } from '@feathersjs/vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import TranslatableText from '@/components/TranslatableText.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 export default {
   name: 'AdList',
 
-  mixins: [makeFindMixin({ service: 'ads', watch: true })],
-
   components: {
-    TranslatableText
+    TranslatableText,
+    CustomTiptap
   },
 
   data: () => ({
+    initialView: true,
     isDeleting: false,
     deleteItem: undefined,
     showDeleteDialog: false,
@@ -612,24 +540,23 @@ export default {
     answerDialogItem: undefined,
     showApplicantsDialog: false,
     applicantsDialogItem: undefined,
+    adMessagesResponse: undefined,
     isUpdating: false,
-    triggerReload: 1,
     message: undefined,
     isSending: false,
     loaders: {},
-    search: '',
-    page: 1,
-    loading: true,
-    total: 0,
-    itemsPerPage: 25,
-    sortBy: ['createdAt'],
-    sortDesc: [true]
+    isLoading: true,
+    adsResponse: undefined,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'createdAt', order: 'desc' }]
+    }
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    await this.adaptQuery()
     setTimeout(async () => {
       await this.checkAcceptedAds()
     }, 1000)
@@ -640,6 +567,7 @@ export default {
       setSnackbar: 'SET_SNACKBAR'
     }),
     ...mapActions('ads', {
+      findAds: 'find',
       patchAd: 'patch',
       removeAd: 'remove'
     }),
@@ -650,18 +578,44 @@ export default {
       findAdMessages: 'find',
       createAdMessage: 'create'
     }),
+    async updateDataTableParams(e) {
+      if (!this.initialView) {
+        this.queryObject = {
+          ...e,
+          query: this.queryObject.query,
+        }
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryPage(this.queryObject.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+            this.updateQuerySortBy(e.sortBy[0].key)
+            this.updateQuerySortOrder(e.sortBy[0].order)
+        }
+      }
+    },
+    async loadDataTableEntities () {
+      this.loading = true
+      this.adsResponse = await this.findAds(
+        this.adsParams
+      )
+      this.isLoading = false
+      setTimeout(async () => {
+        await this.checkAcceptedAds()
+      }, 1000)
+    },
     async deleteAd (id) {
       this.isDeleting = true
-      this.$set(this.loaders, id + 'delete', true)
+      this.loaders[id + 'delete'] = true
       try {
         this.deleteItem = undefined
         await this.removeAd(id)
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
         this.isDeleting = false
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
         this.isDeleting = false
       }
     },
@@ -702,7 +656,7 @@ export default {
       }
     },
     async changeAdProperty (adId, property, value) {
-      this.$set(this.loaders, adId + property, true)
+      this.loaders[adId + property] = true
       const patchObj = {}
       patchObj[property] = value
       try {
@@ -712,11 +666,12 @@ export default {
             patchObj
           ]
         )
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-        this.$set(this.loaders, adId + property, undefined)
+        this.loaders[adId + property] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        this.$set(this.loaders, adId + property, undefined)
+        this.loaders[adId + property] = undefined
       }
     },
     getOwnStatusContainerOfAd (adId) {
@@ -726,7 +681,7 @@ export default {
       return this.getOwnStatusContainerOfAd(adId).relation === 'owner'
     },
     async checkAcceptedAds () {
-      const visibleAds = this.ads.map(obj => obj._id)
+      const visibleAds = this.computedAds.map(obj => obj._id)
       const acceptedStatusContainers = this.statusContainers.filter(obj => obj.user === this.user._id && obj.type === 'ads' && obj.relation === 'owner' && obj.customField === 'accepted').map(obj => obj.reference)
       const adIds = visibleAds.filter(e => acceptedStatusContainers.indexOf(e) !== -1)
       if (adIds.length > 0 && !this.isUpdating) {
@@ -763,107 +718,19 @@ export default {
         this.message = undefined
         this.answerDialogItem = undefined
         this.isSending = false
+        await this.loadAdMessages()
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
         this.isSending = false
       }
     },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
-        }
-        this.sortDesc = tmpDesc
-      }
-    },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
-      if (parseInt(this.$route.query.p) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
+    async loadAdMessages () {
+      if (this.applicantsDialogItem) {
+        this.adMessagesResponse = await this.findAdMessages(
+          this.adMessagesParams
         )
-      }
-    },
-    updateItemsPerPage (data) {
-      if (parseInt(this.$route.query.i) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
       } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
-          }
-        })
-      } else if (!data) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
-          }
-        })
-      }
-    },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
-          }
-        })
+        this.adMessagesResponse = []
       }
     }
   },
@@ -874,7 +741,12 @@ export default {
       'relationItems',
       'deepSort',
       'newTab',
-      'itemsPerPageOptions'
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -890,23 +762,23 @@ export default {
       user: 'user'
     }),
     computedAds () {
-      return this.deepSort(
-        this.sortBy[0],
-        this.sortDesc[0],
-        JSON.parse(JSON.stringify(this.ads))
-      )
+      if (this.adsResponse && this.adsResponse.data) {
+        return this.adsResponse.data
+      } else {
+        return []
+      }
     },
     headers () {
       return [
-        { text: this.$t('title'), value: 'title.value' },
-        { text: this.$t('role'), value: 'relation' },
-        { text: this.$t('createdAt'), value: 'createdAt' },
-        { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
-        { text: this.$t('active'), value: 'isActive', align: 'center' },
-        { text: this.$t('applicants'), value: 'applicants', align: 'center', sortable: false },
-        { text: this.$t('editButton'), value: 'edit', align: 'center', sortable: false },
-        { text: this.$t('deleteButton'), value: 'delete', align: 'center', sortable: false },
-        { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
+        { title: this.$t('title'), key: 'title.value' },
+        { title: this.$t('role'), key: 'relation' },
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
+        { title: this.$t('active'), key: 'isActive', align: 'center' },
+        { title: this.$t('applicants'), key: 'applicants', align: 'center', sortable: false },
+        { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },
+        { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
+        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
       ]
     },
     adsParams () {
@@ -919,58 +791,61 @@ export default {
           ).map(obj => obj.reference)
         },
         $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc }
+        $skip: this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
       }
-      if (this.search && this.search !== '') {
+      if (this.queryObject.query) {
         query.title = {
           $elemMatch: {
             $and: [
-              { value: { $regex: this.search, $options: 'i' } },
+              { value: { $regex: this.queryObject.query, $options: 'i' } },
               { type: 'default' }
             ]
           }
         }
       }
       return {
-        query,
-        debounce: 1000,
-        qid: this.user._id
+        query
+      }
+    },
+    computedTotal () {
+      if (this.adsResponse) {
+        return this.adsResponse.total
+      } else {
+        return 0
       }
     },
     computedLimit () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 1000000
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
     computedSkip () {
-      if (this.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.itemsPerPage
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
       }
+      return (this.queryObject.page - 1) * tmpSkip
     },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
       } else {
         return -1
       }
-    }
-  },
-
-  asyncComputed: {
-    async computedAdMessages () {
-      if (this.applicantsDialogItem && this.triggerReload) {
-        return await this.findAdMessages(
-          {
-            query: {
-              ad: this.applicantsDialogItem._id
-            }
-          }
-        )
+    },
+    adMessagesParams () {
+      return {
+        query: {
+          ad: this.applicantsDialogItem._id
+        }
+      }
+    },
+    computedAdMessages () {
+      if (this.adMessagesResponse) {
+        return this.adMessagesResponse
       } else {
         return []
       }
@@ -978,6 +853,20 @@ export default {
   },
 
   watch: {
+    ['queryObject.query'] () {
+      this.updateQueryQuery(this.queryObject.query)
+    },
+    adsParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
+      }
+    },
     async computedAdMessages () {
       if (this.applicantsDialogItem) {
         const adStatusContainer = this.statusContainers
@@ -999,9 +888,6 @@ export default {
           ]
         )
       }
-    },
-    adMessages () {
-      this.triggerReload = Date.now()
     },
     showDeleteDialog () {
       if (!this.showDeleteDialog) {
@@ -1029,23 +915,14 @@ export default {
         this.message = this.$sanitize(this.message)
       }
     },
-    isFindAdsPending () {
-      if (!this.isFindAdsPending) {
-        this.loading = false
-        this.total = this.adsPaginationData[this.user._id].mostRecent.total
-      } else {
-        this.loading = true
-      }
-    },
     async showApplicantsDialog () {
       if (!this.showApplicantsDialog) {
         this.applicantsDialogItem = undefined
-      } else {
-        this.triggerReload = Date.now()
       }
     },
     async applicantsDialogItem () {
       if (this.applicantsDialogItem) {
+        await this.loadAdMessages()
         this.showApplicantsDialog = true
       } else {
         this.showApplicantsDialog = false
@@ -1054,8 +931,6 @@ export default {
     async showAnswerDialog () {
       if (!this.showAnswerDialog) {
         this.answerDialogItem = undefined
-      } else {
-        // this.triggerReload = Date.now()
       }
     },
     answerDialogItem () {

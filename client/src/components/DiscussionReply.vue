@@ -440,7 +440,6 @@ export default {
     },
     async showSuggestions () {
       if (this.showSuggestions) {
-        console.log('call to server for users')
         const result = await this.findUsers(
           this.usersParams
         )

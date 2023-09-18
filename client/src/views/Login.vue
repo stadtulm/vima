@@ -140,6 +140,7 @@ export default {
           this.$router.push({ name: 'Participate' })
         }
       } catch (e) {
+        console.log(e)
         if (e.code === 404) {
           this.loginError = e.message
         } else {

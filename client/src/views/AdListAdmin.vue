@@ -186,9 +186,6 @@ export default {
     initialView: true,
     loading: true,
     isUpdating: false,
-    message: undefined,
-    isSending: false,
-    activeAnswerField: undefined,
     loaders: {},
     adsResponse: undefined,
     queryObject: {
@@ -200,7 +197,7 @@ export default {
   }),
 
   async mounted () {
-    this.adaptQuery()
+    await this.adaptQuery()
     setTimeout(async () => {
       await this.checkAcceptedAds()
     }, 1000)
@@ -307,36 +304,11 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
         this.loaders[ad._id + property] = undefined
       }
-    },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
-        }
-        this.sortDesc = tmpDesc
-      }
     }
   },
 
   computed: {
     ...mapGetters([
-      's3',
-      'deepSort',
       'getTags',
       'getCategories',
       'adaptQuery',

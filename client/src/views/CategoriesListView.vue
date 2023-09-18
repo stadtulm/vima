@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col
-        class="mb-4"
+        class="d-flex mx-3 mb-4"
       >
         <v-row>
           <span
@@ -240,6 +240,9 @@ export default {
     ...mapActions('logging', {
       createLog: 'create'
     }),
+    resetFilters () {
+      this.queryObject.query = this.searchDefault
+    },
     async updateDataTableParams(e) {
       if (!this.initialView) {
         this.queryObject = {

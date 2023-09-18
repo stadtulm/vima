@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col
-        class="mb-4"
+        class="d-flex mx-3 mb-4"
       >
         <v-row>
           <span
@@ -369,7 +369,6 @@ export default {
       if (this.queryObject.type && this.queryObject.type !== 'all') {
         query.type = this.queryObject.type
       }
-      console.log(query.$sort)
       return {
         query
       }
@@ -414,7 +413,6 @@ export default {
   watch: {
     rawSortBy () {
       this.queryObject.sortBy[0] = this.rawSortBy
-      console.log('WATCHED AND CHANGED queryObject.sortBy', this.queryObject.sortBy)
     },
     ['queryObject.sortBy']: {
       deep: true,

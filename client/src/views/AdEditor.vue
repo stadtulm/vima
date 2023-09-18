@@ -1,6 +1,15 @@
 <template>
   <div>
     <v-row
+      class="d-flex mx-0 mb-4"
+    >
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
+      >
+        {{$t('ad')}} {{ selectedAd ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+      </span>
+    </v-row>
+    <v-row
       v-if="selectedAd || !$route.params.id"
     >
       <v-col
@@ -15,12 +24,12 @@
               class="mb-3"
             >
               <v-col
-                class="text-h5 font-weight-bold"
+                class="font-weight-bold text-subtitle-1"
               >
-                {{$t('ad')}} {{ selectedAd ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+                {{$t('state')}}:
                 <v-chip
-                  dark
-                  class="ml-3"
+                  variant="flat"
+                  class="ml-3 mb-1"
                   :color="selectedAd && selectedAd.accepted && selectedAd.accepted.isAccepted ? 'success' : 'warning'"
                 >
                   <v-icon
@@ -45,11 +54,8 @@
                 >
                   <v-text-field
                     ref="tabStart"
-                    dense
-                    outlined
+                    density="compact"
                     :label="$t('headline')"
-                    :color="$settings.modules.ads.color"
-                    background-color="#fff"
                     v-model="title"
                     :rules="[rules.required]"
                   >
@@ -61,15 +67,11 @@
               >
                 <v-col>
                   <v-select
-                    dense
-                    :color="$settings.modules.ads.color"
-                    :item-color="$settings.modules.ads.color"
-                    background-color="#fff"
-                    outlined
+                    density="compact"
                     v-model="type"
                     :label="$t('type')"
                     :rules="[rules.required]"
-                    :items="[{ text: $t('wanted'), value: 'request' }, { text: $t('offer'), value: 'offer'}]"
+                    :items="[{ title: $t('wanted'), value: 'request' }, { title: $t('offer'), value: 'offer'}]"
                   >
                   </v-select>
                 </v-col>
@@ -79,14 +81,10 @@
               >
                 <v-col>
                   <v-select
-                    dense
+                    density="compact"
                     multiple
-                    :color="$settings.modules.ads.color"
-                    :item-color="$settings.modules.ads.color"
-                    background-color="#fff"
-                    outlined
                     v-model="selectedCategories"
-                    item-text="text.value"
+                    item-title="text.value"
                     item-value="_id"
                     :label="$t('categories')"
                     :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
@@ -102,17 +100,13 @@
                   cols="12"
                 >
                   <v-autocomplete
-                    dense
+                    density="compact"
                     multiple
                     chips
                     deletable-chips
                     auto-select-first
-                    :color="$settings.modules.ads.color"
-                    :item-color="$settings.modules.ads.color"
-                    background-color="#fff"
-                    outlined
                     v-model="selectedTags"
-                    item-text="text"
+                    item-title="text"
                     item-value="_id"
                     :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
                     :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
@@ -122,10 +116,10 @@
                 </v-col>
                 <v-col
                   cols="12"
-                  class="text-right"
+                  class="text-right pt-0"
                 >
                   <v-btn
-                    text
+                    variant="outlined"
                     :color="$settings.modules.ads.color"
                     @click="showTagProposalDialog = true"
                   >
@@ -169,20 +163,12 @@
                           v-model="text"
                           width="100%"
                         >
-                          <template slot="default">
-                            <VuetifyTiptap
-                              :editor-properties="{
-                                disableInputRules: true,
-                                disablePasteRules: true
-                              }"
-                              color="customGreyUltraLight"
+                          <template v-slot:default>
+                            <!-- TODO: Remove headings from editor -->
+                            <custom-tiptap
                               v-model="text"
-                              :card-props="{ tile: true, flat: true }"
-                              :extensions="extensions"
-                              :placeholder="$t('enterText')"
-                              style="border: 1px solid #aaa"
                             >
-                            </VuetifyTiptap>
+                            </custom-tiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -234,20 +220,27 @@
                 </v-col>
               </v-row>
             </v-form>
-            <v-card-actions
-              class="px-0"
+            <v-divider
+              class="mb-6 mt-9"
+            ></v-divider>
+            <v-toolbar
+              class="mt-4"
+              color="transparent"
             >
               <v-btn
                 block
-                :dark="isValid"
+                size="large"
+                dark
+                variant="elevated"
                 :color="$settings.modules.ads.color"
                 :loading="isLoading"
                 :disabled="!isValid"
                 @click="user.role === 'admins' ? saveAd() : showAcceptDialog = true"
+                class="mx-0 text-white"
               >
                 {{$t('saveDataButton')}}
               </v-btn>
-            </v-card-actions>
+            </v-toolbar>
           </v-card-text>
         </v-card>
       </v-col>
@@ -259,7 +252,6 @@
       max-width="600"
     >
       <v-card
-        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -274,7 +266,7 @@
           </v-row>
           <v-row>
             <v-col
-              class="text-body-1 font-weight-bold"
+              class="text-body-1"
             >
               <div
                 v-html="$t('acceptWarningBody', { type: $t('ad') })"
@@ -282,24 +274,26 @@
               </div>
             </v-col>
           </v-row>
-          <v-card-actions
-            class="mt-4 pa-0"
-          >
-            <v-btn
-              @click="showAcceptDialog = false"
-            >
-              {{$t('cancelButton')}}
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn
-              @click="prepareSaveAd()"
-              dark
-              :color="$settings.modules.ads.color"
-            >
-              {{$t('understoodButton')}}
-            </v-btn>
-          </v-card-actions>
         </v-card-text>
+
+        <v-toolbar
+          class="mt-2 pa-3"
+        >
+          <v-btn
+            variant="elevated"
+            @click="showAcceptDialog = false"
+          >
+            {{$t('cancelButton')}}
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            variant="elevated"
+            @click="prepareSaveAd()"
+            color="customGrey"
+          >
+            {{$t('saveDataButton')}}
+          </v-btn>
+        </v-toolbar>
       </v-card>
     </v-dialog>
     <TagProposalDialog
@@ -314,13 +308,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TagProposalDialog from '@/components/TagProposalDialog.vue'
 import FileUpload from '@/components/FileUpload.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 export default {
   name: 'AdEditor',
 
   components: {
     TagProposalDialog,
-    FileUpload
+    FileUpload,
+    CustomTiptap
   },
 
   data: () => ({

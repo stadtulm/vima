@@ -7,8 +7,8 @@
         <v-btn
           icon
           v-bind="props"
-          size="small"
-          class="ml-2"
+          size="x-small"
+          class="ml-2 mb-1"
         >
           <v-icon
             size="20"

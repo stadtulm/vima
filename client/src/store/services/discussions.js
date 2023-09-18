@@ -15,7 +15,7 @@ export function discussions ({ feathers }) {
     static setupInstance (data, { store, models }) {
       if (data.group) {
         if (typeof data.group === 'object') {
-        // eslint-disable-next-line new-cap
+          // eslint-disable-next-line new-cap
           data.group = new models.api.groups(data.group)._id
         }
       }

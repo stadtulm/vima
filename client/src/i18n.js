@@ -5,6 +5,9 @@ import en from '@/locales/en'
 import ro from '@/locales/ro'
 import rs from '@/locales/rs'
 import ua from '@/locales/ua'
+import it from '@/locales/it'
+import fr from '@/locales/fr'
+import es from '@/locales/es'
 
 export default createI18n({
   locale: import.meta.env.VITE_I18N_LOCALE || 'en',
@@ -15,6 +18,9 @@ export default createI18n({
     en,
     ro,
     rs,
-    ua
+    ua,
+    it,
+    fr,
+    es
   }
 })
