@@ -103,7 +103,7 @@
                     density="compact"
                     multiple
                     chips
-                    deletable-chips
+                    closable-chips
                     auto-select-first
                     v-model="selectedTags"
                     item-title="text"

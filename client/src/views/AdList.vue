@@ -739,7 +739,6 @@ export default {
     ...mapGetters([
       's3',
       'relationItems',
-      'deepSort',
       'newTab',
       'adaptQuery',
       'updateQueryQuery',

@@ -51,7 +51,7 @@
             outlined
             auto-select-first
             chips
-            deletable-chips
+            closable-chips
             dense
             hide-details
             :items="tags.sort((a, b) => a.text.localeCompare(b.text))"

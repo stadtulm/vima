@@ -152,7 +152,7 @@
             multiple
             auto-select-first
             chips
-            deletable-chips
+            closable-chips
             density="compact"
             hide-details
             :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
@@ -427,11 +427,11 @@ export default {
       await this.loadDataTableEntities()
     },
     async ['queryObject.categories'] () {
-      this.updateQueryCategories(this.queryObject.categories)
+      this.updateQueryCategories(this.queryObject.categories.join(','))
       await this.loadDataTableEntities()
     },
     async ['queryObject.tags'] () {
-      this.updateQueryTags(this.queryObject.tags)
+      this.updateQueryTags(this.queryObject.tags.join(','))
       await this.loadDataTableEntities()
     },
     async ['queryObject.type'] () {

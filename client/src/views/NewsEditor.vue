@@ -393,7 +393,6 @@
               <v-btn
                 block
                 size="large"
-                dark
                 variant="elevated"
                 color="customGrey"
                 :loading="isLoading"

@@ -106,7 +106,7 @@
               :item-color="computedColor"
               multiple
               chips
-              deletable-chips
+              closable-chips
               :items="computedRelationItems[item._id]"
               :value="computedDiscussionRelations[item._id]"
               @change="changeDiscussionRelation($event, item)"

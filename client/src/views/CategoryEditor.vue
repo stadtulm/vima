@@ -1,147 +1,147 @@
 <template>
-  <v-row
-    v-if="selectedCategory || !$route.params.id"
-  >
-    <v-col
-      cols="12"
+  <div>
+    <v-row
+      class="d-flex mx-0 mb-4"
     >
-      <v-card
-        color="customGreyUltraLight"
-        tile
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
-        <v-card-text>
-          <v-row
-            class="mb-3"
-          >
-            <v-col
-              class="text-h5 font-weight-bold"
+        {{$t('category')}} {{ selectedCategory ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+      </span>
+    </v-row>
+    <v-row
+      v-if="selectedCategory || !$route.params.id"
+    >
+      <v-col
+        cols="12"
+      >
+        <v-card
+          tile
+        >
+          <v-card-text>
+            <v-form
+              v-model="isValid"
+              ref="categoryEditorForm"
             >
-              {{$t('category')}} {{ selectedCategory ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
-            </v-col>
-          </v-row>
-          <v-form
-            v-model="isValid"
-            ref="categoryEditorForm"
-          >
-            <v-row
-              dense
-              v-if="text"
-            >
-              <v-col
-                cols="12"
+              <v-row
+                dense
+                v-if="text"
               >
-                <v-text-field
-                  ref="tabStart"
-                  dense
-                  outlined
-                  color="customGrey"
-                  :label="$t('name')"
-                  background-color="#fff"
-                  v-model="text.find(obj => obj.lang === currentLanguage).value"
-                  :rules="[v => text.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
+                <v-col
+                  cols="12"
                 >
-                  <template v-slot:prepend>
-                    <LanguageSelect
-                      :currentLanguage="currentLanguage"
-                      :languageObjects="text"
-                      @setLanguage="(l) => { currentLanguage = l }"
-                    ></LanguageSelect>
-                  </template>
-                </v-text-field>
-              </v-col>
-            </v-row>
-            <v-row
-              dense
-              v-if="description"
-            >
-              <v-col
-                cols="12"
-              >
-                <v-textarea
-                  dense
-                  outlined
-                  color="customGrey"
-                  v-model="description.find(obj => obj.lang === currentLanguage).value"
-                  background-color="#fff"
-                  :label="$t('description') + ' ' + $t('optionalLabelExtension')"
-                  :rules="[rules.shortText]"
-                >
-                  <template v-slot:prepend>
-                    <LanguageSelect
-                      :currentLanguage="currentLanguage"
-                      :languageObjects="description"
-                      @setLanguage="(l) => { currentLanguage = l }"
-                    ></LanguageSelect>
-                  </template>
-                </v-textarea>
-              </v-col>
-            </v-row>
-            <v-row
-              dense
-            >
-              <v-col
-                cols="12"
-              >
-                <v-card
-                  flat
-                  color="customGreyUltraLight"
-                >
-                  <v-row>
-                    <v-col
-                      class="text-subtitle-1"
-                      cols="12"
-                    >
-                      {{$t('pic')}} {{$t('optionalLabelExtension')}}
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    dense
+                  <v-text-field
+                    ref="tabStart"
+                    density="compact"  
+                    :label="$t('name')"
+                    v-model="text.find(obj => obj.lang === currentLanguage).value"
+                    :rules="[v => text.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
                   >
-                    <v-col
-                      cols="12"
-                      tabIndex="0"
-                      @keypress="$refs.categoryUpload.fakeClick()"
+                    <template v-slot:prepend>
+                      <LanguageSelect
+                        :currentLanguage="currentLanguage"
+                        :languageObjects="text"
+                        @setLanguage="(l) => { currentLanguage = l }"
+                      ></LanguageSelect>
+                    </template>
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-row
+                dense
+                v-if="description"
+              >
+                <v-col
+                  cols="12"
+                >
+                  <v-textarea
+                    density="compact"
+                    v-model="description.find(obj => obj.lang === currentLanguage).value"
+                    :label="$t('description') + ' ' + $t('optionalLabelExtension')"
+                    :rules="[rules.shortText]"
+                  >
+                    <template v-slot:prepend>
+                      <LanguageSelect
+                        :currentLanguage="currentLanguage"
+                        :languageObjects="description"
+                        @setLanguage="(l) => { currentLanguage = l }"
+                      ></LanguageSelect>
+                    </template>
+                  </v-textarea>
+                </v-col>
+              </v-row>
+              <v-row
+                dense
+              >
+                <v-col
+                  cols="12"
+                >
+                  <v-card
+                    flat
+                    color="customGreyUltraLight"
+                  >
+                    <v-row>
+                      <v-col
+                        class="text-subtitle-1"
+                        cols="12"
+                      >
+                        {{$t('pic')}} {{$t('optionalLabelExtension')}}
+                      </v-col>
+                    </v-row>
+                    <v-row
+                      dense
                     >
-                      <FileUpload
-                        ref="categoryPicUpload"
-                        v-model="pic"
-                        @fileRemove="patchFileRemove()"
-                        @fileAdd="$nextTick(() => { $refs.categoryEditorForm.validate() })"
-                        :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
-                        :maxFileSize="0.5"
-                        :maxFiles="1"
-                        bgColor="white"
-                        :scaleToFit="[400, 400]"
-                        :resizeQuality="75"
-                      ></FileUpload>
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-col>
-            </v-row>
+                      <v-col
+                        cols="12"
+                        tabIndex="0"
+                        @keypress="$refs.categoryUpload.fakeClick()"
+                      >
+                        <FileUpload
+                          ref="categoryPicUpload"
+                          v-model="pic"
+                          @fileRemove="patchFileRemove()"
+                          @fileAdd="$nextTick(() => { $refs.categoryEditorForm.validate() })"
+                          :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                          :maxFileSize="0.5"
+                          :maxFiles="1"
+                          bgColor="white"
+                          :scaleToFit="[400, 400]"
+                          :resizeQuality="75"
+                        ></FileUpload>
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-divider
+                class="my-9"
+              ></v-divider>
+            </v-form>
             <v-divider
-              class="my-9"
+              class="mb-6 mt-9"
             ></v-divider>
-          </v-form>
-          <v-card-actions
-            class="px-0"
-          >
-            <v-btn
-              block
-              large
-              :dark="isValid"
-              color="customGrey"
-              :loading="isLoading"
-              :disabled="!isValid"
-              @click="saveCategory()"
+            <v-toolbar
+              class="mt-4"
+              color="transparent"
             >
-              {{$t('saveDataButton')}}
-            </v-btn>
-          </v-card-actions>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+              <v-btn
+                block
+                size="large"
+                variant="elevated"
+                color="customGrey"
+                :loading="isLoading"
+                :disabled="!isValid"
+                @click="saveCategory()"
+                class="mx-0"
+              >
+                {{$t('saveDataButton')}}
+              </v-btn>
+            </v-toolbar>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
@@ -259,7 +259,6 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3',
       'reduceTranslations',
       'hydrateTranslations'
     ]),

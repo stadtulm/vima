@@ -109,7 +109,7 @@
                     dense
                     multiple
                     chips
-                    deletable-chips
+                    closable-chips
                     auto-select-first
                     :color="$settings.modules.discussions.color"
                     :item-color="$settings.modules.discussions.color"

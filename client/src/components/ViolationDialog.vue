@@ -6,7 +6,7 @@
     <v-dialog
       max-width="800"
       persistent
-      :value="showViolationDialog"
+      :model-value="showViolationDialog"
       @click:outside="closeViolationDialog()"
     >
       <v-card
@@ -60,19 +60,21 @@
           <template
             v-if="selectedViolation"
           >
-            <v-row
+            <v-toolbar
               v-if="computedMessage"
+              class="mt-2 px-0 mx-0"
             >
-              <v-col>
-                <v-btn
-                  :loading="isDeleting"
-                  color="error"
-                  @click="deleteMessage(computedMessage)"
-                >
-                  {{$t('deleteButton')}}
-                </v-btn>
-              </v-col>
-            </v-row>
+              <v-btn
+                block
+                variant="elevated"
+                :loading="isDeleting"
+                @click="deleteMessage(computedMessage)"
+                color="error"
+                class="mx-0"
+              >
+                {{$t('deleteButton')}}
+              </v-btn>
+            </v-toolbar>
             <v-divider
               class="my-4 mb-6"
             ></v-divider>
@@ -89,7 +91,9 @@
                 <v-col
                   cols="12"
                 >
-                <v-alert>
+                <v-alert
+                  variant="outlined"
+                >
                   {{$sanitize(newTab(response.comment))}}
                 </v-alert>
               </v-col>
@@ -109,11 +113,8 @@
                 cols="12"
               >
                 <v-text-field
-                  dense
-                  outlined
-                  color="customGrey"
+                  density="compact"
                   :label="$t('writeComment')"
-                  background-color="#fff"
                   v-model="comment"
                   :rules="[rules.required]"
                 >
@@ -121,21 +122,28 @@
               </v-col>
             </v-row>
           </v-form>
-          <v-card-actions
+          <v-toolbar
             class="px-0"
           >
             <v-btn
-              block
-              large
-              :dark="isValidViolation"
-              color="customGrey"
+              class="mx-0"
+              variant="elevated"
+              @click="$emit('closeViolationDialog')"
+            >
+              {{$t('cancelButton')}}
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+              variant="elevated"
               :loading="isLoading"
               :disabled="!isValidViolation"
               @click="saveViolation()"
+              color="customGrey"
+              class="mx-0"
             >
               {{ selectedViolation ? $t('sendComment') : $t('reportButton')}}
             </v-btn>
-          </v-card-actions>
+          </v-toolbar>
         </v-card-text>
       </v-card>
     </v-dialog>

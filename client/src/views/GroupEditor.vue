@@ -105,7 +105,7 @@
                     dense
                     multiple
                     chips
-                    deletable-chips
+                    closable-chips
                     auto-select-first
                     :color="$settings.modules.groups.color"
                     :item-color="$settings.modules.groups.color"

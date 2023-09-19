@@ -1,69 +1,72 @@
 <template>
-  <v-row
-    v-if="selectedTag || !$route.params.id"
-  >
-    <v-col
-      cols="12"
+  <div>
+    <v-row
+      class="d-flex mx-0 mb-4"
     >
-      <v-card
-        color="customGreyUltraLight"
-        tile
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
-        <v-card-text>
-          <v-row
-            class="mb-3"
-          >
-            <v-col
-              class="text-h5 font-weight-bold"
+        {{$t('tag')}} {{ selectedTag ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+      </span>
+    </v-row>
+    <v-row
+      v-if="selectedTag || !$route.params.id"
+    >
+      <v-col
+        cols="12"
+      >
+        <v-card
+          tile
+        >
+          <v-card-text>
+            <v-form
+              v-model="isValid"
             >
-              {{$t('tag')}} {{ selectedTag ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
-            </v-col>
-          </v-row>
-          <v-form
-            v-model="isValid"
-          >
-            <v-row
-              dense
-            >
-              <v-col
-                cols="12"
+              <v-row
+                dense
               >
-                <v-text-field
-                  dense
-                  outlined
-                  color="customGrey"
-                  :label="$t('name')"
-                  background-color="#fff"
-                  v-model="text"
-                  :rules="[
-                    rules.required,
-                    rules.tagText,
-                    rules.noBlanks
-                  ]"
+                <v-col
+                  cols="12"
                 >
-                </v-text-field>
-              </v-col>
-            </v-row>
-          </v-form>
-          <v-card-actions
-            class="px-0"
-          >
-            <v-btn
-              block
-              large
-              :dark="isValid"
-              color="customGrey"
-              :loading="isLoading"
-              :disabled="!isValid"
-              @click="saveTag()"
+                  <v-text-field
+                    density="compact"
+                    :label="$t('name')"
+                    v-model="text"
+                    :rules="[
+                      rules.required,
+                      rules.tagText,
+                      rules.noBlanks
+                    ]"
+                  >
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-form>
+            <v-divider
+              class="my-6"
+            ></v-divider>
+            <v-toolbar
+              class="mt-4"
+              color="transparent"
             >
-              {{$t('saveDataButton')}}
-            </v-btn>
-          </v-card-actions>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+              <v-btn
+                block
+                size="large"
+                variant="elevated"
+                color="customGrey"
+                :loading="isLoading"
+                :disabled="!isValid"
+                @click="saveTag()"
+                class="mx-0"
+              >
+                {{$t('saveDataButton')}}
+              </v-btn>
+            </v-toolbar>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>

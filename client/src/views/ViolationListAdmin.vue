@@ -1,47 +1,53 @@
 <template>
   <div>
-    <v-row
-      class="mb-4"
-    >
+    <v-row>
       <v-col
-        class="text-h5 font-weight-bold text-customGrey text-uppercase"
+        class="d-flex mx-3 mb-4"
       >
-        {{$t('adminView')}} {{$t('violations')}}
-      </v-col>
-      <v-col
-        class="shrink align-self-center"
-      >
-        <v-btn
-          v-if="computedFiltersDirty"
-          text
-          color="customGrey"
-          @click="resetFilters()"
-        >
-          {{$t('resetFilters')}}
-        </v-btn>
-      </v-col>
-      <v-col
-        class="shrink align-self-center"
-      >
-        <v-badge
-          :value="computedFiltersDirty"
-          color="customGrey"
-          overlap
-        >
-          <v-btn
-            outlined
-            color="customGrey"
-            @click="showFilters = !showFilters"
+        <v-row>
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
-            {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
-            <v-icon
-              size="18"
-              class="ml-3"
+            <div
+              v-html="$t('adminView') + ' ' + $t('violations')"
             >
-              {{showFilters ? 'fas fa-chevron-up': 'fas fa-chevron-down'}}
-            </v-icon>
-          </v-btn>
-        </v-badge>
+            </div>
+          </span>
+          <span
+            class="my-3 mr-3"
+          >
+            <v-btn
+              v-if="computedFiltersDirty"
+              variant="text"
+              color="customGrey"
+              @click="resetFilters()"
+            >
+              {{$t('resetFilters')}}
+            </v-btn>
+          </span>
+          <span
+            class="my-3 mr-6"
+          >
+            <v-badge
+              v-model="computedFiltersDirty"
+              :color="$settings.modules.ads.color"
+            >
+              <v-btn
+                variant="outlined"
+                color="customGrey"
+                @click="showFilters = !showFilters"
+              >
+                {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
+                <v-icon
+                  size="18"
+                  class="ml-3"
+                >
+                  {{showFilters ? 'fas fa-chevron-up': 'fas fa-chevron-down'}}
+                </v-icon>
+              </v-btn>
+            </v-badge>
+          </span>
+        </v-row>
       </v-col>
     </v-row>
     <v-expand-transition
@@ -55,20 +61,13 @@
         >
           <v-select
             v-model="types"
-            color="black"
-            item-color="customGrey"
             :label="$t('type')"
-            outlined
-            dense
+            density="compact"
             multiple
             chips
-            deletable-chips
+            closable-chips
             hide-details
-            :items="[
-              { text: $t('chat'), value: 'chats'},
-              { text: $t('discussion'), value: 'discussions'},
-              { text: $t('group'), value: 'groups' }
-            ]"
+            :items="typeItems"
           ></v-select>
         </v-col>
       </v-row>
@@ -77,6 +76,7 @@
       <v-col>
         <ViolationsList
           :types="types"
+          @updateTypes="updateTypes($event)"
         ></ViolationsList>
       </v-col>
     </v-row>
@@ -95,15 +95,25 @@ export default {
   },
 
   data: () => ({
-    types: ['chats', 'discussions'],
+    typeItems: [], 
+    types: [],
     computedFiltersDirty: false,
     showFilters: false
   }),
 
   async mounted () {
+    this.typeItems = [
+      { title: this.$t('chat'), value: 'chats'},
+      { title: this.$t('discussion'), value: 'discussions'},
+      { title: this.$t('group'), value: 'groups' }
+    ]
+    this.types = ['chats', 'discussions']
   },
 
   methods: {
+    updateTypes(updatedTypes) {
+      this.types = updatedTypes
+    }
   },
 
   computed: {

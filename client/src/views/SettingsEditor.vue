@@ -4,7 +4,6 @@
       cols="12"
     >
       <v-card
-        color="customGreyUltraLight"
         tile
       >
         <v-card-text>
@@ -58,8 +57,7 @@
             <v-row>
               <v-col>
                 <v-text-field
-                  dense
-                  outlined
+                  density="compact"
                   :label="$t('defaultLanguage')"
                   v-model="defaultLanguage"
                   disabled
@@ -74,13 +72,9 @@
               <v-col>
                 <v-combobox
                   chips
-                  deletable-chips
-                  dense
+                  closable-chips
+                  density="compact"
                   multiple
-                  color="customGrey"
-                  item-color="customGrey"
-                  outlined
-                  background-color="#fff"
                   v-model="languages"
                   :items="languages"
                   :label="$t('languages') + ' (ISO 3166-1)'"
@@ -105,11 +99,8 @@
                 cols="12"
               >
                 <v-text-field
-                  dense
-                  outlined
+                  density="compact"
                   :label="$t('linkTo') + ' facebook'"
-                  color="customGrey"
-                  background-color="#fff"
                   v-model="fb"
                   :rules="[rules.webLink]"
                 >
@@ -119,11 +110,8 @@
                 cols="12"
               >
                 <v-text-field
-                  dense
-                  outlined
+                  density="compact"
                   :label="$t('linkTo') + ' instagram'"
-                  color="customGrey"
-                  background-color="#fff"
                   v-model="instagram"
                   :rules="[rules.webLink]"
                 >
@@ -133,11 +121,8 @@
                 cols="12"
               >
                 <v-text-field
-                  dense
-                  outlined
+                  density="compact"
                   :label="$t('linkTo') + ' twitter'"
-                  color="customGrey"
-                  background-color="#fff"
                   v-model="twitter"
                   :rules="[rules.webLink]"
                 >
@@ -164,13 +149,10 @@
                     cols="5"
                   >
                     <v-text-field
-                      dense
-                      color="customGrey"
+                      density="compact"
                       v-model="link.name"
-                      outlined
                       :label="$t('name')"
                       :rules="[rules.required]"
-                      background-color="#fff"
                     >
                     </v-text-field>
                   </v-col>
@@ -178,13 +160,10 @@
                     cols="5"
                   >
                     <v-text-field
-                      dense
-                      color="customGrey"
+                      density="compact"
                       v-model="link.url"
-                      outlined
                       :label="$t('url')"
                       :rules="[rules.required]"
-                      background-color="#fff"
                     >
                     </v-text-field>
                   </v-col>
@@ -194,13 +173,10 @@
                     class="text-right"
                   >
                     <v-btn
-                      icon
+                      icon="fas fa-times"
                       @click="otherVimaLinks.splice(i, 1)"
                       class="mb-6"
                     >
-                      <v-icon>
-                        fas fa-times
-                      </v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -213,13 +189,10 @@
                     cols="5"
                   >
                     <v-text-field
-                      dense
-                      color="customGrey"
+                      density="compact"
                       v-model="link.name"
-                      outlined
                       :label="$t('name')"
                       :rules="[rules.required]"
-                      background-color="#fff"
                     >
                     </v-text-field>
                   </v-col>
@@ -227,13 +200,10 @@
                     cols="5"
                   >
                     <v-text-field
-                      dense
-                      color="customGrey"
+                      density="compact"
                       v-model="link.url"
-                      outlined
                       :label="$t('url')"
                       :rules="[rules.required]"
-                      background-color="#fff"
                     >
                     </v-text-field>
                   </v-col>
@@ -243,13 +213,10 @@
                     class="text-right"
                   >
                     <v-btn
-                      icon
+                      icon="fas fa-times"
                       @click="tmpOtherVimaLinks.splice(j, 1)"
                       class="mb-6"
                     >
-                      <v-icon>
-                        fas fa-times
-                      </v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -260,12 +227,9 @@
                     cols="5"
                   >
                     <v-text-field
-                      dense
-                      color="customGrey"
+                      density="compact"
                       v-model="linkName"
-                      outlined
                       :label="$t('name')"
-                      background-color="#fff"
                       :rules="linkName || linkUrl ? [rules.required] : []"
                     >
                     </v-text-field>
@@ -274,12 +238,9 @@
                     cols="5"
                   >
                     <v-text-field
-                      dense
-                      color="customGrey"
+                      density="compact"
                       v-model="linkUrl"
-                      outlined
                       :label="$t('url')"
-                      background-color="#fff"
                       :rules="linkName || linkUrl ? [rules.required] : []"
                     >
                     </v-text-field>
@@ -290,14 +251,11 @@
                     class="text-right"
                   >
                     <v-btn
-                      icon
+                      icon="fas fa-plus"
                       :disabled="!linkName || !linkUrl"
                       @click="addTmpOtherVimaLink()"
                       class="mb-6"
                     >
-                      <v-icon>
-                        fas fa-plus
-                      </v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -315,11 +273,7 @@
                 cols="12"
               >
                 <v-select
-                  dense
-                  color="customGrey"
-                  item-color="customGrey"
-                  background-color="#fff"
-                  outlined
+                  density="compact"
                   v-model="replyLevel"
                   :items="Array.from({length: 5}, (_, i) => i + 1)"
                   :rules="[rules.required]"
@@ -446,10 +400,7 @@
                     <v-row>
                       <v-col>
                         <v-select
-                          dense
-                          color="customGrey"
-                          item-color="customGrey"
-                          outlined
+                          density="compact"
                           v-model="module.position"
                           :label="$t('position')"
                           :items="Array.from({length: Object.keys(modules).length}, (_, i) => i + 1)"
@@ -461,14 +412,11 @@
                      <v-row>
                       <v-col>
                         <v-select
-                          dense
-                          color="customGrey"
-                          item-color="customGrey"
-                          outlined
+                          density="compact"
                           multiple
                           v-model="module.dependents"
                           :label="$t('dependentsOfThisModule')"
-                          :items="Object.keys($settings.modules).map(key => ({value: key, text: $t(key)}))"
+                          :items="Object.keys($settings.modules).map(key => ({value: key, title: $t(key)}))"
                         >
                         </v-select>
                       </v-col>
@@ -616,20 +564,10 @@
                               @setLanguage="(l) => { currentLanguage = l }"
                             ></LanguageSelect>
                           </template>
-                          <template slot="default">
-                            <VuetifyTiptap
-                              :editor-properties="{
-                                disableInputRules: true,
-                                disablePasteRules: true
-                              }"
-                              color="customGreyUltraLight"
+                          <template v-slot:default>
+                            <custom-tiptap
                               v-model="modules[key].text.find(obj => obj.lang === currentLanguage).value"
-                              :card-props="{ tile: true, flat: true }"
-                              style="border: 1px solid #aaa"
-                              :extensions="extensions"
-                              :placeholder="$t('enterText')"
-                            >
-                            </VuetifyTiptap>
+                            ></custom-tiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -639,21 +577,26 @@
               </v-col>
             </v-row>
           </v-form>
-          <v-card-actions
-            class="px-0"
+          <v-divider
+            class="mb-6 mt-9"
+          ></v-divider>
+          <v-toolbar
+            class="mt-4"
+            color="transparent"
           >
             <v-btn
               block
-              large
-              :dark="isValid"
+              size="large"
+              variant="elevated"
               color="customGrey"
               :loading="isLoading"
               :disabled="!isValid"
               @click="saveSettings()"
+              class="mx-0"
             >
               {{$t('saveDataButton')}}
             </v-btn>
-          </v-card-actions>
+          </v-toolbar>
         </v-card-text>
       </v-card>
     </v-col>
@@ -665,6 +608,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FileUpload from '@/components/FileUpload.vue'
 import LanguageSelect from '@/components/LanguageSelect.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 const appName = import.meta.env.VITE_NAME
 
@@ -673,7 +617,8 @@ export default {
 
   components: {
     FileUpload,
-    LanguageSelect
+    LanguageSelect,
+    CustomTiptap
   },
 
   data: () => ({
@@ -707,10 +652,6 @@ export default {
     }),
     ...mapActions('settings', {
       patchSettings: 'patch'
-    }),
-    ...mapActions('uploads', {
-      createUpload: 'create',
-      removeUpload: 'remove'
     }),
     async adapt () {
       if (this.$settings) {
@@ -853,7 +794,6 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3',
       'parseRgbString',
       'hydrateTranslations'
     ])

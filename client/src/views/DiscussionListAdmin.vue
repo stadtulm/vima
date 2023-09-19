@@ -72,7 +72,7 @@
               variant="outlined"
               v-for="category in getCategories(item.raw.categories)"
               :key="category._id"
-              class="mr-1"
+              class="mr-1 mb-1"
               disabled
             >
             {{category.text.value}}
@@ -84,7 +84,7 @@
             <v-chip
               v-for="tag in getTags(item.raw.tags)"
               :key="tag._id"
-              class="mr-1"
+              class="mr-1 mb-1"
               disabled
             >
             {{tag.text}}
@@ -232,6 +232,7 @@ export default {
       this.loaders[id + 'delete'] = true
       try {
         await this.removeDiscussion(id)
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
         this.loaders[id + 'delete'] = undefined
       } catch (e) {
@@ -282,6 +283,7 @@ export default {
             patchObj
           ]
         )
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         this.loaders[discussion._id + property] = undefined
       } catch (e) {

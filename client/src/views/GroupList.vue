@@ -399,7 +399,7 @@
                 :item-color="$settings.modules.groups.color"
                 multiple
                 chips
-                deletable-chips
+                closable-chips
                 :items="computedRelationItems[item._id]"
                 :value="computedGroupRelations[item._id]"
                 @change="changeGroupRelation($event, item)"
@@ -561,7 +561,7 @@
                             multiple
                             :label="$t('possibleGroupModeratorsHint')"
                             chips
-                            deletable-chips
+                            closable-chips
                           >
                           </v-select>
                         </v-col>

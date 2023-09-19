@@ -365,6 +365,9 @@ const state = {
       this.$router.replace(
         {
           query: {
+            c: this.queryObject.categories?.join(','),
+            t: this.queryObject.tags?.join(','),
+            y: this.queryObject.type,
             r: data,
             q: this.queryObject.query,
             p: this.queryObject.page,
@@ -381,6 +384,9 @@ const state = {
       this.$router.replace(
         {
           query: {
+            c: this.queryObject.categories?.join(','),
+            t: this.queryObject.tags?.join(','),
+            y: this.queryObject.type,
             r: this.queryObject.role,
             q: data,
             p: this.queryObject.page,
@@ -397,6 +403,9 @@ const state = {
       this.$router.replace(
         {
           query: {
+            c: this.queryObject.categories?.join(','),
+            t: this.queryObject.tags?.join(','),
+            y: this.queryObject.type,
             r: this.queryObject.role,
             q: this.queryObject.query,
             p: this.queryObject.page,
@@ -413,6 +422,9 @@ const state = {
       this.$router.replace(
         {
           query: {
+            c: this.queryObject.categories?.join(','),
+            t: this.queryObject.tags?.join(','),
+            y: this.queryObject.type,
             r: this.queryObject.role,
             q: this.queryObject.query,
             p: this.queryObject.page,
@@ -428,6 +440,9 @@ const state = {
     if (data && this.$route.query.s !== data) {
       this.$router.replace({
         query: {
+          c: this.queryObject.categories?.join(','),
+          t: this.queryObject.tags?.join(','),
+          y: this.queryObject.type,
           r: this.queryObject.role,
           q: this.queryObject.query,
           p: this.queryObject.page,
@@ -439,6 +454,9 @@ const state = {
     } else if (!data) {
       this.$router.replace({
         query: {
+          c: this.queryObject.categories?.join(','),
+          t: this.queryObject.tags?.join(','),
+          y: this.queryObject.type,
           r: this.queryObject.role,
           q: this.queryObject.query,
           p: this.queryObject.page,
@@ -452,6 +470,9 @@ const state = {
     if (data && this.$route.query.d !== data) {
       this.$router.replace({
         query: {
+          c: this.queryObject.categories?.join(','),
+          t: this.queryObject.tags?.join(','),
+          y: this.queryObject.type,
           r: this.queryObject.role,
           q: this.queryObject.query,
           p: this.queryObject.page,

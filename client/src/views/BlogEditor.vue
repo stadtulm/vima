@@ -131,7 +131,7 @@
                     dense
                     multiple
                     chips
-                    deletable-chips
+                    closable-chips
                     auto-select-first
                     color="customGrey"
                     item-color="customGrey"
