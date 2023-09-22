@@ -11,8 +11,8 @@ module.exports = {
     parser: '@babel/eslint-parser'
   },
   rules: {
-    'no-console': import.meta.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': import.meta.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-console': 'warn',
+    'no-debugger': 'warn',
     'vue/multi-word-component-names': 'off',
     'no-empty': 'off',
     'vue/no-deprecated-slot-attribute': 'off',

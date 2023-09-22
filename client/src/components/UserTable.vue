@@ -15,7 +15,6 @@
     <v-row>
       <v-col>
         <v-data-table-server
-          v-if="!initialView"
           v-model:items-per-page="queryObject.itemsPerPage"
           v-model:page="queryObject.page"
           :sort-by="queryObject.sortBy"
@@ -131,11 +130,11 @@ export default {
       findUsers: 'find'
     }),
     // Can not be externalized
-    async updateDataTableParams(e) {
-        this.queryObject = {
-          ...e
-        }
-        await this.loadDataTableEntities()
+    async updateDataTableParams (e) {
+      this.queryObject = {
+        ...e
+      }
+      await this.loadDataTableEntities()
     },
     async loadDataTableEntities () {
       this.loading = true

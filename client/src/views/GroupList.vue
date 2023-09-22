@@ -1,94 +1,81 @@
 <template>
   <div>
-    <v-row
-      class="mb-4"
-    >
+    <v-row>
       <v-col
-        class="text-h5 font-weight-bold text-customGrey text-uppercase"
+        class="d-flex mx-3 mb-4"
       >
-        {{$t('myInterestGroups')}}
-      </v-col>
-      <v-col
-        class="text-right"
-      >
-        <v-btn
-          dark
-          :to="{ name: 'GroupEditor' }"
-          :color="$settings.modules.groups.color"
-        >
-          {{$t('newGroupButton')}}
-          <v-icon
-            class="ml-3"
-            size="18"
+        <v-row>
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
-            fas fa-plus
-          </v-icon>
-        </v-btn>
+            {{$t('myInterestGroups')}}
+          </span>
+          <span
+            v-if="user"
+            class="my-3 mr-3"
+          >
+            <v-btn
+              :to="{ name: 'GroupEditor' }"
+              :color="$settings.modules.groups.color"
+              class="text-white"
+            >
+              {{$t('newGroupButton')}}
+              <v-icon
+                class="ml-3"
+                size="18"
+                color="white"
+              >
+                fas fa-plus
+              </v-icon>
+            </v-btn>
+          </span>
+        </v-row>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
         <v-text-field
-          v-model="search"
+          v-model="queryObject.query"
           :label="$t('filterByTitleLabel')"
-          outlined
-          dense
+          density="compact"
           hide-details
-          color="black"
         ></v-text-field>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          :item-class="itemRowBackground"
-          item-key="_id"
-          single-expand
-          :expanded.sync="expanded"
-          show-expand
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          v-if="!initialView"
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
+          :items-length="computedTotal"
           :items="computedGroups"
-          :loading="loading"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          :server-items-length="total"
-          must-sort
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :footer-props="{
-            itemsPerPageText: '',
-            itemsPerPageOptions
-          }"
+          :loading="isLoading"
+          class="customGreyUltraLight pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateDataTableParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          :show-current-page="true"
+          :must-sort="true"
+          :item-class="itemRowBackground"
         >
           <template
-            v-slot:progress
-          >
-            <v-progress-linear
-              indeterminate
-              :color="$settings.modules.groups.color"
-            ></v-progress-linear>
-          </template>
-          <template
-            v-slot:[`item.data-table-expand`]="{ expand, isExpanded, item }"
+            v-slot:[`item.moderators`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fas fa-users"
+              size="small"
+              class="pr-1"
               :color="$settings.modules.groups.color"
-              @click="expand(!isExpanded)"
-              :disabled="!isOwnGroup(item._id) || !item.accepted || !item.accepted.isAccepted"
+              @click="moderatorsDialogItem = item.raw"
+              :disabled="
+                !isOwnGroup(item.raw._id) ||
+                !item.raw.accepted?.isAccepted
+              "
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                {{ isExpanded ? 'fas fa-chevron-up' : 'fas fa-users' }}
-              </v-icon>
             </v-btn>
           </template>
           <template
@@ -97,36 +84,36 @@
             <v-badge
               overlap
               :color="$settings.indicatorColor"
-              :value="
+              :model-value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
-                  obj.reference === item._id &&
+                  obj.reference === item.raw._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ) &&
                 statusContainers.find(obj =>
                   obj.user === user._id &&
-                  obj.reference === item._id &&
+                  obj.reference === item.raw._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ).unread.filter(obj => obj.type === 'users').length > 0
                 ? true : false
               "
             >
-              <template slot="badge">
+              <template v-slot:badge>
                 <span
                   class="text-customGrey font-weight-bold"
                 >
                   {{
                     statusContainers.find(
                       obj => obj.user === user._id &&
-                      obj.reference === item._id &&
+                      obj.reference === item.raw._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ) ?
                     statusContainers.find(
                       obj => obj.user === user._id &&
-                      obj.reference === item._id &&
+                      obj.reference === item.raw._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ).unread.filter(obj => obj.type === 'users').length
@@ -136,25 +123,18 @@
                 </span>
               </template>
               <v-btn
-                fab
-                small
+                icon="fas fa-list"
+                size="small"
                 :color="$settings.modules.groups.color"
-                @click="membersDialogItem = item"
+                @click="membersDialogItem = item.raw"
                 :disabled="
                   (
-                    !isOwnGroup(item._id) &&
-                    !isModeratorGroup(item._id)
+                    !isOwnGroup(item.raw._id) &&
+                    !isModeratorGroup(item.raw._id)
                   ) ||
-                  !item.accepted ||
-                  !item.accepted.isAccepted
+                  !item.raw.accepted?.isAccepted
                 "
               >
-                <v-icon
-                  color="white"
-                  size="18"
-                >
-                  fas fa-list
-                </v-icon>
               </v-btn>
             </v-badge>
           </template>
@@ -164,36 +144,36 @@
             <v-badge
               overlap
               :color="$settings.indicatorColor"
-              :value="
+              :model-value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
-                  obj.reference === item._id &&
+                  obj.reference === item.raw._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ) &&
                 statusContainers.find(obj =>
                   obj.user === user._id &&
-                  obj.reference === item._id &&
+                  obj.reference === item.raw._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ).unread.filter(obj => obj.type === 'discussions').length > 0
                 ? true : false
               "
             >
-              <template slot="badge">
+              <template v-slot:badge>
                 <span
                   class="text-customGrey font-weight-bold"
                 >
                   {{
                     statusContainers.find(obj =>
                       obj.user === user._id &&
-                      obj.reference === item._id &&
+                      obj.reference === item.raw._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ) ?
                     statusContainers.find(obj =>
                       obj.user === user._id &&
-                      obj.reference === item._id &&
+                      obj.reference === item.raw._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ).unread.filter(obj => obj.type === 'discussions').length
@@ -203,26 +183,20 @@
                 </span>
               </template>
               <v-btn
-                fab
-                small
+                icon="fas fa-comments"
+                size="small"
+                class="pr-1"
                 :color="$settings.modules.groups.color"
-                @click="discussionsDialogItem = item"
+                @click="discussionsDialogItem = item.raw"
                 :disabled="
                   (
-                    !isOwnGroup(item._id) &&
-                    !isModeratorGroup(item._id)
+                    !isOwnGroup(item.raw._id) &&
+                    !isModeratorGroup(item.raw._id)
                   ) ||
-                  !item.accepted ||
-                  !item.accepted.isAccepted ||
-                  !item.isActive
+                  !item.raw.accepted?.isAccepted ||
+                  !item.raw.isActive
                 "
               >
-                <v-icon
-                  color="white"
-                  size="18"
-                >
-                  fas fa-comments
-                </v-icon>
               </v-btn>
             </v-badge>
           </template>
@@ -232,25 +206,25 @@
             <v-badge
               overlap
               :color="$settings.indicatorColor"
-              :value="
+              :model-value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
                   obj.type === 'groups' &&
-                  obj.reference === item._id &&
+                  obj.reference === item.raw._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ) &&
                 statusContainers.find(obj =>
                   obj.user === user._id &&
                   obj.type === 'groups' &&
-                  obj.reference === item._id &&
+                  obj.reference === item.raw._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ).unread.filter(obj => obj.type === 'violations').length > 0
                 ? true : false
               "
             >
-              <template slot="badge">
+              <template v-slot:badge>
                 <span
                   class="text-customGrey font-weight-bold"
                 >
@@ -258,14 +232,14 @@
                     statusContainers.find(obj =>
                       obj.user === user._id &&
                       obj.type === 'groups' &&
-                      obj.reference === item._id &&
+                      obj.reference === item.raw._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ) ?
                     statusContainers.find(obj =>
                       obj.user === user._id &&
                       obj.type === 'groups' &&
-                      obj.reference === item._id &&
+                      obj.reference === item.raw._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ).unread.filter(obj => obj.type === 'violations').length
@@ -275,25 +249,18 @@
                 </span>
               </template>
               <v-btn
-                fab
-                small
+                icon="fas fa-ban"
+                size="small"
                 :color="$settings.modules.groups.color"
-                @click="violationsDialogItem = item"
+                @click="violationsDialogItem = item.raw"
                 :disabled="
                   (
-                    !isOwnGroup(item._id) &&
-                    !isModeratorGroup(item._id)
+                    !isOwnGroup(item.raw._id) &&
+                    !isModeratorGroup(item.raw._id)
                   ) ||
-                  !item.accepted ||
-                  !item.accepted.isAccepted
+                  !item.raw.accepted?.isAccepted
                 "
               >
-                <v-icon
-                  color="white"
-                  size="18"
-                >
-                  fas fa-ban
-                </v-icon>
               </v-btn>
             </v-badge>
           </template>
@@ -301,25 +268,18 @@
             v-slot:[`item.files`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fas fa-file"
+              size="small"
               :color="$settings.modules.groups.color"
-              @click="filesDialogItem = item"
+              @click="filesDialogItem = item.raw"
               :disabled="
                 (
-                  !isOwnGroup(item._id) &&
-                  !isModeratorGroup(item._id)
+                  !isOwnGroup(item.raw._id) &&
+                  !isModeratorGroup(item.raw._id)
                 ) ||
-                !item.accepted ||
-                !item.accepted.isAccepted
+                !item.raw.accepted?.isAccepted
               "
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fas fa-file
-              </v-icon>
             </v-btn>
           </template>
           <template
@@ -328,39 +288,35 @@
             <span
               class="font-weight-bold"
             >
-              {{item.title.value}}
+              {{item.raw.title.value}}
             </span>
           </template>
           <template
             v-slot:[`item.relation`]="{ item }"
           >
             <template
-              v-if="computedGroupRelations[item._id].includes('invitation')"
+              v-if="computedGroupRelations[item.raw._id].includes('invitation')"
             >
               <v-row>
                 <v-col
-                  class="align-self-center shrink"
-                >
-                  {{$t('invitation')}}:
-                </v-col>
-                <v-col
                   class="text-center"
                 >
+                  <v-toolbar
+                    color="transparent"
+                  >
+                  {{$t('invitation')}}:
                   <v-tooltip
                     bottom
                   >
-                    <template v-slot:activator="{ on, attrs }">
+                  // TODO : TAB OFFENE ANFRAGE TESTEN --> NACH GRUPPENANSICHTEN
+                    <template v-slot:activator="{ props }">
                       <v-btn
-                        v-bind="attrs"
-                        v-on="on"
+                        v-bind="props"
                         color="success"
-                        small
-                        icon
-                        @click="acceptInvitation(item)"
+                        size="small"
+                        icon="fas fa-check"
+                        @click="acceptInvitation(item.raw)"
                       >
-                        <v-icon>
-                          fas fa-check
-                        </v-icon>
                       </v-btn>
                     </template>
                     <span>
@@ -370,24 +326,21 @@
                   <v-tooltip
                     bottom
                   >
-                    <template v-slot:activator="{ on, attrs }">
+                    <template v-slot:activator="{ props }">
                       <v-btn
-                        v-bind="attrs"
-                        v-on="on"
+                        v-bind="props"
                         color="error"
-                        small
-                        icon
-                        @click="declineInvitation(item)"
+                        size="small"
+                        icon="fas fa-times"
+                        @click="declineInvitation(item.raw)"
                       >
-                        <v-icon>
-                          fas fa-times
-                        </v-icon>
                       </v-btn>
                     </template>
                     <span>
                       {{$t('decline')}}
                     </span>
                   </v-tooltip>
+                  </v-toolbar>
                 </v-col>
               </v-row>
             </template>
@@ -395,14 +348,13 @@
               v-else
             >
               <v-select
-                :color="$settings.modules.groups.color"
-                :item-color="$settings.modules.groups.color"
+                density="compact"
                 multiple
                 chips
                 closable-chips
-                :items="computedRelationItems[item._id]"
-                :value="computedGroupRelations[item._id]"
-                @change="changeGroupRelation($event, item)"
+                :items="computedRelationItems[item.raw._id]"
+                :model-value="computedGroupRelations[item.raw._id]"
+                @update:modelValue="changeGroupRelation($event, item.raw)"
               >
               </v-select>
             </template>
@@ -410,183 +362,90 @@
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+            {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
             <v-btn
-              icon
+              variant="text"
+              :icon="item.raw.isActive ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.groups.color"
-              :loading="loaders[item._id + 'isActive'] === true"
-              :disabled="!isOwnGroup(item._id)"
+              :loading="loaders[item.raw._id + 'isActive'] === true"
+              :disabled="!isOwnGroup(item.raw._id)"
               @click="changeGroupProperty(
-                item._id,
+                item.raw._id,
                 'isActive',
-                !item.isActive
+                !item.raw.isActive
               )"
             >
-              <template
-                slot="loader"
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon>
-                {{item.isActive ? 'fas fa-check-square' : 'far fa-square'}}
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.accepted.isAccepted`]="{ item }"
           >
             <v-btn
-              icon
+              variant="text"
+              :icon="item.raw.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.groups.color"
               disabled
-              :loading="loaders[item._id + 'accepted'] === true"
-              @click="changeGroupProperty(
-                item._id,
-                'accepted',
-                {
-                  isAccepted: item.accepted ? !item.accepted.isAccepted : true,
-                  dt: new Date(),
-                  user: user._id
-                }
-              )"
             >
-              <template
-                slot="loader"
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon>
-                {{item.accepted && item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'}}
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-pen"
+              size="small"
               :color="$settings.modules.groups.color"
               class="my-4"
-              :to="{name: 'GroupEditor', params: { id: item._id } }"
-              :disabled="!isOwnGroup(item._id) && !isModeratorGroup(item._id)"
+              :to="{name: 'GroupEditor', params: { id: item.raw._id } }"
+              :disabled="!isOwnGroup(item.raw._id) && !isModeratorGroup(item.raw._id)"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-pen
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-trash"
+              size="small"
               :color="$settings.modules.groups.color"
               class="my-4"
-              :loading="loaders[item._id + 'delete'] === true"
-              :disabled="!isOwnGroup(item._id)"
-              @click="deleteGroup(item._id)"
+              :loading="loaders[item.raw._id + 'delete'] === true"
+              :disabled="!isOwnGroup(item.raw._id)"
+              @click="deleteGroup(item.raw._id)"
             >
-              <template
-                slot="loader"
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-trash
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-arrow-right"
+              size="small"
               :color="$settings.modules.groups.color"
               :disabled="
-                !item.isActive ||
-                !item.accepted ||
-                !item.accepted.isAccepted
+                !item.raw.isActive ||
+                !item.raw.accepted?.isAccepted
               "
-              :to="{name: 'Group', params: { group: item._id } }"
+              :to="{name: 'Group', params: { group: item.raw._id } }"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-arrow-right
-              </v-icon>
             </v-btn>
           </template>
-          <template v-slot:expanded-item="{ headers }">
-            <td :colspan="headers.length" class="pa-4">
-              <v-row>
-                <v-col>
-                  <v-card>
-                    <v-card-text>
-                      <v-row>
-                        <v-col>
-                          <v-select
-                            item-text="userName"
-                            item-value="_id"
-                            :items="computedPossibleModerators"
-                            :value="computedExpandedModerators"
-                            @change="changeExpandedModerators"
-                            :color="$settings.modules.groups.color"
-                            :item-color="$settings.modules.groups.color"
-                            multiple
-                            :label="$t('possibleGroupModeratorsHint')"
-                            chips
-                            closable-chips
-                          >
-                          </v-select>
-                        </v-col>
-                      </v-row>
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </td>
-          </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
-    <!-- Members dialog -->
+    <!-- Members dialog -->T
     <v-dialog
       v-model="showMembersDialog"
       max-width="1200"
     >
       <v-card
-        color="customGreyUltraLight"
         tile
       >
-        <v-card-text
-          class="pa-8"
-        >
+        <v-card-text>
           <v-row>
             <v-col
               class="text-h5 font-weight-bold"
@@ -622,74 +481,70 @@
                 </v-tab>
               </v-tabs>
               </v-toolbar>
-              <v-tabs-items v-model="membersTab">
-                <v-tab-item>
+              <v-window
+                v-model="membersTab"
+              >
+                <v-window-item>
                   <v-card flat>
                     <v-card-text>
                       <v-list
-                        v-if="computedMemberStatusContainers"
+                        v-if="memberStatusContainers.length > 0"
                       >
                         <v-list-item
-                          v-for="member in computedMemberStatusContainers.filter(obj => obj.relation === 'member' || obj.relation === 'owner').map(obj => getUser(obj.user))"
+                          v-for="member in memberStatusContainers.filter(obj => obj.relation === 'member' || obj.relation === 'owner').map(obj => getUser(obj.user))"
                           :key="member._id"
                         >
-                          <v-list-item-avatar
-                            class="my-2"
-                            color="customGreyLight"
-                            size="40"
-                          >
-                            <v-img
-                              v-if="member.pic"
-                              :src="s3 + member.pic.url"
-                              :alt="$t('userPic')"
-                              :title="member.pic.credit ? '© ' + member.pic.credit : ''"
+                          <template v-slot:prepend>
+                            <v-avatar
+                              class="my-2"
+                              color="customGreyLight"
+                              size="40"
                             >
-                            </v-img>
-                            <v-icon
-                              v-else
-                              color="white"
-                              size="18"
-                            >
-                              fas fa-user
-                            </v-icon>
-                          </v-list-item-avatar>
-                          <v-list-item-content>
-                            <v-list-item-title
-                              class="pointer"
-                              @click="$router.push({name: 'User', params: { user: member._id}})"
-                            >
-                              {{member.userName}}
-                              <span
-                                v-for="(relation, i) of computedMemberStatusContainers.filter(obj => obj.user === member._id && obj.relation !== 'member').map(obj => obj.relation)"
-                                :key="i"
+                              <v-img
+                                v-if="member.pic"
+                                :src="s3 + member.pic.url"
+                                :alt="$t('userPic')"
+                                :title="member.pic.credit ? '© ' + member.pic.credit : ''"
                               >
-                                - {{$t(relationItems[relation].textKey)}}
-                              </span>
-                            </v-list-item-title>
-                          </v-list-item-content>
-                          <v-list-item-action
-                            v-if="!computedMemberStatusContainers.find(obj => obj.user === member._id && obj.relation === 'owner')"
+                              </v-img>
+                              <v-icon
+                                v-else
+                                color="white"
+                                size="18"
+                              >
+                                fas fa-user
+                              </v-icon>
+                            </v-avatar>
+                          </template>
+                          <v-list-item-title
+                            class="pointer"
+                            @click="$router.push({name: 'User', params: { user: member._id}})"
+                          >
+                            {{member.userName}}
+                            <span
+                              v-for="(relation, i) of memberStatusContainers.filter(obj => obj.user === member._id && obj.relation !== 'member').map(obj => obj.relation)"
+                              :key="i"
+                            >
+                              - {{$t(relationItems[relation].textKey)}}
+                            </span>
+                          </v-list-item-title>
+                          <template v-slot:append
+                            v-if="!memberStatusContainers.find(obj => obj.user === member._id && obj.relation === 'owner')"
                           >
                             <v-btn
                               @click="removeMember(member)"
-                              fab
-                              small
-                              dark
+                              icon="fas fa-times"
+                              soze="small"
                               :color="$settings.modules.groups.color"
                             >
-                              <v-icon
-                                size="18"
-                              >
-                                fas fa-times
-                              </v-icon>
                             </v-btn>
-                          </v-list-item-action>
+                          </template>
                         </v-list-item>
                       </v-list>
                     </v-card-text>
                   </v-card>
-                </v-tab-item>
-                <v-tab-item>
+                </v-window-item>
+                <v-window-item>
                   <v-card
                     flat
                     color="transparent"
@@ -706,12 +561,12 @@
                       ></UserTable>
                     </v-card-text>
                   </v-card>
-                </v-tab-item>
-                <v-tab-item>
+                </v-window-item>
+                <v-window-item>
                   <v-card
                     flat
                     color="transparent"
-                    v-if="computedMemberStatusContainers"
+                    v-if="memberStatusContainers.length > 0"
                   >
                     <v-card-text>
                       <UserTable
@@ -720,52 +575,52 @@
                         :customColor="$settings.modules.groups.color"
                         :customQuery="
                           {
-                            _id: { $in: computedMemberStatusContainers.filter(obj => obj.relation === 'invitation').map(obj => obj.user) }
+                            _id: { $in: memberStatusContainers.filter(obj => obj.relation === 'invitation').map(obj => obj.user) }
                           }
                         "
                         @customAction="removeMember"
                       ></UserTable>
                     </v-card-text>
                   </v-card>
-                </v-tab-item>
-                <v-tab-item>
+                </v-window-item>
+                <v-window-item>
                   <v-card flat>
                     <v-card-text>
                       <v-list
-                        v-if="computedMemberStatusContainers"
+                        v-if="memberStatusContainers.length > 0"
                       >
                         <v-list-item
-                          v-for="(member, i) in computedMemberStatusContainers.filter(obj => obj.relation === 'applicant').map(obj => getUser(obj.user))"
+                          v-for="(member, i) in memberStatusContainers.filter(obj => obj.relation === 'applicant').map(obj => getUser(obj.user))"
                           :key="member._id"
                         >
-                          <v-list-item-avatar
-                            class="my-2"
-                            color="customGreyLight"
-                            size="40"
-                          >
-                            <v-img
-                              v-if="member.pic"
-                              :src="s3 + member.pic.url"
-                              :alt="$t('userPic')"
-                              :title="member.pic.credit ? '© ' + member.pic.credit : ''"
+                          <template v-slot:prepend>
+                            <v-avatar
+                              class="my-2"
+                              color="customGreyLight"
+                              size="40"
                             >
-                            </v-img>
-                            <v-icon
-                              v-else
-                              color="white"
-                              size="18"
-                            >
-                              fas fa-user
-                            </v-icon>
-                          </v-list-item-avatar>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              {{member.userName}}
-                            </v-list-item-title>
-                            <v-list-item-title>
-                              {{$t('messageToGroup')}} "{{computedMemberStatusContainers.filter(obj => obj.relation === 'applicant')[i].customField}}"
-                            </v-list-item-title>
-                          </v-list-item-content>
+                              <v-img
+                                v-if="member.pic"
+                                :src="s3 + member.pic.url"
+                                :alt="$t('userPic')"
+                                :title="member.pic.credit ? '© ' + member.pic.credit : ''"
+                              >
+                              </v-img>
+                              <v-icon
+                                v-else
+                                color="white"
+                                size="18"
+                              >
+                                fas fa-user
+                              </v-icon>
+                            </v-avatar>
+                          </template>
+                          <v-list-item-title>
+                            {{member.userName}}
+                          </v-list-item-title>
+                          <v-list-item-title>
+                            {{$t('messageToGroup')}} "{{memberStatusContainers.filter(obj => obj.relation === 'applicant')[i].customField}}"
+                          </v-list-item-title>
                           <v-list-item-action>
                             <v-btn
                               @click="acceptMember(member)"
@@ -800,8 +655,8 @@
                       </v-list>
                     </v-card-text>
                   </v-card>
-                </v-tab-item>
-              </v-tabs-items>
+                </v-window-item>
+              </v-window>
             </v-col>
           </v-row>
         </v-card-text>
@@ -810,15 +665,12 @@
     <!-- Files dialog -->
     <v-dialog
       v-model="showFilesDialog"
-      max-width="800"
+      max-width="600"
     >
       <v-card
-        color="customGreyUltraLight"
         tile
       >
-        <v-card-text
-          class="pa-8"
-        >
+        <v-card-text>
           <v-row>
             <v-col
               class="text-h5 font-weight-bold"
@@ -840,15 +692,12 @@
     <!-- Discussions dialog -->
     <v-dialog
       v-model="showDiscussionsDialog"
-      max-width="800"
+      max-width="600"
     >
       <v-card
-        color="customGreyUltraLight"
         tile
       >
-        <v-card-text
-          class="pa-8"
-        >
+        <v-card-text>
           <v-row>
             <v-col
               class="text-h5 font-weight-bold"
@@ -873,12 +722,9 @@
       max-width="1200"
     >
       <v-card
-        color="customGreyUltraLight"
         tile
       >
-        <v-card-text
-          class="pa-8"
-        >
+        <v-card-text>
           <v-row>
             <v-col
               class="text-h5 font-weight-bold"
@@ -892,6 +738,38 @@
                 :group="violationsDialogItem"
                 :types="['groups']"
               ></ViolationsList>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- Moderators dialog -->
+    <v-dialog
+      v-model="showModeratorsDialog"
+    >
+      <v-card>
+        <v-card-text>
+          <v-row>
+            <v-col
+              class="text-h5 font-weight-bold"
+            >
+              {{$t('moderators')}}
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-select
+                item-title="userName"
+                item-value="_id"
+                :items="possibleModerators"
+                :model-value="computedExpandedModerators"
+                @update:modelValue="changeExpandedModerators"
+                multiple
+                :label="$t('possibleGroupModeratorsHint')"
+                chips
+                closable-chips
+              >
+              </v-select>
             </v-col>
           </v-row>
         </v-card-text>
@@ -921,7 +799,6 @@ export default {
   data: () => ({
     triggerReload: 1,
     isUpdating: false,
-    membersTrigger: 1,
     membersTab: 0,
     filesDialogItem: undefined,
     showFilesDialog: false,
@@ -931,22 +808,24 @@ export default {
     showDiscussionsDialog: false,
     violationsDialogItem: undefined,
     showViolationsDialog: false,
-    expandedModeratorsTrigger: 1,
-    isSending: false,
-    expanded: [],
+    showModeratorsDialog: false,
+    moderatorsDialogItem: undefined,
+    possibleModerators: [],
+    expandedStatusContainers:[],
+    memberStatusContainers: [],
     loaders: {},
-    search: '',
-    page: 1,
-    loading: true,
-    itemsPerPage: 25,
-    sortBy: ['createdAt'],
-    sortDesc: [true]
+    initialView: true,
+    groupsResponse: undefined,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'createdAt', order: 'desc' }]
+    }
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    await this.adaptQuery()
     setTimeout(async () => {
       await this.checkAcceptedGroups()
     }, 1000)
@@ -969,15 +848,41 @@ export default {
       removeGroupRelation: 'remove',
       patchGroupNotifications: 'patch'
     }),
+    async updateDataTableParams(e) {
+      if (!this.initialView) {
+        this.queryObject = {
+          ...e,
+          query: this.queryObject.query,
+        }
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryPage(this.queryObject.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+            this.updateQuerySortBy(e.sortBy[0].key)
+            this.updateQuerySortOrder(e.sortBy[0].order)
+        }
+      }
+    },
+    async loadDataTableEntities () {
+      this.loading = true
+      this.groupsResponse = await this.findGroups(
+        this.groupsParams
+      )
+      this.isLoading = false
+      setTimeout(async () => {
+        await this.checkAcceptedGroups()
+      }, 1000)
+    },
     async deleteGroup (id) {
-      this.$set(this.loaders, id + 'delete', true)
+      this.loaders[id + 'delete'] = true
       try {
         await this.removeGroup(id)
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
       }
     },
     async removeMember (user) {
@@ -993,7 +898,7 @@ export default {
             }
           ]
         )
-        this.membersTrigger = Date.now()
+        await this.loadMemberStatusContainers()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
@@ -1008,7 +913,7 @@ export default {
             groupId: this.membersDialogItem._id
           }
         )
-        this.membersTrigger = Date.now()
+        await this.loadMemberStatusContainers()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
@@ -1027,7 +932,7 @@ export default {
             }
           ]
         )
-        this.membersTrigger = Date.now()
+        await this.loadMemberStatusContainers()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
@@ -1041,7 +946,7 @@ export default {
             groupId: group._id
           }
         )
-        this.membersTrigger = Date.now()
+        await this.loadMemberStatusContainers()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
@@ -1056,7 +961,7 @@ export default {
             groupId: this.membersDialogItem._id
           }
         )
-        this.membersTrigger = Date.now()
+        await this.loadMemberStatusContainers()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
@@ -1115,9 +1020,10 @@ export default {
               {
                 type: 'createGroupModeration',
                 userId: user,
-                groupId: this.expanded[0]._id
+                groupId: this.moderatorsDialogItem._id
               }
             )
+            await this.loadExpandedStatusContainers()
             this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
           } catch (e) {
             this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
@@ -1132,7 +1038,7 @@ export default {
           try {
             await this.removeGroupRelation(
               [
-                this.expanded[0]._id,
+                this.moderatorsDialogItem._id,
                 {
                   query: {
                     type: 'removeGroupModeration',
@@ -1141,6 +1047,7 @@ export default {
                 }
               ]
             )
+            await this.loadExpandedStatusContainers()
             this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
           } catch (e) {
             this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
@@ -1166,7 +1073,7 @@ export default {
       }
     },
     async changeGroupProperty (groupId, property, value) {
-      this.$set(this.loaders, groupId + property, true)
+      this.loaders[groupId + property] = true
       const patchObj = {}
       patchObj[property] = value
       try {
@@ -1176,11 +1083,12 @@ export default {
             patchObj
           ]
         )
+        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-        this.$set(this.loaders, groupId + property, undefined)
+        this.loaders[groupId + property] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        this.$set(this.loaders, groupId + property, undefined)
+        this.loaders[groupId + property] = undefined
       }
     },
     getOwnStatusContainersOfGroup (groupId) {
@@ -1254,102 +1162,42 @@ export default {
         this.isUpdating = false
       }
     },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
+    async loadMemberStatusContainers () {
+      if (this.membersDialogItem) {
+        this.memberStatusContainers = await this.findStatusContainers({
+          query: {
+            reference: this.membersDialogItem._id
           }
-        }
-        this.sortDesc = tmpDesc
-      }
-    },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
-      if (parseInt(this.$route.query.p) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateItemsPerPage (data) {
-      if (parseInt(this.$route.query.i) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
+        })
       } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
-          }
-        })
-      } else if (!data) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
-          }
-        })
+        this.memberStatusContainers = []
       }
     },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
-        this.$router.replace({
+    async loadExpandedStatusContainers () {
+      if (this.moderatorsDialogItem) {
+        this.expandedStatusContainers = await this.findStatusContainers({
           query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
+            reference: this.moderatorsDialogItem._id,
+            relation: 'moderator'
           }
         })
+      } else {
+        this.expandedStatusContainers = []
+      }
+    },
+    async loadPossibleModerators () {
+      if (this.moderatorsDialogItem) {
+        const statusContainers = await this.findStatusContainers({
+          query: {
+            user: { $ne: this.user._id },
+            reference: this.moderatorsDialogItem._id,
+            relation: { $in: ['member'] }
+          }
+        })
+        this.possibleModerators = statusContainers.map(obj => this.getUser(obj.user))
+        console.log(statusContainers)
+      } else {
+        this.possibleModerators = []
       }
     }
   },
@@ -1358,8 +1206,12 @@ export default {
     ...mapGetters([
       's3',
       'relationItems',
-      'deepSort',
-      'itemsPerPageOptions'
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -1375,24 +1227,29 @@ export default {
     }),
     computedCustomQuery () {
       return {
-        _id: { $nin: this.computedMemberStatusContainers && this.membersDialogItem ? this.computedMemberStatusContainers.filter(obj => obj.reference === this.membersDialogItem._id).map(obj => obj.user).concat([this.user._id]) : [this.user._id] }
+        _id: {
+          $nin:
+            this.memberStatusContainers.length > 0 && this.membersDialogItem ?
+              this.memberStatusContainers.filter(obj => obj.reference === this.membersDialogItem._id).map(obj => obj.user).concat([this.user._id]) :
+              [this.user._id]
+        }
       }
     },
     headers () {
       return [
-        { text: this.$t('title'), value: 'title.value' },
-        { text: this.$t('role'), value: 'relation' },
-        { text: this.$t('createdAt'), value: 'createdAt' },
-        { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
-        { text: this.$t('active'), value: 'isActive', align: 'center' },
-        { text: this.$t('moderators'), value: 'data-table-expand', align: 'center', sortable: false },
-        { text: this.$t('manageMembersButton'), value: 'members', align: 'center', sortable: false },
-        { text: this.$t('groupDiscussions'), value: 'discussions', align: 'center', sortable: false },
-        { text: this.$t('violations'), value: 'violations', align: 'center', sortable: false },
-        { text: this.$t('files'), value: 'files', align: 'center', sortable: false },
-        { text: this.$t('editButton'), value: 'edit', align: 'center', sortable: false },
-        { text: this.$t('deleteButton'), value: 'delete', align: 'center', sortable: false },
-        { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
+        { title: this.$t('title'), key: 'title.value' },
+        { title: this.$t('role'), key: 'relation', width: 200 },
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
+        { title: this.$t('active'), key: 'isActive', align: 'center' },
+        { title: this.$t('moderators'), key: 'moderators', align: 'center', sortable: false },
+        { title: this.$t('manageMembersButton'), key: 'members', align: 'center', sortable: false },
+        { title: this.$t('groupDiscussions'), key: 'discussions', align: 'center', sortable: false },
+        { title: this.$t('violations'), key: 'violations', align: 'center', sortable: false },
+        { title: this.$t('files'), key: 'files', align: 'center', sortable: false },
+        { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },
+        { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
+        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
       ]
     },
     computedRelationItems () {
@@ -1423,8 +1280,8 @@ export default {
         for (const key of Object.keys(tmpItems)) {
           items.push({
             value: key,
-            text: this.$t(this.relationItems[key].textKey),
-            disabled: key === 'owner'
+            title: this.$t(this.relationItems[key].textKey),
+            props: { disabled: key === 'owner' }
           })
         }
         tmpRelationItems[group._id] = items
@@ -1432,8 +1289,8 @@ export default {
       return tmpRelationItems
     },
     computedExpandedModerators () {
-      if (this.computedExpandedStatusContainers) {
-        return this.computedExpandedStatusContainers.map(obj => this.getUser(obj.user))
+      if (this.expandedStatusContainers) {
+        return this.expandedStatusContainers.map(obj => this.getUser(obj.user))
       } else {
         return []
       }
@@ -1449,29 +1306,31 @@ export default {
       const query = {
         _id: { $in: this.statusContainers.filter(obj => obj.user === this.user._id && obj.type === 'groups').map(obj => obj.reference) },
         $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc }
+        $skip: this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
       }
-      if (this.search && this.search !== '') {
+      if (this.queryObject.query) {
         query.title = {
           $elemMatch: {
             $and: [
-              { value: { $regex: this.search, $options: 'i' } },
+              { value: { $regex: this.queryObject.query, $options: 'i' } },
               { type: 'default' }
             ]
           }
         }
       }
-      return query
+      return {
+        query
+      }
     },
     computedGroups () {
-      if (this.groupsResponse) {
+      if (this.groupsResponse && this.groupsResponse.data) {
         return this.groupsResponse.data
       } else {
         return []
       }
     },
-    total () {
+    computedTotal () {
       if (this.groupsResponse) {
         return this.groupsResponse.total
       } else {
@@ -1479,82 +1338,43 @@ export default {
       }
     },
     computedLimit () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 1000000
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
     computedSkip () {
-      if (this.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.itemsPerPage
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
       }
+      return (this.queryObject.page - 1) * tmpSkip
     },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
       } else {
         return -1
       }
-    }
-  },
-
-  asyncComputed: {
-    async computedPossibleModerators () {
-      if (this.expanded[0]) {
-        const statusContainers = await this.findStatusContainers({
-          query: {
-            user: { $ne: this.user._id },
-            reference: this.expanded[0]._id,
-            relation: { $in: ['moderator', 'member'] }
-          }
-        })
-        return statusContainers.map(obj => this.getUser(obj.user))
-      } else {
-        return []
-      }
     },
-    async computedExpandedStatusContainers () {
-      const expandedGroups = this.expanded[0]
-      if (expandedGroups && this.expandedModeratorsTrigger) {
-        return await this.findStatusContainers({
-          query: {
-            reference: expandedGroups._id,
-            relation: 'moderator'
-          }
-        })
-      } else {
-        return []
-      }
-    },
-    async computedMemberStatusContainers () {
-      if (this.membersDialogItem && this.membersTrigger) {
-        return await this.findStatusContainers({
-          query: {
-            reference: this.membersDialogItem._id
-          }
-        })
-      } else {
-        return []
-      }
-    },
-    async groupsResponse () {
-      if (this.triggerReload) {
-        this.loading = true
-        const groups = await this.findGroups(
-          {
-            query: this.groupsParams
-          }
-        )
-        this.loading = false
-        return groups
-      }
-    }
   },
 
   watch: {
+    ['queryObject.query'] () {
+      this.updateQueryQuery(this.queryObject.query)
+    },
+    groupsParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
+      }
+    },
     async membersTab () {
       if (
         this.membersTab === 3 &&
@@ -1585,6 +1405,20 @@ export default {
         )
       }
     },
+    showModeratorsDialog () {
+      if (!this.showModeratorsDialog) {
+        this.moderatorsDialogItem = undefined
+      }
+    },
+    async moderatorsDialogItem () {
+      if (this.moderatorsDialogItem) {
+        this.showModeratorsDialog = true
+        await this.loadExpandedStatusContainers()
+        await this.loadPossibleModerators()
+      } else {
+        this.showModeratorsDialog = false
+      }
+    },
     showMembersDialog () {
       if (!this.showMembersDialog) {
         this.membersDialogItem = undefined
@@ -1592,6 +1426,7 @@ export default {
     },
     async membersDialogItem (newValue, oldValue) {
       if (this.membersDialogItem) {
+        await this.loadMemberStatusContainers()
         this.showMembersDialog = true
       } else {
         this.showMembersDialog = false
@@ -1697,13 +1532,13 @@ export default {
       deep: true,
       async handler (newValue, oldValue) {
         await this.checkAcceptedGroups()
-        if (this.expanded[0]) {
+        if (this.moderatorsDialogItem) {
           const filteredModeratorNewValue = newValue.filter(obj =>
-            obj.reference === this.expanded[0]._id &&
+            obj.reference === this.moderatorsDialogItem._id &&
           obj.relation === 'moderator'
           )
           const filteredModeratorOldValue = oldValue.filter(obj =>
-            obj.reference === this.expanded[0]._id &&
+            obj.reference === this.moderatorsDialogItem._id &&
           obj.relation === 'moderator'
           )
           if (JSON.stringify(filteredModeratorNewValue) !== JSON.stringify(filteredModeratorOldValue)) {
@@ -1730,7 +1565,7 @@ export default {
             )
           )
           if (JSON.stringify(filteredMembershipNewValue) !== JSON.stringify(filteredMembershipOldValue)) {
-            this.membersTrigger = Date.now()
+            await this.loadMemberStatusContainers()
           }
         }
       }
