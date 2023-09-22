@@ -364,7 +364,6 @@
         </v-badge>
 
       </v-app-bar>
-      
       <v-navigation-drawer
         v-if="user"
         v-model="isNavigationDrawer"

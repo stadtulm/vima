@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
-import { ViteEjsPlugin } from 'vite-plugin-ejs';
+import { ViteEjsPlugin } from 'vite-plugin-ejs'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import dns from 'dns'
@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
         /* options */
         // locale messages resource pre-compile option
         strictMessage: false,
-        include: './src/locales/**',
+        include: './src/locales/**'
       }),
       ViteEjsPlugin(loadEnv(mode, '.')),
       nodePolyfills({

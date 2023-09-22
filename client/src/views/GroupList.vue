@@ -811,7 +811,7 @@ export default {
     showModeratorsDialog: false,
     moderatorsDialogItem: undefined,
     possibleModerators: [],
-    expandedStatusContainers:[],
+    expandedStatusContainers: [],
     memberStatusContainers: [],
     loaders: {},
     initialView: true,
@@ -848,18 +848,18 @@ export default {
       removeGroupRelation: 'remove',
       patchGroupNotifications: 'patch'
     }),
-    async updateDataTableParams(e) {
+    async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
-          query: this.queryObject.query,
+          query: this.queryObject.query
         }
         this.updateQueryQuery(this.queryObject.query)
         this.updateQueryPage(this.queryObject.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
-            this.updateQuerySortBy(e.sortBy[0].key)
-            this.updateQuerySortOrder(e.sortBy[0].order)
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
         }
       }
     },
@@ -1195,7 +1195,6 @@ export default {
           }
         })
         this.possibleModerators = statusContainers.map(obj => this.getUser(obj.user))
-        console.log(statusContainers)
       } else {
         this.possibleModerators = []
       }
@@ -1229,9 +1228,9 @@ export default {
       return {
         _id: {
           $nin:
-            this.memberStatusContainers.length > 0 && this.membersDialogItem ?
-              this.memberStatusContainers.filter(obj => obj.reference === this.membersDialogItem._id).map(obj => obj.user).concat([this.user._id]) :
-              [this.user._id]
+            this.memberStatusContainers.length > 0 && this.membersDialogItem
+              ? this.memberStatusContainers.filter(obj => obj.reference === this.membersDialogItem._id).map(obj => obj.user).concat([this.user._id])
+              : [this.user._id]
         }
       }
     },
@@ -1357,11 +1356,11 @@ export default {
       } else {
         return -1
       }
-    },
+    }
   },
 
   watch: {
-    ['queryObject.query'] () {
+    'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
     },
     groupsParams: {

@@ -32,7 +32,7 @@
                 >
                   <v-text-field
                     ref="tabStart"
-                    density="compact"  
+                    density="compact"
                     :label="$t('name')"
                     v-model="text.find(obj => obj.lang === currentLanguage).value"
                     :rules="[v => text.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"

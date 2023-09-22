@@ -72,8 +72,7 @@ export function setupFeathers () {
           }
         ]
       }
-    }
-  )
+    })
 
   let handleEvents = {}
 

@@ -95,7 +95,7 @@ export default {
   },
 
   data: () => ({
-    typeItems: [], 
+    typeItems: [],
     types: [],
     computedFiltersDirty: false,
     showFilters: false
@@ -103,15 +103,15 @@ export default {
 
   async mounted () {
     this.typeItems = [
-      { title: this.$t('chat'), value: 'chats'},
-      { title: this.$t('discussion'), value: 'discussions'},
+      { title: this.$t('chat'), value: 'chats' },
+      { title: this.$t('discussion'), value: 'discussions' },
       { title: this.$t('group'), value: 'groups' }
     ]
     this.types = ['chats', 'discussions']
   },
 
   methods: {
-    updateTypes(updatedTypes) {
+    updateTypes (updatedTypes) {
       this.types = updatedTypes
     }
   },

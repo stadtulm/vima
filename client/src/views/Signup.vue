@@ -42,7 +42,7 @@
                 >
                   <v-text-field
                     bg-color="white"
-                    density="compact" 
+                    density="compact"
                     :label="$t('firstName')"
                     v-model="firstName"
                     :rules="[rules.required]"
@@ -55,7 +55,7 @@
                 >
                   <v-text-field
                     bg-color="white"
-                    density="compact" 
+                    density="compact"
                     :label="$t('lastName')"
                     v-model="lastName"
                     :rules="[rules.required]"
@@ -72,7 +72,7 @@
                 >
                   <v-text-field
                     bg-color="white"
-                    density="compact" 
+                    density="compact"
                     v-model="userName"
                     :error-messages="userNameError"
                     :label="$t('userName')"
@@ -86,7 +86,7 @@
                 >
                   <v-text-field
                     bg-color="white"
-                    density="compact" 
+                    density="compact"
                     v-model="email"
                     :error-messages="emailError"
                     :label="$t('email')"
@@ -104,7 +104,7 @@
                 >
                   <v-text-field
                     bg-color="white"
-                    density="compact" 
+                    density="compact"
                     v-model="pw"
                     :label="$t('password')"
                     :rules="[rules.required, rules.password]"
@@ -120,7 +120,7 @@
                 >
                   <v-text-field
                     bg-color="white"
-                    density="compact" 
+                    density="compact"
                     :rules="[pwRule]"
                     v-model="pwRepitition"
                     :label="$t('repeatPassword')"

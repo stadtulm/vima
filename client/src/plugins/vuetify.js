@@ -5,10 +5,9 @@ import colors from 'vuetify/lib/util/colors'
 import { aliases, fa } from 'vuetify/iconsets/fa'
 import { mdi } from 'vuetify/iconsets/mdi'
 
-
 // Vuetify
 import { createVuetify } from 'vuetify'
-import * as labs from "vuetify/labs/components";
+import * as labs from 'vuetify/labs/components'
 import { en, de, bg, ro } from 'vuetify/locale'
 
 export default createVuetify(
@@ -33,15 +32,15 @@ export default createVuetify(
     locale: {
       locale: 'en',
       fallback: 'en',
-      messages: { de, en, bg, ro },
+      messages: { de, en, bg, ro }
     },
     icons: {
       defaultSet: 'fa',
       aliases,
       sets: {
         fa,
-        mdi,
-      },
+        mdi
+      }
     }
   }
   // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides

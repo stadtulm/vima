@@ -202,7 +202,7 @@ export default {
     ...mapActions('status-container-helper', {
       patchViolationNotifications: 'patch'
     }),
-    async updateDataTableParams(e) {
+    async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
@@ -213,8 +213,8 @@ export default {
         this.updateQueryPage(this.queryObject.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
-            this.updateQuerySortBy(e.sortBy[0].key)
-            this.updateQuerySortOrder(e.sortBy[0].order)
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
         }
       }
     },
@@ -296,7 +296,7 @@ export default {
       } else {
         return false
       }
-    },
+    }
   },
 
   computed: {
@@ -410,7 +410,7 @@ export default {
       } else {
         return -1
       }
-    },
+    }
   },
 
   watch: {
@@ -425,14 +425,14 @@ export default {
         }
       }
     },
-    async ['queryObject.categories'] () {
+    async 'queryObject.categories' () {
       if (!this.areArraysEqual(this.queryObject.categories, this.types)) {
         this.$emit('updateTypes', this.queryObject.categories)
       }
     },
     types: {
       deep: true,
-      async handler() {
+      async handler () {
         this.queryObject.categories = this.types
         this.updateQueryCategories(this.queryObject.categories.join(','))
         await this.loadDataTableEntities()

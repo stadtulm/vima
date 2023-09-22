@@ -151,18 +151,18 @@ export default {
       findEvents: 'find',
       removeEvent: 'remove'
     }),
-    async updateDataTableParams(e) {
+    async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
-          query: this.queryObject.query,
+          query: this.queryObject.query
         }
         this.updateQueryQuery(this.queryObject.query)
         this.updateQueryPage(this.queryObject.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
-            this.updateQuerySortBy(e.sortBy[0].key)
-            this.updateQuerySortOrder(e.sortBy[0].order)
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
         }
       }
     },
@@ -275,7 +275,7 @@ export default {
   },
 
   watch: {
-    ['queryObject.query'] () {
+    'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
     },
     eventsParams: {
@@ -288,7 +288,7 @@ export default {
           await this.loadDataTableEntities()
         }
       }
-    },
+    }
   }
 }
 </script>

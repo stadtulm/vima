@@ -291,7 +291,7 @@ export default {
       createOrganisationMembership: 'create',
       removeOrganisationMembership: 'remove'
     }),
-    async updateDataTableParams(e) {
+    async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
@@ -301,8 +301,8 @@ export default {
         this.updateQueryPage(e.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
-            this.updateQuerySortBy(e.sortBy[0].key)
-            this.updateQuerySortOrder(e.sortBy[0].order)
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
         }
       }
     },
@@ -382,7 +382,7 @@ export default {
         { title: this.$t('name'), key: 'name', width: 350 },
         { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('updatedAt'), key: 'updatedAt' },
-        { title: this.$t('position'), key: 'position'},
+        { title: this.$t('position'), key: 'position' },
         { title: this.$t('manageMembersButton'), key: 'members', align: 'center', sortable: false },
         { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
         { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
@@ -439,17 +439,17 @@ export default {
   },
 
   watch: {
-    ['queryObject.query'] () {
+    'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
     },
     async membersTrigger () {
       if (this.membersDialogItem && this.membersTrigger) {
         this.memberStatusContainers = await this.findStatusContainers({
-            query: {
-              reference: this.membersDialogItem._id,
-              relation: { $in: ['owner', 'member'] }
-            }
-          })
+          query: {
+            reference: this.membersDialogItem._id,
+            relation: { $in: ['owner', 'member'] }
+          }
+        })
       } else {
         return []
       }
@@ -458,11 +458,11 @@ export default {
       if (this.membersDialogItem) {
         if (this.membersDialogItem && this.membersTrigger) {
           this.memberStatusContainers = await this.findStatusContainers({
-              query: {
-                reference: this.membersDialogItem._id,
-                relation: { $in: ['owner', 'member'] }
-              }
-            })
+            query: {
+              reference: this.membersDialogItem._id,
+              relation: { $in: ['owner', 'member'] }
+            }
+          })
         } else {
           return []
         }

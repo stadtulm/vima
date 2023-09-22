@@ -22,29 +22,29 @@ export default {
   props: {
     items: {
       type: Array,
-      required: true,
+      required: true
     },
 
     command: {
       type: Function,
-      required: true,
-    },
+      required: true
+    }
   },
 
-  data() {
+  data () {
     return {
-      selectedIndex: 0,
+      selectedIndex: 0
     }
   },
 
   watch: {
-    items() {
+    items () {
       this.selectedIndex = 0
-    },
+    }
   },
 
   methods: {
-    onKeyDown({ event }) {
+    onKeyDown ({ event }) {
       if (event.key === 'ArrowUp') {
         this.upHandler()
         return true
@@ -63,26 +63,26 @@ export default {
       return false
     },
 
-    upHandler() {
+    upHandler () {
       this.selectedIndex = ((this.selectedIndex + this.items.length) - 1) % this.items.length
     },
 
-    downHandler() {
+    downHandler () {
       this.selectedIndex = (this.selectedIndex + 1) % this.items.length
     },
 
-    enterHandler() {
+    enterHandler () {
       this.selectItem(this.selectedIndex)
     },
 
-    selectItem(index) {
+    selectItem (index) {
       const item = this.items[index]
 
       if (item) {
         this.command({ id: item })
       }
-    },
-  },
+    }
+  }
 }
 </script>
 

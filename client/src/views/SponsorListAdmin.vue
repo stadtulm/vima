@@ -96,7 +96,7 @@
               class="my-3"
               :loading="loaders[item.raw._id + 'delete'] === true"
               @click="deleteSponsor(item.raw._id)"
-            >             
+            >
             </v-btn>
           </template>
         </v-data-table-server>
@@ -153,18 +153,18 @@ export default {
         this.loaders[id + 'delete'] = undefined
       }
     },
-    async updateDataTableParams(e) {
+    async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
-          query: this.queryObject.query,
+          query: this.queryObject.query
         }
         this.updateQueryQuery(this.queryObject.query)
         this.updateQueryPage(e.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
-            this.updateQuerySortBy(e.sortBy[0].key)
-            this.updateQuerySortOrder(e.sortBy[0].order)
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
         }
       }
     },
@@ -205,7 +205,7 @@ export default {
           name: { $regex: this.queryObject.query, $options: 'i' },
           $limit: this.computedLimit,
           $skip: this.computedSkip,
-          $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder },
+          $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
         }
       }
     },
@@ -247,7 +247,7 @@ export default {
   },
 
   watch: {
-    ['queryObject.query'] () {
+    'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
     },
     sponsorsParams: {

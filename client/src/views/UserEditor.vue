@@ -645,7 +645,7 @@ export default {
       return v => (!!v && v) === this.pw || this.$t('passwordsDoNotMatchError')
     },
     computedRoles () {
-      const tmpRoleItems = JSON.parse(JSON.stringify(this.roleItems)).map(item => ({ title: this.$t(item.textKey), value: item.value}))
+      const tmpRoleItems = JSON.parse(JSON.stringify(this.roleItems)).map(item => ({ title: this.$t(item.textKey), value: item.value }))
       if (this.user.role === 'admins' || this.user.role === 'hosts') {
         return tmpRoleItems
       } else {

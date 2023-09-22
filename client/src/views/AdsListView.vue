@@ -264,11 +264,11 @@ export default {
       categories: [],
       tags: [],
       type: 'all'
-    },
+    }
   }),
 
   async mounted () {
-    this.rawSortBy = { title: this.$t('sortTitleDesc'), value: this.queryObject.sortBy[0]},
+    this.rawSortBy = { title: this.$t('sortTitleDesc'), value: this.queryObject.sortBy[0] }
     await this.adaptQuery()
   },
 
@@ -325,7 +325,7 @@ export default {
       'updateQuerySortOrder',
       'updateQueryCategories',
       'updateQueryTags',
-      'updateQueryType',
+      'updateQueryType'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -414,35 +414,35 @@ export default {
     rawSortBy () {
       this.queryObject.sortBy[0] = this.rawSortBy
     },
-    ['queryObject.sortBy']: {
+    'queryObject.sortBy': {
       deep: true,
       async handler () {
         this.updateQuerySortBy(this.queryObject.sortBy[0].key)
-        this.updateQuerySortOrder(this.queryObject.sortBy[0].order)    
+        this.updateQuerySortOrder(this.queryObject.sortBy[0].order)
         await this.loadDataTableEntities()
       }
     },
-    async ['queryObject.query'] () {
+    async 'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
       await this.loadDataTableEntities()
     },
-    async ['queryObject.categories'] () {
+    async 'queryObject.categories' () {
       this.updateQueryCategories(this.queryObject.categories.join(','))
       await this.loadDataTableEntities()
     },
-    async ['queryObject.tags'] () {
+    async 'queryObject.tags' () {
       this.updateQueryTags(this.queryObject.tags.join(','))
       await this.loadDataTableEntities()
     },
-    async ['queryObject.type'] () {
+    async 'queryObject.type' () {
       this.updateQueryType(this.queryObject.type)
       await this.loadDataTableEntities()
     },
-    async ['queryObject.page'] () {
+    async 'queryObject.page' () {
       this.updateQueryPage(this.queryObject.page)
       await this.loadDataTableEntities()
     },
-    async ['queryObject.itemsPerPage'] () {
+    async 'queryObject.itemsPerPage' () {
       this.updateQueryItemsPerPage(this.queryObject.itemsPerPage)
       await this.loadDataTableEntities()
     }

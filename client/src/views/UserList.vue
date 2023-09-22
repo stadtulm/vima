@@ -132,7 +132,7 @@ export default {
       findUsers: 'find'
     }),
     // Can not be externalized
-    async updateDataTableParams(e) {
+    async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
@@ -142,8 +142,8 @@ export default {
         this.updateQueryPage(e.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
-            this.updateQuerySortBy(e.sortBy[0].key)
-            this.updateQuerySortOrder(e.sortBy[0].order)
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
         }
       }
     },
@@ -243,7 +243,7 @@ export default {
     }
   },
   watch: {
-    ['queryObject.query'] () {
+    'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
     },
     usersParams: {

@@ -42,7 +42,7 @@
       <v-col
         cols="12"
         sm="6"
-      > 
+      >
         <v-select
           v-model="queryObject.role"
           :items="[{ textKey: 'all', value: 'all'}].concat(roleItems)"
@@ -245,7 +245,7 @@
             dark
             color="error"
             @click="setProperty('isActive', setActiveItem._id, !setActiveItem.isActive)"
-          >         
+          >
             {{$t('deactivateButton')}}
           </v-btn>
         </v-toolbar>
@@ -293,7 +293,7 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
-    async updateDataTableParams(e) {
+    async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
@@ -305,8 +305,8 @@ export default {
         this.updateQueryPage(this.queryObject.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
-            this.updateQuerySortBy(e.sortBy[0].key)
-            this.updateQuerySortOrder(e.sortBy[0].order)
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
         }
       }
     },
@@ -504,10 +504,10 @@ export default {
   },
 
   watch: {
-    ['queryObject.query'] () {
+    'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
     },
-    ['queryObject.role'] () {
+    'queryObject.role' () {
       this.updateQueryRole(this.queryObject.role)
     },
     computedUsers: {

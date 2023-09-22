@@ -144,7 +144,7 @@ export default {
       page: 1,
       itemsPerPage: 25,
       sortBy: [{ key: 'updatedAt', order: 'desc' }]
-    },
+    }
   }),
 
   async mounted () {
@@ -159,18 +159,18 @@ export default {
       removeEvent: 'remove',
       findEvents: 'find'
     }),
-    async updateDataTableParams(e) {
+    async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
-          query: this.queryObject.query,
+          query: this.queryObject.query
         }
         this.updateQueryQuery(this.queryObject.query)
         this.updateQueryPage(this.queryObject.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
-            this.updateQuerySortBy(e.sortBy[0].key)
-            this.updateQuerySortOrder(e.sortBy[0].order)
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
         }
       }
     },
@@ -182,7 +182,7 @@ export default {
       this.loading = false
     },
     async deleteEvent (id) {
-        this.loaders[id + 'delete'] = true
+      this.loaders[id + 'delete'] = true
       try {
         await this.removeEvent(id)
         await this.loadDataTableEntities()
@@ -227,7 +227,7 @@ export default {
       const query = {
         organisation: this.computedUserOrganisationId,
         $limit: this.computedLimit,
-        $skip:this.computedSkip,
+        $skip: this.computedSkip,
         $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
       }
       if (this.queryObject.query) {
@@ -299,7 +299,7 @@ export default {
   },
 
   watch: {
-    ['queryObject.query'] () {
+    'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
     },
     eventsParams: {

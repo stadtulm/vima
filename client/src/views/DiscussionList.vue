@@ -319,7 +319,7 @@ export default {
       removeDiscussionSubscription: 'remove',
       patchDiscussionNotifications: 'patch'
     }),
-    async updateDataTableParams(e) {
+    async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
@@ -330,8 +330,8 @@ export default {
         this.updateQueryPage(this.queryObject.page)
         this.updateQueryItemsPerPage(e.itemsPerPage)
         if (e.sortBy[0]) {
-            this.updateQuerySortBy(e.sortBy[0].key)
-            this.updateQuerySortOrder(e.sortBy[0].order)
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
         }
       }
     },
@@ -482,7 +482,7 @@ export default {
         tmpTypes.unshift({ title: this.$t('allDiscussions'), value: 'all' })
       }
       return tmpTypes
-    },
+    }
   },
 
   computed: {
@@ -494,7 +494,7 @@ export default {
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
       'updateQuerySortOrder',
-      'updateQueryType',
+      'updateQueryType'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -634,10 +634,10 @@ export default {
   },
 
   watch: {
-    ['queryObject.query'] () {
+    'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
     },
-    async ['queryObject.type'] () {
+    async 'queryObject.type' () {
       this.updateQueryType(this.queryObject.type)
       await this.loadDataTableEntities()
     },
