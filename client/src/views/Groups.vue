@@ -2,40 +2,38 @@
   <div>
     <v-row>
       <v-col
-        cols="12"
-        class="mb-4"
+        class="d-flex mx-3 mb-4"
       >
         <v-row>
-          <v-col
-            class="text-h5 font-weight-bold text-customGrey text-uppercase"
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
             <div
               v-html="$t('groupsTitle')"
             >
             </div>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-3"
           >
             <v-btn
               v-if="computedFiltersDirty"
-              text
+              variant="text"
               :color="$settings.modules.groups.color"
               @click="resetFilters()"
             >
               {{$t('resetFilters')}}
             </v-btn>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-6"
           >
             <v-badge
-              :value="computedFiltersDirty"
+              :model-value="computedFiltersDirty"
               :color="$settings.modules.groups.color"
-              overlap
             >
               <v-btn
-                outlined
+                variant="outlined"
                 :color="$settings.modules.groups.color"
                 @click="showFilters = !showFilters"
               >
@@ -48,25 +46,26 @@
                 </v-icon>
               </v-btn>
             </v-badge>
-          </v-col>
-          <v-col
+          </span>
+          <span
             v-if="user"
-            class="shrink align-self-center"
+            class="my-3 mr-3"
           >
             <v-btn
-              dark
               :to="{ name: 'GroupEditor' }"
               :color="$settings.modules.groups.color"
+              class="text-white"
             >
               {{$t('newGroupButton')}}
               <v-icon
                 class="ml-3"
                 size="18"
+                color="white"
               >
                 fas fa-plus
               </v-icon>
             </v-btn>
-          </v-col>
+          </span>
         </v-row>
       </v-col>
     </v-row>
@@ -75,7 +74,6 @@
     >
       <v-row
         v-if="showFilters"
-        class="mb-4"
       >
         <v-col
           cols="12"
@@ -83,12 +81,10 @@
           md="3"
         >
           <v-text-field
-            v-model="search"
-            color="black"
+            v-model="queryObject.query"
             :label="$t('filterByTitleLabel')"
             hide-details
-            outlined
-            dense
+            density="compact"
           ></v-text-field>
         </v-col>
         <v-col
@@ -97,19 +93,16 @@
           md="3"
         >
           <v-select
-            v-model="combinedSort"
-            color="black"
-            :item-color="$settings.modules.groups.color"
+            v-model="rawSortBy"
             :label="$t('sortByLabel')"
-            outlined
-            dense
+            density="compact"
             hide-details
             :items="[
-              { text: $t('sortUpdateDesc'), value: [['latestMessage'], -1]},
-              { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
-              { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
-              { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
-              { text: $t('sortTitleDesc'), value: [['title.value'], -1] }
+              { title: $t('sortUpdateDesc'), value: { key: 'latestMessage', order: 'asc' } },
+              { title: $t('sortDateAsc'), value: { key: 'createdAt', order: 'asc' } },
+              { title: $t('sortDateDesc'), value: { key: 'createdAt', order: 'desc' } },
+              { title: $t('sortTitleAsc'), value: { key: 'title.value', order: 'desc' }  },
+              { title: $t('sortTitleDesc'), value: { key: 'title.value', order: 'asc' }  }
             ]"
           ></v-select>
         </v-col>
@@ -119,17 +112,13 @@
           md="3"
         >
           <v-autocomplete
-            v-model="categoriesList"
-            color="black"
-            :item-color="$settings.modules.groups.color"
+            v-model="queryObject.categories"
             :label="$t('filterByCategoriesLabel')"
             multiple
-            outlined
-            auto-select-first
-            dense
+            density="compact"
             hide-details
             :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
-            item-text="text.value"
+            item-title="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -139,19 +128,15 @@
           md="3"
         >
           <v-autocomplete
-            v-model="tagsList"
-            color="black"
-            :item-color="$settings.modules.groups.color"
+            v-model="queryObject.tags"
             :label="$t('filterByTagsLabel')"
             multiple
-            outlined
-            auto-select-first
             chips
             closable-chips
-            dense
+            density="compact"
             hide-details
             :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
-            item-text="text"
+            item-title="text"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -184,16 +169,17 @@
       <v-row>
         <v-col>
           <v-pagination
+            variant="outlined"
             :color="$settings.modules.groups.color"
-            v-model="page"
-            :length="Math.ceil(total / itemsPerPage)"
+            v-model="queryObject.page"
+            :length="Math.ceil(computedTotal / queryObject.itemsPerPage)"
             :total-visible="6"
           ></v-pagination>
         </v-col>
       </v-row>
     </template>
     <template
-      v-else-if="!isFindGroupsPending"
+      v-else-if="!loading"
     >
       <v-row>
         <v-col
@@ -240,30 +226,26 @@ export default {
   },
 
   data: () => ({
+    rawSortBy: undefined,
     showFilters: false,
-    init: true,
-    manualLoad: false,
-    isFindGroupsPending: false,
-    triggerReload: 1,
-    page: 1,
     loading: true,
-    search: '',
-    categoriesList: [],
-    tagsList: [],
     categoriesListDefault: [],
     tagsListDefault: [],
     searchDefault: '',
-    total: 0,
-    itemsPerPage: 12,
-    combinedSort: [['latestMessage'], -1],
-    sortBy: ['latestMessage'],
-    sortDesc: -1
+    groupsResponse: undefined,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'title.value', order: 'desc' }],
+      categories: [],
+      tags: []
+    }
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    this.rawSortBy = this.queryObject.sortBy[0]
+    await this.adaptQuery()
   },
 
   methods: {
@@ -271,10 +253,11 @@ export default {
       findGroups: 'find'
     }),
     resetFilters () {
-      this.categoriesList = this.categoriesListDefault
-      this.tagsList = this.tagsListDefault
-      this.search = this.searchDefault
+      this.queryObject.categories = this.categoriesListDefault
+      this.queryObject.tags = this.tagsListDefault
+      this.queryObject.query = this.searchDefault
     },
+    // TODO: Move to globals
     areArraysEqual (array1, array2) {
       if (
         JSON.stringify(array1.slice().sort()) === JSON.stringify(array2.slice().sort())
@@ -284,41 +267,44 @@ export default {
         return false
       }
     },
+    // TODO: Move to globals
     selectCategory (categoryId) {
-      this.tagsList = []
-      this.categoriesList = [categoryId]
+      this.queryObject.tags = []
+      this.queryObject.categories = [categoryId]
     },
+    // TODO: Move to globals
     selectTag (tagId) {
-      this.categoriesList = []
-      this.tagsList = [tagId]
+      this.queryObject.categories = []
+      this.queryObject.tags = [tagId]
     },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
+    async loadDataTableEntities () {
+      this.loading = true
+      try {
+        this.groupsResponse = await this.findGroups(
+          this.groupsParams
+        )
+      } catch (e) {
+        if (e.code === 403) {
+          this.$router.push({ name: 'Forbidden' })
+        }
+        return []
       }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        this.sortDesc = parseInt(this.$route.query.d)
-      }
-      if (this.$route.query.d || this.$route.query.s) {
-        this.combinedSort = [this.sortBy, this.sortDesc]
-      }
-      if (this.$route.query.c) {
-        this.categoriesList = this.$route.query.c.split(',')
-      }
-      if (this.$route.query.t) {
-        this.tagsList = this.$route.query.t.split(',')
-      }
+      this.loading = false
     }
   },
 
   computed: {
+    ...mapGetters([
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder',
+      'updateQueryCategories',
+      'updateQueryTags',
+      'updateQueryType'
+    ]),
     ...mapGetters('auth', {
       user: 'user'
     }),
@@ -328,41 +314,27 @@ export default {
     ...mapGetters('tags', {
       tags: 'list'
     }),
-    ...mapGetters('groups', {
-      allGroups: 'list'
-    }),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
     }),
     computedFiltersDirty () {
       if (
-        !this.areArraysEqual(this.categoriesList, this.categoriesListDefault) ||
-        !this.areArraysEqual(this.tagsList, this.tagsListDefault) ||
-        this.search !== this.searchDefault
+        !this.areArraysEqual(this.queryObject.categories, this.categoriesListDefault) ||
+        !this.areArraysEqual(this.queryObject.tags, this.tagsListDefault) ||
+        this.queryObject.query !== this.searchDefault
       ) {
         return true
       } else {
         return false
       }
     },
-    computedGroups () {
-      if (this.computedGroupsData && this.computedGroupsData.data) {
-        return this.computedGroupsData.data
-      } else {
-        return []
-      }
-    }
-  },
-  asyncComputed: {
-    async computedGroupsData () {
-      if (this.triggerReload) {}
-      this.isFindGroupsPending = true
+    groupsParams () {
       const query = {
         'accepted.isAccepted': true,
         isActive: true,
-        $limit: this.itemsPerPage,
-        $skip: (this.page - 1) * this.itemsPerPage,
-        $sort: { [this.sortBy]: this.sortDesc },
+        $limit: this.computedLimit,
+        $skip: (this.queryObject.query || this.queryObject.categories.length > 0 || this.queryObject.tags.length > 0) ? 0 : this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder },
         $or: [
           { visibility: 'public' },
           { visibility: 'private' },
@@ -372,6 +344,7 @@ export default {
               {
                 _id: {
                   $in: this.statusContainers.filter(obj =>
+                    obj.reference && // TODO: Check how many containers without reference exist
                     obj.user === this.user._id &&
                     obj.type === 'groups' &&
                     obj.relation !== 'applicant'
@@ -382,192 +355,94 @@ export default {
           }
         ]
       }
-      if (this.search && this.search !== '') {
+      if (this.queryObject.query) {
         query.title = {
           $elemMatch: {
             $and: [
-              { value: { $regex: this.search, $options: 'i' } },
+              { value: { $regex: this.queryObject.query, $options: 'i' } },
               { type: 'default' }
             ]
           }
         }
       }
-      if (this.categoriesList.length > 0) {
-        query.categories = { $in: this.categoriesList }
+      if (this.queryObject.categories.length > 0) {
+        query.categories = { $in: this.queryObject.categories }
       }
-      if (this.tagsList.length > 0) {
-        query.tags = { $in: this.tagsList }
+      if (this.queryObject.tags.length > 0) {
+        query.tags = { $in: this.queryObject.tags }
       }
-      return await this.findGroups(
-        {
-          query
-        }
-      )
+      return {
+        query
+      }
+    },
+    computedGroups () {
+      if (this.groupsResponse && this.groupsResponse.data) {
+        return this.groupsResponse.data
+      } else {
+        return []
+      }
+    },
+    computedTotal () {
+      if (this.groupsResponse) {
+        return this.groupsResponse.total
+      } else {
+        return 0
+      }
+    },
+    computedLimit () {
+      if (this.queryObject.itemsPerPage === -1) {
+        return 1000000
+      } else {
+        return this.queryObject.itemsPerPage
+      }
+    },
+    computedSkip () {
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
+      }
+      return (this.queryObject.page - 1) * tmpSkip
+    },
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
+        return 1
+      } else {
+        return -1
+      }
     }
   },
 
   watch: {
-    combinedSort (newValue, oldValue) {
-      if (newValue && newValue !== oldValue) {
-        this.sortBy = this.combinedSort[0]
-        this.sortDesc = this.combinedSort[1]
-      }
+    rawSortBy () {
+      this.queryObject.sortBy[0] = this.rawSortBy
     },
-    page () {
-      if (parseInt(this.$route.query.p) !== this.page) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(',')
-            }
-          }
-        )
-      }
-    },
-    itemsPerPage () {
-      if (parseInt(this.$route.query.i) !== this.itemsPerPage) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(',')
-            }
-          }
-        )
-      }
-    },
-    sortBy () {
-      let tmpData
-      this.page = 1
-      if (Array.isArray(this.sortBy)) {
-        tmpData = this.sortBy.join(',')
-      } else {
-        tmpData = this.sortBy
-      }
-      if (this.sortBy && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc,
-            c: this.categoriesList.join(','),
-            t: this.tagsList.join(',')
-          }
-        })
-      } else if (!this.sortBy) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc,
-            c: this.categoriesList.join(','),
-            t: this.tagsList.join(',')
-          }
-        })
-      }
-    },
-    categoriesList () {
-      let tmpData
-      if (Array.isArray(this.categoriesList)) {
-        tmpData = this.categoriesList.join(',')
-      } else {
-        tmpData = this.categoriesList
-      }
-      if (this.categoriesList && this.$route.query.c !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: this.sortDesc,
-            c: tmpData,
-            t: this.tagsList.join(',')
-          }
-        })
-      } else if (!this.sortBy) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc
-          }
-        })
-      }
-    },
-    tagsList () {
-      let tmpData
-      if (Array.isArray(this.tagsList)) {
-        tmpData = this.tagsList.join(',')
-      } else {
-        tmpData = this.tagsList
-      }
-      if (this.tagsList && this.$route.query.t !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: this.sortDesc,
-            c: this.categoriesList.join(','),
-            t: tmpData
-          }
-        })
-      } else if (!this.sortBy) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc
-          }
-        })
-      }
-    },
-    sortDesc () {
-      if (parseInt(this.$route.query.d) !== this.sortDesc) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(',')
-            }
-          }
-        )
-      }
-    },
-    allGroups: {
+    'queryObject.sortBy': {
       deep: true,
-      handler (newValue, oldValue) {
-        if (!this.init && !this.manualLoad) {
-          this.triggerReload = Date.now()
-          this.manualLoad = true
-        }
+      async handler () {
+        this.updateQuerySortBy(this.queryObject.sortBy[0].key)
+        this.updateQuerySortOrder(this.queryObject.sortBy[0].order)
+        await this.loadDataTableEntities()
       }
     },
-    computedGroups (newValue, oldValue) {
-      //
-      this.total = this.computedGroupsData.total
-      //
-      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
-        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
-      }
-      //
-      this.isFindGroupsPending = false
-      this.init = false
-      this.manualLoad = false
+    async 'queryObject.query' () {
+      this.updateQueryQuery(this.queryObject.query)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.categories' () {
+      this.updateQueryCategories(this.queryObject.categories.join(','))
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.tags' () {
+      this.updateQueryTags(this.queryObject.tags.join(','))
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.page' () {
+      this.updateQueryPage(this.queryObject.page)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.itemsPerPage' () {
+      this.updateQueryItemsPerPage(this.queryObject.itemsPerPage)
+      await this.loadDataTableEntities()
     }
   }
 }

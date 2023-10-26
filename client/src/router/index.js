@@ -607,7 +607,7 @@ const routes = [
     ])
   },
   {
-    path: '/admin/veranstaltungen/uebersicht/leckmich',
+    path: '/admin/veranstaltungen/uebersicht',
     name: 'EventListAdmin',
     component: EventListAdmin,
     meta: {

@@ -29,7 +29,7 @@
             class="my-3 mr-6"
           >
             <v-badge
-              v-model="computedFiltersDirty"
+              :model-value="computedFiltersDirty"
               :color="$settings.modules.ads.color"
             >
               <v-btn
@@ -94,7 +94,6 @@
         >
           <v-select
             v-model="queryObject.type"
-            :item-color="$settings.modules.ads.color"
             :label="$t('type')"
             density="compact"
             hide-details
@@ -112,7 +111,6 @@
         >
           <v-select
             v-model="rawSortBy"
-            :item-color="$settings.modules.ads.color"
             :label="$t('sortByLabel')"
             density="compact"
             hide-details
@@ -133,7 +131,6 @@
             v-model="queryObject.categories"
             :label="$t('filterByCategoriesLabel')"
             multiple
-            auto-select-first
             density="compact"
             hide-details
             :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
@@ -150,7 +147,6 @@
             v-model="queryObject.tags"
             :label="$t('filterByTagsLabel')"
             multiple
-            auto-select-first
             chips
             closable-chips
             density="compact"
@@ -268,7 +264,7 @@ export default {
   }),
 
   async mounted () {
-    this.rawSortBy = { title: this.$t('sortTitleDesc'), value: this.queryObject.sortBy[0] }
+    this.rawSortBy = this.queryObject.sortBy[0]
     await this.adaptQuery()
   },
 
@@ -340,7 +336,8 @@ export default {
       if (
         !this.areArraysEqual(this.queryObject.categories, this.categoriesListDefault) ||
         !this.areArraysEqual(this.queryObject.tags, this.tagsListDefault) ||
-        this.queryObject.query !== this.searchDefault
+        this.queryObject.query !== this.searchDefault ||
+        this.queryObject.type !== this.typeDefault
       ) {
         return true
       } else {

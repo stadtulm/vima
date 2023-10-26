@@ -42,10 +42,9 @@
                   v-if="computedGroupStatus"
                   :key="JSON.stringify(computedGroupStatus)"
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template v-slot:activator="{ props }">
                     <v-icon
-                      v-bind="attrs"
-                      v-on="on"
+                      v-bind="props"
                       v-if="computedGroupStatus.value"
                       color="customGrey"
                       class="ml-3"
@@ -102,11 +101,10 @@
                       right
                       color="customGrey"
                     >
-                      <template v-slot:activator="{ on, attrs }">
+                      <template v-slot:activator="{ props }">
                         <v-chip
                           dark
-                          v-bind="attrs"
-                          v-on="on"
+                          v-bind="props"
                         >
                           {{$t(computedGroup.visibility + 'VisibilityTitle')}}
                           <v-icon
@@ -296,12 +294,11 @@
                   class="mb-3 white"
                 >
                   <template
-                    v-slot:prev="{ on, attrs }"
+                    v-slot:prev="{ props }"
                   >
                   <v-btn
                     icon
-                    v-bind="attrs"
-                    v-on="on"
+                    v-bind="props"
                   >
                     <v-icon>
                       fas fa-chevron-left
@@ -309,12 +306,11 @@
                   </v-btn>
                   </template>
                   <template
-                    v-slot:next="{ on, attrs }"
+                    v-slot:next="{ props }"
                   >
                   <v-btn
                     icon
-                    v-bind="attrs"
-                    v-on="on"
+                    v-bind="props"
                   >
                     <v-icon>
                       fas fa-chevron-right
@@ -696,10 +692,12 @@ export default {
     message: undefined,
     isLoading: false,
     showApplyDialog: false,
-    applicantDialogMode: 'message'
+    applicantDialogMode: 'message',
+    computedGroup: undefined
   }),
 
   async mounted () {
+    await this.loadGroup()
   },
 
   methods: {
@@ -712,6 +710,30 @@ export default {
     ...mapActions('status-container-helper', {
       handleGroupMembership: 'create'
     }),
+    async loadGroup () {
+      if (this.groupProp) {
+        this.computedGroup = this.groupProp
+      } else {
+        if (
+          (
+            this.$route.name === 'Group' ||
+            this.$route.name === 'GroupSelection'
+          ) &&
+          this.$route.params.group &&
+          !this.groupProp
+        ) {
+          let selectedGroup = this.getGroup(this.$route.params.group)
+          if (!selectedGroup) {
+            selectedGroup = await this.requestGroup(
+              [
+                this.$route.params.group
+              ]
+            )
+          }
+          this.computedGroup = selectedGroup
+        }
+      }
+    },
     truncatedDescription (text) {
       const len = 200
       text = this.$sanitize(text)
@@ -835,37 +857,16 @@ export default {
     }
   },
 
-  asyncComputed: {
-    async computedGroup () {
-      if (this.groupProp) {
-        return this.groupProp
-      } else {
-        if (
-          (
-            this.$route.name === 'Group' ||
-            this.$route.name === 'GroupSelection'
-          ) &&
-          this.$route.params.group &&
-          !this.groupProp
-        ) {
-          let selectedGroup = this.getGroup(this.$route.params.group)
-          if (!selectedGroup) {
-            selectedGroup = await this.requestGroup(
-              [
-                this.$route.params.group
-              ]
-            )
-          }
-          return selectedGroup
-        }
-      }
-    }
-  },
-
   watch: {
     showApplyDialog () {
       this.applicantDialogMode = 'message'
       this.message = undefined
+    },
+    groupProp: {
+      deep: true,
+      async handler () {
+        await this.loadGroup()
+      }
     }
   }
 }

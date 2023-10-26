@@ -67,7 +67,7 @@
           :headers="headers"
           :items-length="computedTotal"
           :items="computedDiscussions"
-          :loading="isLoading"
+          :loading="loading"
           class="customGreyUltraLight pb-3 elevation-3"
           item-value="_id"
           @update:options="updateDataTableParams"
@@ -340,7 +340,7 @@ export default {
       this.discussionsResponse = await this.findDiscussions(
         this.discussionsParams
       )
-      this.isLoading = false
+      this.loading = false
       setTimeout(async () => {
         await this.checkAcceptedDiscussions()
       }, 1000)

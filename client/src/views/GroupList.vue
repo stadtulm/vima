@@ -82,7 +82,6 @@
             v-slot:[`item.members`]="{ item }"
           >
             <v-badge
-              overlap
               :color="$settings.indicatorColor"
               :model-value="
                 statusContainers.find(obj =>
@@ -142,7 +141,6 @@
             v-slot:[`item.discussions`]="{ item }"
           >
             <v-badge
-              overlap
               :color="$settings.indicatorColor"
               :model-value="
                 statusContainers.find(obj =>
@@ -204,7 +202,6 @@
             v-slot:[`item.violations`]="{ item }"
           >
             <v-badge
-              overlap
               :color="$settings.indicatorColor"
               :model-value="
                 statusContainers.find(obj =>
@@ -692,7 +689,7 @@
     <!-- Discussions dialog -->
     <v-dialog
       v-model="showDiscussionsDialog"
-      max-width="600"
+      max-width="1200"
     >
       <v-card
         tile
@@ -709,7 +706,6 @@
             <v-col>
               <DiscussionsList
                 :group="discussionsDialogItem"
-                :isAcceptList="true"
               ></DiscussionsList>
             </v-col>
           </v-row>

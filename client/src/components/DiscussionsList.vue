@@ -11,12 +11,10 @@
           sm="4"
         >
           <v-text-field
-            v-model="search"
+            v-model="queryObject.query"
             :label="$t('filterByTitleLabel')"
-            outlined
-            dense
+            density="compact"
             hide-details
-            color="black"
           ></v-text-field>
         </v-col>
         <v-col
@@ -24,17 +22,13 @@
           sm="4"
         >
           <v-autocomplete
-            v-model="categoriesList"
-            color="black"
-            :item-color="$settings.modules.discussions.color"
+            v-model="queryObject.categories"
             :label="$t('filterByCategoriesLabel')"
             multiple
-            outlined
-            auto-select-first
-            dense
+            density="compact"
             hide-details
             :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
-            item-text="text.value"
+            item-title="text.value"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -43,19 +37,15 @@
           sm="4"
         >
           <v-autocomplete
-            v-model="tagsList"
-            color="black"
-            :item-color="$settings.modules.discussions.color"
+            v-model="queryObject.tags"
             :label="$t('filterByTagsLabel')"
             multiple
-            outlined
-            auto-select-first
             chips
             closable-chips
-            dense
+            density="compact"
             hide-details
             :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
-            item-text="text"
+            item-title="text"
             item-value="_id"
           ></v-autocomplete>
         </v-col>
@@ -67,41 +57,35 @@
           tile
           color="transparent"
         >
-          <v-data-table
-            class="discussionTable"
-            item-key="_id"
+          <v-data-table-server
+            v-if="!initialView"
+            v-model:items-per-page="queryObject.itemsPerPage"
+            v-model:page="queryObject.page"
+            :sort-by="queryObject.sortBy"
             :headers="headers"
+            :items-length="computedTotal"
             :items="computedDiscussions"
             :loading="loading"
-            @update:page="updatePage"
-            @update:items-per-page="updateItemsPerPage"
-            @update:sort-by="updateSortBy"
-            @update:sort-desc="updateSortDesc"
-            :server-items-length="total"
-            must-sort
-            :page.sync="page"
-            :items-per-page.sync="itemsPerPage"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
-            :footer-props="{
-              itemsPerPageText: '',
-              itemsPerPageOptions
-            }"
+            class="customGreyUltraLight pb-3 elevation-3"
+            item-value="_id"
+            @update:options="updateDataTableParams"
+            sort-asc-icon="fas fa-caret-up"
+            sort-desc-icon="fas fa-caret-down"
+            :show-current-page="true"
+            :must-sort="true"
           >
-            <template
-              v-slot:progress
-            >
-              <v-progress-linear
-                indeterminate
-                :color="'custom' + computedColor"
-              ></v-progress-linear>
-            </template>
             <template
               v-slot:[`item.title.value`]="{ item }"
             >
               <div
                 class="pointer font-weight-bold"
-                @click="$router.push(group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } })"
+                @click="
+                  $router.push(
+                    group ?
+                      { name: 'GroupDiscussion', params: { group: group._id, id: item.raw._id } } :
+                      { name: 'Discussion', params: { id: item.raw._id } }
+                    )
+                  "
               >
                 <TranslatableText
                   ownField="title"
@@ -113,7 +97,7 @@
                       translationSum: obj.translationSum
                     })
                   )"
-                  :textParent="item"
+                  :textParent="item.raw"
                 >
                 </TranslatableText>
               </div>
@@ -121,29 +105,29 @@
             <template
               v-slot:[`item.author`]="{ item }"
             >
-              {{item.author && item.author.user ? item.author.user.userName : ''}}
+              {{item.raw.author && item.raw.author.user ? item.raw.author.user.userName : ''}}
             </template>
             <template
               v-slot:[`item.createdAt`]="{ item }"
             >
-              {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+              {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
             </template>
             <template
               v-slot:[`item.latestMessage`]="{ item }"
             >
-              {{ item.latestMessage ? $moment(item.latestMessage).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock')  : '-' }}
+              {{ item.raw.latestMessage ? $moment(item.raw.latestMessage).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock')  : '-' }}
             </template>
             <template
               v-slot:[`item.messagesCount`]="{ item }"
             >
-              {{ item.messagesCount }}
+              {{ item.raw.messagesCount }}
             </template>
             <template
               v-slot:[`item.categories`]="{ item }"
             >
               <v-chip
-                outlined
-                v-for="category in getCategories(item.categories)"
+                variant="outlined"
+                v-for="category in getCategories(item.raw.categories)"
                 :key="category._id"
                 class="mr-1"
                 @click="selectCategory(category._id)"
@@ -155,7 +139,7 @@
               v-slot:[`item.tags`]="{ item }"
             >
               <v-chip
-                v-for="tag in getTags(item.tags)"
+                v-for="tag in getTags(item.raw.tags)"
                 :key="tag._id"
                 class="mr-1"
                 @click="selectTag(tag._id)"
@@ -167,108 +151,59 @@
               v-slot:[`item.accepted.isAccepted`]="{ item }"
             >
               <v-btn
-                icon
+                variant="text"
+                :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
                 :color="'custom' + computedColor"
                 :loading="loaders[item._id + 'accepted'] === true"
                 @click="changeDiscussionProperty(
-                  item,
+                  item.raw,
                   'accepted',
                   {
-                    isAccepted: !item.accepted.isAccepted,
+                    isAccepted: !item.raw.accepted?.isAccepted,
                     dt: new Date(),
                     user: user._id
                   }
                 )"
               >
-                <template
-                  slot="loader"
-                >
-                  <v-progress-circular
-                    color="white"
-                    width="3"
-                    indeterminate
-                  ></v-progress-circular>
-                </template>
-                <v-icon>
-                  {{item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'}}
-                </v-icon>
               </v-btn>
             </template>
             <template
               v-slot:[`item.isActive`]="{ item }"
             >
               <v-btn
-                icon
+                variant="text"
+                :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
                 disabled
                 :color="'custom' + computedColor"
-                :loading="loaders[item._id + 'isActive'] === true"
-                @click="changeDiscussionProperty(
-                  item,
-                  'isActive',
-                  !item.isActive
-                )"
               >
-                <template
-                  slot="loader"
-                >
-                  <v-progress-circular
-                    color="white"
-                    width="3"
-                    indeterminate
-                  ></v-progress-circular>
-                </template>
-                <v-icon>
-                  {{item.isActive ? 'fas fa-check-square' : 'far fa-square'}}
-                </v-icon>
               </v-btn>
             </template>
             <template
               v-slot:[`item.delete`]="{ item }"
             >
               <v-btn
-                fab
-                small
+                icon="fa fa-trash"
+                size="small"
                 :color="computedColor"
                 class="my-4"
                 :loading="loaders[item._id + 'delete'] === true"
                 @click="deleteDiscussion(item._id)"
               >
-                <template
-                  slot="loader"
-                >
-                  <v-progress-circular
-                    color="white"
-                    width="3"
-                    indeterminate
-                  ></v-progress-circular>
-                </template>
-                <v-icon
-                  color="white"
-                  size="18"
-                >
-                  fa fa-trash
-                </v-icon>
               </v-btn>
             </template>
             <template
               v-slot:[`item.link`]="{ item }"
             >
               <v-btn
-                fab
-                small
+                icon="fa fa-arrow-right"
+                size="small"
                 class="my-3"
                 :color="computedColor"
-                :to="group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } }"
+                :to="group ? {name: 'GroupDiscussion', params: { group: group._id, id: item.raw._id } } : {name: 'Discussion', params: { id: item.raw._id } }"
               >
-                <v-icon
-                  color="white"
-                  size="18"
-                >
-                  fa fa-arrow-right
-                </v-icon>
               </v-btn>
             </template>
-          </v-data-table>
+          </v-data-table-server>
         </v-card>
       </v-col>
     </v-row>
@@ -296,26 +231,26 @@ export default {
   ],
 
   data: () => ({
-    findDiscussionsTrigger: 1,
     loaders: {},
-    categoriesList: [],
-    tagsList: [],
-    search: '',
-    sortBy: ['latestMessage'],
-    sortDesc: [false],
     categoriesListDefault: [],
     tagsListDefault: [],
     searchDefault: '',
-    page: 1,
-    itemsPerPage: 25,
-    loading: true
+    loading: true,
+    discussionsResponse: undefined,
+    initialView: true,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'latestMessage', order: 'asc' }],
+      categories: [],
+      tags: []
+    }
   }),
 
   async mounted () {
-    // Save current query
     if (!this.isAcceptList) {
-      this.$router.options.tmpQuery = this.$route.query
-      this.initQuery()
+      await this.adaptQuery()
     } else {
       this.sortBy = ['accepted.isAccepted']
     }
@@ -330,20 +265,44 @@ export default {
       removeDiscussion: 'remove',
       findDiscussions: 'find'
     }),
+    async updateDataTableParams (e) {
+      if (!this.initialView) {
+        this.queryObject = {
+          ...e,
+          query: this.queryObject.query,
+          categories: this.queryObject.categories,
+          tags: this.queryObject.tags
+        }
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryPage(this.queryObject.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
+        }
+      }
+    },
+    async loadDataTableEntities () {
+      this.loading = true
+      this.discussionsResponse = await this.findDiscussions(
+        this.discussionsParams
+      )
+      this.loading = false
+    },
     async deleteDiscussion (id) {
-      this.$set(this.loaders, id + 'delete', true)
+      this.loaders[id + 'delete'] = true
       try {
         await this.removeDiscussion(id)
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
         this.findDiscussionsTrigger = Date.now()
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
       }
     },
     async changeDiscussionProperty (discussion, property, value) {
-      this.$set(this.loaders, discussion._id + property, true)
+      this.loaders[discussion._id + property] = true
       const patchObj = {}
       patchObj[property] = value
       try {
@@ -355,10 +314,10 @@ export default {
         )
         this.findDiscussionsTrigger = Date.now()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-        this.$set(this.loaders, discussion._id + property, undefined)
+        this.loaders[discussion._id + property] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        this.$set(this.loaders, discussion._id + property, undefined)
+        this.loaders[discussion._id + property] = undefined
       }
     },
     areArraysEqual (array1, array2) {
@@ -371,141 +330,28 @@ export default {
       }
     },
     selectCategory (categoryId) {
-      this.tagsList = []
-      this.categoriesList = [categoryId]
+      this.queryObject.tags = []
+      this.queryObject.categories = [categoryId]
     },
     selectTag (tagId) {
-      this.categoriesList = []
-      this.tagsList = [tagId]
-    },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
-        }
-        this.sortDesc = tmpDesc
-      }
-      if (this.$route.query.c) {
-        this.categoriesList = this.$route.query.c.split(',')
-      }
-      if (this.$route.query.t) {
-        this.tagsList = this.$route.query.t.split(',')
-      }
-    },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
-      if (!this.isAcceptList) {
-        if (parseInt(this.$route.query.p) !== data) {
-          this.$router.replace(
-            {
-              query: {
-                p: data,
-                i: this.itemsPerPage,
-                s: this.sortBy.join(','),
-                d: this.sortDesc.join(','),
-                c: this.categoriesList.join(','),
-                t: this.tagsList.join(',')
-              }
-            }
-          )
-        }
-      }
-    },
-    updateItemsPerPage (data) {
-      if (!this.isAcceptList) {
-        if (parseInt(this.$route.query.i) !== data) {
-          this.$router.replace(
-            {
-              query: {
-                p: this.page,
-                i: data,
-                s: this.sortBy.join(','),
-                d: this.sortDesc.join(','),
-                c: this.categoriesList.join(','),
-                t: this.tagsList.join(',')
-              }
-            }
-          )
-        }
-      }
-    },
-    updateSortBy (data) {
-      if (!this.isAcceptList) {
-        let tmpData
-        if (Array.isArray(data)) {
-          tmpData = data.join(',')
-        } else {
-          tmpData = data
-        }
-        if (data && this.$route.query.s !== tmpData) {
-          this.$router.replace({
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: tmpData,
-              d: this.sortDesc.join(','),
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(',')
-            }
-          })
-        } else if (!data) {
-          this.$router.replace({
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              d: this.sortDesc.join(',')
-            }
-          })
-        }
-      }
-    },
-    updateSortDesc (data) {
-      if (!this.isAcceptList) {
-        let tmpData
-        if (Array.isArray(data)) {
-          tmpData = data.join(',')
-        } else {
-          tmpData = data
-        }
-        if (data && this.$route.query.d !== tmpData) {
-          this.$router.replace({
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: tmpData,
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(',')
-            }
-          })
-        }
-      }
+      this.queryObject.categories = []
+      this.queryObject.tags = [tagId]
     }
   },
 
   computed: {
     ...mapGetters([
-      'deepSort',
       'getTags',
       'getCategories',
-      'itemsPerPageOptions'
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder',
+      'updateQueryType',
+      'updateQueryCategories',
+      'updateQueryTags'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -524,9 +370,9 @@ export default {
     }),
     computedFiltersDirty () {
       if (
-        !this.areArraysEqual(this.categoriesList, this.categoriesListDefault) ||
-        !this.areArraysEqual(this.tagsList, this.tagsListDefault) ||
-        this.search !== this.searchDefault
+        !this.areArraysEqual(this.queryObject.categories, this.categoriesListDefault) ||
+        !this.areArraysEqual(this.queryObject.tags, this.tagsListDefault) ||
+        !!this.search
       ) {
         return true
       } else {
@@ -536,24 +382,24 @@ export default {
     headers () {
       if (this.isAcceptList) {
         return [
-          { text: this.$t('title'), value: 'title.value' },
-          { text: this.$t('author'), value: 'author' },
-          { text: this.$t('accepted'), value: 'accepted.isAccepted', align: 'center' },
-          { text: this.$t('active'), value: 'isActive', align: 'center' },
-          { text: this.$t('deleteButton'), value: 'delete', align: 'center', sortable: false },
-          { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
+          { title: this.$t('title'), key: 'title.value' },
+          { title: this.$t('author'), key: 'author' },
+          { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
+          { title: this.$t('active'), key: 'isActive', align: 'center' },
+          { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
+          { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
         ]
       } else {
         const tmpHeaders = [
-          { text: this.$t('title'), value: 'title.value' },
-          { text: this.$t('created'), value: 'createdAt' },
-          { text: this.$t('latestPost'), value: 'latestMessage' },
-          { text: this.$t('tags'), value: 'tags', sortable: false },
-          { text: this.$t('posts'), value: 'messagesCount', width: '80px', sortable: false },
-          { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
+          { title: this.$t('title'), key: 'title.value' },
+          { title: this.$t('created'), key: 'createdAt' },
+          { title: this.$t('latestPost'), key: 'latestMessage' },
+          { title: this.$t('tags'), key: 'tags', sortable: false },
+          { title: this.$t('posts'), key: 'messagesCount', sortable: false, align: 'center' },
+          { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
         ]
         if (!this.category) {
-          tmpHeaders.splice(3, 0, { text: this.$t('categories'), value: 'categories', sortable: false })
+          tmpHeaders.splice(3, 0, { title: this.$t('categories'), key: 'categories', sortable: false })
         }
         return tmpHeaders
       }
@@ -565,21 +411,22 @@ export default {
         return this.$settings.modules.discussions.color
       }
     },
+    // TODO
     discussionsQueryWhen () {
       return !this.isAcceptList || (this.isAcceptList && this.group)
     },
     discussionsParams () {
       const query = {
         $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc },
+        $skip: (this.queryObject.query || this.queryObject.categories.length > 0 || this.queryObject.tags.length > 0) ? 0 : this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder },
         isActive: true
       }
-      if (this.categoriesList.length > 0) {
-        query.categories = { $in: this.categoriesList }
+      if (this.queryObject.categories.length > 0) {
+        query.categories = { $in: this.queryObject.categories }
       }
-      if (this.tagsList.length > 0) {
-        query.tags = { $in: this.tagsList }
+      if (this.queryObject.tags.length > 0) {
+        query.tags = { $in: this.queryObject.tags }
       }
       if (!this.isAcceptList) {
         query['accepted.isAccepted'] = true
@@ -589,26 +436,28 @@ export default {
       } else {
         query.group = null
       }
-      if (this.search && this.search !== '') {
+      if (this.queryObject.query) {
         query.title = {
           $elemMatch: {
             $and: [
-              { value: { $regex: this.search, $options: 'i' } },
+              { value: { $regex: this.queryObject.query, $options: 'i' } },
               { type: 'default' }
             ]
           }
         }
       }
-      return query
+      return {
+        query
+      }
     },
     computedDiscussions () {
-      if (this.discussionsResponse) {
+      if (this.discussionsResponse && this.discussionsResponse.data) {
         return this.discussionsResponse.data
       } else {
         return []
       }
     },
-    total () {
+    computedTotal () {
       if (this.discussionsResponse) {
         return this.discussionsResponse.total
       } else {
@@ -616,21 +465,21 @@ export default {
       }
     },
     computedLimit () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 1000000
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
     computedSkip () {
-      if (this.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.itemsPerPage
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
       }
+      return (this.queryObject.page - 1) * tmpSkip
     },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
       } else {
         return -1
@@ -638,101 +487,38 @@ export default {
     }
   },
 
-  asyncComputed: {
-    async discussionsResponse () {
-      if (this.findDiscussionsTrigger) {
-        this.loading = true
-        const discussions = await this.findDiscussions(
-          {
-            query: this.discussionsParams
-          }
-        )
-        this.loading = false
-        return discussions
-      }
-    }
-  },
-
   watch: {
-    category (newValue, oldValue) {
-      if (newValue && !this.categoriesList.includes(newValue._id)) {
-        this.categoriesList.push(newValue._id)
-      } else if (!newValue && oldValue) {
-        this.categoriesList = this.categoriesList.filter(category => category !== oldValue._id)
-      }
+    'queryObject.query' () {
+      this.updateQueryQuery(this.queryObject.query)
     },
-    discussions () {
-      this.findDiscussionsTrigger = Date.now()
+    async 'queryObject.categories' () {
+      this.updateQueryCategories(this.queryObject.categories.join(','))
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.tags' () {
+      this.updateQueryTags(this.queryObject.tags.join(','))
+      await this.loadDataTableEntities()
+    },
+    discussionsParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
+      }
     },
     resetFilterTrigger () {
       if (this.resetFilterTrigger) {
-        this.categoriesList = this.categoriesListDefault
-        this.tagsList = this.tagsListDefault
-        this.search = this.searchDefault
+        this.queryObject.categories = this.categoriesListDefault
+        this.queryObject.tags = this.tagsListDefault
+        this.queryObject.query = this.searchDefault
       }
     },
     computedFiltersDirty () {
       this.$emit('filtersDirty', this.computedFiltersDirty)
-    },
-    categoriesList () {
-      if (!this.isAcceptList) {
-        let tmpData
-        if (Array.isArray(this.categoriesList)) {
-          tmpData = this.categoriesList.join(',')
-        } else {
-          tmpData = this.categoriesList
-        }
-        if (this.categoriesList && this.$route.query.c !== tmpData) {
-          this.$router.replace({
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: tmpData,
-              t: this.tagsList.join(',')
-            }
-          })
-        } else if (!this.sortBy) {
-          this.$router.replace({
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              d: this.sortDesc
-            }
-          })
-        }
-      }
-    },
-    tagsList () {
-      if (!this.isAcceptList) {
-        let tmpData
-        if (Array.isArray(this.tagsList)) {
-          tmpData = this.tagsList.join(',')
-        } else {
-          tmpData = this.tagsList
-        }
-        if (this.tagsList && this.$route.query.t !== tmpData) {
-          this.$router.replace({
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: this.categoriesList.join(','),
-              t: tmpData
-            }
-          })
-        } else if (!this.sortBy) {
-          this.$router.replace({
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              d: this.sortDesc
-            }
-          })
-        }
-      }
     }
   }
 }

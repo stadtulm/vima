@@ -2,39 +2,38 @@
   <div>
     <v-row>
       <v-col
-        cols="12"
+        class="d-flex mx-3 mb-4"
       >
         <v-row>
-          <v-col
-            class="text-h5 font-weight-bold text-customGrey text-uppercase"
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
             <div
               v-html="$t('discussionsTitle')"
             >
             </div>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-3"
           >
             <v-btn
               v-if="filtersDirty"
-              text
+              variant="text"
               :color="$settings.modules.discussions.color"
               @click="resetFilterTrigger = Date.now()"
             >
               {{$t('resetFilters')}}
             </v-btn>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-6"
           >
             <v-badge
-              :value="filtersDirty"
+              :model-value="filtersDirty"
               :color="$settings.modules.discussions.color"
-              overlap
             >
             <v-btn
-              outlined
+              variant="outlined"
               :color="$settings.modules.discussions.color"
               @click="showFilters = !showFilters"
             >
@@ -47,25 +46,26 @@
               </v-icon>
             </v-btn>
             </v-badge>
-          </v-col>
-          <v-col
+          </span>
+          <span
             v-if="user && user.role === 'admins'"
-            class="shrink align-self-center"
+            class="my-3 mr-3"
           >
             <v-btn
-              dark
               :to="{ name: 'DiscussionEditor' }"
               :color="$settings.modules.discussions.color"
+              class="text-white"
             >
               {{$t('newDiscussion')}}
               <v-icon
                 class="ml-3"
                 size="18"
+                color="white"
               >
                 fas fa-plus
               </v-icon>
             </v-btn>
-          </v-col>
+          </span>
         </v-row>
       </v-col>
     </v-row>
@@ -74,7 +74,7 @@
         <DiscussionsList
           :showFilters="showFilters"
           :resetFilterTrigger="resetFilterTrigger"
-          @filtersDirty="setFiltersDirty"
+          @filtersDirty="setFiltersDirty($event)"
         >
         </DiscussionsList>
       </v-col>

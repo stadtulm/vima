@@ -165,7 +165,6 @@
 <script>
 
 import { mapActions, mapGetters } from 'vuex'
-import 'jimp/browser/lib/jimp'
 
 export default {
   name: 'FileUpload',
@@ -313,6 +312,8 @@ export default {
             'image/gif',
             'image/bmp'
           ].includes(pic.type.toLowerCase())) {
+            // Is globally imported
+            // eslint-disable-next-line no-undef
             const jimpPic = await Jimp.read(pic.uri)
             pic.uri = await jimpPic
               .scaleToFit(this.scaleToFit[0], this.scaleToFit[1])
