@@ -82,7 +82,7 @@
                             <LanguageSelect
                               :currentLanguage="currentLanguage"
                               :languageObjects="text"
-                              @setLanguage="(l) => { currentLanguage = l }"
+                              @update:setLanguage="(l) => { currentLanguage = l }"
                             ></LanguageSelect>
                           </template>
                           <template v-slot:default>

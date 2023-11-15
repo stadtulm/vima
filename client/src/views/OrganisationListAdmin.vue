@@ -228,7 +228,7 @@
                           _id: { $nin: memberStatusContainers ? memberStatusContainers.map(obj => obj.user) : [] }
                         }
                         "
-                        @customAction="addMember"
+                        @update:customAction="addMember"
                       ></UserTable>
                     </v-card-text>
                   </v-card>

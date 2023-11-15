@@ -8,7 +8,9 @@
       <v-col
         class="pa-0"
       >
-        <v-toolbar>
+        <v-toolbar
+          color="transparent"
+        >
           <v-btn
             size="small"
             variant="outlined"

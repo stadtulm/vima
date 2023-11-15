@@ -161,8 +161,8 @@
                   translationSum: obj.translationSum
                 })
               )"
-            @selectCategory="selectCategory"
-            @selectTag="selectTag"
+            @update:selectCategory="selectCategory"
+            @update:selectTag="selectTag"
           ></GroupCard>
         </v-col>
       </v-row>

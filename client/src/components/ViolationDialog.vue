@@ -68,7 +68,7 @@
                 block
                 variant="elevated"
                 :loading="isDeleting"
-                @click="deleteMessage(computedMessage)"
+                @click.prevent="deleteMessage(computedMessage)"
                 color="error"
                 class="mx-0"
               >
@@ -128,7 +128,7 @@
             <v-btn
               class="mx-0"
               variant="elevated"
-              @click="$emit('closeViolationDialog')"
+              @click="$emit('update:closeViolationDialog')"
             >
               {{$t('cancelButton')}}
             </v-btn>
@@ -137,7 +137,7 @@
               variant="elevated"
               :loading="isLoading"
               :disabled="!isValidViolation"
-              @click="saveViolation()"
+              @click.prevent="saveViolation()"
               color="customGrey"
               class="mx-0"
             >
@@ -170,6 +170,8 @@ export default {
     'type'
   ],
 
+  emits: ['update:closeViolationDialog'],
+
   data: () => ({
     isDeleting: false,
     isLoading: false,
@@ -196,7 +198,7 @@ export default {
     }),
     closeViolationDialog () {
       this.comment = ''
-      this.$emit('closeViolationDialog')
+      this.$emit('update:closeViolationDialog')
     },
     async deleteMessage (message) {
       this.isDeleting = true
@@ -271,7 +273,6 @@ export default {
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         this.closeViolationDialog()
-        document.querySelector('.v-overlay__scrim').click()
       } catch (e) {
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })

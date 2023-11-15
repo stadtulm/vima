@@ -69,7 +69,7 @@
               :icon="customActionIcon"
               size="small"
               :color="customColor"
-              @click="$emit('customAction', item.raw)"
+              @click="$emit('update:customAction', item.raw)"
             >
             </v-btn>
           </template>
@@ -80,7 +80,7 @@
               :icon="customSecondaryActionIcon"
               size="small"
               :color="customColor"
-              @click="$emit('customSecondaryAction', item.raw)"
+              @click="$emit('update:customSecondaryAction', item.raw)"
             >
             </v-btn>
           </template>
@@ -107,6 +107,11 @@ export default {
     'customSecondaryActionIcon',
     'customSecondaryActionText',
     'customQuery'
+  ],
+
+  emits: [
+    'update:customAction',
+    'update:customSecondaryAction'
   ],
 
   data: () => ({

@@ -18,7 +18,7 @@
           :canTranslate="true"
           :canTranslateAll="allIds ? allIds.length > 1 : false"
           :canTranslateObject="allFields ? allFields.length > 1 : false"
-          @translateText="translateText"
+          @update:translateText="translateText"
         ></TranslatableTextInfo>
       </slot>
     </div>
@@ -48,8 +48,8 @@
                 :canShowOriginal="true"
                 :canTranslateObject="allFields.length > 1"
                 :needsUpdate="textParent.translationSum !== computedText.translationSum"
-                @showOriginal="showOriginal"
-                @translateText="translateText"
+                @update:showOriginal="showOriginal"
+                @update:translateText="translateText"
               ></TranslatableTextInfo>
             </v-sheet>
           </template>

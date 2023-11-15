@@ -41,7 +41,7 @@
                       <LanguageSelect
                         :currentLanguage="currentLanguage"
                         :languageObjects="text"
-                        @setLanguage="(l) => { currentLanguage = l }"
+                        @update:setLanguage="(l) => { currentLanguage = l }"
                       ></LanguageSelect>
                     </template>
                   </v-text-field>
@@ -64,7 +64,7 @@
                       <LanguageSelect
                         :currentLanguage="currentLanguage"
                         :languageObjects="description"
-                        @setLanguage="(l) => { currentLanguage = l }"
+                        @update:setLanguage="(l) => { currentLanguage = l }"
                       ></LanguageSelect>
                     </template>
                   </v-textarea>
@@ -99,8 +99,8 @@
                         <FileUpload
                           ref="categoryPicUpload"
                           v-model="pic"
-                          @fileRemove="patchFileRemove()"
-                          @fileAdd="$nextTick(() => { $refs.categoryEditorForm.validate() })"
+                          @update:fileRemove="patchFileRemove()"
+                          @update:fileAdd="$nextTick(() => { $refs.categoryEditorForm.validate() })"
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
                           :maxFileSize="0.5"
                           :maxFiles="1"

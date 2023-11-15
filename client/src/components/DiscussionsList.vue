@@ -230,6 +230,8 @@ export default {
     'category'
   ],
 
+  emits: ['update:filtersDirty'],
+
   data: () => ({
     loaders: {},
     categoriesListDefault: [],
@@ -518,7 +520,7 @@ export default {
       }
     },
     computedFiltersDirty () {
-      this.$emit('filtersDirty', this.computedFiltersDirty)
+      this.$emit('update:filtersDirty', this.computedFiltersDirty)
     }
   }
 }

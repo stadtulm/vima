@@ -38,7 +38,7 @@
     "tippy.js": "^6.2.5",
     "vite-plugin-ejs": "^1.6.4",
     "vite-plugin-node-polyfills": "^0.11.3",
-    "vue": "^3.2.13",
+    "vue": "^3.3.8",
     "vue-3-sanitize": "^0.1.4",
     "vue-country-flag-next": "^2.3.2",
     "vue-i18n": "^9.1.0",
@@ -48,7 +48,7 @@
     "vue-vimeo-player": "^0.2.2",
     "vue3-tour": "^0.3.4",
     "vue3-youtube": "^0.1.9",
-    "vuetify": "v3.4.0-alpha.1",
+    "vuetify": "v3.4.0",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

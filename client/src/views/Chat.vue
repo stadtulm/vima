@@ -223,7 +223,7 @@
                                           <TranslatableTextInfo
                                             :canTranslate="true"
                                             :canTranslateAll="chatMessages.filter(m => !isOwnMessage(m)).length > 1"
-                                            @translateText="(data) => { translateText(data) }"
+                                            @update:translateText="(data) => { translateText(data) }"
                                           ></TranslatableTextInfo>
                                         </v-col>
                                       </template>
@@ -249,8 +249,8 @@
                                         <TranslatableTextInfo
                                           :canShowOriginal="true"
                                           :needsUpdate="message.translationSum !== computedText.translationSum"
-                                          @showOriginal="(data) => { showOriginal(data) }"
-                                          @translateText="(data) => { translateText(data) }"
+                                          @update:showOriginal="(data) => { showOriginal(data) }"
+                                          @update:translateText="(data) => { translateText(data) }"
                                         ></TranslatableTextInfo>
                                       </template>
                                     </TranslatableText>
@@ -378,8 +378,8 @@
                                 <ChatReplies
                                   :mainMessage="message"
                                   :selectedChat="selectedChat"
-                                  @checkVisibleMessages="checkVisibleMessages"
-                                  @report="openReportDialog"
+                                  @update:checkVisibleMessages="checkVisibleMessages"
+                                  @update:report="openReportDialog"
                                   :computedOwnStatusContainer="computedOwnStatusContainer"
                                   :computedOtherStatusContainers="computedOtherStatusContainers"
                                 ></ChatReplies>
@@ -511,8 +511,8 @@
                           <FileUpload
                             ref="messageUpload"
                             v-model="pics"
-                            @fileRemove="patchFileRemove"
-                            @fileAdd="$nextTick(() => { $refs.messagesForm.validate() })"
+                            @update:fileRemove="patchFileRemove"
+                            @update:fileAdd="$nextTick(() => { $refs.messagesForm.validate() })"
                             :acceptedMimeTypes="[]"
                             :maxFileSize="2"
                             :maxFiles="10"
@@ -563,7 +563,7 @@
       :showViolationDialog="showViolationDialog"
       :message="itemToReport"
       :key="JSON.stringify(itemToReport)"
-      @closeViolationDialog="itemToReport = undefined"
+      @update:closeViolationDialog="itemToReport = undefined"
     ></ViolationDialog>
   </div>
 </template>

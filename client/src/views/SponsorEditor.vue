@@ -94,8 +94,8 @@
                         <FileUpload
                           ref="sponsorUpload"
                           v-model="pic"
-                          @fileRemove="patchFileRemove"
-                          @fileAdd="$nextTick(() => { $refs.sponsorsEditorForm.validate() })"
+                          @update:fileRemove="patchFileRemove"
+                          @update:fileAdd="$nextTick(() => { $refs.sponsorsEditorForm.validate() })"
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg', 'image/svg+xml']"
                           :maxFileSize="0.5"
                           :maxFiles="1"

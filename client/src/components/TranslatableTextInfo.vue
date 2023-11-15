@@ -40,7 +40,7 @@
         </v-list-item>
         <v-list-item
           v-if="canShowOriginal"
-          @click="$emit('showOriginal')"
+          @click="$emit('update:showOriginal')"
         >
           <template v-slot:prepend>
             <v-icon
@@ -56,7 +56,7 @@
         </v-list-item>
         <v-list-item
           v-if="needsUpdate && canShowOriginal"
-          @click="$emit('translateText', {
+          @click="$emit('update:translateText', {
             allTexts: false,
             allFields: true,
             force: true
@@ -80,7 +80,7 @@
         </v-list-item>
         <v-list-item
           v-if="canTranslate"
-          @click="$emit('translateText', {
+          @click="$emit('update:translateText', {
             allTexts: false,
             allFields: false,
             force: false
@@ -101,7 +101,7 @@
         </v-list-item>
         <v-list-item
           v-if="canTranslateObject"
-          @click="$emit('translateText', {
+          @click="$emit('update:translateText', {
             allTexts: false,
             allFields: true,
             force: false
@@ -122,7 +122,7 @@
         </v-list-item>
         <v-list-item
           v-if="canTranslateAll"
-          @click="$emit('translateText', {
+          @click="$emit('update:translateText', {
               allTexts: true,
               allFields: true,
               force: false
@@ -156,6 +156,11 @@ export default {
     'canTranslateAll',
     'canShowOriginal',
     'needsUpdate'
+  ],
+
+  emits: [
+    'update:showOriginal',
+    'update:translateText'
   ],
 
   data: () => ({

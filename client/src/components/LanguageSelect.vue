@@ -75,6 +75,8 @@ export default {
     'isMainSwitch'
   ],
 
+  emits: ['update:setLanguage'],
+
   data: () => ({
     selectedLanguage: ''
   }),
@@ -85,7 +87,7 @@ export default {
 
   methods: {
     selectLanguage (e) {
-      this.$emit('setLanguage', e.id)
+      this.$emit('update:setLanguage', e.id)
     }
   },
 

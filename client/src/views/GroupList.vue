@@ -70,10 +70,10 @@
               size="small"
               class="pr-1"
               :color="$settings.modules.groups.color"
-              @click="moderatorsDialogItem = item.raw"
+              @click="moderatorsDialogItem = item"
               :disabled="
-                !isOwnGroup(item.raw._id) ||
-                !item.raw.accepted?.isAccepted
+                !isOwnGroup(item._id) ||
+                !item.accepted?.isAccepted
               "
             >
             </v-btn>
@@ -86,13 +86,13 @@
               :model-value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
-                  obj.reference === item.raw._id &&
+                  obj.reference === item._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ) &&
                 statusContainers.find(obj =>
                   obj.user === user._id &&
-                  obj.reference === item.raw._id &&
+                  obj.reference === item._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ).unread.filter(obj => obj.type === 'users').length > 0
@@ -106,13 +106,13 @@
                   {{
                     statusContainers.find(
                       obj => obj.user === user._id &&
-                      obj.reference === item.raw._id &&
+                      obj.reference === item._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ) ?
                     statusContainers.find(
                       obj => obj.user === user._id &&
-                      obj.reference === item.raw._id &&
+                      obj.reference === item._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ).unread.filter(obj => obj.type === 'users').length
@@ -125,13 +125,13 @@
                 icon="fas fa-list"
                 size="small"
                 :color="$settings.modules.groups.color"
-                @click="membersDialogItem = item.raw"
+                @click="membersDialogItem = item"
                 :disabled="
                   (
-                    !isOwnGroup(item.raw._id) &&
-                    !isModeratorGroup(item.raw._id)
+                    !isOwnGroup(item._id) &&
+                    !isModeratorGroup(item._id)
                   ) ||
-                  !item.raw.accepted?.isAccepted
+                  !item.accepted?.isAccepted
                 "
               >
               </v-btn>
@@ -145,13 +145,13 @@
               :model-value="
                 statusContainers.find(obj =>
                   obj.user === user._id &&
-                  obj.reference === item.raw._id &&
+                  obj.reference === item._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ) &&
                 statusContainers.find(obj =>
                   obj.user === user._id &&
-                  obj.reference === item.raw._id &&
+                  obj.reference === item._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ).unread.filter(obj => obj.type === 'discussions').length > 0
@@ -165,13 +165,13 @@
                   {{
                     statusContainers.find(obj =>
                       obj.user === user._id &&
-                      obj.reference === item.raw._id &&
+                      obj.reference === item._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ) ?
                     statusContainers.find(obj =>
                       obj.user === user._id &&
-                      obj.reference === item.raw._id &&
+                      obj.reference === item._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ).unread.filter(obj => obj.type === 'discussions').length
@@ -185,14 +185,14 @@
                 size="small"
                 class="pr-1"
                 :color="$settings.modules.groups.color"
-                @click="discussionsDialogItem = item.raw"
+                @click="discussionsDialogItem = item"
                 :disabled="
                   (
-                    !isOwnGroup(item.raw._id) &&
-                    !isModeratorGroup(item.raw._id)
+                    !isOwnGroup(item._id) &&
+                    !isModeratorGroup(item._id)
                   ) ||
-                  !item.raw.accepted?.isAccepted ||
-                  !item.raw.isActive
+                  !item.accepted?.isAccepted ||
+                  !item.isActive
                 "
               >
               </v-btn>
@@ -207,14 +207,14 @@
                 statusContainers.find(obj =>
                   obj.user === user._id &&
                   obj.type === 'groups' &&
-                  obj.reference === item.raw._id &&
+                  obj.reference === item._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ) &&
                 statusContainers.find(obj =>
                   obj.user === user._id &&
                   obj.type === 'groups' &&
-                  obj.reference === item.raw._id &&
+                  obj.reference === item._id &&
                   obj.relation !== 'applicant' &&
                   obj.relation !== 'member'
                 ).unread.filter(obj => obj.type === 'violations').length > 0
@@ -229,14 +229,14 @@
                     statusContainers.find(obj =>
                       obj.user === user._id &&
                       obj.type === 'groups' &&
-                      obj.reference === item.raw._id &&
+                      obj.reference === item._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ) ?
                     statusContainers.find(obj =>
                       obj.user === user._id &&
                       obj.type === 'groups' &&
-                      obj.reference === item.raw._id &&
+                      obj.reference === item._id &&
                       obj.relation !== 'applicant' &&
                       obj.relation !== 'member'
                     ).unread.filter(obj => obj.type === 'violations').length
@@ -249,13 +249,13 @@
                 icon="fas fa-ban"
                 size="small"
                 :color="$settings.modules.groups.color"
-                @click="violationsDialogItem = item.raw"
+                @click="violationsDialogItem = item"
                 :disabled="
                   (
-                    !isOwnGroup(item.raw._id) &&
-                    !isModeratorGroup(item.raw._id)
+                    !isOwnGroup(item._id) &&
+                    !isModeratorGroup(item._id)
                   ) ||
-                  !item.raw.accepted?.isAccepted
+                  !item.accepted?.isAccepted
                 "
               >
               </v-btn>
@@ -268,13 +268,13 @@
               icon="fas fa-file"
               size="small"
               :color="$settings.modules.groups.color"
-              @click="filesDialogItem = item.raw"
+              @click="filesDialogItem = item"
               :disabled="
                 (
-                  !isOwnGroup(item.raw._id) &&
-                  !isModeratorGroup(item.raw._id)
+                  !isOwnGroup(item._id) &&
+                  !isModeratorGroup(item._id)
                 ) ||
-                !item.raw.accepted?.isAccepted
+                !item.accepted?.isAccepted
               "
             >
             </v-btn>
@@ -285,14 +285,14 @@
             <span
               class="font-weight-bold"
             >
-              {{item.raw.title.value}}
+              {{item.title.value}}
             </span>
           </template>
           <template
             v-slot:[`item.relation`]="{ item }"
           >
             <template
-              v-if="computedGroupRelations[item.raw._id].includes('invitation')"
+              v-if="computedGroupRelations[item._id].includes('invitation')"
             >
               <v-row>
                 <v-col
@@ -312,7 +312,7 @@
                         color="success"
                         size="small"
                         icon="fas fa-check"
-                        @click="acceptInvitation(item.raw)"
+                        @click="acceptInvitation(item)"
                       >
                       </v-btn>
                     </template>
@@ -329,7 +329,7 @@
                         color="error"
                         size="small"
                         icon="fas fa-times"
-                        @click="declineInvitation(item.raw)"
+                        @click="declineInvitation(item)"
                       >
                       </v-btn>
                     </template>
@@ -349,9 +349,9 @@
                 multiple
                 chips
                 closable-chips
-                :items="computedRelationItems[item.raw._id]"
-                :model-value="computedGroupRelations[item.raw._id]"
-                @update:modelValue="changeGroupRelation($event, item.raw)"
+                :items="computedRelationItems[item._id]"
+                :model-value="computedGroupRelations[item._id]"
+                @update:modelValue="changeGroupRelation($event, item)"
               >
               </v-select>
             </template>
@@ -359,21 +359,21 @@
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+            {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
             <v-btn
               variant="text"
-              :icon="item.raw.isActive ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.groups.color"
-              :loading="loaders[item.raw._id + 'isActive'] === true"
-              :disabled="!isOwnGroup(item.raw._id)"
+              :loading="loaders[item._id + 'isActive'] === true"
+              :disabled="!isOwnGroup(item._id)"
               @click="changeGroupProperty(
-                item.raw._id,
+                item._id,
                 'isActive',
-                !item.raw.isActive
+                !item.isActive
               )"
             >
             </v-btn>
@@ -383,7 +383,7 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.groups.color"
               disabled
             >
@@ -397,8 +397,8 @@
               size="small"
               :color="$settings.modules.groups.color"
               class="my-4"
-              :to="{name: 'GroupEditor', params: { id: item.raw._id } }"
-              :disabled="!isOwnGroup(item.raw._id) && !isModeratorGroup(item.raw._id)"
+              :to="{name: 'GroupEditor', params: { id: item._id } }"
+              :disabled="!isOwnGroup(item._id) && !isModeratorGroup(item._id)"
             >
             </v-btn>
           </template>
@@ -410,9 +410,9 @@
               size="small"
               :color="$settings.modules.groups.color"
               class="my-4"
-              :loading="loaders[item.raw._id + 'delete'] === true"
-              :disabled="!isOwnGroup(item.raw._id)"
-              @click="deleteGroup(item.raw._id)"
+              :loading="loaders[item._id + 'delete'] === true"
+              :disabled="!isOwnGroup(item._id)"
+              @click="deleteGroup(item._id)"
             >
             </v-btn>
           </template>
@@ -424,17 +424,17 @@
               size="small"
               :color="$settings.modules.groups.color"
               :disabled="
-                !item.raw.isActive ||
-                !item.raw.accepted?.isAccepted
+                !item.isActive ||
+                !item.accepted?.isAccepted
               "
-              :to="{name: 'Group', params: { group: item.raw._id } }"
+              :to="{name: 'Group', params: { group: item._id } }"
             >
             </v-btn>
           </template>
         </v-data-table-server>
       </v-col>
     </v-row>
-    <!-- Members dialog -->T
+    <!-- Members dialog -->
     <v-dialog
       v-model="showMembersDialog"
       max-width="1200"
@@ -554,7 +554,7 @@
                         :customQuery="
                           computedCustomQuery
                         "
-                        @customAction="inviteMember"
+                        @update:customAction="inviteMember"
                       ></UserTable>
                     </v-card-text>
                   </v-card>
@@ -575,7 +575,7 @@
                             _id: { $in: memberStatusContainers.filter(obj => obj.relation === 'invitation').map(obj => obj.user) }
                           }
                         "
-                        @customAction="removeMember"
+                        @update:customAction="removeMember"
                       ></UserTable>
                     </v-card-text>
                   </v-card>
@@ -1507,7 +1507,7 @@ export default {
         this.showDiscussionsDialog = false
       }
     },
-    async showViolationsDialog () {
+    showViolationsDialog () {
       if (!this.showViolationsDialog) {
         this.violationsDialogItem = undefined
       }

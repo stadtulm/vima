@@ -120,8 +120,8 @@
                         <FileUpload
                           ref="organisationUpload"
                           v-model="pic"
-                          @fileRemove="patchFileRemove"
-                          @fileAdd="$nextTick(() => { $refs.organisationsEditorForm.validate() })"
+                          @update:fileRemove="patchFileRemove"
+                          @update:fileAdd="$nextTick(() => { $refs.organisationsEditorForm.validate() })"
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg', 'image/svg+xml']"
                           :maxFileSize="0.5"
                           :maxFiles="1"

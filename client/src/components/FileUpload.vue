@@ -1,7 +1,7 @@
 <template>
   <div class="droparea-container">
     <v-sheet
-      outlined
+      variant="outlined"
       class="droparea"
       :class="files.length < maxFiles ? 'pointer' : ''"
       width="100%"
@@ -22,12 +22,12 @@
     />
       <v-row
         dense
-        class="pt-4"
+        class="pt-12"
         v-if="files.length < maxFiles"
       >
         <v-col
           cols=12
-          class="text-center title"
+          class="text-center text-h5 font-weight-light mt-3"
         >
           {{$t('dropFilesHeadline', { maxfiles: maxFiles, filesize: maxFileSize })}}
         </v-col>
@@ -48,7 +48,7 @@
       </v-row>
       <v-container
         fluid
-        class="mt-3"
+        class="mt-6"
       >
         <v-row>
           <v-col
@@ -61,12 +61,11 @@
           >
             <v-card
               :ripple="false"
-              @click.stop
               style="cursor: auto !important"
             >
               <v-row>
                 <v-col
-                  class="mx-3 mb-3 font-weight-bold"
+                  class="mt-4 mb-1 text-subtitle-1 text-center"
                 >
                   {{file.originalname || file.url}}
                 </v-col>
@@ -81,11 +80,10 @@
                   v-if="file.state"
                   bottom
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template v-slot:activator="{ props }">
                     <v-icon
                       class="pointer"
-                      v-bind="attrs"
-                      v-on="on"
+                      v-bind="props"
                       color="white"
                       size="50"
                     >
@@ -107,22 +105,22 @@
                 </v-tooltip>
               </v-img>
               <v-card-text>
-              <v-text-field
-                v-model="file.credit"
-                @click.stop
-                :label="$t('copyrightOwner')"
-                :rules="[rules.required]"
-                @keypress.stop
-                @input="updateFileCredit($event, i)"
-                :disabled="file.errors.length > 0"
-                :hint="$t('publicHint')"
-                persistent-hint
-              ></v-text-field>
+                <v-text-field
+                  v-model="file.credit"
+                  @click.stop
+                  :label="$t('copyrightOwner')"
+                  :rules="[rules.required]"
+                  @keypress.stop
+                  @input="updateFileCredit($event, i)"
+                  :disabled="file.errors.length > 0"
+                  :hint="$t('publicHint')"
+                  persistent-hint
+                ></v-text-field>
               </v-card-text>
               <v-card-actions>
                 <v-btn
+                  variant="elevated"
                   color="customGrey"
-                  dark
                   block
                   @click.stop="removeFile(file)"
                 >
@@ -174,7 +172,7 @@ export default {
       type: Boolean,
       default: false
     },
-    value: {
+    modelValue: {
     },
     maxFiles: {
       type: Number,
@@ -200,6 +198,12 @@ export default {
       default: 100
     }
   },
+
+  emits: [
+    'update:modelValue',
+    'update:fileAdd',
+    'update:fileRemove'
+  ],
 
   components: {
   },
@@ -251,18 +255,18 @@ export default {
         file.url = result.id
       }
       if (this.maxFiles > 1) {
-        this.$emit('input', this.files)
+        this.$emit('update:model-value', this.files)
       } else {
-        this.$emit('input', this.files[0])
+        this.$emit('update:model-value', this.files[0])
       }
     },
     adapt () {
-      if (!this.value) {
+      if (!this.modelValue) {
         this.files = []
       } else {
-        if (Array.isArray(this.value)) {
+        if (Array.isArray(this.modelValue)) {
           if (this.maxFiles > 1) {
-            this.files = this.value.map(file => ({
+            this.files = this.modelValue.map(file => ({
               ...file,
               state: file.state || 'uploaded',
               errors: file.errors || []
@@ -272,19 +276,18 @@ export default {
           }
         } else {
           this.files = [{
-            ...this.value,
-            state: this.value.state || 'uploaded',
-            errors: this.value.errors || []
+            ...this.modelValue,
+            state: this.modelValue.state || 'uploaded',
+            errors: this.modelValue.errors || []
           }]
         }
       }
     },
     updateFileCredit (e, i) {
-      this.$set(this.files, i, { ...this.files[i], credit: e })
       if (this.maxFiles > 1) {
-        this.$emit('input', this.files)
+        this.$emit('update:modelValue', this.files)
       } else {
-        this.$emit('input', this.files[0])
+        this.$emit('update:modelValue', this.files[0])
       }
     },
     async addFile (e, type) {
@@ -328,12 +331,12 @@ export default {
       this.files = this.files.concat(filesWithDataUrl)
       this.$refs.hiddenInput.value = null
       if (this.maxFiles > 1) {
-        this.$emit('input', this.files)
+        this.$emit('update:model-value', this.files)
       } else {
-        this.$emit('input', this.files[0])
+        this.$emit('update:model-value', this.files[0])
       }
       this.isInsideDroparea = false
-      this.$emit('fileAdd')
+      this.$emit('update:fileAdd')
       this.isLoading = false
     },
     fileToDataURL (file) {
@@ -369,7 +372,7 @@ export default {
     async removeFile (file) {
       if (file.state === 'uploaded') {
         await this.removeUpload([file.url, {}, {}])
-        this.$emit('fileRemove', file)
+        this.$emit('update:fileRemove', file)
       } else {
         this.files = this.files.filter(f => {
           return f !== file
@@ -379,7 +382,7 @@ export default {
     }
   },
   watch: {
-    value: {
+    modelValue: {
       deep: true,
       handler (newValue, oldValue) {
         if (newValue !== oldValue) {

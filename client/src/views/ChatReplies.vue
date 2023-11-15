@@ -213,7 +213,7 @@
                                           <TranslatableTextInfo
                                             :canTranslate="true"
                                             :canTranslateAll="chatMessages.filter(m => !isOwnMessage(m)).length > 1"
-                                            @translateText="(data) => { translateText(data) }"
+                                            @update:translateText="(data) => { translateText(data) }"
                                           ></TranslatableTextInfo>
                                         </v-col>
                                       </template>
@@ -239,8 +239,8 @@
                                         <TranslatableTextInfo
                                           :canShowOriginal="true"
                                           :needsUpdate="message.translationSum !== computedText.translationSum"
-                                          @showOriginal="(data) => { showOriginal(data) }"
-                                          @translateText="(data) => { translateText(data) }"
+                                          @update:showOriginal="(data) => { showOriginal(data) }"
+                                          @update:translateText="(data) => { translateText(data) }"
                                         ></TranslatableTextInfo>
                                       </template>
                                     </TranslatableText>
@@ -269,7 +269,7 @@
                                         rounded
                                       >
                                         <v-list-item
-                                          @click="$emit('report', message)"
+                                          @click="$emit('update:report', message)"
                                         >
                                           <v-list-item-avatar>
                                             <v-icon>
@@ -406,8 +406,8 @@
                       <FileUpload
                         ref="messageReplyUpload"
                         v-model="pics"
-                        @fileRemove="patchFileRemove"
-                        @fileAdd="$nextTick(() => { $refs.messagesReplyForm.validate() })"
+                        @update:fileRemove="patchFileRemove"
+                        @update:fileAdd="$nextTick(() => { $refs.messagesReplyForm.validate() })"
                         :acceptedMimeTypes="[]"
                         :maxFileSize="2"
                         :maxFiles="10"
@@ -476,6 +476,12 @@ export default {
     'computedOwnStatusContainer',
     'computedOtherStatusContainers'
   ],
+
+  emits: [
+    'update:report',
+    'update:checkVisibleMessages'
+  ],
+
   components: {
     TranslatableText,
     TranslatableTextInfo,
@@ -609,7 +615,7 @@ export default {
           this.resetInput()
           this.$nextTick(() => {
             this.$nextTick(() => {
-              this.$emit('checkVisibleMessages')
+              this.$emit('update:checkVisibleMessages')
             })
           })
           this.message = undefined
@@ -694,7 +700,7 @@ export default {
               if (oldValue.length < newValue.length && !this.manualLoad) {
                 document.querySelector('#messageContainer').scrollTop = document.querySelector('#messageContainer').scrollTop + document.querySelector('[name="' + newValue[newValue.length - 1]._id + '"]').clientHeight
               }
-              this.$emit('checkVisibleMessages')
+              this.$emit('update:checkVisibleMessages')
               this.manualLoad = false
             })
           })

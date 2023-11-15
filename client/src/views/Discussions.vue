@@ -74,7 +74,7 @@
         <DiscussionsList
           :showFilters="showFilters"
           :resetFilterTrigger="resetFilterTrigger"
-          @filtersDirty="setFiltersDirty($event)"
+          @update:filtersDirty="setFiltersDirty($event)"
         >
         </DiscussionsList>
       </v-col>

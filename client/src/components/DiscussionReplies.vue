@@ -11,8 +11,8 @@
         :selectedReplyToAnswer="selectedReplyToAnswer"
         :message="mainMessage"
         :isEditMessage="isEditMessage"
-        @selectedReplyToAnswer="replyMessage"
-        @resetInput="resetInput()"
+        @update:selectedReplyToAnswer="replyMessage"
+        @update:resetInput="resetInput()"
       >
       </DiscussionReply>
     </v-row>
@@ -50,7 +50,9 @@
               <v-list-item
                 class="px-0"
               >
-                <v-list-item-avatar>
+                <template
+                  v-slot:prepend
+                >
                   <v-avatar
                     color="customGreyLight"
                   >
@@ -68,25 +70,23 @@
                       fas fa-user
                     </v-icon>
                   </v-avatar>
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-row>
-                    <v-col
-                      cols="12"
-                      class="text-subtitle-1 pb-0"
-                      style="line-height:20px"
-                      @click="!isOwnMessage(message) ? $router.push({name: 'User', params: { user: message.author}}) : ''"
-                      :class="!isOwnMessage(message) ? 'pointer' : ''"
-                    >
-                      {{getUser(message.author).userName}}
-                    </v-col>
-                    <v-col
-                      class="pt-0 caption"
-                    >
-                    {{$moment(message.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.editedAt ? '(' + $t('editedAt') + ' ' + $moment(message.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
-                    </v-col>
-                  </v-row>
-                </v-list-item-content>
+                </template>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    class="text-subtitle-1 pb-0"
+                    style="line-height:20px"
+                    @click="!isOwnMessage(message) ? $router.push({name: 'User', params: { user: message.author}}) : ''"
+                    :class="!isOwnMessage(message) ? 'pointer' : ''"
+                  >
+                    {{getUser(message.author).userName}}
+                  </v-col>
+                  <v-col
+                    class="pt-0 caption"
+                  >
+                  {{$moment(message.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.editedAt ? '(' + $t('editedAt') + ' ' + $moment(message.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
+                  </v-col>
+                </v-row>
               </v-list-item>
             </v-col>
           </v-row>
@@ -145,7 +145,7 @@
                             <TranslatableTextInfo
                               :canTranslate="true"
                               :canTranslateAll="computedMessages.filter(m => !isOwnMessage(m)).length > 1"
-                              @translateText="(data) => { translateText(data) }"
+                              @update:translateText="(data) => { translateText(data) }"
                             ></TranslatableTextInfo>
                           </template>
 
@@ -164,8 +164,8 @@
                             <TranslatableTextInfo
                               :canShowOriginal="true"
                               :needsUpdate="message.translationSum !== computedText.translationSum"
-                              @showOriginal="(data) => { showOriginal(data) }"
-                              @translateText="(data) => { translateText(data) }"
+                              @update:showOriginal="(data) => { showOriginal(data) }"
+                              @update:translateText="(data) => { translateText(data) }"
                             ></TranslatableTextInfo>
                           </template>
                         </TranslatableText>
@@ -227,15 +227,15 @@
                           v-if="isOwnMessage(message)"
                           open-on-hover
                         >
-                          <template v-slot:activator="{ on, attrs }">
+                          <template v-slot:activator="{ props }">
                             <v-btn
                               icon
-                              v-bind="attrs"
-                              v-on="on"
+                              v-bind="props"
                               class="mb-2 elevation-1 customGreyUltraLight"
                             >
                               <v-icon
                                 size="14"
+                                color="customGrey"
                               >
                                 fas fa-ellipsis-v
                               </v-icon>
@@ -249,31 +249,31 @@
                             <v-list-item
                               @click="editMessage(message)"
                             >
-                              <v-list-item-avatar>
+                              <template
+                                v-slot:prepend
+                              >
                                 <v-icon>
                                   fas fa-pen
                                 </v-icon>
-                              </v-list-item-avatar>
-                              <v-list-item-content>
-                                <v-list-item-title>
-                                  {{$t('editButton')}}
-                                </v-list-item-title>
-                              </v-list-item-content>
+                              </template>
+                              <v-list-item-title>
+                                {{$t('editButton')}}
+                              </v-list-item-title>
                             </v-list-item>
                             <!-- Delete button -->
                             <v-list-item
                               @click="deleteMessage(message._id)"
                             >
-                              <v-list-item-avatar>
+                              <template
+                                v-slot:prepend
+                              >
                                 <v-icon>
                                   fas fa-trash
                                 </v-icon>
-                              </v-list-item-avatar>
-                              <v-list-item-content>
-                                <v-list-item-title>
-                                  {{$t('deleteButton')}}
-                                </v-list-item-title>
-                              </v-list-item-content>
+                              </template>
+                              <v-list-item-title>
+                                {{$t('deleteButton')}}
+                              </v-list-item-title>
                             </v-list-item>
                           </v-list>
                         </v-menu>
@@ -281,11 +281,10 @@
                           v-if="!isOwnMessage(message) && user"
                           open-on-hover
                         >
-                          <template v-slot:activator="{ on, attrs }">
+                          <template v-slot:activator="{ props }">
                             <v-btn
                               icon
-                              v-bind="attrs"
-                              v-on="on"
+                              v-bind="props"
                               class="mb-2 elevation-1 customGreyUltraLight"
                             >
                               <v-icon
@@ -301,18 +300,18 @@
                           >
                             <!-- Report button -->
                             <v-list-item
-                              @click="$emit('report', message)"
+                              @click="$emit('update:report', message)"
                             >
-                              <v-list-item-avatar>
+                              <template
+                                v-slot:prepend
+                              >
                                 <v-icon>
                                   fas fa-exclamation-triangle
                                 </v-icon>
-                              </v-list-item-avatar>
-                              <v-list-item-content>
-                                <v-list-item-title>
-                                  {{$t('reportButton')}}
-                                </v-list-item-title>
-                              </v-list-item-content>
+                              </template>
+                              <v-list-item-title>
+                                {{$t('reportButton')}}
+                              </v-list-item-title>
                             </v-list-item>
                           </v-list>
                         </v-menu>
@@ -327,8 +326,8 @@
                         :selectedReplyToAnswer="selectedReplyToAnswer"
                         :message="message"
                         :isEditMessage="isEditMessage"
-                        @selectedReplyToAnswer="replyMessage"
-                        @resetInput="resetInput()"
+                        @update:selectedReplyToAnswer="replyMessage"
+                        @update:resetInput="resetInput()"
                       >
                       </DiscussionReply>
                     </v-row>
@@ -336,9 +335,10 @@
                     <DiscussionReplies
                       :mainMessage="message"
                       :discussion="discussion"
-                      @checkVisibleMessages="$emit('checkVisibleMessages')"
-                      @report="$emit('report', $event)"
-                      @translateText="$emit('translateText', $event)"
+                      @update:checkVisibleMessages="$emit('update:checkVisibleMessages')"
+                      @update:report="$emit('update:report', $event)"
+                      @update:closeViolationDialog="$emit('update:closeViolationDialog', $event)"
+                      @update:translateText="$emit('update:translateText', $event)"
                       :computedOwnSubscriberStatusContainer="computedOwnSubscriberStatusContainer"
                       :computedGroupStatus="computedGroupStatus"
                       :level="level + 1"
@@ -356,7 +356,6 @@
 
 <script>
 
-import { makeFindMixin } from '@feathersjs/vuex'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
@@ -366,8 +365,6 @@ import DiscussionReply from './DiscussionReply.vue'
 export default {
   name: 'DiscussionReplies',
 
-  mixins: [makeFindMixin({ service: 'discussion-messages', watch: true })],
-
   props: [
     'mainMessage',
     'discussion',
@@ -376,6 +373,13 @@ export default {
     'level',
     'sort'
   ],
+
+  emits: [
+    'update:checkVisibleMessages',
+    'update:report',
+    'update:translateText'
+  ],
+
   components: {
     TranslatableText,
     TranslatableTextInfo,
@@ -387,10 +391,12 @@ export default {
     selectedReplyToAnswer: undefined,
     isEditMessage: undefined,
     pics: [],
-    manualLoad: false
+    manualLoad: false,
+    messages: undefined
   }),
 
   async mounted () {
+    await this.loadMessageReplies()
   },
 
   methods: {
@@ -403,7 +409,8 @@ export default {
     ...mapActions('discussion-messages', {
       createMessage: 'create',
       patchMessage: 'patch',
-      removeMessage: 'remove'
+      removeMessage: 'remove',
+      findMessages: 'find'
     }),
     replyMessage (message) {
       this.resetInput()
@@ -420,12 +427,14 @@ export default {
       this.isEditMessage = undefined
       this.selectedReplyToAnswer = undefined
       this.pics = []
+      this.$emit('update:resetInput')
     },
     async deleteMessage (messageId) {
       try {
         await this.removeMessage(messageId)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
       } catch (e) {
+        console.log(e)
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
       }
     },
@@ -436,6 +445,11 @@ export default {
       const element = document.getElementById('messageInput_' + message._id)
       const y = element.getBoundingClientRect().top + window.pageYOffset - 180
       window.scrollTo({ top: y, behavior: 'smooth' })
+    },
+    async loadMessageReplies () {
+      this.messages = (await this.findMessages(
+        this.discussionMessagesParams
+      )).data
     }
   },
 
@@ -448,11 +462,11 @@ export default {
     ...mapGetters('auth', {
       user: 'user'
     }),
-    ...mapGetters('discussion-messages', {
-      messages: 'list'
-    }),
     ...mapGetters('users', {
       getUser: 'get'
+    }),
+    ...mapGetters('discussion-messages', {
+      allMessages: 'list'
     }),
     discussionMessagesParams () {
       const query = {
@@ -469,8 +483,8 @@ export default {
     },
     computedMessages () {
       if (this.messages) {
-        return this.messages
-          .filter(obj => obj.repliesTo === this.mainMessage._id)
+        const tmpDiscussionReplies = JSON.parse(JSON.stringify(this.messages))
+        return tmpDiscussionReplies
           .sort((b, a) => {
             if (this.sort > 0) {
               return new Date(b.createdAt) - new Date(a.createdAt)
@@ -485,6 +499,9 @@ export default {
   },
 
   watch: {
+    async allMessages () {
+      await this.loadMessageReplies()
+    },
     computedMessages (newValue, oldValue) {
       if (document.querySelector('#replyContainer')) {
         this.$nextTick(() => {
@@ -492,7 +509,7 @@ export default {
             if (oldValue.length < newValue.length && !this.manualLoad) {
               document.querySelector('#messageContainer').scrollTop = document.querySelector('#messageContainer').scrollTop + document.querySelector('[name="' + newValue[newValue.length - 1]._id + '"]').clientHeight
             }
-            this.$emit('checkVisibleMessages')
+            this.$emit('update:checkVisibleMessages')
             this.manualLoad = false
           })
         })

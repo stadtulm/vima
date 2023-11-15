@@ -32,8 +32,8 @@
                 <FileUpload
                   ref="headerLogoFileUpload"
                   v-model="headerLogo"
-                  @fileRemove="patchFileRemove($event, 'headerLogo', false)"
-                  @fileAdd="$nextTick(() => { $refs.settingsForm.validate() })"
+                  @update:fileRemove="patchFileRemove($event, 'headerLogo', false)"
+                  @update:fileAdd="$nextTick(() => { $refs.settingsForm.validate() })"
                   :acceptedMimeTypes="['image/png', 'image/svg+xml']"
                   :maxFileSize="0.25"
                   :maxFiles="1"
@@ -528,8 +528,8 @@
                         <FileUpload
                           :ref="key + 'Upload'"
                           v-model="modules[key].pic"
-                          @fileRemove="patchFileRemove($event, 'modules.' + key + '.pic', false)"
-                          @fileAdd="$nextTick(() => { $refs.settingsForm.validate() })"
+                          @update:fileRemove="patchFileRemove($event, 'modules.' + key + '.pic', false)"
+                          @update:fileAdd="$nextTick(() => { $refs.settingsForm.validate() })"
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
                           :maxFileSize="0.5"
                           :maxFiles="1"
@@ -561,7 +561,7 @@
                             <LanguageSelect
                               :currentLanguage="currentLanguage"
                               :languageObjects="modules[key].text"
-                              @setLanguage="(l) => { currentLanguage = l }"
+                              @update:setLanguage="(l) => { currentLanguage = l }"
                             ></LanguageSelect>
                           </template>
                           <template v-slot:default>

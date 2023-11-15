@@ -1,6 +1,29 @@
 <template>
   <div>
     <v-row
+      class="d-flex mx-0 mb-4"
+    >
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
+      >
+        {{$t('discussion')}} {{ selectedDiscussion ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+        <v-chip
+          v-if="(selectedDiscussion && group) || !group"
+          variant="flat"
+          class="ml-3 mb-1"
+          :color="selectedDiscussion && selectedDiscussion.accepted && selectedDiscussion.accepted.isAccepted ? 'success' : 'warning'"
+        >
+          <v-icon
+            size="14"
+            class="mr-3"
+          >
+            {{selectedDiscussion && selectedDiscussion.accepted && selectedDiscussion.accepted.isAccepted ? 'fas fa-lock-open' : 'fas fa-lock'}}
+          </v-icon>
+          {{selectedDiscussion && selectedDiscussion.accepted && selectedDiscussion.accepted.isAccepted ? $t('accepted') : $t('notYetAccepted') }}
+        </v-chip>
+      </span>
+    </v-row>
+    <v-row
       v-if="selectedDiscussion || !$route.params.id"
     >
       <v-col
@@ -11,29 +34,6 @@
           tile
         >
           <v-card-text>
-            <v-row
-              class="mb-3"
-            >
-              <v-col
-                class="text-h5 font-weight-bold"
-              >
-                {{$t('discussion')}} {{ selectedDiscussion ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
-                <v-chip
-                  v-if="(selectedDiscussion && group) || !group"
-                  dark
-                  class="ml-3"
-                  :color="selectedDiscussion && selectedDiscussion.accepted && selectedDiscussion.accepted.isAccepted ? 'success' : 'warning'"
-                >
-                  <v-icon
-                    size="14"
-                    class="mr-3"
-                  >
-                    {{selectedDiscussion && selectedDiscussion.accepted && selectedDiscussion.accepted.isAccepted ? 'fas fa-lock-open' : 'fas fa-lock'}}
-                  </v-icon>
-                  {{selectedDiscussion && selectedDiscussion.accepted && selectedDiscussion.accepted.isAccepted ? $t('accepted') : $t('notYetAccepted') }}
-                </v-chip>
-              </v-col>
-            </v-row>
             <v-form
               v-model="isValid"
               ref="discussionEditorForm"
@@ -45,14 +45,11 @@
                   cols="12"
                 >
                   <v-text-field
-                    dense
-                    outlined
+                    ref="tabStart"
+                    density="compact"
                     :label="$t('headline')"
-                    :color="$settings.modules.discussions.color"
-                    background-color="#fff"
                     v-model="title"
                     :rules="[rules.required]"
-                    ref="tabStart"
                   >
                   </v-text-field>
                 </v-col>
@@ -63,13 +60,9 @@
               >
                 <v-col>
                   <v-select
-                    dense
-                    :color="$settings.modules.discussions.color"
-                    :item-color="$settings.modules.discussions.color"
-                    background-color="#fff"
-                    outlined
+                    density="compact"
                     v-model="group"
-                    item-text="title"
+                    item-title="title"
                     item-value="_id"
                     :label="$t('group')"
                     :items="[{ title: $t('none'), _id: null}].concat(computedGroups.map(group => ({ _id: group._id, title: group.title.value })))"
@@ -83,14 +76,10 @@
               >
                 <v-col>
                   <v-select
-                    dense
+                    density="compact"
                     multiple
-                    :color="$settings.modules.discussions.color"
-                    :item-color="$settings.modules.discussions.color"
-                    background-color="#fff"
-                    outlined
                     v-model="selectedCategories"
-                    item-text="text.value"
+                    item-title="text.value"
                     item-value="_id"
                     :label="$t('categories')"
                     :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
@@ -106,17 +95,13 @@
                   cols="12"
                 >
                   <v-autocomplete
-                    dense
+                    density="compact"
                     multiple
                     chips
                     closable-chips
                     auto-select-first
-                    :color="$settings.modules.discussions.color"
-                    :item-color="$settings.modules.discussions.color"
-                    background-color="#fff"
-                    outlined
                     v-model="selectedTags"
-                    item-text="text"
+                    item-title="text"
                     item-value="_id"
                     :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
                     :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
@@ -126,10 +111,10 @@
                 </v-col>
                 <v-col
                   cols="12"
-                  class="text-right"
+                  class="text-right pt-0"
                 >
                   <v-btn
-                    text
+                    variant="outlined"
                     :color="$settings.modules.discussions.color"
                     @click="showTagProposalDialog = true"
                   >
@@ -173,20 +158,12 @@
                           v-model="description"
                           width="100%"
                         >
-                          <template slot="default">
-                            <VuetifyTiptap
-                              :editor-properties="{
-                                disableInputRules: true,
-                                disablePasteRules: true
-                              }"
-                              color="customGreyUltraLight"
+                          <template v-slot:default>
+                            <!-- TODO: Remove headings from editor -->
+                            <custom-tiptap
                               v-model="description"
-                              :card-props="{ tile: true, flat: true }"
-                              :extensions="extensions"
-                              :placeholder="$t('enterText')"
-                              style="border: 1px solid #aaa"
                             >
-                            </VuetifyTiptap>
+                            </custom-tiptap>
                           </template>
                         </v-input>
                       </v-col>
@@ -223,8 +200,8 @@
                         <FileUpload
                           ref="discussionUpload"
                           v-model="pics"
-                          @fileRemove="patchFileRemove"
-                          @fileAdd="$nextTick(() => { $refs.discussionEditorForm.validate() })"
+                          @update:fileRemove="patchFileRemove"
+                          @update:fileAdd="$nextTick(() => { $refs.discussionEditorForm.validate() })"
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
                           :maxFileSize="2"
                           :maxFiles="10"
@@ -238,20 +215,27 @@
                 </v-col>
               </v-row>
             </v-form>
-            <v-card-actions
-              class="px-0"
+            <v-divider
+              class="mb-6 mt-9"
+            ></v-divider>
+            <v-toolbar
+              class="mt-4"
+              color="transparent"
             >
               <v-btn
                 block
-                :dark="isValid"
+                size="large"
+                dark
+                variant="elevated"
                 :color="$settings.modules.discussions.color"
                 :loading="isLoading"
                 :disabled="!isValid"
                 @click="saveOrWarn()"
+                class="mx-0 text-white"
               >
                 {{$t('saveDataButton')}}
               </v-btn>
-            </v-card-actions>
+            </v-toolbar>
           </v-card-text>
         </v-card>
       </v-col>
@@ -263,7 +247,6 @@
       max-width="600"
     >
       <v-card
-        color="customGreyUltraLight"
         tile
       >
         <v-card-text
@@ -296,8 +279,8 @@
               </div>
             </v-col>
           </v-row>
-          <v-card-actions
-            class="mt-4 pa-0"
+          <v-toolbar
+            class="mt-2 pa-3"
           >
             <v-btn
               @click="showAcceptDialog = false"
@@ -312,7 +295,7 @@
             >
               {{$t('understoodButton')}}
             </v-btn>
-          </v-card-actions>
+          </v-toolbar>
         </v-card-text>
       </v-card>
     </v-dialog>

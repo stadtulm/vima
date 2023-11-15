@@ -250,7 +250,11 @@ module.exports = {
             }
           }
           if (Array.isArray(rec.text)) {
-            rec.text = rec.text.find(t => t.type === 'default')
+            try {
+              rec.text = rec.text.find(t => t.type === 'default')
+            } catch (e) {
+              console.log(e)
+            }
           }
           return rec
         })
@@ -331,21 +335,25 @@ module.exports = {
       // If message to remove is a reply - remove reply from reference message
       async (context) => {
         if (context.result.repliesTo) {
-          await context.app.service('discussion-messages').patch(
-            context.result.repliesTo,
-            {
-              $pull: {
-                replies: context.result._id
+          try {
+            await context.app.service('discussion-messages').patch(
+              context.result.repliesTo,
+              {
+                $pull: {
+                  replies: context.result._id
+                }
+              },
+              {
+                query: {
+                  $populate: [
+                    { path: 'latestAnswers' }
+                  ]
+                }
               }
-            },
-            {
-              query: {
-                $populate: [
-                  { path: 'latestAnswers' }
-                ]
-              }
-            }
-          )
+            )
+          } catch (e) {
+            console.log('Can not patch - already deleted', context.result.repliesTo)
+          }
         }
       },
       // If message to remove has replies - remove its replies
@@ -360,15 +368,9 @@ module.exports = {
               }
             }
           )
-          await context.app.service('discussion-messages').remove(
-            null,
-            {
-              query: {
-                _id: { $in: context.result.replies }
-              },
-              many: discussionMessageIds.map(obj => obj._id)
-            }
-          )
+          for (const reply of discussionMessageIds) {
+            await context.app.service('discussion-messages').remove(reply._id)
+          }
         }
       },
       // Remove message unread-flag and all reply unread-flags from status containers

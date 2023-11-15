@@ -7,14 +7,10 @@ import { mdi } from 'vuetify/iconsets/mdi'
 
 // Vuetify
 import { createVuetify } from 'vuetify'
-import * as labs from 'vuetify/labs/components'
 import { en, de, bg, ro } from 'vuetify/locale'
 
 export default createVuetify(
   {
-    components: {
-      ...labs
-    },
     theme: {
       defaultTheme: 'customTheme',
       themes: {

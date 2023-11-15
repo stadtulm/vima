@@ -46,7 +46,7 @@
         <LanguageSelect
           :isMainSwitch="true"
           :currentLanguage="$i18n.locale"
-          @setLanguage="setLanguage"
+          @update:setLanguage="setLanguage"
         ></LanguageSelect>
         <v-menu
           open-on-hover
@@ -1448,7 +1448,7 @@
                               </v-icon>
                             </v-avatar>
                           </template>
-                          <v-list-item-title>
+                          <v-col>
                             <div
                               class="text-body-1 font-weight-bold"
                             >
@@ -1457,7 +1457,7 @@
                             <div class="text-body-2">
                               {{$t(helpItem.subTitle)}}
                             </div>
-                          </v-list-item-title>
+                          </v-col>
                           <template
                             v-slot:append
                             v-if="helpItem.linkName"
@@ -1703,7 +1703,7 @@
       <!-- Newsletter dialog -->
       <NewsletterDialog
         :showNewsletterDialog="showNewsletterDialog"
-        @closeNewsletterDialog="showNewsletterDialog = false"
+        @update:closeNewsletterDialog="showNewsletterDialog = false"
       ></NewsletterDialog>
       <!-- Tour snackbar -->
       <v-snackbar
@@ -2627,11 +2627,11 @@ export default {
     margin-bottom: 10px;
   }
 
-  .foreign-sheet, .v-data-table tr {
+  .foreign-sheet, .v-data-table__tr {
     transition: background-color 3s !important;
   }
 
-  .v-data-table tr.new, .foreign-sheet.new {
+  .v-data-table__tr.new, .foreign-sheet.new {
     background-color: #E6EE9C !important;
     transition: background-color 0s !important;
   }

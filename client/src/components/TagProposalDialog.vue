@@ -50,7 +50,7 @@
         >
           <v-btn
             variant="elevated"
-            @click="$emit('closeTagProposalDialog')"
+            @click="$emit('update:closeTagProposalDialog')"
           >
             {{$t('cancelButton')}}
           </v-btn>
@@ -84,6 +84,8 @@ export default {
     'showTagProposalDialog'
   ],
 
+  emits: ['update:closeTagProposalDialog'],
+
   data: () => ({
     isTagLoading: false,
     tagProposal: undefined,
@@ -112,7 +114,7 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
         this.tagProposal = ''
         this.$refs.tagProposalForm.reset()
-        this.$emit('closeTagProposalDialog')
+        this.$emit('update:closeTagProposalDialog')
       } catch (e) {
         this.isTagLoading = false
         this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })

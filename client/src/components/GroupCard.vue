@@ -5,13 +5,8 @@
     height="100%"
     :to="groupProp ? { name: 'Group', params: { group: computedGroup._id } } : ''"
   >
-    <v-container
-      fluid
-      class="fill-height"
-    >
-      <v-row
-        class="align-self-start"
-      >
+    <v-card-text>
+      <v-row>
         <v-col
           :class="groupProp ? 'pa-0' : ''"
         >
@@ -24,8 +19,8 @@
               :order-md="groupProp ? 2 : 1"
             >
               <!-- Title -->
-              <v-card-title
-                class="word-wrap mb-3"
+              <div
+                class="ma-4 mb-0 text-h6 font-weight-bold"
               >
                 <TranslatableText
                   ownField="title"
@@ -35,46 +30,21 @@
                   :textParent="computedGroup"
                 >
                 </TranslatableText>
-                <!-- Membership buttons / icon -->
-                <v-tooltip
-                  right
-                  color="customGrey"
-                  v-if="computedGroupStatus"
-                  :key="JSON.stringify(computedGroupStatus)"
-                >
-                  <template v-slot:activator="{ props }">
-                    <v-icon
-                      v-bind="props"
-                      v-if="computedGroupStatus.value"
-                      color="customGrey"
-                      class="ml-3"
-                    >
-                      {{computedGroupStatus.icon}}
-                    </v-icon>
-                  </template>
-                  <span>
-                    {{$t(computedGroupStatus.textKey)}}
-                  </span>
-                </v-tooltip>
-              </v-card-title>
-              <v-card-title
-                v-if="computedCategory"
-                class="pt-0 pb-8"
-              >
-                {{computedCategory.text.value}}
-              </v-card-title>
-              <!-- Subtitle -->
+              </div>
+              <!-- Info -->
               <v-card-subtitle
-                v-if="!computedCategory"
+                class="mb-5"
+                v-if="!computedCategory && user && computedGroup.owner?.user?.userName"
               >
                 {{$t('createdAt')}} {{$moment(computedGroup.createdAt).format('DD.MM.YYYY')}} {{$t('by')}}
-                <span
-                  class="font-weight-bold"
-                  :class="computedGroup.owner ? 'pointer': ''"
+                <v-btn
+                  class="ml-1"
+                  variant="outlined"
+                  size="x-small"
                   @click="computedGroup.owner ? $router.push({name: 'User', params: { user: computedGroup.owner.user._id }}) : ''"
                 >
-                  {{computedGroup.owner ? computedGroup.owner.user.userName : ''}}
-                </span>
+                  {{computedGroup.owner.user.userName}}
+                </v-btn>
               </v-card-subtitle>
               <v-card-text>
                 <!-- Latest message -->
@@ -83,10 +53,10 @@
                 >
                   <v-col>
                     <v-chip
-                      :color="$moment().diff($moment(computedGroup.latestMessage), 'days') <= 5 ? $settings.indicatorColor : 'customGreyMedium'"
-                      :dark="$moment().diff($moment(computedGroup.latestMessage), 'days') > 5"
+                      variant="flat"
+                      :color="$moment().diff($moment(computedGroup.latestMessage), 'days') <= 5 ? $settings.indicatorColor : 'customGrey'"
+                      :class="$moment().diff($moment(computedGroup.latestMessage), 'days') <= 5 ? 'elevation-3 font-weight-bold' : ''"
                       disabled
-                      :class="$moment().diff($moment(computedGroup.latestMessage), 'days') <= 5 ? 'elevation-8 font-weight-bold' : ''"
                     >
                       {{$t('latestPost')}}: {{$moment(computedGroup.latestMessage).format("DD.MM.YYYY, HH:mm")}} {{$t('oClock')}}
                     </v-chip>
@@ -103,7 +73,6 @@
                     >
                       <template v-slot:activator="{ props }">
                         <v-chip
-                          dark
                           v-bind="props"
                         >
                           {{$t(computedGroup.visibility + 'VisibilityTitle')}}
@@ -121,48 +90,6 @@
                     </v-tooltip>
                   </v-col>
                 </v-row>
-                <!-- Interaction -->
-                <v-row
-                  v-if="
-                    !computedGroupStatus &&
-                    !groupProp &&
-                    user &&
-                    !computedCategory
-                  "
-                >
-                  <v-col>
-                    <v-btn
-                      v-if="computedGroup.visibility === 'public'"
-                      dark
-                      :color="$settings.modules.groups.color"
-                      :loading="isLoading"
-                      @click="joinGroup()"
-                    >
-                      {{$t('join')}}
-                      <v-icon
-                        size="18"
-                        class="ml-3"
-                      >
-                        fas fa-user-plus
-                      </v-icon>
-                    </v-btn>
-                    <v-btn
-                      v-else
-                      dark
-                      :color="$settings.modules.groups.color"
-                      :loading="isLoading"
-                      @click="showApplyDialog = true"
-                    >
-                      {{$t('requestMembership')}}
-                      <v-icon
-                        size="18"
-                        class="ml-3"
-                      >
-                        fas fa-user-plus
-                      </v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
                 <!-- Categories -->
                 <v-row
                   v-if="
@@ -173,14 +100,14 @@
                 >
                   <v-col>
                     <v-chip
-                      outlined
+                      variant="outlined"
                       v-for="category in getCategories(computedGroup.categories)"
                       :key="category._id"
-                      class="mr-1"
+                      class="mr-1 mb-1"
                       :disabled="!groupProp"
-                      @click.prevent="$emit('selectCategory', category._id)"
+                      @click.prevent="$emit('update:selectCategory', category._id)"
                     >
-                    {{category.text.value}}
+                      {{category.text.value}}
                     </v-chip>
                   </v-col>
                 </v-row>
@@ -196,12 +123,64 @@
                     <v-chip
                       v-for="tag in getTags(computedGroup.tags)"
                       :key="tag._id"
-                      class="mr-1"
+                      class="mr-1 mb-1"
                       :disabled="!groupProp"
-                      @click.prevent="$emit('selectTag', tag._id)"
+                      @click.prevent="$emit('update:selectTag', tag._id)"
                     >
-                    {{tag.text}}
+                      {{tag.text}}
                     </v-chip>
+                  </v-col>
+                </v-row>
+                <!-- Join / request membership -->
+                <v-row
+                  v-if="
+                    !computedGroupStatus &&
+                    !groupProp &&
+                    user &&
+                    !computedCategory
+                  "
+                >
+                  <v-col>
+                    <v-btn
+                      :color="$settings.modules.groups.color"
+                      :loading="isLoading"
+                      @click="computedGroup.visibility === 'public' ? joinGroup() : showApplyDialog = true"
+                    >
+                      {{computedGroup.visibility === 'public' ? $t('join') : $t('requestMembership')}}
+                      <v-icon
+                        size="18"
+                        class="ml-3"
+                      >
+                        fas fa-user-plus
+                      </v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+                <!-- Membership indicator / icon -->
+                <v-row
+                  v-if="computedGroupStatus"
+                >
+                  <v-col>
+                    <v-tooltip
+                      right
+                      color="customGrey"
+                      :key="JSON.stringify(computedGroupStatus)"
+                    >
+                      <template v-slot:activator="{ props }">
+                        <v-btn
+                          variant="outlined"
+                          :icon="computedGroupStatus.icon"
+                          v-bind="props"
+                          v-if="computedGroupStatus.value"
+                          color="customGrey"
+                          size="small"
+                        >
+                        </v-btn>
+                      </template>
+                      <span>
+                        {{$t(computedGroupStatus.textKey)}}
+                      </span>
+                    </v-tooltip>
                   </v-col>
                 </v-row>
                 <!-- Description -->
@@ -219,7 +198,7 @@
                       v-slot:defaultLang="{ computedText, translateText }"
                     >
                       <v-col
-                        class="text-body-1 mx-4"
+                        class="text-body-1"
                       >
                         <span
                           v-html="groupProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
@@ -227,7 +206,7 @@
                         <TranslatableTextInfo
                           :canTranslate="true"
                           :canShowOriginal="false"
-                          @translateText="(data) => { translateText(data) }"
+                          @update:translateText="(data) => { translateText(data) }"
                         ></TranslatableTextInfo>
                       </v-col>
                     </template>
@@ -240,13 +219,6 @@
                         <v-sheet
                           class="pa-1 px-3"
                         >
-                          <TranslatableTextInfo
-                            :canTranslate="false"
-                            :canShowOriginal="true"
-                            :needsUpdate="computedGroup.translationSum !== computedText.translationSum"
-                            @showOriginal="(data) => { showOriginal(data) }"
-                            @translateText="(data) => { translateText(data) }"
-                          ></TranslatableTextInfo>
                           <span
                             class="text-body-1"
                             v-html="groupProp ?
@@ -254,6 +226,13 @@
                               $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
                             "
                           ></span>
+                          <TranslatableTextInfo
+                            :canTranslate="false"
+                            :canShowOriginal="true"
+                            :needsUpdate="computedGroup.translationSum !== computedText.translationSum"
+                            @update:showOriginal="(data) => { showOriginal(data) }"
+                            @update:translateText="(data) => { translateText(data) }"
+                          ></TranslatableTextInfo>
                         </v-sheet>
                       </v-col>
                     </template>
@@ -274,72 +253,43 @@
             <v-col
               v-if="!computedCategory"
               cols="12"
-              sm="12"
               :md="groupProp ? 12 : 4"
               :class="groupProp ? 'py-0': ''"
               :order="1"
               :order-md="groupProp ? 1 : 2"
             >
-              <v-card-text
-                :class="groupProp ? 'pa-0' : ''"
+              <v-carousel
+                v-if="computedPics.length > 0"
+                v-model="picsCarousel"
+                hide-delimiters
+                :show-arrows="computedPics.length > 1"
+                :show-arrows-on-hover="computedPics.length > 1"
+                :cycle="false"
+                :height="groupProp ? 250 : '100%'"
+                class="mb-3 white"
               >
-                <v-carousel
-                  v-if="computedPics.length > 0"
-                  v-model="picsCarousel"
-                  hide-delimiters
-                  :show-arrows="computedPics.length > 1"
-                  :show-arrows-on-hover="computedPics.length > 1"
-                  :cycle="false"
-                  :height="groupProp ? 250 : '100%'"
-                  class="mb-3 white"
+                <v-carousel-item
+                  v-for="pic in computedPics"
+                  :key="pic.url"
                 >
-                  <template
-                    v-slot:prev="{ props }"
+                  <v-img
+                    :height="groupProp ? 250 : 350"
+                    :src="pic.url && pic.url !== 'nopic' ? s3 + pic.url : ''"
+                    :cover="groupProp ? true : false"
+                    :alt="$t('groupTitlePic')"
+                    :title="pic.credit ? '© ' + pic.credit : ''"
                   >
-                  <v-btn
-                    icon
-                    v-bind="props"
-                  >
-                    <v-icon>
-                      fas fa-chevron-left
-                    </v-icon>
-                  </v-btn>
-                  </template>
-                  <template
-                    v-slot:next="{ props }"
-                  >
-                  <v-btn
-                    icon
-                    v-bind="props"
-                  >
-                    <v-icon>
-                      fas fa-chevron-right
-                    </v-icon>
-                  </v-btn>
-                  </template>
-                  <v-carousel-item
-                    v-for="pic in computedPics"
-                    :key="pic.url"
-                  >
-                    <v-img
-                      :height="groupProp ? 250 : 350"
-                      :src="pic.url && pic.url !== 'nopic' ? s3 + pic.url : ''"
-                      :contain="groupProp ? false : true"
-                      :alt="$t('groupTitlePic')"
-                      :title="pic.credit ? '© ' + pic.credit : ''"
+                    <v-icon
+                      v-if="pic.url === 'nopic'"
+                      class="d-flex fill-height pa-6"
+                      size="200"
+                      color="customGreyUltraLight"
                     >
-                      <v-icon
-                        v-if="pic.url === 'nopic'"
-                        class="d-flex fill-height pa-6"
-                        size="200"
-                        color="customGreyUltraLight"
-                      >
-                        fas fa-image
-                      </v-icon>
-                    </v-img>
-                  </v-carousel-item>
-                </v-carousel>
-              </v-card-text>
+                      fas fa-image
+                    </v-icon>
+                  </v-img>
+                </v-carousel-item>
+              </v-carousel>
             </v-col>
           </v-row>
           <!-- If private group - only visible for members -->
@@ -368,13 +318,13 @@
                 "
               >
                 <v-divider
-                  class="mx-4 mt-8 mb-10"
+                  class="mx-4 mt-4 mb-6"
                 ></v-divider>
                 <v-row>
                   <v-col
-                    class="mx-6 title"
+                    class="mx-6 text-body-1 font-weight-bold"
                   >
-                    {{$t('prominentCategories')}}
+                    {{$t('prominentCategories')}}:
                   </v-col>
                 </v-row>
                 <v-row
@@ -383,15 +333,13 @@
                   <v-col
                     v-for="(cat, i) in getCategories(computedGroup.prominentCategories)"
                     :key="i"
+                    cols="3"
                   >
                     <v-card
                       height="100%"
                       @click="$router.push({ name: 'GroupSelection', params: { group: computedGroup._id, category: cat._id } })"
                     >
-                      <v-container
-                        fluid
-                        class="fill-height"
-                      >
+                      <v-card-text>
                         <v-row
                           class="align-self-start"
                         >
@@ -399,6 +347,7 @@
                             :src="cat.pic ? s3 + cat.pic.url: ''"
                             height="200px"
                             width="100%"
+                            cover
                             :title="cat.pic ? cat.pic.credit : ''"
                           ></v-img>
                           <v-col
@@ -411,10 +360,16 @@
                             </v-card-title>
                           </v-col>
                           <v-col
-                            class="pb-0 shrink right-text align-self-center"
+                            v-if="cat.description && cat.description.value"
+                            cols="12"
+                            class="pb-4 px-4 text-body-1 text-black"
                           >
+                            {{cat.description.value}}
+                          </v-col>
+                          <v-col>
                             <v-btn
-                              :class="'text-' + $settings.modules.groups.color"
+                              block
+                              :color="$settings.modules.groups.color"
                               @click="$router.push({ name: 'GroupSelection', params: { group: computedGroup._id, category: cat._id } })"
                             >
                               {{$t('viewButton')}}
@@ -426,15 +381,8 @@
                               </v-icon>
                             </v-btn>
                           </v-col>
-                          <v-col
-                            v-if="cat.description && cat.description.value"
-                            cols="12"
-                            class="pb-4 px-4 text-body-1 text-black"
-                          >
-                            {{cat.description.value}}
-                          </v-col>
                         </v-row>
-                      </v-container>
+                      </v-card-text>
                     </v-card>
                   </v-col>
                 </v-row>
@@ -443,13 +391,13 @@
                 v-if="!computedCategory"
               >
                 <v-divider
-                  class="mb-9 mt-10 mx-6"
+                  class="mb-6 mt-10 mx-6"
                 ></v-divider>
                 <v-row>
                   <v-col
-                    class="mx-6 title"
+                    class="mx-6 text-body-1 font-weight-bold"
                   >
-                    {{$t('allDiscussions')}}
+                    {{$t('allDiscussions')}}:
                   </v-col>
                 </v-row>
               </template>
@@ -498,9 +446,18 @@
               v-if="!groupProp && computedGroup && computedGroup.files && computedGroup.files.length > 0"
             >
               <v-divider
-                class="mt-8 mb-10"
+                class="mb-6 mt-10 mx-6"
               ></v-divider>
               <v-row>
+                <v-col
+                  class="mx-6 text-body-1 font-weight-bold"
+                >
+                  {{$t('groupFilesForDownload')}}:
+                </v-col>
+              </v-row>
+              <v-row
+                class="mx-2"
+              >
                 <v-col>
                   <FileDownloadList
                     :groupStatus="computedGroupStatus"
@@ -515,7 +472,7 @@
             v-else-if="!groupProp"
           >
             <v-divider
-              class="mt-8 mb-10"
+              class="mb-6 mt-10 mx-6"
             ></v-divider>
             <v-row>
               <v-col>
@@ -562,7 +519,7 @@
           </v-card-actions>
         </v-col>
       </v-row>
-    </v-container>
+    </v-card-text>
     <!-- Apply dialog -->
     <v-dialog
       v-model="showApplyDialog"
@@ -597,13 +554,9 @@
                 <v-textarea
                   :label="$t('writeNewMessage')"
                   v-model="message"
-                  outlined
-                  filled
                   auto-grow
                   multi-line
                   hide-details
-                  background-color="#fff"
-                  color="customGrey"
                 >
                 </v-textarea>
               </v-col>
@@ -612,14 +565,15 @@
               class="mt-8 pa-0"
             >
               <v-btn
+                variant="elevated"
                 @click="showApplyDialog = false"
               >
                 {{$t('cancelButton')}}
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn
+                variant="elevated"
                 @click="applyForGroupMembership()"
-                :dark="message ? true : false"
                 :color="$settings.modules.groups.color"
                 :loading="isLoading"
                 :disabled="!message"
@@ -650,8 +604,8 @@
             >
               <v-spacer></v-spacer>
               <v-btn
+                variant="elevated"
                 @click="showApplyDialog = false"
-                dark
                 :color="$settings.modules.groups.color"
               >
                 {{$t('understoodButton')}}
@@ -685,6 +639,11 @@ export default {
   props: [
     'groupProp',
     'allGroupIds'
+  ],
+
+  emits: [
+    'update:selectCategory',
+    'update:selectTag'
   ],
 
   data: () => ({

@@ -7,6 +7,19 @@
         class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
         {{$t('ad')}} {{ selectedAd ? $t('editButton').toLowerCase() : $t('createButton').toLowerCase()}}
+        <v-chip
+          variant="flat"
+          class="ml-3 mb-1"
+          :color="selectedAd && selectedAd.accepted && selectedAd.accepted.isAccepted ? 'success' : 'warning'"
+        >
+          <v-icon
+            size="14"
+            class="mr-3"
+          >
+            {{selectedAd && selectedAd.accepted && selectedAd.accepted.isAccepted ? 'fas fa-lock-open' : 'fas fa-lock'}}
+          </v-icon>
+          {{selectedAd && selectedAd.accepted && selectedAd.accepted.isAccepted ? $t('accepted') : $t('notYetAccepted') }}
+        </v-chip>
       </span>
     </v-row>
     <v-row
@@ -20,28 +33,6 @@
           tile
         >
           <v-card-text>
-            <v-row
-              class="mb-3"
-            >
-              <v-col
-                class="font-weight-bold text-subtitle-1"
-              >
-                {{$t('state')}}:
-                <v-chip
-                  variant="flat"
-                  class="ml-3 mb-1"
-                  :color="selectedAd && selectedAd.accepted && selectedAd.accepted.isAccepted ? 'success' : 'warning'"
-                >
-                  <v-icon
-                    size="14"
-                    class="mr-3"
-                  >
-                    {{selectedAd && selectedAd.accepted && selectedAd.accepted.isAccepted ? 'fas fa-lock-open' : 'fas fa-lock'}}
-                  </v-icon>
-                  {{selectedAd && selectedAd.accepted && selectedAd.accepted.isAccepted ? $t('accepted') : $t('notYetAccepted') }}
-                </v-chip>
-              </v-col>
-            </v-row>
             <v-form
               v-model="isValid"
               ref="adEditorForm"
@@ -205,8 +196,8 @@
                         <FileUpload
                           ref="adUpload"
                           v-model="pics"
-                          @fileRemove="patchFileRemove"
-                          @fileAdd="$nextTick(() => { $refs.adEditorForm.validate() })"
+                          @update:fileRemove="patchFileRemove"
+                          @update:fileAdd="$nextTick(() => { $refs.adEditorForm.validate() })"
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
                           :maxFileSize="2"
                           :maxFiles="10"
@@ -291,7 +282,7 @@
             @click="prepareSaveAd()"
             color="customGrey"
           >
-            {{$t('saveDataButton')}}
+            {{$t('understoodButton')}}
           </v-btn>
         </v-toolbar>
       </v-card>

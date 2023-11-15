@@ -16,7 +16,7 @@
       sort-desc-icon="fas fa-caret-down"
       :show-current-page="true"
       :must-sort="true"
-      :item-class="itemRowBackground"
+      :row-props="itemRowBackground"
     >
       <template
         v-slot:[`item.responses.0`]="{ item }"
@@ -24,43 +24,43 @@
         <v-list-item-title
           class="font-weight-bold"
         >
-          {{getUser(item.raw.responses[0].user).userName}}
+          {{getUser(item.responses[0].user).userName}}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{getUser(item.raw.responses[0].user).firstName}} {{getUser(item.raw.responses[0].user).lastName}}
+          {{getUser(item.responses[0].user).firstName}} {{getUser(item.responses[0].user).lastName}}
         </v-list-item-subtitle>
       </template>
       <template
         v-slot:[`item.type`]="{ item }"
       >
         <template
-          v-if="item.raw.type === 'discussions'"
+          v-if="item.type === 'discussions'"
         >
           <div
             class="font-weight-bold pointer"
-            @click="$router.push(item.raw.link)"
+            @click="$router.push(item.link)"
           >
-            {{$t('discussion')}}: {{item.raw.discussion?.title?.value || ''}}
+            {{$t('discussion')}}: {{item.discussion?.title?.value || ''}}
           </div>
         </template>
         <template
-          v-else-if="item.raw.type === 'groups'"
+          v-else-if="item.type === 'groups'"
         >
           <div
             class="font-weight-bold pointer"
-            @click="$router.push(item.raw.link)"
+            @click="$router.push(item.link)"
           >
-            {{$t('groupDiscussion')}}{{ item.raw.discussion ? ': ' : '' }}
-            {{ item.raw.discussion?.title?.value ? item.raw.discussion?.title?.value : '' }}
-            {{ item.raw.discussion?.group?.title?.value ? ' (' + item.raw.discussion?.group?.title?.value + ')' : ''}}
+            {{$t('groupDiscussion')}}{{ item.discussion ? ': ' : '' }}
+            {{ item.discussion?.title?.value ? item.discussion?.title?.value : '' }}
+            {{ item.discussion?.group?.title?.value ? ' (' + item.discussion?.group?.title?.value + ')' : ''}}
           </div>
         </template>
         <template
-          v-else-if="item.raw.type === 'chats'"
+          v-else-if="item.type === 'chats'"
         >
           <div
             class="font-weight-bold pointer"
-            @click="$router.push(item.raw.link)"
+            @click="$router.push(item.link)"
           >
             {{$t('chat')}}
           </div>
@@ -70,9 +70,9 @@
         v-slot:[`item.discussion`]="{ item }"
       >
         <template
-          v-if="item.raw.discussion"
+          v-if="item.discussion"
         >
-          {{item.raw.discussion.title.value}}
+          {{item.discussion.title.value}}
         </template>
       </template>
       <template
@@ -80,13 +80,13 @@
       >
         <v-btn
           variant="text"
-          :icon="item.raw.isClosed ? 'fas fa-check-square' : 'far fa-square'"
+          :icon="item.isClosed ? 'fas fa-check-square' : 'far fa-square'"
           color="customGrey"
-          :loading="loaders[item.raw._id + 'isClosed'] === true"
+          :loading="loaders[item._id + 'isClosed'] === true"
           @click="changeViolationProperty(
-            item.raw,
+            item,
             'isClosed',
-            !item.raw.isClosed
+            !item.isClosed
           )"
         >
         </v-btn>
@@ -94,12 +94,12 @@
       <template
         v-slot:[`item.updatedAt`]="{ item }"
       >
-        {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+        {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
       </template>
       <template
         v-slot:[`item.createdAt`]="{ item }"
       >
-        {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+        {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
       </template>
       <template
         v-slot:[`item.edit`]="{ item }"
@@ -109,7 +109,7 @@
           size="small"
           color="customGrey"
           class="my-3"
-          @click="itemToReport = item.raw"
+          @click="itemToReport = item"
         >
         </v-btn>
       </template>
@@ -121,8 +121,8 @@
           size="small"
           color="customGrey"
           class="my-3"
-          :loading="loaders[item.raw._id + 'delete'] === true"
-          @click="deleteViolation(item.raw._id)"
+          :loading="loaders[item._id + 'delete'] === true"
+          @click="deleteViolation(item._id)"
         >
         </v-btn>
       </template>
@@ -130,11 +130,11 @@
         v-slot:[`item.link`]="{ item }"
       >
         <v-btn
-          v-if="item.raw.discussion"
+          v-if="item.discussion"
           icon="fa fa-arrow-right"
           size="small"
           color="customGrey"
-          :to="item.raw.link"
+          :to="item.link"
         >
         </v-btn>
       </template>
@@ -144,7 +144,7 @@
       :showViolationDialog="showViolationDialog"
       :message="itemToReport"
       :selectedViolation="itemToReport"
-      @closeViolationDialog="itemToReport = undefined"
+      @update:closeViolationDialog="itemToReport = undefined"
     ></ViolationDialog>
   </div>
 </template>
@@ -166,6 +166,8 @@ export default {
     'types'
   ],
 
+  emits: ['update:updateTypes'],
+
   data: () => ({
     showViolationDialog: false,
     itemToReport: undefined,
@@ -184,10 +186,13 @@ export default {
   async mounted () {
     if (!this.group) {
       await this.adaptQuery()
+    } else {
+      await this.loadDataTableEntities()
+      this.initialView = false
     }
     setTimeout(async () => {
       await this.checkNewViolations()
-    }, 1000)
+    }, 10000)
   },
 
   methods: {
@@ -228,16 +233,16 @@ export default {
       this.isLoading = false
       setTimeout(async () => {
         await this.checkNewViolations()
-      }, 1000)
+      }, 500)
     },
-    itemRowBackground (item) {
+    itemRowBackground (props) {
       if (
         this.computedNewViolations &&
-        this.computedNewViolations.includes(item._id)
+        this.computedNewViolations.includes(props.item._id)
       ) {
-        return 'new'
+        return { class: 'new' }
       } else {
-        return ''
+        return {}
       }
     },
     async changeViolationProperty (violation, property, value) {
@@ -378,7 +383,9 @@ export default {
       if (this.group) {
         query.group = this.group._id
       }
-      query.type = { $in: this.queryObject.categories }
+      if (this.categories?.length > 0) {
+        query.type = { $in: this.queryObject.categories }
+      }
       return {
         query
       }
@@ -427,7 +434,7 @@ export default {
     },
     async 'queryObject.categories' () {
       if (!this.areArraysEqual(this.queryObject.categories, this.types)) {
-        this.$emit('updateTypes', this.queryObject.categories)
+        this.$emit('update:updateTypes', this.queryObject.categories)
       }
     },
     types: {

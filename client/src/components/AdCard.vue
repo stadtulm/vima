@@ -4,6 +4,7 @@
     v-if="ad"
     :to="adProp ? { name: 'Ad', params: { id: ad._id }} : ''"
   >
+    <v-card-text>
     <v-row>
       <v-col
         cols="12"
@@ -15,8 +16,8 @@
         <v-row>
           <v-col>
             <!-- Title -->
-            <v-card-title
-              class="word-wrap mb-3"
+            <div
+              class="ma-4 mb-0 text-h6 font-weight-bold"
             >
               <TranslatableText
                 ownField="title"
@@ -26,6 +27,72 @@
                 :textParent="ad"
               >
               </TranslatableText>
+            </div>
+            <!-- Info -->
+            <v-card-subtitle
+              class="mb-5"
+            >
+              {{ad.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}}
+              {{$t('from')}} {{$moment(ad.createdAt).format('DD.MM.YYYY')}}
+              <template
+                v-if="user"
+              >
+                {{$t('by')}}
+                <v-btn
+                  class="ml-1"
+                  variant="outlined"
+                  size="x-small"
+                  @click="$router.push({name: 'User', params: { user: ad.author.user._id} })"
+                >
+                {{ad.author.user.userName}}
+                </v-btn>
+              </template>
+            </v-card-subtitle>
+          </v-col>
+        </v-row>
+        <v-card-text>
+          <!-- Categories -->
+          <v-row
+            dense
+            v-if="ad.categories && ad.categories.length > 0"
+          >
+            <v-col>
+              <v-chip
+                variant="outlined"
+                v-for="category in getCategories(ad.categories)"
+                :key="category._id"
+                class="mr-1 mb-1"
+                :disabled="!adProp"
+                @click.prevent="$emit('update:selectCategory', category._id)"
+              >
+              {{category.text.value}}
+              </v-chip>
+            </v-col>
+          </v-row>
+          <!-- Tags -->
+          <v-row
+            dense
+            v-if="ad.tags && ad.tags.length > 0"
+          >
+            <v-col>
+              <v-chip
+                v-for="tag in getTags(ad.tags)"
+                :key="tag._id"
+                class="mr-1 mb-1"
+                :disabled="!adProp"
+                @click.prevent="$emit('update:selectTag', tag._id)"
+              >
+              {{tag.text}}
+              </v-chip>
+            </v-col>
+          </v-row>
+          <!-- Indicators -->
+          <v-row
+            v-if="!adProp"
+          >
+            <v-col
+              cols="12"
+            >
               <v-tooltip
                 right
                 color="customGrey"
@@ -34,18 +101,17 @@
                 <template v-slot:activator="{ props }">
                   <!-- Subscription buttons -->
                   <v-btn
+                    icon
                     v-if="computedAdStatus.value === 'subscriber' || computedAdStatus.value === 'subscribe'"
                     v-bind="props"
-                    color="#fff"
-                    :style="'color:' + $settings.modules.ads.bgColor"
-                    icon
+                    :color="$settings.modules.ads.color"
                     size="small"
                     :disabled="user ? false : true"
                     @click="toggleAdSubscription()"
                     :title="$t(computedAdStatus.textKey)"
                   >
                     <v-icon
-                      :color="$settings.modules.ads.color"
+                      color="white"
                     >
                       {{computedAdStatus.value === 'subscriber' ? 'fas fa-star' : 'far fa-star'}}
                     </v-icon>
@@ -53,12 +119,11 @@
                   <!-- Owner or applicant icons -->
                   <v-btn
                     icon
-                    vsariant="text"
+                    variant="outlined"
                     size="small"
                     v-bind="props"
                     v-else-if="computedAdStatus.value === 'owner' || computedAdStatus.value === 'applicant'"
                     :title="$t(computedAdStatus.textKey)"
-                    class="ml-3"
                   >
                     <v-icon
                       color="customGrey"
@@ -71,154 +136,95 @@
                   {{$t(computedAdStatus.textKey)}}
                 </span>
               </v-tooltip>
-            </v-card-title>
-            <!-- Info -->
-            <v-card-subtitle
-              class="pb-1"
+            </v-col>
+          </v-row>
+          <!-- Description -->
+          <v-row>
+            <TranslatableText
+              ownField="text"
+              :allFields="['title', 'text']"
+              type="ads"
+              :allIds="allAdIds"
+              :textParent="ad"
             >
-              {{ad.type === 'offer' ? $t('offerNoun') : $t('wantedNoun')}}
-              {{$t('from')}} {{$moment(ad.createdAt).format('DD.MM.YYYY')}}
               <template
-                v-if="user"
+                v-slot:defaultLang="{ computedText, translateText }"
               >
-                {{$t('by')}}
-                <v-btn
-                  text
-                  class="px-1"
-                  @click="$router.push({name: 'User', params: { user: ad.author.user._id} })"
-                >
-                {{ad.author.user.userName}}
-                </v-btn>
-              </template>
-            </v-card-subtitle>
-          </v-col>
-          <v-col
-            v-if="adProp"
-            class="shrink align-self-center"
-            :class="$vuetify.display.smAndUp ? 'text-right' : ''"
-            cols="12"
-            sm="6"
-          >
-            <!-- View more button -->
-            <v-btn
-              :style="'color:' + $settings.modules.ads.color"
-              :class="$vuetify.display.mdAndUp ? '' : 'mx-4 mb-4'"
-              :to="{ name: 'Ad', params: { id: ad._id } }"
-            >
-              {{$t('viewButton')}}
-              <v-icon
-                class="ml-3"
-                size="18"
-                :color="$settings.modules.ads.color"
-              >
-                fas fa-arrow-right
-              </v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-        <!-- Categories -->
-        <v-row
-          dense
-          v-if="ad.categories && ad.categories.length > 0"
-        >
-          <v-col
-            class="mx-4 mt-2"
-          >
-            <v-chip
-              variant="outlined"
-              v-for="category in getCategories(ad.categories)"
-              :key="category._id"
-              class="mr-1"
-              :disabled="!adProp"
-              @click.prevent="$emit('selectCategory', category._id)"
-            >
-            {{category.text.value}}
-            </v-chip>
-          </v-col>
-        </v-row>
-        <!-- Tags -->
-        <v-row
-          dense
-          v-if="ad.tags && ad.tags.length > 0"
-        >
-          <v-col
-            class="mx-4"
-          >
-            <v-chip
-              v-for="tag in getTags(ad.tags)"
-              :key="tag._id"
-              class="mr-1"
-              :disabled="!adProp"
-              @click.prevent="$emit('selectTag', tag._id)"
-            >
-            {{tag.text}}
-            </v-chip>
-          </v-col>
-        </v-row>
-        <!-- Description -->
-        <v-row>
-          <TranslatableText
-            ownField="text"
-            :allFields="['title', 'text']"
-            type="ads"
-            :allIds="allAdIds"
-            :textParent="ad"
-          >
-            <template
-              v-slot:defaultLang="{ computedText, translateText }"
-            >
-              <v-col
-                class="text-body-1 mx-4"
-              >
-                <span
-                  v-html="adProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
-                ></span>
-                <TranslatableTextInfo
-                  :canTranslate="true"
-                  :canShowOriginal="false"
-                  @translateText="(data) => { translateText(data) }"
-                ></TranslatableTextInfo>
-              </v-col>
-            </template>
-            <template
-              v-slot:translatedLang="{ computedText, showOriginal, translateText }"
-            >
-              <v-col
-                class="pb-0"
-              >
-                <v-sheet
-                  class="ma-4 pa-1 px-3"
+                <v-col
+                  class="text-body-1"
                 >
                   <span
-                    v-html="adProp ?
-                      $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
-                      truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
-                    "
+                    v-html="adProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
                   ></span>
                   <TranslatableTextInfo
-                    :canTranslate="false"
-                    :canShowOriginal="true"
-                    :needsUpdate="ad.translationSum !== computedText.translationSum"
-                    @showOriginal="(data) => { showOriginal(data) }"
-                    @translateText="(data) => { translateText(data) }"
+                    :canTranslate="true"
+                    :canShowOriginal="false"
+                    @update:translateText="(data) => { translateText(data) }"
                   ></TranslatableTextInfo>
-                </v-sheet>
-              </v-col>
-            </template>
-          </TranslatableText>
-        </v-row>
+                </v-col>
+              </template>
+              <template
+                v-slot:translatedLang="{ computedText, showOriginal, translateText }"
+              >
+                <v-col
+                  class="pb-0"
+                >
+                  <v-sheet
+                    class="pa-1 px-3"
+                  >
+                    <span
+                      v-html="adProp ?
+                        $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
+                        truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
+                      "
+                    ></span>
+                    <TranslatableTextInfo
+                      :canTranslate="false"
+                      :canShowOriginal="true"
+                      :needsUpdate="ad.translationSum !== computedText.translationSum"
+                      @update:showOriginal="(data) => { showOriginal(data) }"
+                      @update:translateText="(data) => { translateText(data) }"
+                    ></TranslatableTextInfo>
+                  </v-sheet>
+                </v-col>
+              </template>
+            </TranslatableText>
+          </v-row>
+          <!-- View more button -->
+          <v-row>
+            <v-col
+              v-if="adProp"
+              cols="12"
+            >
+              <v-btn
+                :style="'color:' + $settings.modules.ads.color"
+                :to="{ name: 'Ad', params: { id: ad._id } }"
+                block
+              >
+                {{$t('viewButton')}}
+                <v-icon
+                  class="ml-3"
+                  size="18"
+                  :color="$settings.modules.ads.color"
+                >
+                  fas fa-arrow-right
+                </v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card-text>
       </v-col>
+      <!-- Carousel -->
       <v-col
+        v-if="computedPics.length > 0"
         cols="12"
         sm="12"
         md="4"
         :order="1"
         :order-md="2"
-        :class="adProp ? 'py-0' : $vuetify.display.mdAndUp ? 'pr-6' : 'pt-0'"
+        :class="adProp ? 'py-3' : $vuetify.display.mdAndUp ? 'pr-6' : 'pt-0'"
       >
-        <!-- Carousel -->
         <v-carousel
-          v-if="computedPics.length > 0"
           v-model="picsCarousel"
           hide-delimiters
           :show-arrows="computedPics.length > 1"
@@ -232,24 +238,18 @@
             v-slot:prev="{ props }"
           >
             <v-btn
-              icon
+              icon="fas fa-chevron-left"
               v-bind="props"
             >
-              <v-icon>
-                fas fa-chevron-left
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:next="{ props }"
           >
             <v-btn
-              icon
+              icon="fas fa-chevron-right"
               v-bind="props"
             >
-              <v-icon>
-                fas fa-chevron-right
-              </v-icon>
             </v-btn>
           </template>
           <v-carousel-item
@@ -278,13 +278,14 @@
           v-if="!user"
         >
           <v-alert
-            class="mx-4 mb-2"
-            theme="dark"
+            class="mx-4 mb-2 text-white"
             icon="fas fa-info-circle"
             :color="$settings.modules.ads.color"
           >
             <v-row>
-              <v-col>
+              <v-col
+                class="text-body-1 pt-3"
+              >
                 {{$t('loginForAds')}}
               </v-col>
             </v-row>
@@ -328,13 +329,14 @@
           "
         >
           <v-alert
-            class="mx-4 mb-2"
-            theme="dark"
+            class="mx-4 mb-2 text-white"
             icon="fas fa-info-circle"
             :color="$settings.modules.ads.color"
           >
             <v-row>
-              <v-col>
+              <v-col
+                class="text-body-1 pt-3"
+              >
                 {{$t('adApplicantAnswer')}}
               </v-col>
             </v-row>
@@ -351,7 +353,7 @@
             color="customGreyLight"
           >
             <v-card-title>
-              {{$t('answerAdButton')}}
+              {{$t('answerAdButton')}}:
             </v-card-title>
             <v-card-text>
               <v-row>
@@ -406,6 +408,7 @@
         </v-col>
       </v-row>
     </template>
+    </v-card-text>
   </v-card>
 </template>
 
@@ -426,6 +429,11 @@ export default {
   props: [
     'adProp',
     'allAdIds'
+  ],
+
+  emits: [
+    'update:selectCategory',
+    'update:selectTag'
   ],
 
   data: () => ({

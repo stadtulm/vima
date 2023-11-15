@@ -3,12 +3,14 @@
     v-if="!user"
   >
     <v-alert
-      dark
+      class="text-white"
       icon="fas fa-info-circle"
       :color="$settings.modules.discussions.color"
     >
       <v-row>
-        <v-col>
+        <v-col
+          class="text-body-1 pt-3"
+        >
           {{$t('loginForDiscussions')}}
         </v-col>
       </v-row>
@@ -83,7 +85,7 @@
       icon
       color="customGrey"
       class="mb-2 customGreyUltraLight elevation-1"
-      @click="$emit('selectedReplyToAnswer', message._id)"
+      @click="$emit('update:selectedReplyToAnswer', message._id)"
       :title="$t('replies')"
     >
       <v-icon
@@ -108,13 +110,12 @@
               class="font-weight-bold pb-0 pt-3 text-body-1 text-black"
               cols="12"
             >
-              {{ message ? (isEditMessage ? $t('editAnswerTitle') : $t('writeNewAnswer')) : (isEditMessage ? $t('editPostTitle') : $t('writeNewPostTitle'))}}
+              {{ message ? (isEditMessage ? $t('editAnswerTitle') : $t('writeNewAnswer')) : (isEditMessage ? $t('editPostTitle') : $t('writeNewPostTitle'))}}:
               <v-btn
-                text
-                small
-                outlined
+                size="small"
+                variant="outlined"
                 class="ml-2"
-                @click="$emit('resetInput')"
+                @click="resetInput"
                 v-if="message || isEditMessage"
               >
                 {{$t('cancelButton')}}
@@ -126,25 +127,18 @@
           >
             <v-col
               class="text-left"
-              cols="11"
+              cols="12"
             >
+              <!-- TODO: Remove headlines -->
               <!-- TODO: This belongs into tiptap - is from mention stash -->
               <!-- :mention="slug" ref="main_test" -->
-              <VuetifyTiptap
-                :editor-properties="{
-                  disableInputRules: true,
-                  disablePasteRules: true
-                }"
-                color="customGreyUltraLight"
-                v-model="messageText"
-                :card-props="{ tile: true, flat: true }"
-                style="border: 1px solid #aaa;"
-                :extensions="extensions"
+              <custom-tiptap
                 :placeholder="$t('writeNewAnswer') + ' ...'"
+                v-model="messageText"
                 :id="'messageInput_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
                 :ref="'messageInput_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
               >
-              </VuetifyTiptap>
+              </custom-tiptap>
               <v-col
                 :id="'mentionAchor_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
               ></v-col  >
@@ -167,7 +161,6 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
->>>>>>> Stashed changes
               <v-row class="mt-3">
                 <v-col
                   cols="12"
@@ -178,8 +171,8 @@
                   <FileUpload
                     :ref="'messageReplyUpload_' + (message ? message._id : 'main')"
                     v-model="pics"
-                    @fileRemove="patchFileRemove"
-                    @fileAdd="$nextTick(() => { $refs['messagesReplyForm_' + (message ? message._id : 'main')].validate() })"
+                    @update:fileRemove="patchFileRemove"
+                    @update:fileAdd="$nextTick(() => { $refs['messagesReplyForm_' + (message ? message._id : 'main')].validate() })"
                     :acceptedMimeTypes="[]"
                     :maxFileSize="2"
                     :maxFiles="10"
@@ -192,13 +185,11 @@
               </v-row>
             </v-col>
             <v-col
-              cols="1"
-              class="px-0 text-center"
-              :class="$vuetify.display.smAndUp ? 'mt-11': 'mt-12'"
+              cols="12"
             >
               <v-btn
-                fab
-                :small="!$vuetify.display.mdAndUp"
+                block
+                :size="!$vuetify.display.mdAndUp ? 'small' : 'default'"
                 :loading="isSending"
                 :disabled="!isValid || !messageText || messageText.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
                 @click="sendMessage()"
@@ -233,6 +224,7 @@
 
 import { mapActions, mapMutations } from 'vuex'
 import FileUpload from '@/components/FileUpload.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 export default {
   name: 'DiscussionReply',
@@ -246,8 +238,17 @@ export default {
     'discussion',
     'isEditMessage'
   ],
+
+  emits: [
+    'update:resetInput',
+    'update:selectedReplyToAnswer',
+    'update:checkVisibleMessages',
+    'update:message'
+  ],
+
   components: {
-    FileUpload
+    FileUpload,
+    CustomTiptap
   },
 
   data: () => ({
@@ -256,7 +257,7 @@ export default {
     users: [],
     showSuggestions: false,
     pics: [],
-    isValid: false,
+    isValid: true,
     isSending: false,
     messageText: undefined
   }),
@@ -281,6 +282,11 @@ export default {
     ...mapActions('users', {
       findUsers: 'find'
     }),
+    resetInput () {
+      this.$emit('update:resetInput')
+      this.messageText = undefined
+      this.pics = []
+    },
     async patchFileRemove (file) {
       this.isLoading = true
       try {
@@ -307,7 +313,6 @@ export default {
       try {
         await this.$refs['messageReplyUpload_' + (this.message ? this.message._id : 'main')].upload()
       } catch (e) {
-        console.log(e)
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
         this.isLoading = false
         return
@@ -333,13 +338,14 @@ export default {
           )
           this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
           this.messageText = undefined
-          this.$emit('resetInput')
+          this.pics = []
+          this.$emit('update:resetInput')
           this.$nextTick(() => {
             this.$nextTick(() => {
-              this.$emit('checkVisibleMessages')
+              this.$emit('update:checkVisibleMessages')
             })
           })
-          this.$emit('message', undefined)
+          this.$emit('update:message', undefined)
         } catch (e) {
           this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
         }
@@ -363,7 +369,8 @@ export default {
           )
           this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
           this.messageText = undefined
-          this.$emit('resetInput')
+          this.pics = []
+          this.$emit('update:resetInput')
         } catch (e) {
           this.setSnackbar({ text: this.$t('snackbarEditError'), color: 'error' })
         }

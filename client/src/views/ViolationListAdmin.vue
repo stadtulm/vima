@@ -76,7 +76,7 @@
       <v-col>
         <ViolationsList
           :types="types"
-          @updateTypes="updateTypes($event)"
+          @update:updateTypes="updateTypes($event)"
         ></ViolationsList>
       </v-col>
     </v-row>

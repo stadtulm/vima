@@ -55,7 +55,7 @@
                           <LanguageSelect
                             :isMainSwitch="true"
                             :currentLanguage="$i18n.locale"
-                            @setLanguage="setLanguageAtHome"
+                            @update:setLanguage="setLanguageAtHome"
                           ></LanguageSelect>
                           <span
                             class="ml-4 pointer text-body-2"

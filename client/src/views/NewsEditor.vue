@@ -42,7 +42,7 @@
                       <LanguageSelect
                         :currentLanguage="currentLanguage"
                         :languageObjects="title"
-                        @setLanguage="(l) => { currentLanguage = l }"
+                        @update:setLanguage="(l) => { currentLanguage = l }"
                       ></LanguageSelect>
                     </template>
                   </v-text-field>
@@ -64,7 +64,7 @@
                       <LanguageSelect
                         :currentLanguage="currentLanguage"
                         :languageObjects="subTitle"
-                        @setLanguage="(l) => { currentLanguage = l }"
+                        @update:setLanguage="(l) => { currentLanguage = l }"
                       ></LanguageSelect>
                     </template>
                   </v-text-field>
@@ -146,7 +146,7 @@
                             <LanguageSelect
                               :currentLanguage="currentLanguage"
                               :languageObjects="text"
-                              @setLanguage="(l) => { currentLanguage = l }"
+                              @update:setLanguage="(l) => { currentLanguage = l }"
                             ></LanguageSelect>
                           </template>
                           <template v-slot:default>
@@ -368,8 +368,8 @@
                         <FileUpload
                           ref="newsUpload"
                           v-model="pics"
-                          @fileRemove="patchFileRemove"
-                          @fileAdd="$nextTick(() => { $refs.newsEditorForm.validate() })"
+                          @update:fileRemove="patchFileRemove"
+                          @update:fileAdd="$nextTick(() => { $refs.newsEditorForm.validate() })"
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
                           :maxFileSize="2"
                           :maxFiles="10"

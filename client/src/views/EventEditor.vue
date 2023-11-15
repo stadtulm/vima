@@ -42,7 +42,7 @@
                       <LanguageSelect
                         :currentLanguage="currentLanguage"
                         :languageObjects="title"
-                        @setLanguage="(l) => { currentLanguage = l }"
+                        @update:setLanguage="(l) => { currentLanguage = l }"
                       ></LanguageSelect>
                     </template>
                   </v-text-field>
@@ -259,7 +259,7 @@
                             <LanguageSelect
                               :currentLanguage="currentLanguage"
                               :languageObjects="text"
-                              @setLanguage="(l) => { currentLanguage = l }"
+                              @update:setLanguage="(l) => { currentLanguage = l }"
                             ></LanguageSelect>
                           </template>
                           <template slot="default">
@@ -312,8 +312,8 @@
                         <FileUpload
                           ref="eventUpload"
                           v-model="pics"
-                          @fileRemove="patchFileRemove"
-                          @fileAdd="$nextTick(() => { $refs.eventEditorForm.validate() })"
+                          @update:fileRemove="patchFileRemove"
+                          @update:fileAdd="$nextTick(() => { $refs.eventEditorForm.validate() })"
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
                           :maxFileSize="2"
                           :maxFiles="10"

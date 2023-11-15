@@ -242,8 +242,8 @@
                         <FileUpload
                           ref="userPicUpload"
                           v-model="pic"
-                          @fileRemove="patchFileRemove()"
-                          @fileAdd="$nextTick(() => { $refs.userEditorForm.validate() })"
+                          @update:fileRemove="patchFileRemove()"
+                          @update:fileAdd="$nextTick(() => { $refs.userEditorForm.validate() })"
                           :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
                           :maxFileSize="0.5"
                           :maxFiles="1"

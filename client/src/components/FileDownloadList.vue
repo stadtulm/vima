@@ -1,13 +1,8 @@
 <template>
   <div>
     <v-card
-      flat
-      outlined
       class="mb-6 collection"
     >
-      <v-card-title>
-        {{$t('groupFilesForDownload')}}
-      </v-card-title>
       <v-card-text>
         <v-list>
           <v-list-item
@@ -16,27 +11,21 @@
             :disabled="!user || !groupStatus || !groupStatus.isMember"
             @click="prepareGetUpload(file.url)"
           >
-            <v-list-item-content>
               <v-list-item-title>
                 {{file.name}}
               </v-list-item-title>
-            </v-list-item-content>
-            <v-list-item-action>
+            <template
+              v-slot:append
+            >
               <v-btn
-                fab
-                :dark="user && groupStatus && groupStatus.isMember"
-                small
+                icon="fas fa-download"
+                size="small"
                 :color="$settings.modules.groups.color"
                 :disabled="!user || !groupStatus || !groupStatus.isMember"
                 :loading="loaders[file.url] === true"
               >
-                <v-icon
-                  size="18"
-                >
-                  fas fa-download
-                </v-icon>
               </v-btn>
-            </v-list-item-action>
+            </template>
           </v-list-item>
         </v-list>
       </v-card-text>
@@ -74,7 +63,7 @@ export default {
       getUpload: 'get'
     }),
     async prepareGetUpload (id) {
-      this.$set(this.loaders, id, true)
+      this.loaders[id] = true
       try {
         const upload = await this.getUpload(id)
         const a = document.createElement('a')
@@ -85,14 +74,14 @@ export default {
           setTimeout(() => {
             URL.revokeObjectURL(upload.uri)
             a.removeEventListener('click', clickHandler)
-            this.$set(this.loaders, id, undefined)
+            this.loaders[id] = undefined
           }, 150)
         }
         a.addEventListener('click', clickHandler, false)
         a.click()
       } catch (e) {
         this.setSnackbar({ text: this.$t('requestFailed'), color: 'error' })
-        this.$set(this.loaders, id, undefined)
+        this.loaders[id] = undefined
       }
     }
   },

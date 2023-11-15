@@ -60,7 +60,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <slot name="actions" :parent="this">
-          <v-btn text @click.native="clearHandler">{{ clearText }}</v-btn>
+          <v-btn text @click="clearHandler">{{ clearText }}</v-btn>
           <v-btn text @click="okHandler">{{ okText }}</v-btn>
         </slot>
       </v-card-actions>
@@ -82,16 +82,12 @@ const DEFAULT_OK_TEXT = 'OK'
 
 export default {
   name: 'DatetimePicker',
-  model: {
-    prop: 'datetime',
-    event: 'input'
-  },
   props: {
     error: {
       type: String,
       default: undefined
     },
-    datetime: {
+    modelValue: {
       type: [Date, String],
       default: null
     },
@@ -135,6 +131,7 @@ export default {
       type: Object
     }
   },
+  emits: ['update:modelValue'],
   data () {
     return {
       display: false,
@@ -183,16 +180,16 @@ export default {
   },
   methods: {
     init () {
-      if (!this.datetime) {
+      if (!this.modelValue) {
         return
       }
 
       let initDateTime
-      if (this.datetime instanceof Date) {
-        initDateTime = this.datetime
-      } else if (typeof this.datetime === 'string' || this.datetime instanceof String) {
+      if (this.modelValue instanceof Date) {
+        initDateTime = this.modelValue
+      } else if (typeof this.modelValue === 'string' || this.modelValue instanceof String) {
         // see https://stackoverflow.com/a/9436948
-        initDateTime = parse(this.datetime, this.dateTimeFormat, new Date())
+        initDateTime = parse(this.modelValue, this.dateTimeFormat, new Date())
       }
 
       this.date = format(initDateTime, DEFAULT_DATE_FORMAT)
@@ -200,13 +197,13 @@ export default {
     },
     okHandler () {
       this.resetPicker()
-      this.$emit('input', this.selectedDatetime)
+      this.$emit('update:modelValue', this.selectedDatetime)
     },
     clearHandler () {
       this.resetPicker()
       this.date = DEFAULT_DATE
       this.time = DEFAULT_TIME
-      this.$emit('input', null)
+      this.$emit('update:modelValue', null)
     },
     resetPicker () {
       this.display = false
@@ -220,7 +217,7 @@ export default {
     }
   },
   watch: {
-    datetime: function () {
+    modelValue: function () {
       this.init()
     }
   }

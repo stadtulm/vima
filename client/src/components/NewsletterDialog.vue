@@ -98,6 +98,8 @@ export default {
     'showNewsletterDialog'
   ],
 
+  emits: ['update:closeNewsletterDialog'],
+
   data: () => ({
     isValid: false,
     isLoading: false,
@@ -120,7 +122,7 @@ export default {
     closeDialog () {
       this.newsletterEmail = ''
       this.emailError = undefined
-      this.$emit('closeNewsletterDialog')
+      this.$emit('update:closeNewsletterDialog')
     },
     async saveSubscriber () {
       this.isLoading = true
@@ -130,7 +132,7 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
         this.newsletterEmail = ''
         this.emailError = undefined
-        this.$emit('closeNewsletterDialog')
+        this.$emit('update:closeNewsletterDialog')
       } catch (e) {
         if (e.errors && e.errors.email) {
           this.emailError = [this.$t('subscriptionExistsError')]
