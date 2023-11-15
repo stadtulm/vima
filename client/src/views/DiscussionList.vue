@@ -75,7 +75,7 @@
           sort-desc-icon="fas fa-caret-down"
           :show-current-page="true"
           :must-sort="true"
-          :item-class="itemRowBackground"
+          :row-props="itemRowBackground"
         >
           <template
             v-slot:[`item.title.value`]="{ item }"
@@ -83,7 +83,7 @@
             <span
               class="font-weight-bold"
             >
-              {{item.raw.title.value}}
+              {{item.title.value}}
             </span>
           </template>
           <template
@@ -94,22 +94,22 @@
               multiple
               chips
               closable-chips
-              :items="computedRelationItems[item.raw._id]"
-              :model-value="computedDiscussionRelations[item.raw._id]"
-              @update:modelValue="changeDiscussionRelation($event, item.raw)"
+              :items="computedRelationItems[item._id]"
+              :model-value="computedDiscussionRelations[item._id]"
+              @update:modelValue="changeDiscussionRelation($event, item)"
             >
             </v-select>
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+            {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.group`]="{ item }"
           >
             <div>
-              {{getGroup(item.raw.group) ? getGroup(item.raw.group).title.value : '-'}}
+              {{getGroup(item.group) ? getGroup(item.group).title.value : '-'}}
             </div>
           </template>
           <template
@@ -117,16 +117,16 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.isActive ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
               :color="computedColor"
-              :loading="loaders[item.raw._id + 'isActive'] === true"
+              :loading="loaders[item._id + 'isActive'] === true"
               :disabled="
-                !isOwnDiscussion(item.raw._id) ||
+                !isOwnDiscussion(item._id) ||
                 (
-                  item.raw.group &&
+                  item.group &&
                   !statusContainers.find(obj =>
                     obj.type === 'groups' &&
-                    obj.reference === item.raw.group &&
+                    obj.reference === item.group &&
                     (
                       obj.relation === 'owner' ||
                       obj.relation === 'member'
@@ -135,9 +135,9 @@
                 )
               "
               @click="changeDiscussionProperty(
-                item.raw._id,
+                item._id,
                 'isActive',
-                !item.raw.isActive
+                !item.isActive
               )"
             >
             </v-btn>
@@ -147,15 +147,15 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
               :color="computedColor"
               disabled
-              :loading="loaders[item.raw._id + 'accepted'] === true"
+              :loading="loaders[item._id + 'accepted'] === true"
               @click="changeDiscussionProperty(
-                item.raw._id,
+                item._id,
                 'accepted',
                 {
-                  isAccepted: item.raw.accepted?.isAccepted ? false : true,
+                  isAccepted: item.accepted?.isAccepted ? false : true,
                   dt: new Date(),
                   user: user._id
                 }
@@ -172,17 +172,17 @@
               :color="computedColor"
               class="my-4"
               :to="
-                item.raw.group ?
-                  { name: 'GroupDiscussionEditor', params: { group: item.raw.group, id: item.raw._id } } :
-                  { name: 'DiscussionEditor', params: { id: item.raw._id } }
+                item.group ?
+                  { name: 'GroupDiscussionEditor', params: { group: item.group, id: item._id } } :
+                  { name: 'DiscussionEditor', params: { id: item._id } }
                 "
               :disabled="
-                !isOwnDiscussion(item.raw._id) ||
+                !isOwnDiscussion(item._id) ||
                 (
-                  item.raw.group &&
+                  item.group &&
                   !statusContainers.find(obj =>
                     obj.type === 'groups' &&
-                    obj.reference === item.raw.group &&
+                    obj.reference === item.group &&
                     (
                       obj.relation === 'owner' ||
                       obj.relation === 'member'
@@ -201,9 +201,9 @@
               size="small"
               :color="computedColor"
               class="my-4"
-              :disabled="!isOwnDiscussion(item.raw._id)"
-              :loading="loaders[item.raw._id + 'delete'] === true"
-              @click="deleteDiscussion(item.raw._id)"
+              :disabled="!isOwnDiscussion(item._id)"
+              :loading="loaders[item._id + 'delete'] === true"
+              @click="deleteDiscussion(item._id)"
             >
             </v-btn>
           </template>
@@ -213,12 +213,12 @@
             <v-badge
               :model-value="
                 (
-                  getOwnStatusContainersOfDiscussion(item.raw._id).find(obj => obj.relation === 'subscriber') ?
+                  getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber') ?
                     true :
                     false
                 ) &&
                 (
-                  getOwnStatusContainersOfDiscussion(item.raw._id).find(obj => obj.relation === 'subscriber').unread.length > 0 ?
+                  getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber').unread.length > 0 ?
                     true :
                     false
                 )
@@ -228,12 +228,12 @@
             >
               <template
                 v-slot:badge
-                v-if="getOwnStatusContainersOfDiscussion(item.raw._id).find(obj => obj.relation === 'subscriber')"
+                v-if="getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber')"
               >
                 <span
                   class="text-customGrey font-weight-bold"
                 >
-                  {{getOwnStatusContainersOfDiscussion(item.raw._id).find(obj => obj.relation === 'subscriber').unread.length}}
+                  {{getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber').unread.length}}
                 </span>
               </template>
               <v-btn
@@ -241,22 +241,22 @@
                 size="small"
                 :color="computedColor"
                 :disabled="
-                  !item.raw.isActive ||
-                  !item.raw.accepted ||
-                  item.raw.accepted.isAccepted !== true ||
+                  !item.isActive ||
+                  !item.accepted ||
+                  item.accepted.isAccepted !== true ||
                   (
-                    getGroup(item.raw.group) &&
+                    getGroup(item.group) &&
                     (
-                      !getGroup(item.raw.group).isActive ||
-                      !getGroup(item.raw.group).accepted ||
-                      !getGroup(item.raw.group).accepted.isAccepted
+                      !getGroup(item.group).isActive ||
+                      !getGroup(item.group).accepted ||
+                      !getGroup(item.group).accepted.isAccepted
                     )
                   )
                 "
                 :to="
-                  item.raw.group ?
-                    { name: 'GroupDiscussion', params: { group: item.raw.group, id: item.raw._id } } :
-                    { name: 'Discussion', params: { id: item.raw._id } }
+                  item.group ?
+                    { name: 'GroupDiscussion', params: { group: item.group, id: item._id } } :
+                    { name: 'Discussion', params: { id: item._id } }
                   "
               >
               </v-btn>
@@ -396,26 +396,26 @@ export default {
         }
       }
     },
-    itemRowBackground (item) {
+    itemRowBackground (props) {
       if (this.statusContainers.find(
         obj =>
-          obj.reference === item._id &&
+          obj.reference === props.item._id &&
           obj.user === this.user._id &&
           (
             (obj.relation === 'owner' && obj.customField === 'accepted')
           )
       )
       ) {
-        return 'new'
+        return { class: 'new' }
       } else {
         if (this.queryObject.type === 'all') {
-          if (item.group) {
-            return this.$settings.modules.groups.bgColor
+          if (props.item.group) {
+            return { class: this.$settings.modules.groups.bgColor }
           } else {
-            return this.$settings.modules.discussions.bgColor
+            return { class: this.$settings.modules.discussions.bgColor }
           }
         } else {
-          return ''
+          return {}
         }
       }
     },

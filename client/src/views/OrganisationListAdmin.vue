@@ -62,18 +62,18 @@
             <v-list-item-title
               class="font-weight-bold"
             >
-              {{item.raw.name}}
+              {{item.name}}
             </v-list-item-title>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
-            {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.members`]="{ item }"
@@ -82,7 +82,7 @@
               icon="fas fa-list"
               size="small"
               color="customGrey"
-              @click="membersDialogItem = item.raw"
+              @click="membersDialogItem = item"
             >
             </v-btn>
           </template>
@@ -93,7 +93,7 @@
               icon="fa fa-pen"
               size="small"
               color="customGrey"
-              :to="{ name: 'OrganisationAdminEditor', params: { organisation: item.raw._id } }"
+              :to="{ name: 'OrganisationAdminEditor', params: { organisation: item._id } }"
             >
             </v-btn>
           </template>
@@ -104,8 +104,8 @@
               icon="fa fa-trash"
               size="small"
               color="customGrey"
-              :loading="loaders[item.raw._id + 'delete'] === true"
-              @click="deleteOrganisation(item.raw._id)"
+              :loading="loaders[item._id + 'delete'] === true"
+              @click="deleteOrganisation(item._id)"
             >
             </v-btn>
           </template>
@@ -117,7 +117,7 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :to="{name: 'Organisation', params: { organisation: item.raw._id } }"
+              :to="{name: 'Organisation', params: { organisation: item._id } }"
             >
             </v-btn>
           </template>

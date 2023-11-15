@@ -37,7 +37,7 @@
           sort-desc-icon="fas fa-caret-down"
           :show-current-page="true"
           :must-sort="true"
-          :item-class="itemRowBackground"
+          :row-props="itemRowBackground"
         >
           <template
             v-slot:[`item.title.value`]="{ item }"
@@ -45,18 +45,18 @@
             <div
               class="font-weight-bold"
             >
-              {{item.raw.title.value}}
+              {{item.title.value}}
             </div>
           </template>
           <template
             v-slot:[`item.author`]="{ item }"
           >
-            {{item.raw.author?.user?.userName || ''}}
+            {{item.author?.user?.userName || ''}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+            {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.categories`]="{ item }"
@@ -68,7 +68,7 @@
               class="mr-1"
               disabled
             >
-            {{category.raw.text.value}}
+            {{category.text.value}}
             </v-chip>
           </template>
           <template
@@ -88,14 +88,14 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.isActive ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.ads.color"
               :loading="loaders[item._id + 'isActive'] === true"
               disabled
               @click="changeAdProperty(
                 item,
                 'isActive',
-                !item.raw.isActive
+                !item.isActive
               )"
             >
             </v-btn>
@@ -105,15 +105,15 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.ads.color"
               :disabled="user.role !== 'admins'"
-              :loading="loaders[item.raw._id + 'accepted'] === true"
+              :loading="loaders[item._id + 'accepted'] === true"
               @click="changeAdProperty(
-                item.raw,
+                item,
                 'accepted',
                 {
-                  isAccepted: !item.raw.accepted.isAccepted,
+                  isAccepted: !item.accepted.isAccepted,
                   dt: new Date(),
                   user: user._id
                 }
@@ -129,8 +129,8 @@
               size="small"
               :color="$settings.modules.ads.color"
               class="my-4"
-              :loading="loaders[item.raw._id + 'delete'] === true"
-              @click="deleteAd(item.raw._id)"
+              :loading="loaders[item._id + 'delete'] === true"
+              @click="deleteAd(item._id)"
             >
               <template
                 v-slot:loader
@@ -156,8 +156,8 @@
               size="small"
               :color="$settings.modules.ads.color"
               class="my-4"
-              :disabled="!item.raw.isActive"
-              :to="{name: 'Ad', params: { id: item.raw._id } }"
+              :disabled="!item.isActive"
+              :to="{name: 'Ad', params: { id: item._id } }"
             >
               <v-icon
                 color="white"
@@ -253,15 +253,15 @@ export default {
       }
     },
     // TODO: Test
-    itemRowBackground (item) {
+    itemRowBackground (props) {
       if (
         this.adminAdStatusContainer &&
         this.adminAdStatusContainer.unread &&
-        this.adminAdStatusContainer.unread.map(unread => unread.id).includes(item._id)
+        this.adminAdStatusContainer.unread.map(unread => unread.id).includes(props.item._id)
       ) {
-        return 'new'
+        return { class: 'new' }
       } else {
-        return ''
+        return {}
       }
     },
     async checkAcceptedAds () {

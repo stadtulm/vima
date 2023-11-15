@@ -60,7 +60,7 @@
           sort-desc-icon="fas fa-caret-down"
           :show-current-page="true"
           :must-sort="true"
-          :item-class="itemRowBackground"
+          :row-props="itemRowBackground"
         >
           <template
             v-slot:[`item.moderators`]="{ item }"
@@ -1051,10 +1051,10 @@ export default {
         }
       }
     },
-    itemRowBackground (item) {
+    itemRowBackground (props) {
       if (this.statusContainers.find(
         obj =>
-          obj.reference === item._id &&
+          obj.reference === props.item._id &&
           obj.user === this.user._id &&
           (
             (obj.relation === 'owner' && obj.customField === 'accepted') ||
@@ -1063,9 +1063,9 @@ export default {
           )
       )
       ) {
-        return 'new'
+        return { class: 'new' }
       } else {
-        return ''
+        return {}
       }
     },
     async changeGroupProperty (groupId, property, value) {

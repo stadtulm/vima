@@ -82,8 +82,8 @@
                 @click="
                   $router.push(
                     group ?
-                      { name: 'GroupDiscussion', params: { group: group._id, id: item.raw._id } } :
-                      { name: 'Discussion', params: { id: item.raw._id } }
+                      { name: 'GroupDiscussion', params: { group: group._id, id: item._id } } :
+                      { name: 'Discussion', params: { id: item._id } }
                     )
                   "
               >
@@ -97,7 +97,7 @@
                       translationSum: obj.translationSum
                     })
                   )"
-                  :textParent="item.raw"
+                  :textParent="item"
                 >
                 </TranslatableText>
               </div>
@@ -105,29 +105,29 @@
             <template
               v-slot:[`item.author`]="{ item }"
             >
-              {{item.raw.author && item.raw.author.user ? item.raw.author.user.userName : ''}}
+              {{item.author && item.author.user ? item.author.user.userName : ''}}
             </template>
             <template
               v-slot:[`item.createdAt`]="{ item }"
             >
-              {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+              {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
             </template>
             <template
               v-slot:[`item.latestMessage`]="{ item }"
             >
-              {{ item.raw.latestMessage ? $moment(item.raw.latestMessage).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock')  : '-' }}
+              {{ item.latestMessage ? $moment(item.latestMessage).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock')  : '-' }}
             </template>
             <template
               v-slot:[`item.messagesCount`]="{ item }"
             >
-              {{ item.raw.messagesCount }}
+              {{ item.messagesCount }}
             </template>
             <template
               v-slot:[`item.categories`]="{ item }"
             >
               <v-chip
                 variant="outlined"
-                v-for="category in getCategories(item.raw.categories)"
+                v-for="category in getCategories(item.categories)"
                 :key="category._id"
                 class="mr-1"
                 @click="selectCategory(category._id)"
@@ -139,7 +139,7 @@
               v-slot:[`item.tags`]="{ item }"
             >
               <v-chip
-                v-for="tag in getTags(item.raw.tags)"
+                v-for="tag in getTags(item.tags)"
                 :key="tag._id"
                 class="mr-1"
                 @click="selectTag(tag._id)"
@@ -156,10 +156,10 @@
                 :color="'custom' + computedColor"
                 :loading="loaders[item._id + 'accepted'] === true"
                 @click="changeDiscussionProperty(
-                  item.raw,
+                  item,
                   'accepted',
                   {
-                    isAccepted: !item.raw.accepted?.isAccepted,
+                    isAccepted: !item.accepted?.isAccepted,
                     dt: new Date(),
                     user: user._id
                   }
@@ -199,7 +199,7 @@
                 size="small"
                 class="my-3"
                 :color="computedColor"
-                :to="group ? {name: 'GroupDiscussion', params: { group: group._id, id: item.raw._id } } : {name: 'Discussion', params: { id: item.raw._id } }"
+                :to="group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } }"
               >
               </v-btn>
             </template>

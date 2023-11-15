@@ -130,13 +130,13 @@
             v-slot:[`item.pic`]="{ item }"
           >
             <v-img
-              v-if="item.raw.pic"
-              :src="s3 + item.raw.pic.url"
+              v-if="item.pic"
+              :src="s3 + item.pic.url"
               contain
               max-height="100"
               max-width="100"
               :alt="$t('categoryPic')"
-              :title="item.raw.pic.credit ? '© ' + item.raw.pic.credit : ''"
+              :title="item.pic.credit ? '© ' + item.pic.credit : ''"
             >
             </v-img>
           </template>
@@ -145,28 +145,28 @@
           >
             <v-list-item-title
               class="pointer font-weight-bold"
-              @click="$router.push({ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item.raw._id }})"
+              @click="$router.push({ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id }})"
             >
-              {{item.raw.text.value}}
+              {{item.text.value}}
             </v-list-item-title>
           </template>
           <template
             v-slot:[`item.entries`]="{ item }"
           >
-            {{item.raw[$route.params.type]}}
+            {{item[$route.params.type]}}
           </template>
 
           <template
             v-slot:[`item.tags`]="{ item }"
           >
             <template
-              v-if="getTags(item.raw).length > 0"
+              v-if="getTags(item).length > 0"
             >
               <v-chip
-                v-for="tag in getTags(item.raw)"
+                v-for="tag in getTags(item)"
                 :key="tag._id"
                 class="ma-1"
-                :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item.raw._id, t: tag._id } }"
+                :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id, t: tag._id } }"
               >
                 {{tag.text}}
               </v-chip>
@@ -178,7 +178,7 @@
           <template
             v-slot:[`item.description`]="{ item }"
           >
-              {{item.raw.description ? item.raw.description.value : '-'}}
+              {{item.description ? item.description.value : '-'}}
           </template>
         </v-data-table-server>
       </v-col>

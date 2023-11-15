@@ -62,18 +62,18 @@
             <v-list-item-title
               class="font-weight-bold"
             >
-              {{item.raw.title.value}}
+              {{item.title.value}}
             </v-list-item-title>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
-            {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
@@ -83,7 +83,7 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :to="{ name: 'NewsEditor', params: { id: item.raw._id } }"
+              :to="{ name: 'NewsEditor', params: { id: item._id } }"
             >
             </v-btn>
           </template>
@@ -95,7 +95,7 @@
               size="small"
               color="customGrey"
               class="my-3"
-              @click="newsletterDialogItem = item.raw"
+              @click="newsletterDialogItem = item"
             >
             </v-btn>
           </template>
@@ -107,8 +107,8 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :loading="loaders[item.raw._id + 'delete'] === true"
-              @click="deleteNews(item.raw._id)"
+              :loading="loaders[item._id + 'delete'] === true"
+              @click="deleteNews(item._id)"
             >
             </v-btn>
           </template>
@@ -120,7 +120,7 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :to="{name: 'NewsEntry', params: { id: item.raw._id } }"
+              :to="{name: 'NewsEntry', params: { id: item._id } }"
             >
             </v-btn>
           </template>
@@ -252,7 +252,7 @@
                     <template
                       v-slot:[`item.type`]="{ item }"
                     >
-                      {{newsletterTypes[item.raw.type]}}
+                      {{newsletterTypes[item.type]}}
                     </template>
                     <template
                       v-slot:[`item.dt`]="{ item }"
@@ -284,12 +284,12 @@
                     <template
                       v-slot:[`item.type`]="{ item }"
                     >
-                      {{newsletterTypes[item.raw.type]}}
+                      {{newsletterTypes[item.type]}}
                     </template>
                     <template
                       v-slot:[`item.dt`]="{ item }"
                     >
-                      {{$moment(item.raw.dt).format('DD.MM.YYYY, HH:mm:ss:SSS')}}
+                      {{$moment(item.dt).format('DD.MM.YYYY, HH:mm:ss:SSS')}}
                     </template>
                   </v-data-table>
                 </v-window-item>
@@ -327,7 +327,7 @@
                             <template
                               v-slot:[`item.type`]="{ item }"
                             >
-                              {{newsletterTypes[item.raw.type]}}
+                              {{newsletterTypes[item.type]}}
                             </template>
                           </v-data-table>
                         </v-col>

@@ -61,18 +61,18 @@
             <v-list-item-title
               class="font-weight-bold"
             >
-              {{item.raw.name}}
+              {{item.name}}
             </v-list-item-title>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
-            {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
@@ -82,7 +82,7 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :to="{ name: 'SponsorEditor', params: { sponsor: item.raw._id } }"
+              :to="{ name: 'SponsorEditor', params: { sponsor: item._id } }"
             >
             </v-btn>
           </template>
@@ -94,8 +94,8 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :loading="loaders[item.raw._id + 'delete'] === true"
-              @click="deleteSponsor(item.raw._id)"
+              :loading="loaders[item._id + 'delete'] === true"
+              @click="deleteSponsor(item._id)"
             >
             </v-btn>
           </template>

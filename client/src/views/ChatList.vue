@@ -12,7 +12,6 @@
     <v-row>
       <v-col>
         <v-data-table
-          :item-class="itemRowBackground"
           class="customGreyUltraLight elevation-3"
           :headers="headers"
           :items="chats"
@@ -31,6 +30,7 @@
             itemsPerPageText: '',
             itemsPerPageOptions
           }"
+          :row-props="itemRowBackground"
         >
           <template
             v-slot:progress
@@ -259,11 +259,11 @@ export default {
         return 'otherBlocked'
       }
     },
-    itemRowBackground (item) {
-      if (this.statusContainers.find(obj => obj.reference === item._id && obj.type === 'chats' && obj.user === this.user._id && obj.customField === 'new')) {
-        return 'new'
+    itemRowBackground (props) {
+      if (this.statusContainers.find(obj => obj.reference === props.item._id && obj.type === 'chats' && obj.user === this.user._id && obj.customField === 'new')) {
+        return { class: 'new' }
       } else {
-        return ''
+        return {}
       }
     },
     async checkNewChats () {

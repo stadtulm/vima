@@ -37,7 +37,7 @@
           sort-desc-icon="fas fa-caret-down"
           :show-current-page="true"
           :must-sort="true"
-          :item-class="itemRowBackground"
+          :row-props="itemRowBackground"
         >
           <template
             v-slot:[`item.title.value`]="{ item }"
@@ -45,32 +45,32 @@
             <div
               class="font-weight-bold"
             >
-              {{item.raw.title.value}}
+              {{item.title.value}}
             </div>
           </template>
           <template
             v-slot:[`item.group`]="{ item }"
           >
             <div>
-              {{getGroup(item.raw.group) ? getGroup(item.raw.group).title.value : '-'}}
+              {{getGroup(item.group) ? getGroup(item.group).title.value : '-'}}
             </div>
           </template>
           <template
             v-slot:[`item.author`]="{ item }"
           >
-            {{item.raw.author && item.raw.author.user ? item.raw.author.user.userName : ''}}
+            {{item.author && item.author.user ? item.author.user.userName : ''}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+            {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.categories`]="{ item }"
           >
             <v-chip
               variant="outlined"
-              v-for="category in getCategories(item.raw.categories)"
+              v-for="category in getCategories(item.categories)"
               :key="category._id"
               class="mr-1 mb-1"
               disabled
@@ -82,7 +82,7 @@
             v-slot:[`item.tags`]="{ item }"
           >
             <v-chip
-              v-for="tag in getTags(item.raw.tags)"
+              v-for="tag in getTags(item.tags)"
               :key="tag._id"
               class="mr-1 mb-1"
               disabled
@@ -95,14 +95,14 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.isActive ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.discussions.color"
-              :loading="loaders[item.raw._id + 'isActive'] === true"
+              :loading="loaders[item._id + 'isActive'] === true"
               disabled
               @click="changeDiscussionProperty(
                 item,
                 'isActive',
-                !item.raw.isActive
+                !item.isActive
               )"
             >
             </v-btn>
@@ -112,15 +112,15 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.discussions.color"
               :disabled="user.role !== 'admins'"
-              :loading="loaders[item.raw._id + 'accepted'] === true"
+              :loading="loaders[item._id + 'accepted'] === true"
               @click="changeDiscussionProperty(
-                item.raw,
+                item,
                 'accepted',
                 {
-                  isAccepted: !item.raw.accepted.isAccepted,
+                  isAccepted: !item.accepted.isAccepted,
                   dt: new Date(),
                   user: user._id
                 }
@@ -136,8 +136,8 @@
               size="small"
               :color="$settings.modules.discussions.color"
               class="my-4"
-              :loading="loaders[item.raw._id + 'delete'] ===  true"
-              @click="deleteDiscussion(item.raw._id)"
+              :loading="loaders[item._id + 'delete'] ===  true"
+              @click="deleteDiscussion(item._id)"
             >
             </v-btn>
           </template>
@@ -149,8 +149,8 @@
               size="small"
               :color="$settings.modules.discussions.color"
               class="my-4"
-              :disabled="!item.raw.isActive"
-              :to="{name: 'Discussion', params: { id: item.raw._id } }"
+              :disabled="!item.isActive"
+              :to="{name: 'Discussion', params: { id: item._id } }"
             >
             </v-btn>
           </template>
@@ -240,15 +240,15 @@ export default {
         this.loaders[id + 'delete'] = undefined
       }
     },
-    itemRowBackground (item) {
+    itemRowBackground (props) {
       if (
         this.adminDiscussionStatusContainer &&
         this.adminDiscussionStatusContainer.unread &&
-        this.adminDiscussionStatusContainer.unread.map(unread => unread.id).includes(item._id)
+        this.adminDiscussionStatusContainer.unread.map(unread => unread.id).includes(props.item._id)
       ) {
-        return 'new'
+        return { class: 'new' }
       } else {
-        return ''
+        return {}
       }
     },
     async checkAcceptedDiscussions () {

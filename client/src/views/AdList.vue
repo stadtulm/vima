@@ -62,20 +62,20 @@
           sort-desc-icon="fas fa-caret-down"
           :show-current-page="true"
           :must-sort="true"
-          :item-class="itemRowBackground"
+          :row-props="itemRowBackground"
         >
           <template
             v-slot:[`item.applicants`]="{ item }"
           >
             <v-badge
-              :model-value="isOwnAd(item.raw._id) && getOwnStatusContainerOfAd(item.raw._id).unread.length > 0"
+              :model-value="isOwnAd(item._id) && getOwnStatusContainerOfAd(item._id).unread.length > 0"
               :color="$settings.indicatorColor"
             >
               <template v-slot:badge>
                 <span
                   class="text-customGrey font-weight-bold"
                 >
-                  {{getOwnStatusContainerOfAd(item.raw._id).unread.length}}
+                  {{getOwnStatusContainerOfAd(item._id).unread.length}}
                 </span>
               </template>
               <!-- TODO: Remove loader template and icon from buttons - add text-white -->
@@ -84,11 +84,11 @@
                 size="small"
                 class="text-white"
                 :color="$settings.modules.ads.color"
-                @click="applicantsDialogItem = item.raw"
+                @click="applicantsDialogItem = item"
                 :disabled="
-                  !isOwnAd(item.raw._id) ||
-                  !item.raw.accepted ||
-                  !item.raw.accepted.isAccepted
+                  !isOwnAd(item._id) ||
+                  !item.accepted ||
+                  !item.accepted.isAccepted
                 "
               >
               </v-btn>
@@ -100,7 +100,7 @@
             <span
               class="font-weight-bold"
             >
-              {{item.raw.title.value}}
+              {{item.title.value}}
               <v-tooltip
                 right
                 color="customGrey"
@@ -121,7 +121,7 @@
                   dark
                 >
                   <v-card-title>
-                    {{item.raw.title.value}}
+                    {{item.title.value}}
                   </v-card-title>
                   <v-card-text
                     class="text-white"
@@ -131,7 +131,7 @@
                         cols="12"
                       >
                         <div
-                          v-html="item.raw.text.value"
+                          v-html="item.text.value"
                         >
                         </div>
                       </v-col>
@@ -144,28 +144,28 @@
           <template
             v-slot:[`item.relation`]="{ item }"
           >
-            {{statusContainers.find(obj => obj.reference === item.raw._id)
-              ? $t(relationItems[statusContainers.find(obj => obj.user === user._id && obj.reference === item.raw._id).relation].textKey)
+            {{statusContainers.find(obj => obj.reference === item._id)
+              ? $t(relationItems[statusContainers.find(obj => obj.user === user._id && obj.reference === item._id).relation].textKey)
               : '-'}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+            {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
             <v-btn
               variant="text"
-              :icon="item.raw.isActive ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.ads.color"
-              :loading="loaders[item.raw._id + 'isActive'] === true"
-              :disabled="!isOwnAd(item.raw._id)"
+              :loading="loaders[item._id + 'isActive'] === true"
+              :disabled="!isOwnAd(item._id)"
               @click="changeAdProperty(
-                item.raw._id,
+                item._id,
                 'isActive',
-                !item.raw.isActive
+                !item.isActive
               )"
             >
             </v-btn>
@@ -175,15 +175,15 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.ads.color"
               disabled
-              :loading="loaders[item.raw._id + 'accepted'] === true"
+              :loading="loaders[item._id + 'accepted'] === true"
               @click="changeAdProperty(
-                item.raw._id,
+                item._id,
                 'accepted',
                 {
-                  isAccepted: !item.raw.accepted.isAccepted,
+                  isAccepted: !item.accepted.isAccepted,
                   dt: new Date(),
                   user: user._id
                 }
@@ -199,8 +199,8 @@
               size="small"
               :color="$settings.modules.ads.color"
               class="my-4 text-white"
-              :to="{name: 'AdEditor', params: { id: item.raw._id } }"
-              :disabled="!isOwnAd(item.raw._id)"
+              :to="{name: 'AdEditor', params: { id: item._id } }"
+              :disabled="!isOwnAd(item._id)"
             >
             </v-btn>
           </template>
@@ -212,9 +212,9 @@
               size="small"
               :color="$settings.modules.ads.color"
               class="my-4 text-white"
-              :disabled="!isOwnAd(item.raw._id)"
-              :loading="loaders[item.raw._id + 'delete'] === true"
-              @click="deleteItem = item.raw._id"
+              :disabled="!isOwnAd(item._id)"
+              :loading="loaders[item._id + 'delete'] === true"
+              @click="deleteItem = item._id"
             >
             </v-btn>
           </template>
@@ -227,14 +227,14 @@
               :color="$settings.modules.ads.color"
               class="my-4 text-white"
               :disabled="
-                !statusContainers.find(obj => obj.reference === item.raw._id && obj.user === user._id && obj.relation === 'owner') &&
+                !statusContainers.find(obj => obj.reference === item._id && obj.user === user._id && obj.relation === 'owner') &&
                 (
-                  !item.raw.isActive ||
-                  !item.raw.accepted ||
-                  !item.raw.accepted.isAccepted
+                  !item.isActive ||
+                  !item.accepted ||
+                  !item.accepted.isAccepted
                 )
               "
-              :to="{name: 'Ad', params: { id: item.raw._id } }"
+              :to="{name: 'Ad', params: { id: item._id } }"
             >
             </v-btn>
           </template>
@@ -274,7 +274,6 @@
           >
             <v-col>
               <v-data-table
-                :item-class="adItemRowBackground"
                 :items="computedAdMessages.filter(obj => !obj.repliesTo)"
                 :headers="[
                   { title: '', key: 'pic.url', width: 50, sortable: false },
@@ -289,6 +288,7 @@
                 :show-current-page="true"
                 :must-sort="true"
                 :sort-by="[{ key: 'createdAt', order: 'desc' }]"
+                :row-props="adItemRowBackground"
               >
                 <template
                   v-slot:[`item.pic.url`]="{ item }"
@@ -298,10 +298,10 @@
                     color="customGreyLight"
                   >
                     <v-img
-                      v-if="getUser(item.raw.author) && getUser(item.raw.author).pic"
-                      :src="s3 + getUser(item.raw.author).pic.url"
+                      v-if="getUser(item.author) && getUser(item.author).pic"
+                      :src="s3 + getUser(item.author).pic.url"
                       :alt="$t('userPic')"
-                      :title="getUser(item.raw.author).pic.credit ? '© ' + getUser(item.raw.author).pic.credit : ''"
+                      :title="getUser(item.author).pic.credit ? '© ' + getUser(item.author).pic.credit : ''"
                     >
                     </v-img>
                     <v-icon
@@ -316,17 +316,17 @@
                   v-slot:[`item.userName`]="{ item }"
                 >
                   <span
-                    v-if="getUser(item.raw.author)"
+                    v-if="getUser(item.author)"
                     class="font-weight-bold pointer"
-                    @click="$router.push({name: 'User', params: { user: getUser(item.raw.author)._id}})"
+                    @click="$router.push({name: 'User', params: { user: getUser(item.author)._id}})"
                   >
-                    {{getUser(item.raw.author).userName}}
+                    {{getUser(item.author).userName}}
                   </span>
                 </template>
                 <template
                   v-slot:[`item.createdAt`]="{ item }"
                 >
-                  {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+                  {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
                 </template>
                 <template
                   v-slot:[`item.message`]="{ item }"
@@ -335,7 +335,7 @@
                     ownField="text"
                     :allFields="['text']"
                     type="ad-messages"
-                    :textParent="item.raw"
+                    :textParent="item"
                   >
                     <template
                       v-slot:defaultLangText="{ computedText }"
@@ -359,8 +359,8 @@
                   v-slot:[`item.answer`]="{ item }"
                 >
                     <v-btn
-                      v-if="!item.raw.replies || item.raw.replies.length === 0"
-                      @click="answerDialogItem = item.raw"
+                      v-if="!item.replies || item.replies.length === 0"
+                      @click="answerDialogItem = item"
                       :color="$settings.modules.ads.color"
                       class="text-white"
                     >
@@ -370,11 +370,11 @@
                       v-else
                     >
                       <TranslatableText
-                        v-if="getAdMessage(item.raw.replies[0])"
+                        v-if="getAdMessage(item.replies[0])"
                         ownField="text"
                         :allFields="['text']"
                         type="ad-messages"
-                        :textParent="getAdMessage(item.raw.replies[0])"
+                        :textParent="getAdMessage(item.replies[0])"
                       >
                         <template
                           v-slot:defaultLangText="{ computedText }"
@@ -402,8 +402,8 @@
                   <v-btn
                     icon
                     class="pr-1 text-white"
-                    v-if="item.raw.chat"
-                    :to="{ name: 'IdChat', params: { chat: item.raw.chat } }"
+                    v-if="item.chat"
+                    :to="{ name: 'IdChat', params: { chat: item.chat } }"
                     :color="$settings.modules.ads.color"
                     size="small"
                   >
@@ -619,23 +619,23 @@ export default {
         this.isDeleting = false
       }
     },
-    itemRowBackground (item) {
+    itemRowBackground (props) {
       if (
         this.statusContainers
           .find(
             obj =>
-              obj.reference === item._id &&
+              obj.reference === props.item._id &&
               obj.relation === 'owner' &&
               obj.user === this.user._id &&
               obj.customField === 'accepted'
           )
       ) {
-        return 'new'
+        return { class: 'new' }
       } else {
-        return ''
+        return {}
       }
     },
-    adItemRowBackground (item) {
+    adItemRowBackground (props) {
       if (this.applicantsDialogItem) {
         const adStatusContainer = this.statusContainers
           .find(
@@ -645,11 +645,11 @@ export default {
               obj.user === this.user._id
           )
         if (
-          adStatusContainer.unread.map(obj => obj.id).includes(item._id)
+          adStatusContainer.unread.map(obj => obj.id).includes(props.item._id)
         ) {
-          return 'new'
+          return { class: 'new' }
         } else {
-          return ''
+          return {}
         }
       } else {
         return ''

@@ -81,10 +81,10 @@
               color="customGreyLight"
             >
               <v-img
-                v-if="item.raw.pic"
-                :src="s3 + item.raw.pic.url"
+                v-if="item.pic"
+                :src="s3 + item.pic.url"
                 :alt="$t('userPic')"
-                :title="item.raw.pic?.credit ? '© ' + item.raw.pic.credit : ''"
+                :title="item.pic?.credit ? '© ' + item.pic.credit : ''"
               >
               </v-img>
               <v-icon
@@ -100,9 +100,9 @@
           >
            <span
               class="pointer font-weight-bold"
-              @click="$router.push({name: 'User', params: { user: item.raw._id}})"
+              @click="$router.push({name: 'User', params: { user: item._id}})"
             >
-              {{item.raw.userName}}
+              {{item.userName}}
             </span>
           </template>
           <template
@@ -115,28 +115,28 @@
                 <v-avatar
                   size="20"
                   v-bind="props"
-                  :color="item.raw.status ? statusItems[item.raw.status].color : ''"
+                  :color="item.status ? statusItems[item.status].color : ''"
                 >
                 </v-avatar>
               </template>
-              <span>{{item.raw.status ? $t(statusItems[item.raw.status].textKey) : ''}}</span>
+              <span>{{item.status ? $t(statusItems[item.status].textKey) : ''}}</span>
             </v-tooltip>
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.raw.createdAt).format('DD.MM.YYYY')}}
+            {{$moment(item.createdAt).format('DD.MM.YYYY')}}
           </template>
           <template
             v-slot:[`item.role`]="{ item }"
           >
             <v-select
-              v-model="roles[item.raw._id]"
+              v-model="roles[item._id]"
               :items="roleItems"
               :item-title="(item) => $t(item.textKey)"
               hide-details
               density="compact"
-              @update:modelValue="setProperty('role', item.raw._id, roles[item.raw._id])"
+              @update:modelValue="setProperty('role', item._id, roles[item._id])"
             >
             </v-select>
           </template>
@@ -144,9 +144,9 @@
             v-slot:[`item.isVerified`]="{ item }"
           >
             <v-btn
-              :icon="item.raw.isVerified ? 'far fa-check-square' : 'far fa-square'"
+              :icon="item.isVerified ? 'far fa-check-square' : 'far fa-square'"
               variant="flat"
-              @click="setProperty('isVerified', item.raw._id, !item.raw.isVerified)"
+              @click="setProperty('isVerified', item._id, !item.isVerified)"
             >
             </v-btn>
           </template>
@@ -154,9 +154,9 @@
             v-slot:[`item.isActive`]="{ item }"
           >
             <v-btn
-              :icon="item.raw.isActive ? 'far fa-check-square' : 'far fa-square'"
+              :icon="item.isActive ? 'far fa-check-square' : 'far fa-square'"
               variant="flat"
-              @click="item.raw.isActive ? (setActiveItem = item.raw) : setProperty('isActive', item.raw._id, !item.raw.isActive)"
+              @click="item.isActive ? (setActiveItem = item) : setProperty('isActive', item._id, !item.isActive)"
             >
             </v-btn>
           </template>
@@ -168,7 +168,7 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :to="{ name: 'UserAdminEditor', params: { user: item.raw._id } }"
+              :to="{ name: 'UserAdminEditor', params: { user: item._id } }"
             >
             </v-btn>
           </template>
@@ -180,7 +180,7 @@
               size="small"
               color="customGrey"
               class="my-4"
-              @click="deleteUser(item.raw)"
+              @click="deleteUser(item)"
             >
             </v-btn>
           </template>
@@ -188,14 +188,14 @@
             v-slot:[`item.resend`]="{ item }"
           >
             <template
-              v-if="!item.raw.isVerified"
+              v-if="!item.isVerified"
             >
               <v-btn
                 size="small"
                 color="customGrey"
-                @click="resendVerify(item.raw)"
+                @click="resendVerify(item)"
               >
-                {{item.raw.createdBy === 'invitation' ? $t('invitation') : $t('verificationLink')}}
+                {{item.createdBy === 'invitation' ? $t('invitation') : $t('verificationLink')}}
               </v-btn>
             </template>
           </template>

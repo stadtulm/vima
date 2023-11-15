@@ -37,7 +37,7 @@
           sort-desc-icon="fas fa-caret-down"
           :show-current-page="true"
           :must-sort="true"
-          :item-class="itemRowBackground"
+          :row-props="itemRowBackground"
         >
           <template
             v-slot:[`item.title.value`]="{ item }"
@@ -45,18 +45,18 @@
             <div
               class="font-weight-bold"
             >
-              {{item.raw.title.value}}
+              {{item.title.value}}
             </div>
           </template>
           <template
             v-slot:[`item.owner`]="{ item }"
           >
-            {{item.raw.owner?.user?.userName || ''}}
+            {{item.owner?.user?.userName || ''}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{ $moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
+            {{ $moment(item.createdAt).format('DD.MM.YYYY, HH:mm') }} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.visibility`]="{ item }"
@@ -64,7 +64,7 @@
             <v-chip
               color="black"
             >
-              {{$t(item.raw.visibility + 'VisibilityTitle')}}
+              {{$t(item.visibility + 'VisibilityTitle')}}
             </v-chip>
           </template>
           <template
@@ -72,7 +72,7 @@
           >
             <v-chip
               variant="outlined"
-              v-for="category in getCategories(item.raw.categories)"
+              v-for="category in getCategories(item.categories)"
               :key="category._id"
               class="mr-1 mb-1"
               disabled
@@ -84,7 +84,7 @@
             v-slot:[`item.tags`]="{ item }"
           >
             <v-chip
-              v-for="tag in getTags(item.raw.tags)"
+              v-for="tag in getTags(item.tags)"
               :key="tag._id"
               class="mr-1 mb-1"
               disabled
@@ -97,14 +97,14 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.isActive ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.groups.color"
-              :loading="loaders[item.raw._id + 'isActive'] === true"
+              :loading="loaders[item._id + 'isActive'] === true"
               disabled
               @click="changeGroupsProperty(
-                item.raw,
+                item,
                 'isActive',
-                !item.raw.isActive
+                !item.isActive
               )"
             >
             </v-btn>
@@ -114,15 +114,15 @@
           >
             <v-btn
               variant="text"
-              :icon="item.raw.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+              :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
               :color="$settings.modules.groups.color"
               :disabled="user.role !== 'admins'"
-              :loading="loaders[item.raw._id + 'accepted'] === true"
+              :loading="loaders[item._id + 'accepted'] === true"
               @click="changeGroupsProperty(
-                item.raw,
+                item,
                 'accepted',
                 {
-                  isAccepted: item.raw.accepted?.isAccepted ? false : true,
+                  isAccepted: item.accepted?.isAccepted ? false : true,
                   dt: new Date(),
                   user: user._id
                 }
@@ -138,8 +138,8 @@
               size="small"
               :color="$settings.modules.groups.color"
               class="my-4"
-              :loading="loaders[item.raw._id + 'delete'] === true"
-              @click="deleteGroup(item.raw._id)"
+              :loading="loaders[item._id + 'delete'] === true"
+              @click="deleteGroup(item._id)"
             >
             </v-btn>
           </template>
@@ -151,8 +151,8 @@
               size="small"
               :color="$settings.modules.groups.color"
               class="my-4"
-              :disabled="!item.raw.isActive"
-              :to="{name: 'Group', params: { group: item.raw._id } }"
+              :disabled="!item.isActive"
+              :to="{name: 'Group', params: { group: item._id } }"
             >
             </v-btn>
           </template>
@@ -242,15 +242,15 @@ export default {
         this.loaders[id + 'delete'] = undefined
       }
     },
-    itemRowBackground (item) {
+    itemRowBackground (props) {
       if (
         this.adminGroupStatusContainer &&
         this.adminGroupStatusContainer.unread &&
-        this.adminGroupStatusContainer.unread.map(unread => unread.id).includes(item._id)
+        this.adminGroupStatusContainer.unread.map(unread => unread.id).includes(props.item._id)
       ) {
-        return 'new'
+        return { class: 'new' }
       } else {
-        return ''
+        return {}
       }
     },
     async checkAcceptedGroups () {

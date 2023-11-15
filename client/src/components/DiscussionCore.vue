@@ -556,7 +556,7 @@ export default {
             return '#f0f0f0'
           }
         } else {
-          if (this.computedOwnSubscriberStatusContainer && this.computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(message._id)) {
+          if (this.computedOwnSubscriberStatusContainer?.unread.map(unread => unread.id).includes(message._id)) {
             return this.$settings.indicatorColor
           } else {
             return '#f6f6f6'
@@ -602,8 +602,7 @@ export default {
             tmpDiscussionMessage &&
             !this.isUpdating &&
             !this.isOwnMessage(tmpDiscussionMessage) &&
-            this.computedOwnSubscriberStatusContainer &&
-            this.computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(tmpDiscussionMessage._id)
+            this.computedOwnSubscriberStatusContainer?.unread.map(unread => unread.id).includes(tmpDiscussionMessage._id)
           ) {
             this.isUpdating = true
             await this.patchDiscussionMessageNotifications(

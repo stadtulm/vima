@@ -44,7 +44,7 @@
             <v-list-item-title
               class="font-weight-bold"
             >
-              {{item.raw.title.value}}
+              {{item.title.value}}
             </v-list-item-title>
           </template>
            <template
@@ -53,8 +53,8 @@
             <v-list-item-title
               class="font-weight-bold"
             >
-              <template v-if="item.raw.organisation && item.raw.organisation.name">
-                {{item.raw.organisation.name}}
+              <template v-if="item.organisation && item.organisation.name">
+                {{item.organisation.name}}
               </template>
               <template v-else>
                 <v-icon
@@ -68,22 +68,22 @@
           <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
-            {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.duration.start`]="{ item }"
           >
-            {{$moment(item.raw.duration.start).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.duration.start).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.duration.end`]="{ item }"
           >
-            {{$moment(item.raw.duration.end).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.duration.end).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
@@ -93,8 +93,8 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :loading="loaders[item.raw._id + 'delete'] === true"
-              @click="deleteEvent(item.raw._id)"
+              :loading="loaders[item._id + 'delete'] === true"
+              @click="deleteEvent(item._id)"
             >
             </v-btn>
           </template>
@@ -106,7 +106,7 @@
               size="small"
               color="customGrey"
               class="my-4"
-              :to="{name: 'Event', params: { event: item.raw._id } }"
+              :to="{name: 'Event', params: { event: item._id } }"
             >
             </v-btn>
           </template>

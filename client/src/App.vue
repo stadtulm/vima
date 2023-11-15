@@ -969,11 +969,6 @@
                     size="small"
                     class="mx-1"
                   >
-                    <span
-                      class="mr-1"
-                    >
-                      {{computedUnreadAdminNotifications}}
-                    </span>
                     <v-icon>
                       fas fa-exclamation
                     </v-icon>

@@ -38,10 +38,10 @@
               color="customGreyLight"
             >
               <v-img
-                v-if="item.raw.pic"
-                :src="s3 + item.raw.pic.url"
+                v-if="item.pic"
+                :src="s3 + item.pic.url"
                 :alt="$t('userPic')"
-                :title="item.raw.pic.credit ? '© ' + item.raw.pic.credit : ''"
+                :title="item.pic.credit ? '© ' + item.pic.credit : ''"
               >
               </v-img>
               <v-icon
@@ -59,7 +59,7 @@
             <v-list-item-title
               class="font-weight-bold"
             >
-              {{item.raw.userName}}
+              {{item.userName}}
             </v-list-item-title>
           </template>
           <template
@@ -69,7 +69,7 @@
               :icon="customActionIcon"
               size="small"
               :color="customColor"
-              @click="$emit('update:customAction', item.raw)"
+              @click="$emit('update:customAction', item)"
             >
             </v-btn>
           </template>
@@ -80,7 +80,7 @@
               :icon="customSecondaryActionIcon"
               size="small"
               :color="customColor"
-              @click="$emit('update:customSecondaryAction', item.raw)"
+              @click="$emit('update:customSecondaryAction', item)"
             >
             </v-btn>
           </template>

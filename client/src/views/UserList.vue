@@ -46,10 +46,10 @@
               color="customGreyLight"
             >
               <v-img
-                v-if="item.raw.pic"
-                :src="s3 + item.raw.pic.url"
+                v-if="item.pic"
+                :src="s3 + item.pic.url"
                 :alt="$t('userPic')"
-                :title="item.raw.pic?.credit ? '© ' + item.raw.pic.credit : ''"
+                :title="item.pic?.credit ? '© ' + item.pic.credit : ''"
               >
               </v-img>
               <v-icon
@@ -71,15 +71,15 @@
               >
                 <span
                   class="pointer"
-                  @click="$router.push({name: 'User', params: { user: item.raw._id}})"
+                  @click="$router.push({name: 'User', params: { user: item._id}})"
                 >
-                  {{item.raw.userName}}
+                  {{item.userName}}
                 </span>
               </v-list-item-title>
               <v-list-item-subtitle
-                v-if="item.raw.description"
+                v-if="item.description"
               >
-                {{item.raw.description}}
+                {{item.description}}
               </v-list-item-subtitle>
             </v-list-item>
           </template>

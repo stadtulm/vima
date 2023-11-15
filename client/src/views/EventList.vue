@@ -62,28 +62,28 @@
             <v-list-item-title
               class="font-weight-bold"
             >
-              {{item.raw.title.value}}
+              {{item.title.value}}
             </v-list-item-title>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
-            {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.duration.start`]="{ item }"
           >
-            {{$moment(item.raw.duration.start).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.duration.start).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.duration.end`]="{ item }"
           >
-            {{$moment(item.raw.duration.end).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.duration.end).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
@@ -93,7 +93,7 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :to="{ name: 'EventEditor', params: { organisation: computedUserOrganisationId, event: item.raw._id } }"
+              :to="{ name: 'EventEditor', params: { organisation: computedUserOrganisationId, event: item._id } }"
             >
             </v-btn>
           </template>
@@ -118,7 +118,7 @@
               size="small"
               color="customGrey"
               class="my-4"
-              :to="{name: 'Event', params: { event: item.raw._id } }"
+              :to="{name: 'Event', params: { event: item._id } }"
             >
             </v-btn>
           </template>

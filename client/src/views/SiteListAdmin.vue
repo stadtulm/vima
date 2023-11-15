@@ -62,18 +62,18 @@
             <v-list-item-title
               class="font-weight-bold"
             >
-              {{$t(item.raw.type)}}
+              {{$t(item.type)}}
             </v-list-item-title>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
-            {{$moment(item.raw.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.createdAt`]="{ item }"
           >
-            {{$moment(item.raw.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
+            {{$moment(item.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
@@ -83,7 +83,7 @@
               size="small"
               color="customGrey"
               class="my-3"
-              :to="{ name: 'SiteEditor', params: { site: item.raw._id } }"
+              :to="{ name: 'SiteEditor', params: { site: item._id } }"
             >
             </v-btn>
           </template>
