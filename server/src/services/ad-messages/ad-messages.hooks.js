@@ -298,8 +298,7 @@ module.exports = {
               {
                 chat: chatId,
                 text: [{
-                  value: '<blockquote class="blockquote"><p>' +
-                    '⮌ "' + ad.title.find(obj => obj.type === 'default').value + '"</blockquote>' +
+                  value: '<blockquote class="blockquote"><p>"' + ad.title.find(obj => obj.type === 'default').value + '"</blockquote>' +
                   '<p>' + tmpApplicantAdMessage + '</p>',
                   type: 'default'
                 }],

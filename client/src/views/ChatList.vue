@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row
-      class="mb-4"
+      class="d-flex mx-0 mb-4"
     >
       <span
         class="my-4 me-auto text-h5 font-weight-bold text-uppercase"

@@ -2,9 +2,11 @@
   <div
     v-if="selectedChat || $route.params.username"
   >
-    <v-row>
+    <v-row
+      class="d-flex mx-0 mb-4"
+    >
       <v-col
-        class="text-h5 font-weight-bold text-customGrey text-uppercase"
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
         {{$t('chatWith')}} {{selectedChat && otherStatusContainers?.length === 1 ? users.find(obj => obj._id === otherStatusContainers[0].user).userName : $route.params.username }}
       </v-col>
