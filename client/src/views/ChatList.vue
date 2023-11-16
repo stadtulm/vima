@@ -3,49 +3,38 @@
     <v-row
       class="mb-4"
     >
-      <v-col
-        class="text-h5 font-weight-bold text-customGrey text-uppercase"
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
         {{$t('myChatsButton')}}
-      </v-col>
+      </span>
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          v-if="!initialView"
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
-          :items="chats"
-          :loading="loading"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          :server-items-length="total"
-          must-sort
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :footer-props="{
-            itemsPerPageText: '',
-            itemsPerPageOptions
-          }"
+          :items-length="computedTotal"
+          :items="computedChats"
+          :loading="isLoading"
+          class="customGreyUltraLight pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateDataTableParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          :show-current-page="true"
+          :must-sort="true"
           :row-props="itemRowBackground"
         >
           <template
-            v-slot:progress
-          >
-            <v-progress-linear
-              indeterminate
-              color="customGrey"
-            ></v-progress-linear>
-          </template>
-          <template
             v-slot:[`item.pic`]="{ item }"
-            v-if="computedOtherStatusContainers"
+            v-if="otherStatusContainers?.length > 0"
           >
             <div
-              v-for="user in computedOtherStatusContainers.filter(obj => obj.reference === item._id).map(obj => getUser(obj.user))"
+              v-for="user in otherStatusContainers.filter(obj => obj.reference === item._id).map(obj => getUser(obj.user))"
               :key="user._id"
             >
               <v-avatar
@@ -73,10 +62,10 @@
           >
             <v-list-item
               class="pa-0"
-              v-if="computedOtherStatusContainers"
+              v-if="otherStatusContainers?.length > 0"
             >
-              <v-list-item-content
-                v-for="user in computedOtherStatusContainers.filter(obj => obj.reference === item._id).map(obj => getUser(obj.user))"
+              <template
+                v-for="user in otherStatusContainers.filter(obj => obj.reference === item._id).map(obj => getUser(obj.user))"
                 :key="user._id"
               >
                 <v-list-item-title
@@ -90,7 +79,7 @@
                 >
                   {{user.description}}
                 </v-list-item-subtitle>
-              </v-list-item-content>
+              </template>
             </v-list-item>
           </template>
           <template
@@ -100,7 +89,7 @@
               :disabled="getIsBlocked(item.isBlocked) === 'otherBlocked'"
               v-model="blocks[item._id]"
               :items="getBlockedItems(item.isBlocked)"
-              :item-text="(item) => $t(item.textKey)"
+              :item-title="(item) => $t(item.textKey)"
               hide-details
               flat
               dense
@@ -114,28 +103,21 @@
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-trash"
+              size="small"
               color="customGrey"
               @click="deleteChat(item._id)"
             >
-              <v-icon
-                size="18"
-                color="white"
-              >
-                fa fa-trash
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.goToChat`]="{ item }"
           >
             <v-badge
-              :value="statusContainers.find(obj => obj.reference === item._id).unread.length > 0"
+              :model-value="statusContainers.find(obj => obj.reference === item._id).unread.length > 0"
               :color="$settings.indicatorColor"
-              overlap
             >
-              <template slot="badge">
+              <template v-slot:badge>
                 <span
                   class="text-customGrey font-weight-bold"
                 >
@@ -144,21 +126,15 @@
               </template>
               <v-btn
                 :disabled="item.isBlocked ? true : false"
-                fab
-                small
+                icon="fa fa-arrow-right"
+                size="small"
                 color="customGrey"
                 :to="{ name: 'IdChat', params: { chat: item._id } }"
               >
-                <v-icon
-                  size="18"
-                  color="white"
-                >
-                  fa fa-arrow-right
-                </v-icon>
               </v-btn>
             </v-badge>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
   </div>
@@ -166,34 +142,32 @@
 
 <script>
 
-import { makeFindMixin } from '@feathersjs/vuex'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   name: 'ChatList',
 
-  mixins: [makeFindMixin({ service: 'chats', watch: true })],
-
   components: {
   },
 
   data: () => ({
-    loaders: {},
-    page: 1,
     loading: true,
     blocks: {},
-    total: 0,
-    itemsPerPage: 25,
-    sortBy: ['createdAt'],
-    sortDesc: [false]
+    otherStatusContainers: undefined,
+    initialView: true,
+    chatsResponse: undefined,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'createdAt', order: 'desc' }]
+    }
   }),
 
-  mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
-    this.$nextTick(() => {
-      this.checkNewChats()
+  async mounted () {
+    await this.adaptQuery()
+    this.$nextTick(async () => {
+      await this.checkNewChats()
     })
     this.fillObjects()
   },
@@ -203,6 +177,7 @@ export default {
       setSnackbar: 'SET_SNACKBAR'
     }),
     ...mapActions('chats', {
+      findChats: 'find',
       removeChat: 'remove',
       patchChat: 'patch'
     }),
@@ -212,9 +187,35 @@ export default {
     ...mapActions('status-container-helper', {
       patchChatNotifications: 'patch'
     }),
+    async updateDataTableParams (e) {
+      if (!this.initialView) {
+        this.queryObject = {
+          ...e,
+          query: this.queryObject.query
+        }
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryPage(this.queryObject.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
+        }
+      }
+    },
+    async loadDataTableEntities () {
+      this.loading = true
+      this.chatsResponse = await this.findChats(
+        this.chatsParams
+      )
+      await this.loadOtherStatusContainers()
+      this.isLoading = false
+      setTimeout(async () => {
+        await this.checkNewChats()
+      }, 1000)
+    },
     fillObjects () {
       const tmpBlocks = {}
-      for (const chat of this.chats) {
+      for (const chat of this.computedChats) {
         if (!chat.isBlocked) {
           tmpBlocks[chat._id] = null
         } else {
@@ -246,7 +247,7 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
         this.blocks[id] = undefined
         this.$nextTick(() => {
-          this.blocks[id] = this.chats.find(obj => obj._id === id).isBlocked
+          this.blocks[id] = this.computedChats.find(obj => obj._id === id).isBlocked
         })
       }
     },
@@ -267,7 +268,7 @@ export default {
       }
     },
     async checkNewChats () {
-      const visibleChats = this.chats.map(obj => obj._id)
+      const visibleChats = this.computedChats.map(obj => obj._id)
       const acceptedStatusContainers = this.statusContainers.filter(obj => obj.user === this.user._id && obj.type === 'chats' && obj.customField === 'new').map(obj => obj.reference)
       const chatIds = visibleChats.filter(e => acceptedStatusContainers.indexOf(e) !== -1)
       if (chatIds.length > 0) {
@@ -292,110 +293,18 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
       }
     },
-    myChar (id, idChar, otherChar) {
-      if (id === this.user._id) {
-        return idChar
-      } else {
-        return otherChar
-      }
-    },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
+    async loadOtherStatusContainers () {
+      this.otherStatusContainers = await this.findStatusContainers(
+        {
+          query: {
+            user: { $ne: this.user._id },
+            type: 'chats',
+            reference: {
+              $in: this.computedChats.map(obj => obj._id)
+            }
           }
         }
-        this.sortDesc = tmpDesc
-      }
-    },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
-      if (parseInt(this.$route.query.p) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateItemsPerPage (data) {
-      if (parseInt(this.$route.query.i) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
-          }
-        })
-      } else if (!data) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
-          }
-        })
-      }
-    },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
-          }
-        })
-      }
+      )
     }
   },
 
@@ -403,7 +312,12 @@ export default {
     ...mapGetters([
       's3',
       'blockedItems',
-      'itemsPerPageOptions'
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -414,43 +328,59 @@ export default {
     ...mapGetters('status-containers', {
       statusContainers: 'list'
     }),
+    ...mapGetters('chats', {
+      chats: 'list'
+    }),
     headers () {
       return [
-        { text: '', value: 'pic', width: 50, sortable: false },
-        { text: this.$t('userName'), value: 'userName' },
-        { text: this.$t('block') + ' / ' + this.$t('unblock'), value: 'status' },
-        // { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
-        { text: this.$t('goToChat'), value: 'goToChat', sortable: false, align: 'center' }
+        { title: '', value: 'pic', width: 50, sortable: false },
+        { title: this.$t('userName'), value: 'userName' },
+        { title: this.$t('block') + ' / ' + this.$t('unblock'), value: 'status' },
+        // { title: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
+        { title: this.$t('goToChat'), value: 'goToChat', sortable: false, align: 'center' }
       ]
+    },
+    computedChats () {
+      if (this.chatsResponse?.data) {
+        return this.chatsResponse.data
+      } else {
+        return []
+      }
     },
     chatsParams () {
       const query = {
         _id: { $in: this.statusContainers.filter(obj => obj.user === this.user._id && obj.type === 'chats').map(obj => obj.reference) },
         $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc }
+        $skip: this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
       }
       return {
-        query,
-        debounce: 1000
+        query
+      }
+    },
+    computedTotal () {
+      if (this.chatsResponse) {
+        return this.chatsResponse.total
+      } else {
+        return 0
       }
     },
     computedLimit () {
-      if (this.itemsPerPage === -1) {
+      if (this.queryObject.itemsPerPage === -1) {
         return 1000000
       } else {
-        return this.itemsPerPage
+        return this.queryObject.itemsPerPage
       }
     },
     computedSkip () {
-      if (this.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.itemsPerPage
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
       }
+      return (this.queryObject.page - 1) * tmpSkip
     },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
       } else {
         return -1
@@ -458,47 +388,29 @@ export default {
     }
   },
 
-  asyncComputed: {
-    async computedOtherStatusContainers () {
-      return await this.findStatusContainers(
-        {
-          query: {
-            user: { $ne: this.user._id },
-            type: 'chats',
-            reference: {
-              $in: this.chats.map(obj => obj._id)
-            }
-          }
-        }
-      )
-    }
-  },
-
   watch: {
-    chatsError () {
-      if (this.chatsError && this.chatsError.code === 403) {
-        this.$router.push({ name: 'Forbidden' })
-      }
-    },
     chats: {
       deep: true,
-      handler () {
-        this.checkNewChats()
+      async handler () {
+        await this.checkNewChats()
         this.fillObjects()
+      }
+    },
+    chatsParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
       }
     },
     statusContainers: {
       deep: true,
-      handler () {
-        this.checkNewChats()
-      }
-    },
-    isFindChatsPending () {
-      if (!this.isFindChatsPending) {
-        this.loading = false
-        this.total = this.chatsPaginationData.default.mostRecent.total
-      } else {
-        this.loading = true
+      async handler () {
+        await this.checkNewChats()
       }
     }
   }

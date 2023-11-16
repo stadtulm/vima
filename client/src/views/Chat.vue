@@ -6,7 +6,7 @@
       <v-col
         class="text-h5 font-weight-bold text-customGrey text-uppercase"
       >
-        {{$t('chatWith')}} {{selectedChat && computedOtherStatusContainers && computedOtherStatusContainers.length === 1 ? users.find(obj => obj._id === computedOtherStatusContainers[0].user).userName : $route.params.username }}
+        {{$t('chatWith')}} {{selectedChat && otherStatusContainers?.length === 1 ? users.find(obj => obj._id === otherStatusContainers[0].user).userName : $route.params.username }}
       </v-col>
     </v-row>
     <v-row>
@@ -27,7 +27,7 @@
                 <v-col
                   v-if="!computedMessages || computedMessages.length === 0"
                 >
-                  <template v-if="isFindChatMessagesPending || init">
+                  <template v-if="isLoading || init">
                     <v-progress-linear
                       color="customGrey"
                       indeterminate
@@ -54,7 +54,7 @@
                 <template
                   v-else
                 >
-                  <v-col v-if="isFindChatMessagesPending">
+                  <v-col v-if="isLoading">
                     <v-progress-linear
                       color="customGrey"
                       indeterminate
@@ -66,7 +66,7 @@
                     </v-col>
                   </v-col>
                   <v-col
-                    v-else-if="selectedChat && chatMessagesPaginationData[selectedChat._id].mostRecent.total <= computedMessages.length"
+                    v-else-if="selectedChat && chatMessagesResponse.total <= computedMessages.length"
                     class="text-center text-customGrey text-body-1 mt-3"
                   >
                     {{$t('noOlderAnswers')}}
@@ -126,11 +126,10 @@
                                     open-on-hover
                                     v-if="isOwnMessage(message)"
                                   >
-                                    <template v-slot:activator="{ on, attrs }">
+                                    <template v-slot:activator="{ props }">
                                       <v-btn
                                         icon
-                                        v-bind="attrs"
-                                        v-on="on"
+                                        v-bind="props"
                                         class="mb-2 mr-2 customGreyUltraLight elevation-1"
                                       >
                                         <v-icon
@@ -145,35 +144,31 @@
                                       rounded
                                     >
                                       <!-- Edit button -->
-                                      <v-list-item
+                                      <v-btn
                                         @click="editMessage(message)"
                                       >
-                                        <v-list-item-avatar>
+                                        <v-avatar>
                                           <v-icon>
                                             fas fa-pen
                                           </v-icon>
-                                        </v-list-item-avatar>
-                                        <v-list-item-content>
-                                          <v-list-item-title>
-                                            {{$t('editButton')}}
-                                          </v-list-item-title>
-                                        </v-list-item-content>
-                                      </v-list-item>
+                                        </v-avatar>
+                                        <v-list-item-title>
+                                          {{$t('editButton')}}
+                                        </v-list-item-title>
+                                      </v-btn>
                                       <!-- Delete button -->
-                                      <v-list-item
+                                      <v-btn
                                         @click="deleteMessage(message._id)"
                                       >
-                                        <v-list-item-avatar>
+                                        <v-avatar>
                                           <v-icon>
                                             fas fa-trash
                                           </v-icon>
-                                        </v-list-item-avatar>
-                                        <v-list-item-content>
-                                          <v-list-item-title>
-                                            {{$t('deleteButton')}}
-                                          </v-list-item-title>
-                                        </v-list-item-content>
-                                      </v-list-item>
+                                        </v-avatar>
+                                        <v-list-item-title>
+                                          {{$t('deleteButton')}}
+                                        </v-list-item-title>
+                                      </v-btn>
                                     </v-list>
                                   </v-menu>
                                   <v-col
@@ -199,7 +194,7 @@
                                     <TranslatableText
                                       ownField="text"
                                       :allFields="['text']"
-                                      :allIds="chatMessages.filter(m => !isOwnMessage(m)).map(m => ({ id: m._id, translationSum: m.translationSum }))"
+                                      :allIds="computedMessages.filter(m => !isOwnMessage(m)).map(m => ({ id: m._id, translationSum: m.translationSum }))"
                                       type="chat-messages"
                                       :textParent="message"
                                     >
@@ -222,7 +217,7 @@
                                         >
                                           <TranslatableTextInfo
                                             :canTranslate="true"
-                                            :canTranslateAll="chatMessages.filter(m => !isOwnMessage(m)).length > 1"
+                                            :canTranslateAll="computedMessages.filter(m => !isOwnMessage(m)).length > 1"
                                             @update:translateText="(data) => { translateText(data) }"
                                           ></TranslatableTextInfo>
                                         </v-col>
@@ -272,12 +267,11 @@
                                     open-on-hover
                                     v-if="!isOwnMessage(message)"
                                   >
-                                    <template v-slot:activator="{ on, attrs }">
+                                    <template v-slot:activator="{ props }">
                                       <v-btn
                                         icon
                                         class="mb-2 ml-2 customGreyUltraLight elevation-1"
-                                        v-bind="attrs"
-                                        v-on="on"
+                                        v-bind="props"
                                       >
                                         <v-icon
                                           size="14"
@@ -291,20 +285,18 @@
                                       rounded
                                     >
                                       <!-- Report button -->
-                                      <v-list-item
+                                      <v-btn
                                         @click="openReportDialog(message)"
                                       >
-                                        <v-list-item-avatar>
+                                        <v-avatar>
                                           <v-icon>
                                             fas fa-exclamation-triangle
                                           </v-icon>
-                                        </v-list-item-avatar>
-                                        <v-list-item-content>
-                                          <v-list-item-title>
-                                            {{$t('reportButton')}}
-                                          </v-list-item-title>
-                                        </v-list-item-content>
-                                      </v-list-item>
+                                        </v-avatar>
+                                        <v-list-item-title>
+                                          {{$t('reportButton')}}
+                                        </v-list-item-title>
+                                      </v-btn>
                                     </v-list>
                                   </v-menu>
                                 </v-row>
@@ -381,7 +373,7 @@
                                   @update:checkVisibleMessages="checkVisibleMessages"
                                   @update:report="openReportDialog"
                                   :computedOwnStatusContainer="computedOwnStatusContainer"
-                                  :computedOtherStatusContainers="computedOtherStatusContainers"
+                                  :computedOtherStatusContainers="otherStatusContainers"
                                 ></ChatReplies>
                               </v-col>
                             </v-row>
@@ -487,20 +479,12 @@
                     <v-col
                       class="grow pr-1"
                     >
-                      <VuetifyTiptap
-                        :editor-properties="{
-                          disableInputRules: true,
-                          disablePasteRules: true
-                        }"
-                        color="customGreyUltraLight"
-                        v-model="message"
-                        :card-props="{ tile: true, flat: true }"
-                        style="border: 1px solid #aaa;"
-                        :extensions="extensions"
+                      <custom-tiptap
                         :placeholder="$t('writeNewMessage')"
                         id="messageInput"
+                        v-model="message"
                       >
-                      </VuetifyTiptap>
+                      </custom-tiptap>
                       <v-row class="mt-3">
                         <v-col
                           cols="12"
@@ -534,7 +518,7 @@
                         color="customGrey"
                       >
                         <template
-                          slot="loader"
+                          v-slot:loader
                         >
                           <v-progress-circular
                             color="white"
@@ -570,7 +554,6 @@
 
 <script>
 
-import { makeFindMixin } from '@feathersjs/vuex'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChatReplies from '@/views/ChatReplies.vue'
 import ViolationDialog from '@/components/ViolationDialog.vue'
@@ -578,11 +561,10 @@ import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 import Lightbox from '@/components/Lightbox.vue'
 import FileUpload from '@/components/FileUpload.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 export default {
   name: 'Chat',
-
-  mixins: [makeFindMixin({ service: 'chat-messages', watch: true })],
 
   components: {
     ChatReplies,
@@ -590,9 +572,12 @@ export default {
     TranslatableText,
     TranslatableTextInfo,
     Lightbox,
-    FileUpload
+    FileUpload,
+    CustomTiptap
   },
   data: () => ({
+    chatMessagesResponse: undefined,
+    otherStatusContainers: undefined,
     pics: [],
     showViolationDialog: undefined,
     itemToReport: undefined,
@@ -611,7 +596,7 @@ export default {
     isSending: false,
     search: '',
     page: 1,
-    loading: true,
+    isLoading: true,
     total: 0,
     itemsPerPage: 10,
     intersectionOptions: {
@@ -661,9 +646,11 @@ export default {
       // No chat exists
       } else {
         this.init = false
-        this.loading = false
+        this.isLoading = false
       }
     }
+    await this.loadChatMessages()
+    await this.loadOtherStatusContainers()
   },
 
   beforeUnmount () {
@@ -689,6 +676,7 @@ export default {
       createChat: 'create'
     }),
     ...mapActions('chat-messages', {
+      findChatMessages: 'find',
       createMessage: 'create',
       patchMessage: 'patch',
       removeMessage: 'remove'
@@ -700,6 +688,11 @@ export default {
       findCommonChat: 'find',
       patchChatMessageNotifications: 'patch'
     }),
+    async loadChatMessages () {
+      this.isLoading = true
+      this.chatMessagesResponse = await this.findChatMessages(this.chatMessagesParams)
+      this.isLoading = false
+    },
     async patchFileRemove (file) {
       this.isLoading = true
       try {
@@ -732,8 +725,8 @@ export default {
       this.itemToReport = message
     },
     isSeen (messageId) {
-      if (this.computedOtherStatusContainers) {
-        return this.computedOtherStatusContainers.filter(obj => obj.unread.map(unread => unread.id).includes(messageId)).length === 0
+      if (this.otherStatusContainers) {
+        return this.otherStatusContainers.filter(obj => obj.unread.map(unread => unread.id).includes(messageId)).length === 0
       } else {
         return true
       }
@@ -761,7 +754,7 @@ export default {
       const tmpState = !this.showRepliesObj[messageId]
       this.showRepliesObj = {}
       if (tmpState) {
-        this.$set(this.showRepliesObj, messageId, true)
+        this.showRepliesObj[messageId] = true
         setTimeout(() => {
           document.querySelector('#replyInput' + messageId).scrollIntoView({ block: 'end', behavior: 'smooth' })
         }, 500)
@@ -875,9 +868,8 @@ export default {
       if (
         scrollTop === 0 &&
         this.selectedChat &&
-        !this.isFindChatMessagesPending &&
-        this.chatMessagesPaginationData[this.selectedChat._id] &&
-        this.chatMessagesPaginationData[this.selectedChat._id].mostRecent.total > this.computedMessages.length
+        !this.isLoading &&
+        this.chatMessagesResponse?.total > this.computedMessages.length
       ) {
         this.manualLoad = true
         this.page++
@@ -953,6 +945,22 @@ export default {
       return top <= containerRect.top
         ? (containerRect.top - top <= height)
         : (bottom - containerRect.bottom <= height)
+    },
+    async loadOtherStatusContainers () {
+      if (this.triggerNewMessage) {}
+      if (this.selectedChat) {
+        this.otherStatusContainers = await this.findStatusContainers(
+          {
+            query: {
+              user: { $ne: this.user._id },
+              type: 'chats',
+              reference: this.selectedChat._id
+            }
+          }
+        )
+      } else {
+        return []
+      }
     }
   },
 
@@ -1005,27 +1013,8 @@ export default {
       }
     },
     computedMessages () {
-      if (this.selectedChat && this.messages && this.triggerNewMessage) {
-        return this.messages.filter(obj => obj.chat === this.selectedChat._id && !obj.repliesTo)
-      } else {
-        return []
-      }
-    }
-  },
-
-  asyncComputed: {
-    async computedOtherStatusContainers () {
-      if (this.triggerNewMessage) {}
-      if (this.selectedChat) {
-        return await this.findStatusContainers(
-          {
-            query: {
-              user: { $ne: this.user._id },
-              type: 'chats',
-              reference: this.selectedChat._id
-            }
-          }
-        )
+      if (this.selectedChat && this.chatMessagesResponse?.data && this.triggerNewMessage) {
+        return this.chatMessagesResponse.data.filter(obj => obj.chat === this.selectedChat._id && !obj.repliesTo)
       } else {
         return []
       }
@@ -1052,22 +1041,6 @@ export default {
           })
           this.tmpScrollHeight = document.querySelector('#messageContainer').scrollHeight
         }
-      }
-    },
-    isFindChatMessagesPending () {
-      if (
-        !this.isFindChatMessagesPending &&
-        this.selectedChat &&
-        this.chatMessagesPaginationData[this.selectedChat._id]
-      ) {
-        this.loading = false
-        this.total = this.chatMessagesPaginationData[this.selectedChat._id].mostRecent.total
-        this.triggerNewMessage = Date.now()
-      } else {
-        this.loading = true
-        setTimeout(() => {
-          this.init = false
-        }, 1000)
       }
     },
     selectedChat () {

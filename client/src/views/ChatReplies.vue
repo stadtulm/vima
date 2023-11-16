@@ -17,7 +17,7 @@
                 <v-col
                   v-if="!computedMessages || computedMessages.length === 0"
                 >
-                  <template v-if="isFindChatMessagesPending">
+                  <template v-if="isLoading">
                     <v-progress-linear
                       color="customGrey"
                       indeterminate
@@ -39,7 +39,7 @@
                 <template
                   v-else
                 >
-                  <v-col v-if="isFindChatMessagesPending">
+                  <v-col v-if="isLoading">
                     <v-progress-linear
                       color="customGrey"
                       indeterminate
@@ -51,7 +51,7 @@
                     </v-col>
                   </v-col>
                   <v-col
-                    v-else-if="chatMessagesPaginationData[mainMessage._id].mostRecent.total > computedMessages.length"
+                    v-else-if="chatMessagesResponse.total > computedMessages.length"
                     class="text-center text-customGrey text-body-1 my-3"
                   >
                     <v-btn
@@ -70,7 +70,7 @@
                     </v-btn>
                   </v-col>
                   <v-col
-                    v-else-if="chatMessagesPaginationData[mainMessage._id].mostRecent.total <= computedMessages.length"
+                    v-else-if="chatMessagesResponse.total <= computedMessages.length"
                     class="text-center text-customGrey text-body-1 mt-3"
                   >
                     {{$t('noOlderAnswers')}}
@@ -128,11 +128,10 @@
                                     offset-y
                                     open-on-hover
                                   >
-                                    <template v-slot:activator="{ on, attrs }">
+                                    <template v-slot:activator="{ props }">
                                       <v-btn
                                         icon
-                                        v-bind="attrs"
-                                        v-on="on"
+                                        v-bind="props"
                                         class="mb-2 mr-2 elevation-1 customGreyUltraLight"
                                       >
                                         <v-icon
@@ -150,31 +149,27 @@
                                       <v-list-item
                                         @click="editMessage(message)"
                                       >
-                                        <v-list-item-avatar>
+                                        <v-avatar>
                                           <v-icon>
                                             fas fa-pen
                                           </v-icon>
-                                        </v-list-item-avatar>
-                                        <v-list-item-content>
-                                          <v-list-item-title>
-                                            {{$t('editButton')}}
-                                          </v-list-item-title>
-                                        </v-list-item-content>
+                                        </v-avatar>
+                                        <v-list-item-title>
+                                          {{$t('editButton')}}
+                                        </v-list-item-title>
                                       </v-list-item>
                                       <!-- Delete button -->
                                       <v-list-item
                                         @click="deleteMessage(message._id)"
                                       >
-                                        <v-list-item-avatar>
+                                        <v-avatar>
                                           <v-icon>
                                             fas fa-trash
                                           </v-icon>
-                                        </v-list-item-avatar>
-                                        <v-list-item-content>
-                                          <v-list-item-title>
-                                            {{$t('deleteButton')}}
-                                          </v-list-item-title>
-                                        </v-list-item-content>
+                                        </v-avatar>
+                                        <v-list-item-title>
+                                          {{$t('deleteButton')}}
+                                        </v-list-item-title>
                                       </v-list-item>
                                     </v-list>
                                   </v-menu>
@@ -212,7 +207,7 @@
                                         >
                                           <TranslatableTextInfo
                                             :canTranslate="true"
-                                            :canTranslateAll="chatMessages.filter(m => !isOwnMessage(m)).length > 1"
+                                            :canTranslateAll="computedMessages.filter(m => !isOwnMessage(m)).length > 1"
                                             @update:translateText="(data) => { translateText(data) }"
                                           ></TranslatableTextInfo>
                                         </v-col>
@@ -250,11 +245,10 @@
                                     offset-y
                                     open-on-hover
                                   >
-                                    <template v-slot:activator="{ on, attrs }">
+                                    <template v-slot:activator="{ props }">
                                       <v-btn
                                         icon
-                                        v-bind="attrs"
-                                        v-on="on"
+                                        v-bind="props"
                                         class="mb-2 ml-2 elevation-1 customGreyUltraLight"
                                       >
                                         <v-icon
@@ -271,16 +265,14 @@
                                         <v-list-item
                                           @click="$emit('update:report', message)"
                                         >
-                                          <v-list-item-avatar>
+                                          <v-avatar>
                                             <v-icon>
                                               fas fa-exclamation-triangle
                                             </v-icon>
-                                          </v-list-item-avatar>
-                                          <v-list-item-content>
-                                            <v-list-item-title>
-                                              {{$t('reportButton')}}
-                                            </v-list-item-title>
-                                          </v-list-item-content>
+                                          </v-avatar>
+                                          <v-list-item-title>
+                                            {{$t('reportButton')}}
+                                          </v-list-item-title>
                                         </v-list-item>
                                       </v-list>
                                   </v-menu>
@@ -383,19 +375,12 @@
                   class="text-left"
                   cols="11"
                 >
-                  <VuetifyTiptap
-                    :editor-properties="{
-                      disableInputRules: true,
-                      disablePasteRules: true
-                    }"
-                    color="customGreyUltraLight"
-                    v-model="message"
-                    :card-props="{ tile: true, flat: true }"
-                    style="border: 1px solid #aaa;"
-                    :extensions="extensions"
+                  <custom-tiptap
                     :placeholder="$t('writeNewAnswer') + ' ...'"
+                    id="messageInput"
+                    v-model="message"
                   >
-                  </VuetifyTiptap>
+                  </custom-tiptap>
                   <v-row class="mt-3">
                     <v-col
                       cols="12"
@@ -431,7 +416,7 @@
                     color="customGrey"
                   >
                     <template
-                      slot="loader"
+                      v-slot:loader
                     >
                       <v-progress-circular
                         color="white"
@@ -458,17 +443,15 @@
 
 <script>
 
-import { makeFindMixin } from '@feathersjs/vuex'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 import Lightbox from '@/components/Lightbox.vue'
 import FileUpload from '@/components/FileUpload.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 export default {
   name: 'ChatReplies',
-
-  mixins: [makeFindMixin({ service: 'chat-messages', watch: true })],
 
   props: [
     'mainMessage',
@@ -486,10 +469,12 @@ export default {
     TranslatableText,
     TranslatableTextInfo,
     Lightbox,
-    FileUpload
+    FileUpload,
+    CustomTiptap
   },
 
   data: () => ({
+    chatMessagesResponse: undefined,
     pics: [],
     isUpdating: false,
     isEditMessage: undefined,
@@ -502,8 +487,7 @@ export default {
     loaders: {},
     search: '',
     page: 1,
-    loading: true,
-    total: 0,
+    isLoading: true,
     itemsPerPage: 10,
     intersectionOptions: {
       root: null,
@@ -513,6 +497,7 @@ export default {
   }),
 
   async mounted () {
+    await this.loadChatMessages()
   },
 
   methods: {
@@ -523,10 +508,16 @@ export default {
       updateTranslationItem: 'updateItem'
     }),
     ...mapActions('chat-messages', {
+      findMessages: 'find',
       createMessage: 'create',
       patchMessage: 'patch',
       removeMessage: 'remove'
     }),
+    async loadChatMessages () {
+      this.isLoading = true
+      this.chatMessagesResponse = await this.findMessages(this.chatMessagesParams)
+      this.isLoading = false
+    },
     isSeen (messageId) {
       if (this.computedOtherStatusContainers) {
         return this.computedOtherStatusContainers.filter(obj => obj.unread.map(obj => obj.id).includes(messageId)).length === 0
@@ -682,8 +673,8 @@ export default {
       }
     },
     computedMessages () {
-      if (this.messages) {
-        return this.messages.filter(obj => obj.repliesTo === this.mainMessage._id)
+      if (this.chatMessagesResponse?.data) {
+        return this.chatMessagesResponse.data.filter(obj => obj.repliesTo === this.mainMessage._id)
       } else {
         return []
       }
@@ -705,14 +696,6 @@ export default {
             })
           })
         }
-      }
-    },
-    isFindChatMessagesPending () {
-      if (!this.isFindChatMessagesPending) {
-        this.loading = false
-        this.total = this.chatMessagesPaginationData[this.mainMessage._id].mostRecent.total
-      } else {
-        this.loading = true
       }
     },
     message () {

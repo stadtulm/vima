@@ -234,7 +234,7 @@ const routes = [
     ])
   },
   {
-    path: '/chats/:chat?',
+    path: '/chats/:chat',
     name: 'IdChat',
     component: Chat,
     meta: {
