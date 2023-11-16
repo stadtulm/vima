@@ -9,7 +9,7 @@
         size="large"
         v-bind="props"
         :icon="!$vuetify.display.smAndUp"
-        class="'rounded-ts-xl rounded-e-xl'"
+        class="rounded-ts-xl rounded-e-xl"
       >
         <country-flag
           :class="$vuetify.display.smAndUp ? 'mb-1': 'mb-0 ml-1 mr-1'"
