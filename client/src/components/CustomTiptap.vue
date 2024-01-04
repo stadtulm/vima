@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mx-1"
+    class="mx-0"
     style="width:100%"
     v-if="editor"
   >
@@ -10,7 +10,19 @@
       >
         <v-toolbar
           color="transparent"
+          class="mx-1"
         >
+          <v-btn
+            size="small"
+            variant="outlined"
+            @click="editor.chain().focus().toggleBlockquote().run()"
+            :disabled="!editor.can().chain().focus().toggleBlockquote().run()"
+            :active="editor.isActive('blockquote')"
+          >
+            <v-icon>
+              fas fa-quote-left
+            </v-icon>
+          </v-btn>
           <v-btn
             size="small"
             variant="outlined"
@@ -120,12 +132,11 @@
     </v-row>
     <v-row>
       <v-col
-        class="pt-0"
         cols="12"
+        class="pt-0 pb-5"
       >
         <editor-content
           style="border: 1px solid black; background-color: #fff;"
-          class="px-3"
           width="100%"
           :editor="editor"
         />
@@ -168,6 +179,7 @@
 
 <script>
 import Mention from '@tiptap/extension-mention'
+import Blockquote from '@tiptap/extension-blockquote'
 import Link from '@tiptap/extension-link'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -249,6 +261,11 @@ export default {
       extensions: [
         StarterKit,
         Underline,
+        Blockquote.configure({
+          HTMLAttributes: {
+            class: 'blockquote'
+          }
+        }),
         Link.configure({
           openOnClick: false,
           autolink: false

@@ -1,7 +1,6 @@
 <template>
   <div class="droparea-container">
     <v-sheet
-      variant="outlined"
       class="droparea"
       :class="files.length < maxFiles ? 'pointer' : ''"
       width="100%"
@@ -62,6 +61,8 @@
             <v-card
               :ripple="false"
               style="cursor: auto !important"
+              theme="light"
+              class="pa-4 elevation-6"
             >
               <v-row>
                 <v-col
@@ -104,29 +105,31 @@
                   </div>
                 </v-tooltip>
               </v-img>
-              <v-card-text>
-                <v-text-field
-                  v-model="file.credit"
-                  @click.stop
-                  :label="$t('copyrightOwner')"
-                  :rules="[rules.required]"
-                  @keypress.stop
-                  @input="updateFileCredit($event, i)"
-                  :disabled="file.errors.length > 0"
-                  :hint="$t('publicHint')"
-                  persistent-hint
-                ></v-text-field>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn
-                  variant="elevated"
-                  color="customGrey"
-                  block
-                  @click.stop="removeFile(file)"
-                >
-                  {{$t('deleteButton')}}
-                </v-btn>
-              </v-card-actions>
+              <v-row>
+                <v-col>
+                  <v-text-field
+                    class="mt-4"
+                    v-model="file.credit"
+                    @click.stop
+                    :label="$t('copyrightOwner')"
+                    :rules="[rules.required]"
+                    @keypress.stop
+                    @input="updateFileCredit($event, i)"
+                    :disabled="file.errors.length > 0"
+                    :hint="$t('publicHint')"
+                    persistent-hint
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-btn
+                class="mt-4"
+                variant="elevated"
+                color="customGrey"
+                block
+                @click.stop="removeFile(file)"
+              >
+                {{$t('deleteButton')}}
+              </v-btn>
             </v-card>
           </v-col>
           <v-col
@@ -255,9 +258,9 @@ export default {
         file.url = result.id
       }
       if (this.maxFiles > 1) {
-        this.$emit('update:model-value', this.files)
+        this.$emit('update:modelValue', this.files)
       } else {
-        this.$emit('update:model-value', this.files[0])
+        this.$emit('update:modelValue', this.files[0])
       }
     },
     adapt () {
@@ -331,9 +334,9 @@ export default {
       this.files = this.files.concat(filesWithDataUrl)
       this.$refs.hiddenInput.value = null
       if (this.maxFiles > 1) {
-        this.$emit('update:model-value', this.files)
+        this.$emit('update:modelValue', this.files)
       } else {
-        this.$emit('update:model-value', this.files[0])
+        this.$emit('update:modelValue', this.files[0])
       }
       this.isInsideDroparea = false
       this.$emit('update:fileAdd')

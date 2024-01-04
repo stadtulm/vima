@@ -552,7 +552,7 @@
             <v-row>
               <v-col>
                 <v-textarea
-                  :label="$t('writeNewMessage')"
+                  :label="$t('writeNewMessage') + ' ...'"
                   v-model="message"
                   auto-grow
                   multi-line

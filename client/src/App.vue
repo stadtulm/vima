@@ -2576,6 +2576,11 @@ export default {
 
 <style>
 
+  html, body {
+    height: 100%;
+    scroll-behavior: smooth;
+  }
+
   .customGrey-badge {
     color: #455A64 !important;
   }

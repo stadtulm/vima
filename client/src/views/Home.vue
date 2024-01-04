@@ -297,7 +297,6 @@ export default {
       while (i < 100) {
         i++
         try {
-          console.log(i)
           await this.getImageSrc('/pics/people/' + i + '.jpeg')
         } catch (e) {
           break

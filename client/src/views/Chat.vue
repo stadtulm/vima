@@ -14,8 +14,10 @@
     <v-row>
       <v-col>
         <v-sheet
+          @scroll="onScroll"
           id="messageContainer"
           min-height="100px"
+          max-height="75vh"
           color="customGreyLight"
           class="pa-6 elevation-4"
           style="overflow-y: auto; overflow-x: hidden"
@@ -50,7 +52,6 @@
           <template
             v-else
           >
-            <!-- TODO: Check this / replace by btn -->
             <v-col v-if="isLoading">
               <v-progress-linear
                 color="customGrey"
@@ -62,7 +63,6 @@
                 {{$t('loadingOlderAnswers')}}
               </v-col>
             </v-col>
-            <!-- TODO: Check this -->
             <v-col
               v-else-if="selectedChat && chatMessagesResponse.total <= computedMessages.length"
               class="text-center text-customGrey text-body-1 mt-3"
@@ -73,17 +73,14 @@
               v-for="(message, i) in computedMessages"
               :key="i"
               cols="12"
-              class="pa-0 my-8"
+              class="pa-0 my-4"
               :class="isOwnMessage(message) ? 'text-right': 'message text-left'"
               :name="message._id"
-              :id="'replyInput' + message._id"
             >
                 <!-- Username & Date -->
-                <v-row
-                  dense
-                >
+                <v-row>
                   <v-col
-                    class="font-weight-light text-customGrey"
+                    class="mb-1 font-weight-light text-customGrey"
                   >
                     <span
                       @click="!isOwnMessage(message) ? $router.push({name: 'User', params: { user: message.author}}) : ''"
@@ -107,7 +104,6 @@
                       color="transparent"
                     >
                       <v-row>
-                        <!-- Message -->
                         <v-col
                           class="text-left"
                         >
@@ -144,7 +140,7 @@
                                   >
                                     <!-- Edit button -->
                                     <v-list-item
-                                      @click="editMessage(message)"
+                                      @click="setIsEditMessage(message)"
                                     >
                                       <template
                                         v-slot:prepend
@@ -179,7 +175,7 @@
                                   </v-list>
                                 </v-menu>
                                 <v-sheet
-                                  :color="isOwnMessage(message) ? '#fff' : 'customGrey'"
+                                  :color="getBGColor(message)"
                                   class="px-4 mr-1 py-1 elevation-4"
                                   :class="{'rounded-s-xl rounded-te-xl': isOwnMessage(message), 'rounded-e-xl rounded-ts-xl': !isOwnMessage(message), 'mb-2': isSeen(message._id)}"
                                 >
@@ -188,45 +184,56 @@
                                   >
                                   </div>
                                 </v-sheet>
-                                <v-menu
-                                  open-on-hover
+                                <!-- Menu for other message -->
+                                <template
                                   v-if="!isOwnMessage(message)"
                                 >
-                                  <template v-slot:activator="{ props }">
-                                    <v-btn
-                                      size="small"
-                                      icon="fas fa-ellipsis-v"
-                                      class="mb-2 ml-2 customGreyUltraLight elevation-1"
-                                      v-bind="props"
-                                    >
-                                    </v-btn>
-                                  </template>
-                                  <v-list
-                                    dense
-                                    rounded
+                                  <v-menu
+                                    open-on-hover
                                   >
-                                    <!-- Report button -->
-                                    <v-list-item
-                                      @click="openReportDialog(message)"
-                                    >
-                                      <template
-                                        v-slot:prepend
+                                    <template v-slot:activator="{ props }">
+                                      <v-btn
+                                        size="small"
+                                        icon="fas fa-ellipsis-v"
+                                        class="mb-2 ml-2 customGreyUltraLight elevation-1"
+                                        v-bind="props"
                                       >
-                                        <v-avatar>
-                                          <v-icon>
-                                            fas fa-exclamation-triangle
-                                          </v-icon>
-                                        </v-avatar>
-                                      </template>
-                                      <v-list-item-title>
-                                        {{$t('reportButton')}}
-                                      </v-list-item-title>
-                                    </v-list-item>
-                                  </v-list>
-                                </v-menu>
+                                      </v-btn>
+                                    </template>
+                                    <v-list
+                                      dense
+                                      rounded
+                                    >
+                                      <!-- Report button -->
+                                      <v-list-item
+                                        @click="openReportDialog(message)"
+                                      >
+                                        <template
+                                          v-slot:prepend
+                                        >
+                                          <v-avatar>
+                                            <v-icon>
+                                              fas fa-exclamation-triangle
+                                            </v-icon>
+                                          </v-avatar>
+                                        </template>
+                                        <v-list-item-title>
+                                          {{$t('reportButton')}}
+                                        </v-list-item-title>
+                                      </v-list-item>
+                                    </v-list>
+                                  </v-menu>
+                                  <v-btn
+                                    size="small"
+                                    icon="fas fa-reply"
+                                    class="mb-2 ml-3 customGreyUltraLight elevation-1"
+                                    @click="setIsReplyMessage(message)"
+                                  >
+                                  </v-btn>
+                                </template>
                               </v-row>
                               <v-col
-                                class="pr-0"
+                                class="px-0"
                                 :class="isOwnMessage(message) ? 'text-right' : ''"
                               >
                                 <TranslatableTextInfo
@@ -263,7 +270,7 @@
                                   >
                                     <!-- Edit button -->
                                     <v-list-item
-                                      @click="editMessage(message)"
+                                      @click="setIsEditMessage(message)"
                                     >
                                       <template
                                         v-slot:prepend
@@ -365,8 +372,8 @@
                             </template>
                           </TranslatableText>
                         </v-col>
-                          </v-row>
-                        </v-sheet>
+                      </v-row>
+                    </v-sheet>
                     <!-- Unread -->
                     <v-row
                       dense
@@ -374,7 +381,7 @@
                     >
                       <v-col
                         cols="12"
-                        class="caption"
+                        class="text-caption"
                       >
                         {{$t('unread')}}
                       </v-col>
@@ -424,13 +431,11 @@
                   </v-col>
                 </v-row>
             </v-col>
-            <v-btn
-              style="bottom: 120px; right: calc(50% - 105px);"
-              absolute
-              large
+            <v-snackbar
               :color="$settings.indicatorColor"
-              @click="scrollDown()"
-              v-if="showScrollDown"
+              @click="() => { scrollDownWithinContainer(); scrollDownToContainer(); showScrollDown = false }"
+              timeout="-1"
+              :model-value="showScrollDown"
             >
               {{$t('newChatMessages')}}
               <v-icon
@@ -439,103 +444,22 @@
               >
                 fas fa-arrow-down
               </v-icon>
-            </v-btn>
+            </v-snackbar>
           </template>
         </v-sheet>
-        <v-row>
-          <v-col>
-            <v-divider class="mt-6"></v-divider>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-form
-              ref="messagesForm"
-              v-model="isValid"
-            >
-              <v-row dense>
-                <v-col
-                  class="font-weight-bold"
-                  cols="12"
-                >
-                  {{ isEditMessage ? $t('editPostTitle') : $t('writeNewPostTitle')}}
-                  <v-btn
-                    v-if="isEditMessage"
-                    text
-                    small
-                    outlined
-                    class="ml-2"
-                    @click="resetInput"
-                  >
-                    {{$t('cancelButton')}}
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row
-                class="align-end"
-              >
-                <v-col
-                  class="grow pr-1"
-                >
-                  <custom-tiptap
-                    :placeholder="$t('writeNewMessage')"
-                    id="messageInput"
-                    v-model="message"
-                  >
-                  </custom-tiptap>
-                  <v-row class="mt-3">
-                    <v-col
-                      cols="12"
-                      class="pt-0"
-                      tabIndex="0"
-                      @keypress="$refs.messageUpload.fakeClick()"
-                    >
-                      <FileUpload
-                        ref="messageUpload"
-                        v-model="pics"
-                        @update:fileRemove="patchFileRemove"
-                        @update:fileAdd="$nextTick(() => { $refs.messagesForm.validate() })"
-                        :acceptedMimeTypes="[]"
-                        :maxFileSize="2"
-                        :maxFiles="10"
-                        bgColor="transparent"
-                        :scaleToFit="[1080, 1080]"
-                        :resizeQuality="50"
-                      ></FileUpload>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <v-col
-                  class="shrink px-3"
-                >
-                  <v-btn
-                    fab
-                    :loading="isSending"
-                    :disabled="!message || message.replace(/(\r\n|\n|\r)/gm, '').replaceAll('<p>', '').replaceAll('</p>', '').replaceAll(' ', '') === ''"
-                    @click="sendMessage()"
-                    color="customGrey"
-                  >
-                    <template
-                      v-slot:loader
-                    >
-                      <v-progress-circular
-                        color="white"
-                        width="3"
-                        indeterminate
-                      ></v-progress-circular>
-                    </template>
-                    <v-icon
-                      size="18"
-                      color="white"
-                    >
-                      fas fa-paper-plane
-                    </v-icon>
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-form>
-          </v-col>
-        </v-row>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <chat-send
+          id="chatSend"
+          :user="user"
+          :chat="selectedChat"
+          :isEditMessage="isEditMessage"
+          :isReplyMessage="isReplyMessage"
+          @update:resetInput="resetInput"
+          @update:checkVisibleMessages="checkVisibleMessages()"
+        ></chat-send>
       </v-col>
     </v-row>
     <ViolationDialog
@@ -551,55 +475,40 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import ChatReplies from '@/views/ChatReplies.vue'
 import ViolationDialog from '@/components/ViolationDialog.vue'
 import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 import Lightbox from '@/components/Lightbox.vue'
-import FileUpload from '@/components/FileUpload.vue'
-import CustomTiptap from '@/components/CustomTiptap.vue'
+import ChatSend from '@/components/ChatSend.vue'
 
 export default {
   name: 'Chat',
 
   components: {
-    ChatReplies,
     ViolationDialog,
     TranslatableText,
     TranslatableTextInfo,
     Lightbox,
-    FileUpload,
-    CustomTiptap
+    ChatSend
   },
   data: () => ({
     chatMessagesResponse: undefined,
     otherStatusContainers: undefined,
-    pics: [],
     showViolationDialog: undefined,
     itemToReport: undefined,
     triggerNewMessage: 1,
     isUpdating: false,
     isEditMessage: undefined,
-    showRepliesObj: {},
+    isReplyMessage: undefined,
     init: true,
     manualLoad: false,
     showScrollDown: false,
-    maxContainerHeight: 550,
     scrollDirty: false,
     selectedChat: undefined,
-    isValid: false,
-    message: undefined,
-    isSending: false,
-    search: '',
     page: 1,
     isLoading: true,
     total: 0,
-    itemsPerPage: 10,
-    intersectionOptions: {
-      root: null,
-      rootMargin: '0px 0px 0px 0px',
-      threshold: [0, 1]
-    }
+    itemsPerPage: 10
   }),
 
   async mounted () {
@@ -620,17 +529,19 @@ export default {
       })
     // There is only a user in route - check if chat exists
     } else if (this.$route.params.user) {
-      const chats = await this.findCommonChat(
+      this.selectedChat = (await this.findCommonChat(
         {
           query: {
             type: 'commonChat',
             users: [this.user._id, this.$route.params.user]
           }
         }
-      )
-      this.selectedChat = chats[0]
-      // Chat found
-      if (this.selectedChat) {
+      ))[0]
+      // No chat found
+      if (!this.selectedChat) {
+        this.isLoading = false
+        return
+      } else {
         this.$nextTick(() => {
           this.$nextTick(() => {
             if (document.querySelector('#messageContainer')) {
@@ -639,14 +550,12 @@ export default {
             }
           })
         })
-      // No chat exists
-      } else {
-        this.init = false
-        this.isLoading = false
       }
     }
-    await this.loadChatMessages()
     await this.loadOtherStatusContainers()
+    await this.loadChatMessages()
+    await this.checkVisibleMessages()
+    this.init = false
   },
 
   beforeUnmount () {
@@ -673,8 +582,6 @@ export default {
     }),
     ...mapActions('chat-messages', {
       findChatMessages: 'find',
-      createMessage: 'create',
-      patchMessage: 'patch',
       removeMessage: 'remove'
     }),
     ...mapActions('status-containers', {
@@ -689,34 +596,6 @@ export default {
       this.chatMessagesResponse = await this.findChatMessages(this.chatMessagesParams)
       this.isLoading = false
     },
-    async patchFileRemove (file) {
-      this.isLoading = true
-      try {
-        await this.patchMessage([
-          this.isEditMessage._id,
-          {
-            $pull: {
-              pics: {
-                _id: file._id
-              }
-            }
-          }
-        ])
-        this.pics = this.isEditMessage.pics
-        this.isLoading = false
-        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-      } catch (e) {
-        console.log(e)
-        this.isLoading = false
-        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-      }
-    },
-    resetInput () {
-      this.isEditMessage = undefined
-      this.$refs.messagesForm.reset()
-      this.message = undefined
-      this.pics = []
-    },
     openReportDialog (message) {
       this.itemToReport = message
     },
@@ -728,37 +607,28 @@ export default {
       }
     },
     getBGColor (message) {
-      if (this.showRepliesObj[message._id]) {
-        return '#B0BEC5'
-      } else {
-        if (this.isOwnMessage(message)) {
-          if (this.isEditMessage === message._id) {
-            return '#ffeac2'
-          } else {
-            return '#f0f0f0'
-          }
+      if (this.isOwnMessage(message)) {
+        if (this.isEditMessage?._id === message._id) {
+          return '#ffeac2'
         } else {
-          if (this.computedOwnStatusContainer.unread.map(unread => unread.id).includes(message._id)) {
-            return this.$settings.indicatorColor
-          } else {
-            return '#f6f6f6'
-          }
+          return '#fff'
+        }
+      } else {
+        if (this.computedOwnStatusContainer.unread.map(unread => unread.id).includes(message._id)) {
+          return this.$settings.indicatorColor
+        } else {
+          return 'customGrey'
         }
       }
     },
-    toggleShowReplies (messageId) {
-      const tmpState = !this.showRepliesObj[messageId]
-      this.showRepliesObj = {}
-      if (tmpState) {
-        this.showRepliesObj[messageId] = true
-        setTimeout(() => {
-          document.querySelector('#replyInput' + messageId).scrollIntoView({ block: 'end', behavior: 'smooth' })
-        }, 500)
-      }
+    scrollDownWithinContainer () {
+      document.querySelector('#messageContainer').scrollTo({ top: document.querySelector('#messageContainer').scrollHeight, behavior: 'smooth' })
     },
-    scrollDown () {
-      document.querySelector('#messageContainer').scrollTop = document.querySelector('#messageContainer').scrollHeight
-      this.showScrollDown = false
+    scrollDownToContainer () {
+      window.scrollTo({ top: document.querySelector('#chatSend').scrollHeight - 200, behavior: 'smooth' })
+    },
+    scrollDownToSend () {
+      document.querySelector('#chatSend').scrollIntoView({ behavior: 'smooth', block: 'end' })
     },
     isOwnMessage (message) {
       return message.author === this.user._id
@@ -771,91 +641,7 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
       }
     },
-    async editMessage (message) {
-      this.isEditMessage = message
-      this.message = message.text.value
-      this.pics = message.pics
-      document.querySelector('#messageInput').scrollIntoView({ block: 'start', behavior: 'smooth' })
-    },
-    async sendMessage () {
-      this.manualLoad = true
-      this.isSending = true
-      try {
-        await this.$refs.messageUpload.upload()
-      } catch (e) {
-        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        this.isLoading = false
-        return
-      }
-      if (!this.isEditMessage) {
-        // Create chat if there is none
-        if (!this.selectedChat) {
-          this.selectedChat = await this.createChat([
-            {
-              tmpUsers: [this.user._id, this.$route.params.user]
-            }
-          ])
-        }
-        try {
-          await this.createMessage(
-            [
-              {
-                chat: this.selectedChat._id,
-                author: this.user._id,
-                text: [
-                  {
-                    value: this.message,
-                    lang: null,
-                    type: 'default'
-                  }
-                ],
-                pics: this.pics
-              }
-            ]
-          )
-          this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
-          this.resetInput()
-          this.$nextTick(() => {
-            this.$nextTick(() => {
-              if (!this.ScrollDirty) {
-                document.querySelector('#messageContainer').scrollTop = document.querySelector('#messageContainer').scrollHeight
-              }
-              this.checkVisibleMessages()
-            })
-          })
-          this.triggerNewMessage = Date.now()
-          this.message = undefined
-        } catch (e) {
-          this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
-        }
-      } else {
-        try {
-          await this.patchMessage(
-            [
-              this.isEditMessage,
-              {
-                text: [
-                  {
-                    value: this.message,
-                    lang: null,
-                    type: 'default'
-                  }
-                ],
-                pics: this.pics,
-                editedAt: new Date()
-              }
-            ]
-          )
-          this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
-          this.resetInput()
-          this.triggerNewMessage = Date.now()
-        } catch (e) {
-          this.setSnackbar({ text: this.$t('snackbarEditError'), color: 'error' })
-        }
-      }
-      this.isSending = false
-    },
-    onScroll ({ target: { scrollTop, clientHeight, scrollHeight } }) {
+    async onScroll ({ target: { scrollTop, clientHeight, scrollHeight } }) {
       this.scrollDirty = true
       if (scrollTop + clientHeight >= scrollHeight - 50) {
         this.scrollDirty = false
@@ -869,6 +655,7 @@ export default {
       ) {
         this.manualLoad = true
         this.page++
+        await this.loadChatMessages()
       }
     },
     async checkVisibleMessages () {
@@ -878,33 +665,6 @@ export default {
           this.isVisibleInsideContainer(message, document.querySelector('#messageContainer'))
         ) {
           const tmpChatMessage = this.computedMessages.find(obj => obj._id === message.getAttribute('name'))
-          if (
-            tmpChatMessage &&
-            !this.isUpdating &&
-            !this.isOwnMessage(tmpChatMessage) &&
-            this.computedOwnStatusContainer.unread.map(unread => unread.id).includes(tmpChatMessage._id)
-          ) {
-            this.isUpdating = true
-            await this.patchChatMessageNotifications(
-              [
-                'pullUnreadById',
-                {
-                  containerId: this.computedOwnStatusContainer._id,
-                  ids: [tmpChatMessage._id]
-                }
-              ]
-            )
-            this.isUpdating = false
-          }
-        }
-      })
-      document.querySelectorAll('.reply').forEach(async message => {
-        if (
-          this.isVisibleInsideDocument(message) &&
-          this.isVisibleInsideContainer(message, document.querySelector('#messageContainer')) &&
-          this.isVisibleInsideContainer(message, document.querySelector('#replyContainer'))
-        ) {
-          const tmpChatMessage = this.messages.find(obj => obj._id === message.getAttribute('name'))
           if (
             tmpChatMessage &&
             !this.isUpdating &&
@@ -957,6 +717,18 @@ export default {
       } else {
         return []
       }
+    },
+    setIsEditMessage (message) {
+      this.isEditMessage = message
+      this.scrollDownToSend()
+    },
+    setIsReplyMessage (message) {
+      this.isReplyMessage = message
+      this.scrollDownToSend()
+    },
+    resetInput () {
+      this.isEditMessage = undefined
+      this.isReplyMessage = undefined
     }
   },
 
@@ -993,11 +765,10 @@ export default {
       }
     },
     chatMessagesParams () {
-      if (this.selectedChat) {
+      if (this.selectedChat && this.triggerNewMessage) {
         return {
           query: {
             chat: this.selectedChat._id,
-            repliesTo: { $exists: false },
             $limit: this.itemsPerPage,
             $skip: (this.page - 1) * this.itemsPerPage,
             $sort: { createdAt: -1 }
@@ -1009,9 +780,9 @@ export default {
       }
     },
     computedMessages () {
-      if (this.selectedChat && this.chatMessagesResponse?.data && this.triggerNewMessage) {
-        return this.chatMessagesResponse.data
-          .filter(obj => obj.chat === this.selectedChat._id && !obj.repliesTo)
+      if (this.selectedChat && this.messages?.length > 0) {
+        return this.messages
+          .filter(obj => obj.chat === this.selectedChat._id)
           .sort((b, a) => { return new Date(b.createdAt) - new Date(a.createdAt) })
       } else {
         return []
@@ -1020,6 +791,11 @@ export default {
   },
 
   watch: {
+    messages () {
+      if (!this.init) {
+        this.loadChatMessages()
+      }
+    },
     computedMessages: {
       deep: true,
       handler (newValue, oldValue) {
@@ -1048,12 +824,6 @@ export default {
           window.addEventListener('scroll', this.checkVisibleMessages)
           document.querySelector('#messageContainer').addEventListener('scroll', this.checkVisibleMessages)
         })
-      }
-    },
-    message () {
-      if (this.message) {
-        this.message = this.$sanitize(this.message)
-        this.message = this.message.replaceAll('<blockquote>', '<blockquote class="blockquote">')
       }
     },
     showViolationDialog () {
