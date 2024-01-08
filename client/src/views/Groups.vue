@@ -257,26 +257,6 @@ export default {
       this.queryObject.tags = this.tagsListDefault
       this.queryObject.query = this.searchDefault
     },
-    // TODO: Move to globals
-    areArraysEqual (array1, array2) {
-      if (
-        JSON.stringify(array1.slice().sort()) === JSON.stringify(array2.slice().sort())
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    // TODO: Move to globals
-    selectCategory (categoryId) {
-      this.queryObject.tags = []
-      this.queryObject.categories = [categoryId]
-    },
-    // TODO: Move to globals
-    selectTag (tagId) {
-      this.queryObject.categories = []
-      this.queryObject.tags = [tagId]
-    },
     async loadDataTableEntities () {
       this.loading = true
       try {
@@ -303,7 +283,10 @@ export default {
       'updateQuerySortOrder',
       'updateQueryCategories',
       'updateQueryTags',
-      'updateQueryType'
+      'updateQueryType',
+      'areArraysEqual',
+      'selectTag',
+      'selectCategory'
     ]),
     ...mapGetters('auth', {
       user: 'user'

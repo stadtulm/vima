@@ -152,6 +152,7 @@
                           <template v-slot:default>
                             <custom-tiptap
                               v-model="text.find(obj => obj.lang === currentLanguage).value"
+                              :extensions="['bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList', 'h1', 'h2', 'h3', 'link']"
                             ></custom-tiptap>
                           </template>
                         </v-input>

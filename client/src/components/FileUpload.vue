@@ -1,5 +1,4 @@
 <template>
-  <div class="droparea-container">
     <v-sheet
       class="droparea"
       :class="files.length < maxFiles ? 'pointer' : ''"
@@ -160,7 +159,6 @@
         </v-row>
       </v-container>
     </v-sheet>
-  </div>
 </template>
 
 <script>
@@ -381,7 +379,6 @@ export default {
           return f !== file
         })
       }
-      // TODO PATCH AND EMIT ODER NUR PATCH
     }
   },
   watch: {
@@ -398,7 +395,7 @@ export default {
 </script>
 
 <style>
-  .droparea-container {
+  .droparea {
     border-radius: 3px;
     border: thin solid rgba(69, 90, 100, 0.5);
   }

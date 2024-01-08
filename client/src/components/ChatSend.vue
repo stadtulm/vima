@@ -33,12 +33,12 @@
             class="text-left"
             cols="12"
           >
-            <!-- TODO: Remove headlines and quotes -->
             <custom-tiptap
               :placeholder="$t('writeNewMessage')"
               v-model="messageText"
               id="messageInput_main"
               ref="messageInput_main"
+              :extensions="['bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList']"
             >
             </custom-tiptap>
             <v-row class="mt-3">
@@ -75,16 +75,6 @@
               @click="sendMessage()"
               color="customGrey"
             >
-              <!-- TODO: Test -->
-              <template
-                v-slot:loader
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
               <v-icon
                 size="18"
                 color="white"

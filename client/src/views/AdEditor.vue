@@ -155,9 +155,9 @@
                           width="100%"
                         >
                           <template v-slot:default>
-                            <!-- TODO: Remove headings from editor -->
                             <custom-tiptap
                               v-model="text"
+                              :extensions="['bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList']"
                             >
                             </custom-tiptap>
                           </template>

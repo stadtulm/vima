@@ -1,8 +1,6 @@
 import app from '@/main'
 import Store from '@/store'
 
-// TODO: Check if app stuff works
-
 export function settings ({ feathers }) {
   const { apiClient, apiVuex } = feathers
   const { BaseModel, makeServicePlugin } = apiVuex

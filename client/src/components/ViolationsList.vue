@@ -292,15 +292,6 @@ export default {
         )
         this.isUpdating = false
       }
-    },
-    areArraysEqual (array1, array2) {
-      if (
-        JSON.stringify(array1.slice().sort()) === JSON.stringify(array2.slice().sort())
-      ) {
-        return true
-      } else {
-        return false
-      }
     }
   },
 
@@ -312,7 +303,8 @@ export default {
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
       'updateQuerySortOrder',
-      'updateQueryCategories'
+      'updateQueryCategories',
+      'areArraysEqual'
     ]),
     ...mapGetters('auth', {
       user: 'user'

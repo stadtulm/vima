@@ -78,7 +78,6 @@
                   {{getOwnStatusContainerOfAd(item._id).unread.length}}
                 </span>
               </template>
-              <!-- TODO: Remove loader template and icon from buttons - add text-white -->
               <v-btn
                 icon="fas fa-list"
                 size="small"
@@ -440,6 +439,7 @@
               <custom-tiptap
                 id="messageInput"
                 v-model="message"
+                :extensions="['bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList']"
               ></custom-tiptap>
             </v-col>
           </v-row>

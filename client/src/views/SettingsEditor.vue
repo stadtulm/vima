@@ -567,6 +567,7 @@
                           <template v-slot:default>
                             <custom-tiptap
                               v-model="modules[key].text.find(obj => obj.lang === currentLanguage).value"
+                              :extensions="['bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList']"
                             ></custom-tiptap>
                           </template>
                         </v-input>

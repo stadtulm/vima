@@ -321,23 +321,6 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
         this.loaders[discussion._id + property] = undefined
       }
-    },
-    areArraysEqual (array1, array2) {
-      if (
-        JSON.stringify(array1.slice().sort()) === JSON.stringify(array2.slice().sort())
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    selectCategory (categoryId) {
-      this.queryObject.tags = []
-      this.queryObject.categories = [categoryId]
-    },
-    selectTag (tagId) {
-      this.queryObject.categories = []
-      this.queryObject.tags = [tagId]
     }
   },
 
@@ -353,7 +336,10 @@ export default {
       'updateQuerySortOrder',
       'updateQueryType',
       'updateQueryCategories',
-      'updateQueryTags'
+      'updateQueryTags',
+      'areArraysEqual',
+      'selectTag',
+      'selectCategory'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'

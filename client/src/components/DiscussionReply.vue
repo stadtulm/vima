@@ -129,7 +129,6 @@
               class="text-left"
               cols="12"
             >
-              <!-- TODO: Remove headlines -->
               <!-- TODO: This belongs into tiptap - is from mention stash -->
               <!-- :mention="slug" ref="main_test" -->
               <custom-tiptap
@@ -137,6 +136,7 @@
                 v-model="messageText"
                 :id="'messageInput_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
                 :ref="'messageInput_' + (isEditMessage ? isEditMessage._id : (message ? message._id : 'main'))"
+                :extensions="['bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList']"
               >
               </custom-tiptap>
               <v-col
@@ -195,16 +195,6 @@
                 @click="sendMessage()"
                 :color="$settings.modules.discussions.color"
               >
-                <!-- TODO: Test -->
-                <template
-                  v-slot:loader
-                >
-                  <v-progress-circular
-                    color="white"
-                    width="3"
-                    indeterminate
-                  ></v-progress-circular>
-                </template>
                 <v-icon
                   size="18"
                   color="white"

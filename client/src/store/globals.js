@@ -18,6 +18,23 @@ const state = {
     rs: 'sr',
     ua: 'uk'
   },
+  selectCategory (categoryId) {
+    this.queryObject.tags = []
+    this.queryObject.categories = [categoryId]
+  },
+  selectTag (tagId) {
+    this.queryObject.categories = []
+    this.queryObject.tags = [tagId]
+  },
+  areArraysEqual (array1, array2) {
+    if (
+      JSON.stringify(array1.slice().sort()) === JSON.stringify(array2.slice().sort())
+    ) {
+      return true
+    } else {
+      return false
+    }
+  },
   isModuleActiveOrDependency (moduleKey) {
     if (!app.config.globalProperties.$settings) {
       return false
@@ -486,6 +503,15 @@ const state = {
 }
 
 const getters = {
+  selectTag: state => {
+    return state.selectTag
+  },
+  selectCategory: state => {
+    return state.selectCategory
+  },
+  areArraysEqual: state => {
+    return state.areArraysEqual
+  },
   replyColors: state => {
     return state.replyColors
   },

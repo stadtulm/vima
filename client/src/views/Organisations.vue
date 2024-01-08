@@ -184,15 +184,6 @@ export default {
       this.tagsList = this.tagsListDefault
       this.search = this.searchDefault
     },
-    areArraysEqual (array1, array2) {
-      if (
-        JSON.stringify(array1.slice().sort()) === JSON.stringify(array2.slice().sort())
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
     initQuery () {
       // Process query
       if (this.$route.query.i) {

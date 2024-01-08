@@ -334,6 +334,7 @@
           </v-row>
           <v-row>
             <v-col>
+              // TODO: CHECK VERIFICATION OF PW WHEN DELETING USER! COULD BE DELETED ANYWAY
               <v-text-field
                 dense
                 outlined
@@ -346,17 +347,18 @@
               </v-text-field>
             </v-col>
           </v-row>
-          <!-- TODO: Replace with toolbar -->
           <v-card-actions
             class="mt-6 pa-0"
           >
             <v-btn
+              variant="elevated"
               @click="showDeleteDialog = false"
             >
               {{$t('cancelDeleteButton')}}
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
+              variant="elevated"
               :disabled="!oldPw"
               @click="deleteUser()"
               :dark="oldPw ? true : false"

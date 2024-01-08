@@ -13,17 +13,8 @@
           class="mx-1"
         >
           <v-btn
-            size="small"
-            variant="outlined"
-            @click="editor.chain().focus().toggleBlockquote().run()"
-            :disabled="!editor.can().chain().focus().toggleBlockquote().run()"
-            :active="editor.isActive('blockquote')"
-          >
-            <v-icon>
-              fas fa-quote-left
-            </v-icon>
-          </v-btn>
-          <v-btn
+            class="mr-2"
+            v-if="extensions.includes('bold')"
             size="small"
             variant="outlined"
             @click="editor.chain().focus().toggleBold().run()"
@@ -35,6 +26,8 @@
             </v-icon>
           </v-btn>
           <v-btn
+            class="mr-2"
+            v-if="extensions.includes('italic')"
             size="small"
             variant="outlined"
             @click="editor.chain().focus().toggleItalic().run()"
@@ -46,6 +39,8 @@
             </v-icon>
           </v-btn>
           <v-btn
+            class="mr-2"
+            v-if="extensions.includes('underline')"
             size="small"
             variant="outlined"
             @click="editor.chain().focus().toggleUnderline().run()"
@@ -57,6 +52,8 @@
             </v-icon>
           </v-btn>
           <v-btn
+            class="mr-2"
+            v-if="extensions.includes('strikethrough')"
             size="small"
             variant="outlined"
             @click="editor.chain().focus().toggleStrike().run()"
@@ -68,6 +65,21 @@
             </v-icon>
           </v-btn>
           <v-btn
+            class="mr-2"
+            v-if="extensions.includes('blockquote')"
+            size="small"
+            variant="outlined"
+            @click="editor.chain().focus().toggleBlockquote().run()"
+            :disabled="!editor.can().chain().focus().toggleBlockquote().run()"
+            :active="editor.isActive('blockquote')"
+          >
+            <v-icon>
+              fas fa-quote-left
+            </v-icon>
+          </v-btn>
+          <v-btn
+            class="mr-2"
+            v-if="extensions.includes('bulletList')"
             size="small"
             variant="outlined"
             @click="editor.chain().focus().toggleBulletList().run()"
@@ -79,6 +91,8 @@
             </v-icon>
           </v-btn>
           <v-btn
+            class="mr-2"
+            v-if="extensions.includes('orderedList')"
             size="small"
             variant="outlined"
             @click="editor.chain().focus().toggleOrderedList().run()"
@@ -90,6 +104,8 @@
             </v-icon>
           </v-btn>
           <v-btn
+            class="mr-2"
+            v-if="extensions.includes('link')"
             size="small"
             variant="outlined"
             @click="setLink"
@@ -101,6 +117,8 @@
             </v-icon>
           </v-btn>
           <v-btn
+            class="mr-2"
+            v-if="extensions.includes('h1')"
             size="small"
             variant="outlined"
             @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
@@ -110,6 +128,8 @@
             H1
           </v-btn>
           <v-btn
+            class="mr-2"
+            v-if="extensions.includes('h2')"
             size="small"
             variant="outlined"
             @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
@@ -119,6 +139,8 @@
             H2
           </v-btn>
           <v-btn
+            class="mr-2"
+            v-if="extensions.includes('h3')"
             size="small"
             variant="outlined"
             @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
@@ -136,7 +158,7 @@
         class="pt-0 pb-5"
       >
         <editor-content
-          style="border: 1px solid black; background-color: #fff;"
+          style="border: 1px solid black; background-color: #fff; padding-left: 10px; padding-right: 10px;"
           width="100%"
           :editor="editor"
         />
@@ -199,12 +221,15 @@ export default {
       type: String,
       default: ''
     },
-    mention: {}
+    mention: {},
+    extensions: {
+      type: Array,
+      default: () => []
+    }
   },
 
   emits: ['update:modelValue'],
 
-  // TODO: Check for "insert" Properties
   data () {
     return {
       editor: null,
@@ -255,6 +280,17 @@ export default {
   mounted () {
     this.editor = new Editor({
       content: this.modelValue,
+      editorProps: {
+        transformPastedText (text) {
+          return text.replace(/\xA0/g, ' ')
+        },
+        transformPastedHTML (html) {
+          return html.replace(/\xA0/g, ' ')
+        },
+        transformPasted (html) {
+          return html.replace(/\xA0/g, ' ')
+        }
+      },
       onUpdate: () => {
         this.$emit('update:modelValue', this.editor.getHTML())
       },
