@@ -49,7 +49,7 @@
           </span>
           <span
             v-if="user && user.role === 'admins'"
-            class="my-3 mr-3"
+            class="my-3 mr-1"
           >
             <v-btn
               :to="{ name: 'DiscussionEditor' }"

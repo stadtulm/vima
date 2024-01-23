@@ -1,106 +1,89 @@
 <template>
   <v-card
     color="customGreyUltraLight"
-    v-if="computedOrganisation"
+    v-if="organisation"
     height="100%"
-    :to="organisationProp ? { name: 'Organisation', params: { organisation: computedOrganisation._id }} : ''"
   >
     <v-container
+      class="fill-height pa-0 pb-3"
       fluid
-      class="fill-height"
     >
       <v-row
         class="align-self-start"
+        style="width: 100%"
       >
         <v-col
-          :class="organisationProp ? 'pa-0' : ''"
+          cols="12"
         >
-          <v-row>
+          <!-- Img -->
+          <v-sheet
+            class="pa-4"
+          >
+          <v-img
+            v-if="organisation.pic"
+            :height="organisationProp ? 250 : 350"
+            :src="s3 + organisation.pic.url"
+            :alt="$t('organisationPic')"
+            :title="organisation.pic.credit ? '© ' + organisation.pic.credit : ''"
+            contain
+            style="background-color: #fff"
+          ></v-img>
+          </v-sheet>
+          <!-- Title -->
+          <v-row
+            class="ma-1"
+          >
             <v-col
               cols="12"
-              sm="12"
-              :md="organisationProp ? 12 : 8"
-              :order="2"
-              :order-md="organisationProp ? 2 : 1"
+              class="text-h6 font-weight-bold"
             >
-              <!-- Title -->
-              <v-card-title
-                class="word-wrap"
-              >
-                {{computedOrganisation.name}}
-              </v-card-title>
-              <v-card-text
-                v-if="
-                  !organisationProp &&
-                  (
-                    computedOrganisation.description || computedOrganisation.website
-                  )
-                "
-              >
-                <!-- Description -->
-                <v-row
-                  v-if="computedOrganisation.description"
-                >
-                  <v-col
-                    class="text-body-1"
-                  >
-                    <div
-                      v-html="organisationProp ? truncatedDescription(newTab(computedOrganisation.description)) : $sanitize(newTab(computedOrganisation.description))"
-                    >
-                    </div>
-                  </v-col>
-                </v-row>
-                <!-- Website -->
-                <v-row
-                  v-if="computedOrganisation.website"
-                >
-                  <v-col
-                    class="text-body-1"
-                  >
-                    {{$t('website')}}: <a :href="computedOrganisation.website">{{computedOrganisation.website}}</a>
-                  </v-col>
-                </v-row>
-              </v-card-text>
+            {{organisation.name}}
             </v-col>
-            <!-- Carousel -->
+          </v-row>
+          <!-- Description -->
+          <v-row
+            v-if="organisation.description"
+            class="ma-1"
+          >
             <v-col
               cols="12"
-              sm="12"
-              :md="organisationProp ? 12 : 4"
-              :class="organisationProp ? 'py-0': ''"
-              :order="1"
-              :order-md="organisationProp ? 1 : 2"
+              class="pt-0 text-body-1"
             >
-              <v-card-text
-                :class="organisationProp ? 'pa-0' : ''"
+              <div
+                v-html="organisationProp ? truncatedDescription(newTab(organisation.description)) : $sanitize(newTab(organisation.description))"
               >
-                <v-img
-                  v-if="computedOrganisation.pic"
-                  :height="organisationProp ? 250 : 350"
-                  :src="s3 + computedOrganisation.pic.url"
-                  :alt="$t('organisationPic')"
-                  :title="computedOrganisation.pic.credit ? '© ' + computedOrganisation.pic.credit : ''"
-                  contain
-                ></v-img>
-              </v-card-text>
+              </div>
+            </v-col>
+          </v-row>
+          <!-- Website -->
+          <v-row
+            v-if="organisation.website"
+            class="ma-1"
+          >
+            <v-col
+              class="py-0 text-body-1"
+            >
+              {{$t('website')}}: <a :href="organisation.website">{{organisation.website}}</a>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      <!-- View more button -->
+      <!-- Show more button -->
       <v-row
         class="align-self-end"
+        v-if="organisationProp"
       >
-        <v-col>
+        <v-col
+          cols="12"
+        >
           <v-card-actions
-            class="mx-2 pb-4 grow"
-            v-if="organisationProp"
+            class="px-4"
           >
             <v-btn
-              large
+              variant="elevated"
               block
               class="text-customGrey"
-              :to="{ name: 'Organisation', params: { organisation: computedOrganisation._id }}"
+              :to="{ name: 'Organisation', params: { organisation: organisation._id }}"
             >
               {{$t('viewButton')}}
               <v-icon
@@ -133,9 +116,11 @@ export default {
   ],
 
   data: () => ({
+    organisation: undefined
   }),
 
   async mounted () {
+    await this.loadOrganisation()
   },
 
   methods: {
@@ -157,6 +142,21 @@ export default {
         tmpStr = tmpStr.substr(0, len) + ' [...]'
       }
       return tmpStr
+    },
+    async loadOrganisation () {
+      if (this.organisationProp) {
+        this.organisation = this.organisationProp
+      } else {
+        if (this.$route.name === 'Organisation' && this.$route.params.organisation && !this.organisationProp) {
+          let selectedOrganisation = this.getOrganisation(this.$route.params.organisation)
+          if (!selectedOrganisation) {
+            selectedOrganisation = await this.requestOrganisation([
+              this.$route.params.organisation
+            ])
+          }
+          this.organisation = selectedOrganisation
+        }
+      }
     }
   },
 
@@ -171,22 +171,6 @@ export default {
     ...mapGetters('organisations', {
       getOrganisation: 'get'
     })
-  },
-
-  asyncComputed: {
-    async computedOrganisation () {
-      if (this.organisationProp) {
-        return this.organisationProp
-      } else {
-        if (this.$route.name === 'Organisation' && this.$route.params.organisation && !this.organisationProp) {
-          let selectedOrganisation = this.getOrganisation(this.$route.params.organisation)
-          if (!selectedOrganisation) {
-            selectedOrganisation = await this.requestOrganisation([this.$route.params.organisation])
-          }
-          return selectedOrganisation
-        }
-      }
-    }
   }
 }
 </script>

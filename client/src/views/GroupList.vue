@@ -12,7 +12,7 @@
           </span>
           <span
             v-if="user"
-            class="my-3 mr-3"
+            class="my-3 mr-1"
           >
             <v-btn
               :to="{ name: 'GroupEditor' }"

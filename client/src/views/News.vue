@@ -1,104 +1,91 @@
 <template>
   <div>
-    <v-row
-      v-if="isPreview"
-      class="mt-4"
-    >
+    <v-row>
       <v-col
-        class="text-h5 font-weight-bold text-customGrey text-uppercase"
-      >
-        <span
-          class="pointer"
-          @click="$router.push({ name: 'News' })"
-        >
-          {{$t('news')}}
-        </span>
-        <v-btn
-          icon
-          color="customGrey"
-          class="mb-1 ml-1"
-          @click="$router.push({ name: 'News' })"
-        >
-          <v-icon>
-            fas fa-arrow-right
-          </v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row
-      v-else
-    >
-      <v-col
-        cols="12"
-        class="mb-4"
+        class="d-flex mx-3 mb-4"
       >
         <v-row>
-          <v-col
-            class="text-h5 font-weight-bold text-customGrey text-uppercase"
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
             {{$t('news')}}
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-3"
           >
             <v-btn
-              outlined
+              v-if="computedFiltersDirty"
+              variant="text"
               color="customGrey"
-              @click="showFilters = !showFilters"
+              @click="resetFilters()"
             >
-              {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
-              <v-icon
-                size="18"
-                class="ml-3"
-              >
-                {{showFilters ? 'fas fa-chevron-up': 'fas fa-chevron-down'}}
-              </v-icon>
+              {{$t('resetFilters')}}
             </v-btn>
-          </v-col>
+          </span>
+          <span
+            class="my-3 mr-1"
+          >
+            <v-badge
+              :model-value="computedFiltersDirty"
+              color="customGrey"
+            >
+              <v-btn
+                variant="outlined"
+                color="customGrey"
+                @click="showFilters = !showFilters"
+              >
+                {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
+                <v-icon
+                  size="18"
+                  class="ml-3"
+                >
+                  {{showFilters ? 'fas fa-chevron-up': 'fas fa-chevron-down'}}
+                </v-icon>
+              </v-btn>
+            </v-badge>
+          </span>
         </v-row>
       </v-col>
     </v-row>
-    <v-row
-      v-if="!isPreview && showFilters"
+    <v-expand-transition
+      mode="in-out"
     >
-      <v-col
-        cols="12"
-        sm="6"
-        md="6"
+      <v-row
+        v-if="showFilters"
+        class="mb-4"
       >
-        <v-text-field
-          v-model="search"
-          color="black"
-          :label="$t('filterByTitleLabel')"
-          hide-details
-          outlined
-          dense
-        ></v-text-field>
-      </v-col>
-      <v-col
-        cols="12"
-        sm="6"
-        md="6"
-      >
-        <v-select
-          v-model="combinedSort"
-          color="black"
-          item-color="customGrey"
-          :label="$t('sortByLabel')"
-          outlined
-          dense
-          hide-details
-          :items="[
-            { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
-            { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
-            { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
-            { text: $t('sortTitleDesc'), value: [['title.value'], -1] }
-          ]"
-        ></v-select>
-      </v-col>
-    </v-row>
+        <v-col
+          cols="12"
+          sm="6"
+        >
+          <v-text-field
+            v-model="queryObject.query"
+            :label="$t('filterByTitleLabel')"
+            hide-details
+            density="compact"
+          ></v-text-field>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+        >
+          <v-select
+            v-model="rawSortBy"
+            :label="$t('sortByLabel')"
+            density="compact"
+            hide-details
+            :items="[
+              { title: $t('sortDateAsc'), value: { key: 'createdAt', order: 'asc' } },
+              { title: $t('sortDateDesc'), value: { key: 'createdAt', order: 'desc' } },
+              { title: $t('sortTitleAsc'), value: { key: 'title.value', order: 'desc' } },
+              { title: $t('sortTitleDesc'), value: { key: 'title.value', order: 'asc' } }
+            ]"
+          ></v-select>
+        </v-col>
+      </v-row>
+    </v-expand-transition>
     <template
-      v-if="(computedNews && computedNews.length > 0)"
+      v-if="computedNews?.length > 0"
     >
       <v-row>
         <v-col
@@ -114,21 +101,20 @@
           </NewsCard>
         </v-col>
       </v-row>
-      <v-row
-        v-if="!isPreview"
-      >
+      <v-row>
         <v-col>
           <v-pagination
+            variant="outlined"
             color="customGrey"
-            v-model="page"
-            :length="Math.ceil(total / itemsPerPage)"
+            v-model="queryObject.page"
+            :length="Math.ceil(computedTotal / queryObject.itemsPerPage)"
             :total-visible="6"
           ></v-pagination>
         </v-col>
       </v-row>
     </template>
     <template
-      v-else-if="!isFindNewsPending"
+      v-else-if="!loading"
     >
       <v-row>
         <v-col
@@ -174,211 +160,145 @@ export default {
     NewsCard
   },
 
-  props: [
-    'isPreview'
-  ],
-
   data: () => ({
+    rawSortBy: undefined,
     showFilters: false,
-    init: true,
-    manualLoad: false,
-    isFindNewsPending: false,
-    triggerReload: 1,
-    search: '',
-    page: 1,
     loading: true,
-    total: 0,
-    itemsPerPage: 12,
-    combinedSort: [['createdAt'], -1],
-    sortBy: ['createdAt'],
-    sortDesc: -1
+    newsResponse: undefined,
+    searchDefault: '',
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'createdAt', order: 'asc' }]
+    }
   }),
 
   async mounted () {
-    if (this.isPreview) {
-      this.itemsPerPage = 3
-    } else {
-      // Save current query
-      this.$router.options.tmpQuery = this.$route.query
-      this.initQuery()
-    }
+    this.rawSortBy = this.queryObject.sortBy[0]
+    await this.adaptQuery()
   },
 
   methods: {
     ...mapActions('news', {
       findNews: 'find'
     }),
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
+    resetFilters () {
+      this.queryObject.query = this.searchDefault
+    },
+    async loadDataTableEntities () {
+      this.loading = true
+      try {
+        this.newsResponse = await this.findNews(
+          this.newsParams
+        )
+      } catch (e) {
+        if (e.code === 403) {
+          this.$router.push({ name: 'Forbidden' })
+        }
+        return []
       }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        this.sortDesc = parseInt(this.$route.query.d)
-      }
+      this.loading = false
     }
   },
 
   computed: {
-    ...mapGetters('auth', {
-      user: 'user'
-    }),
-    ...mapGetters('news', {
-      allNews: 'list'
-    }),
-    computedNews () {
-      if (this.computedNewsData && this.computedNewsData.data) {
-        const tmp = JSON.parse(JSON.stringify(this.computedNewsData))
-        return tmp.data
+    ...mapGetters([
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
+    ]),
+    computedFiltersDirty () {
+      if (
+        this.queryObject.query !== this.searchDefault
+      ) {
+        return true
       } else {
-        return []
+        return false
       }
-    }
-  },
-
-  asyncComputed: {
-    async computedNewsData () {
-      if (this.triggerReload) {}
-      this.isFindNewsPending = true
+    },
+    newsParams () {
       const query = {
         isActive: true,
-        $limit: this.itemsPerPage,
-        $skip: (this.page - 1) * this.itemsPerPage,
-        $sort: { [this.sortBy]: this.sortDesc }
+        $limit: this.computedLimit,
+        $skip: this.queryObject.query ? 0 : this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
       }
-      if (!this.user) {
-        query.isInternal = false
-      }
-      if (this.search && this.search !== '') {
+      if (this.queryObject.query) {
         query.title = {
           $elemMatch: {
             $and: [
-              { value: { $regex: this.search, $options: 'i' } },
-              {
-                $or: [
-                  { lang: this.$i18n.locale },
-                  { type: 'default' }
-                ]
-              }
+              { value: { $regex: this.queryObject.query, $options: 'i' } },
+              { type: 'default' }
             ]
           }
         }
       }
-      return await this.findNews(
-        {
-          query
-        }
-      )
+      return { query }
+    },
+    computedNews () {
+      if (this.newsResponse?.data) {
+        return this.newsResponse.data
+      } else {
+        return []
+      }
+    },
+    computedTotal () {
+      if (this.newsResponse) {
+        return this.newsResponse.total
+      } else {
+        return 0
+      }
+    },
+    computedLimit () {
+      if (this.queryObject.itemsPerPage === -1) {
+        return 1000000
+      } else {
+        return this.queryObject.itemsPerPage
+      }
+    },
+    computedSkip () {
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
+      }
+      return (this.queryObject.page - 1) * tmpSkip
+    },
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
+        return 1
+      } else {
+        return -1
+      }
     }
   },
 
   watch: {
-    combinedSort (newValue, oldValue) {
-      if (newValue && newValue !== oldValue) {
-        this.sortBy = this.combinedSort[0]
-        this.sortDesc = this.combinedSort[1]
-      }
+    rawSortBy () {
+      this.queryObject.sortBy[0] = this.rawSortBy
     },
-    page () {
-      if (!this.isPreview && parseInt(this.$route.query.p) !== this.page) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc
-            }
-          }
-        )
-      }
-    },
-    itemsPerPage () {
-      if (!this.isPreview && parseInt(this.$route.query.i) !== this.itemsPerPage) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc
-            }
-          }
-        )
-      }
-    },
-    sortBy () {
-      if (!this.isPreview) {
-        let tmpData
-        if (Array.isArray(this.sortBy)) {
-          tmpData = this.sortBy.join(',')
-        } else {
-          tmpData = this.sortBy
-        }
-        if (this.sortBy && this.$route.query.s !== tmpData) {
-          this.$router.replace({
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: tmpData,
-              d: this.sortDesc
-            }
-          })
-        } else if (!this.sortBy) {
-          this.$router.replace({
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              d: this.sortDesc
-            }
-          })
-        }
-      }
-    },
-    sortDesc () {
-      if (!this.isPreview && parseInt(this.$route.query.d) !== this.sortDesc) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc
-            }
-          }
-        )
-      }
-    },
-    allNews: {
+    'queryObject.sortBy': {
       deep: true,
-      handler (newValue, oldValue) {
-        if (
-          !this.init &&
-          !this.manualLoad &&
-          JSON.stringify(newValue) !== JSON.stringify(oldValue)
-        ) {
-          this.triggerReload = Date.now()
-          this.manualLoad = true
-        }
+      async handler () {
+        this.updateQuerySortBy(this.queryObject.sortBy[0].key)
+        this.updateQuerySortOrder(this.queryObject.sortBy[0].order)
+        await this.loadDataTableEntities()
       }
     },
-    computedNews (newValue, oldValue) {
-      //
-      this.total = this.computedNewsData.total
-      //
-      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
-        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
-      }
-      //
-      this.isFindNewsPending = false
-      this.init = false
-      this.manualLoad = false
+    async 'queryObject.query' () {
+      this.updateQueryQuery(this.queryObject.query)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.page' () {
+      this.updateQueryPage(this.queryObject.page)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.itemsPerPage' () {
+      this.updateQueryItemsPerPage(this.queryObject.itemsPerPage)
+      await this.loadDataTableEntities()
     }
   }
 }

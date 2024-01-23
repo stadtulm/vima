@@ -1,18 +1,18 @@
 <template>
   <div>
     <v-row
-      class="mb-4"
+      class="d-flex mx-0 mb-4"
     >
-      <v-col
-        class="text-h5 font-weight-bold text-customGrey text-uppercase"
+      <span
+        class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
         {{$t('adminView')}} {{$t('blog')}}
-      </v-col>
-      <v-col
-        class="shrink align-self-center"
+      </span>
+      <span
+        class="my-3"
       >
         <v-btn
-          dark
+          variant="elevated"
           :to="{ name: 'BlogEditor' }"
           color="customGrey"
         >
@@ -24,67 +24,50 @@
             fas fa-plus
           </v-icon>
         </v-btn>
-      </v-col>
+      </span>
     </v-row>
     <v-row>
       <v-col>
         <v-text-field
-          v-model="search"
+          v-model="queryObject.query"
           :label="$t('filterByTitleLabel')"
-          outlined
-          dense
+          density="compact"
           hide-details
-          color="black"
         ></v-text-field>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
-          class="customGreyUltraLight elevation-3"
+        <v-data-table-server
+          v-if="!initialView"
+          v-model:items-per-page="queryObject.itemsPerPage"
+          v-model:page="queryObject.page"
+          :sort-by="queryObject.sortBy"
           :headers="headers"
+          :items-length="computedTotal"
           :items="computedBlog"
-          :loading="isFindBlogPending"
-          @update:page="updatePage"
-          @update:items-per-page="updateItemsPerPage"
-          @update:sort-by="updateSortBy"
-          @update:sort-desc="updateSortDesc"
-          :server-items-length="total"
-          must-sort
-          :page.sync="page"
-          :items-per-page.sync="itemsPerPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          mobile-breakpoint="0"
-          :footer-props="{ itemsPerPageText: '' }"
+          :loading="loading"
+          class="customGreyUltraLight pb-3 elevation-3"
+          item-value="_id"
+          @update:options="updateDataTableParams"
+          sort-asc-icon="fas fa-caret-up"
+          sort-desc-icon="fas fa-caret-down"
+          :show-current-page="true"
+          :must-sort="true"
         >
-          <template
-            v-slot:progress
-          >
-            <v-progress-linear
-              indeterminate
-              color="customGrey"
-            ></v-progress-linear>
-          </template>
           <template
             v-slot:[`item.title.value`]="{ item }"
           >
-            <v-list-item
-              class="pa-0"
+            <v-list-item-title
+              class="font-weight-bold"
             >
-              <v-list-item-content>
-                <v-list-item-title
-                  class="font-weight-bold"
-                >
-                  {{item.title.value}}
-                </v-list-item-title>
-                <v-list-item-subtitle
-                  v-if="item.subTitle && item.subTitle !== ''"
-                >
-                  {{item.subTitle.value}}
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
+              {{item.title.value}}
+            </v-list-item-title>
+            <v-list-item-subtitle
+              v-if="item.subTitle && item.subTitle !== ''"
+            >
+              {{item.subTitle.value}}
+            </v-list-item-subtitle>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
@@ -100,67 +83,40 @@
             v-slot:[`item.edit`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-pen"
+              size="small"
               color="customGrey"
               class="my-3"
               :to="{ name: 'BlogEditor', params: { id: item._id } }"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-pen
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-trash"
+              size="small"
               color="customGrey"
               class="my-3"
               :loading="loaders[item._id + 'delete'] === true"
               @click="deleteBlog(item._id)"
             >
-              <template
-                slot="loader"
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
-              </template>
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-trash
-              </v-icon>
             </v-btn>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
             <v-btn
-              fab
-              small
+              icon="fa fa-arrow-right"
+              size="small"
               color="customGrey"
               class="my-4"
               :to="{name: 'BlogEntry', params: { id: item._id } }"
             >
-              <v-icon
-                color="white"
-                size="18"
-              >
-                fa fa-arrow-right
-              </v-icon>
             </v-btn>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
   </div>
@@ -173,25 +129,21 @@ import { mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
   name: 'BlogListAdmin',
 
-  components: {
-  },
-
   data: () => ({
-    isFindBlogPending: false,
+    initialView: true,
+    loading: true,
     loaders: {},
-    search: '',
-    page: 1,
-    total: 0,
-    itemsPerPage: 5,
-    sortBy: ['updatedAt'],
-    sortDesc: [true],
-    triggerReload: 1
+    blogsResponse: undefined,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'updatedAt', order: 'asc' }]
+    }
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    await this.adaptQuery()
   },
 
   methods: {
@@ -202,178 +154,71 @@ export default {
       removeBlog: 'remove',
       findBlog: 'find'
     }),
+    async updateDataTableParams (e) {
+      if (!this.initialView) {
+        this.queryObject = {
+          ...e,
+          query: this.queryObject.query
+        }
+        this.updateQueryQuery(this.queryObject.query)
+        this.updateQueryPage(this.queryObject.page)
+        this.updateQueryItemsPerPage(e.itemsPerPage)
+        if (e.sortBy[0]) {
+          this.updateQuerySortBy(e.sortBy[0].key)
+          this.updateQuerySortOrder(e.sortBy[0].order)
+        }
+      }
+    },
+    async loadDataTableEntities () {
+      this.loading = true
+      this.blogsResponse = await this.findBlog(
+        this.blogParams
+      )
+      this.loading = false
+    },
     async deleteBlog (id) {
-      this.$set(this.loaders, id + 'delete', true)
+      this.loaders[id + 'delete'] = true
       try {
         await this.removeBlog(id)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.$set(this.loaders, id + 'delete', undefined)
+        this.loaders[id + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.$set(this.loaders, id + 'delete', undefined)
-      }
-    },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
-      }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        const tmpDesc = this.$route.query.d.split(',')
-        for (let i = 0; i < tmpDesc.length; i++) {
-          if (tmpDesc[i] === 'true') {
-            tmpDesc[i] = true
-          } else if (tmpDesc[i] === 'false') {
-            tmpDesc[i] = false
-          }
-        }
-        this.sortDesc = tmpDesc
-      }
-    },
-    goToPage (i) {
-      this.skip = this.itemsPerPage * (i - 1)
-    },
-    updatePage (data) {
-      if (parseInt(this.$route.query.p) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: data,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateItemsPerPage (data) {
-      if (parseInt(this.$route.query.i) !== data) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: data,
-              s: this.sortBy.join(','),
-              d: this.sortDesc.join(',')
-            }
-          }
-        )
-      }
-    },
-    updateSortBy (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc.join(',')
-          }
-        })
-      } else if (!data) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc.join(',')
-          }
-        })
-      }
-    },
-    updateSortDesc (data) {
-      let tmpData
-      if (Array.isArray(data)) {
-        tmpData = data.join(',')
-      } else {
-        tmpData = data
-      }
-      if (data && this.$route.query.d !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: this.sortBy.join(','),
-            d: tmpData
-          }
-        })
+        this.loaders[id + 'delete'] = undefined
       }
     }
   },
 
   computed: {
-    ...mapGetters('auth', {
-      user: 'user'
-    }),
-    ...mapGetters('blog', {
-      blog: 'list'
-    }),
+    ...mapGetters([
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
+    ]),
     headers () {
       return [
-        { text: this.$t('title'), value: 'title.value' },
-        { text: this.$t('createdAt'), value: 'createdAt', width: 170 },
-        { text: this.$t('updatedAt'), value: 'updatedAt', width: 170 },
-        { text: this.$t('editButton'), value: 'edit', sortable: false, align: 'center' },
-        { text: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
-        { text: this.$t('viewButton'), value: 'link', align: 'center', sortable: false }
+        { title: this.$t('title'), key: 'title.value' },
+        { title: this.$t('createdAt'), key: 'createdAt', width: 170 },
+        { title: this.$t('updatedAt'), key: 'updatedAt', width: 170 },
+        { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
+        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
+        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
       ]
     },
-    computedLimit () {
-      if (this.itemsPerPage === -1) {
-        return 1000000
-      } else {
-        return this.itemsPerPage
-      }
-    },
-    computedSkip () {
-      if (this.itemsPerPage === -1) {
-        return 0
-      } else {
-        return this.itemsPerPage
-      }
-    },
-    computedSortDesc () {
-      if (this.sortDesc[0] === true) {
-        return 1
-      } else {
-        return -1
-      }
-    },
-    computedBlog () {
-      if (this.computedBlogData && this.computedBlogData.data) {
-        return this.computedBlogData.data
-      } else {
-        return []
-      }
-    }
-  },
-
-  asyncComputed: {
-    async computedBlogData () {
-      if (this.triggerReload) {}
-      this.isFindBlogPending = true
+    blogParams () {
       const query = {
         $limit: this.computedLimit,
-        $skip: (this.page - 1) * this.computedSkip,
-        $sort: { [this.sortBy]: this.computedSortDesc }
+        $skip: this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
       }
-      if (this.search && this.search !== '') {
+      if (this.queryObject.query) {
         query.title = {
           $elemMatch: {
             $and: [
-              { value: { $regex: this.search, $options: 'i' } },
+              { value: { $regex: this.queryObject.query, $options: 'i' } },
               {
                 $or: [
                   { lang: this.$i18n.locale },
@@ -384,28 +229,61 @@ export default {
           }
         }
       }
-      const tmpBlog = await this.findBlog(
-        {
-          query
-        }
-      )
-      return tmpBlog
+      return {
+        query
+      }
+    },
+    computedBlog () {
+      if (this.blogsResponse?.data) {
+        return this.blogsResponse.data
+      } else {
+        return []
+      }
+    },
+    computedTotal () {
+      if (this.blogsResponse) {
+        return this.blogsResponse.total
+      } else {
+        return 0
+      }
+    },
+    computedLimit () {
+      if (this.queryObject.itemsPerPage === -1) {
+        return 1000000
+      } else {
+        return this.queryObject.itemsPerPage
+      }
+    },
+    computedSkip () {
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
+      }
+      return (this.queryObject.page - 1) * tmpSkip
+    },
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
+        return 1
+      } else {
+        return -1
+      }
     }
   },
 
   watch: {
-    blog () {
-      this.triggerReload = Date.now()
+    'queryObject.query' () {
+      this.updateQueryQuery(this.queryObject.query)
     },
-    computedBlog (newValue, oldValue) {
-      //
-      this.total = this.computedBlogData.total
-      //
-      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
-        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
+    blogParams: {
+      deep: true,
+      async handler (newValue, oldValue) {
+        if (
+          !this.initialView &&
+          JSON.stringify(newValue) !== JSON.stringify(oldValue)
+        ) {
+          await this.loadDataTableEntities()
+        }
       }
-      //
-      this.isFindBlogPending = false
     }
   }
 }

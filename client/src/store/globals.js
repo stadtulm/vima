@@ -279,6 +279,11 @@ const state = {
     } else {
       tmpQueryObject.query = this.queryObject.query
     }
+    if (this.$route.query.l) {
+      tmpQueryObject.location = this.$route.query.l
+    } else {
+      tmpQueryObject.location = this.queryObject.location
+    }
     if (this.$route.query.i) {
       tmpQueryObject.itemsPerPage = parseInt(this.$route.query.i)
     } else {
@@ -330,6 +335,7 @@ const state = {
             y: data,
             r: this.queryObject.role,
             q: this.queryObject.query,
+            l: this.queryObject.location,
             p: this.queryObject.page,
             i: this.queryObject.itemsPerPage,
             s: this.queryObject.sortBy[0].key,
@@ -349,6 +355,7 @@ const state = {
             y: this.queryObject.type,
             r: this.queryObject.role,
             q: this.queryObject.query,
+            l: this.queryObject.location,
             p: this.queryObject.page,
             i: this.queryObject.itemsPerPage,
             s: this.queryObject.sortBy[0].key,
@@ -368,6 +375,7 @@ const state = {
             y: this.queryObject.type,
             r: this.queryObject.role,
             q: this.queryObject.query,
+            l: this.queryObject.location,
             p: this.queryObject.page,
             i: this.queryObject.itemsPerPage,
             s: this.queryObject.sortBy[0].key,
@@ -387,6 +395,7 @@ const state = {
             y: this.queryObject.type,
             r: data,
             q: this.queryObject.query,
+            l: this.queryObject.location,
             p: this.queryObject.page,
             i: this.queryObject.itemsPerPage,
             s: this.queryObject.sortBy[0].key,
@@ -406,6 +415,27 @@ const state = {
             y: this.queryObject.type,
             r: this.queryObject.role,
             q: data,
+            l: this.queryObject.location,
+            p: this.queryObject.page,
+            i: this.queryObject.itemsPerPage,
+            s: this.queryObject.sortBy[0].key,
+            o: this.queryObject.sortBy[0].order
+          }
+        }
+      )
+    }
+  },
+  updateQueryLocation (data) {
+    if (this.$route.query.l !== data) {
+      this.$router.replace(
+        {
+          query: {
+            c: this.queryObject.categories?.join(','),
+            t: this.queryObject.tags?.join(','),
+            y: this.queryObject.type,
+            r: this.queryObject.role,
+            q: this.queryObject.query,
+            l: data,
             p: this.queryObject.page,
             i: this.queryObject.itemsPerPage,
             s: this.queryObject.sortBy[0].key,
@@ -425,6 +455,7 @@ const state = {
             y: this.queryObject.type,
             r: this.queryObject.role,
             q: this.queryObject.query,
+            l: this.queryObject.location,
             p: this.queryObject.page,
             i: this.queryObject.itemsPerPage,
             s: this.queryObject.sortBy[0].key,
@@ -444,6 +475,7 @@ const state = {
             y: this.queryObject.type,
             r: this.queryObject.role,
             q: this.queryObject.query,
+            l: this.queryObject.location,
             p: this.queryObject.page,
             i: data,
             s: this.queryObject.sortBy[0].key,
@@ -462,6 +494,7 @@ const state = {
           y: this.queryObject.type,
           r: this.queryObject.role,
           q: this.queryObject.query,
+          l: this.queryObject.location,
           p: this.queryObject.page,
           i: this.queryObject.itemsPerPage,
           s: data,
@@ -476,6 +509,7 @@ const state = {
           y: this.queryObject.type,
           r: this.queryObject.role,
           q: this.queryObject.query,
+          l: this.queryObject.location,
           p: this.queryObject.page,
           i: this.queryObject.itemsPerPage,
           o: this.queryObject.sortBy[0].order
@@ -492,6 +526,7 @@ const state = {
           y: this.queryObject.type,
           r: this.queryObject.role,
           q: this.queryObject.query,
+          l: this.queryObject.location,
           p: this.queryObject.page,
           i: this.queryObject.itemsPerPage,
           s: this.queryObject.sortBy[0].key,
@@ -622,6 +657,9 @@ const getters = {
   },
   updateQueryQuery: state => {
     return state.updateQueryQuery
+  },
+  updateQueryLocation: state => {
+    return state.updateQueryLocation
   },
   updateQueryPage: state => {
     return state.updateQueryPage

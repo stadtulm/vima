@@ -2,131 +2,36 @@
   <v-card
     color="customGreyUltraLight"
     v-if="event"
-    :to="eventProp ? { name: 'Event', params: { event: event._id } } : ''"
+    height="100%"
   >
-    <v-row>
-      <v-col
-        cols="12"
-        sm="12"
-        :md="eventProp ? 12 : 8"
-        :order="2"
-        :order-md="eventProp ? 2 : 1"
+    <v-container
+      class="fill-height pa-0 pb-3"
+      fluid
+    >
+      <v-row
+        class="align-self-start"
+        style="width: 100%"
       >
-        <v-row>
-          <v-col>
-            <!-- Title -->
-            <v-card-title
-              class="word-wrap mb-3"
-            >
-              {{event.title.value}}
-            </v-card-title>
-            <v-card-subtitle
-              class="text-body-1 pb-0"
-              v-if="event.location"
-            >
-              {{event.location}}
-            </v-card-subtitle>
-            <v-card-subtitle
-              class="text-body-1"
-            >
-              {{computedDateTime}}
-            </v-card-subtitle>
-          </v-col>
-          <v-col
-            v-if="eventProp"
-            class="shrink align-self-center"
-            :class="$vuetify.display.smAndUp ? 'text-right' : ''"
-            cols="12"
-            sm="6"
-          >
-            <!-- View more button -->
-            <v-btn
-              class="text-customGrey mx-4"
-              :to="{ name: 'Event', params: { event: event._id }}"
-            >
-              {{$t('viewButton')}}
-              <v-icon
-                class="ml-3"
-                size="18"
-                color="customGrey"
-              >
-                fas fa-arrow-right
-              </v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-        <!-- Categories -->
-        <v-row
-          dense
-          class="mx-1"
-          v-if="event.categories && event.categories.length > 0"
+        <v-col
+          cols="12"
         >
-          <v-col>
-            <v-chip
-              outlined
-              v-for="category in getCategories(event.categories)"
-              :key="category._id"
-              class="mr-1"
-              disabled
-            >
-            {{category.text.value}}
-            </v-chip>
-          </v-col>
-        </v-row>
-        <!-- Tags -->
-        <v-row
-          class="mx-1"
-          v-if="event.tags && event.tags.length > 0"
-        >
-          <v-col>
-            <v-chip
-              v-for="tag in getTags(event.tags)"
-              :key="tag._id"
-              class="mr-1"
-              disabled
-            >
-            {{tag.text}}
-            </v-chip>
-          </v-col>
-        </v-row>
-        <!-- Description -->
-        <v-row>
-          <v-col
-            class="text-body-1 mx-4"
-          >
-            <div
-              v-html="eventProp ? truncatedDescription(newTab(event.text.value)) : $sanitize(newTab(event.text.value))"
-            >
-            </div>
-          </v-col>
-        </v-row>
-      </v-col>
-      <!-- Carousel -->
-      <v-col
-        cols="12"
-        sm="12"
-        :md="eventProp ? 12 : 4"
-        :order="1"
-        :order-md="eventProp ? 1 : 2"
-        :class="eventProp ? 'py-0' : $vuetify.display.mdAndUp ? 'pr-6' : 'pt-0'"
-      >
+          <!-- Carousel -->
           <v-carousel
             v-if="event.pics.length > 0"
             v-model="picsCarousel"
             hide-delimiters
             :show-arrows="event.pics.length > 1"
             :show-arrows-on-hover="event.pics.length > 1"
-            height="100%"
-            max-height="200px"
-            class="white"
+            :cycle="false"
+            :height="eventProp ? 250 : 350"
+            class="mb-3"
           >
             <template
-              v-slot:prev="{ on, attrs }"
+              v-slot:prev="{ props }"
             >
             <v-btn
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>
                 fas fa-chevron-left
@@ -134,12 +39,11 @@
             </v-btn>
             </template>
             <template
-              v-slot:next="{ on, attrs }"
+              v-slot:next="{ props }"
             >
             <v-btn
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>
                 fas fa-chevron-right
@@ -156,11 +60,103 @@
                 :contain="eventProp ? false : true"
                 :alt="$t('eventTitlePic')"
                 :title="pic.credit ? '© ' + pic.credit : ''"
+                style="background-color: #fff"
               ></v-img>
             </v-carousel-item>
           </v-carousel>
-      </v-col>
-    </v-row>
+          <!-- Title -->
+          <div
+            class="ma-4 mb-4 mb-0 text-h6 font-weight-bold"
+          >
+            {{event.title.value}}
+          </div>
+          <v-card-subtitle
+            class="text-body-1 pb-0"
+            v-if="event.location"
+          >
+            {{event.location}}
+          </v-card-subtitle>
+          <v-card-subtitle
+            class="text-body-1"
+          >
+            {{computedDateTime}}
+          </v-card-subtitle>
+          <!-- Categories -->
+          <v-row
+            class="mx-1 mt-3"
+            v-if="event.categories && event.categories.length > 0"
+          >
+            <v-col>
+              <v-chip
+                variant="outlined"
+                v-for="category in getCategories(event.categories)"
+                :key="category._id"
+                class="mr-1 mb-1"
+                disabled
+              >
+              {{category.text.value}}
+              </v-chip>
+            </v-col>
+          </v-row>
+          <!-- Tags -->
+          <v-row
+            class="mx-1"
+            v-if="event.tags && event.tags.length > 0"
+          >
+            <v-col>
+              <v-chip
+                v-for="tag in getTags(event.tags)"
+                :key="tag._id"
+                class="mr-1 mb-1"
+                disabled
+              >
+              {{tag.text}}
+              </v-chip>
+            </v-col>
+          </v-row>
+          <!-- Description -->
+          <v-row>
+            <v-col
+              class="text-body-1 mx-4"
+            >
+              <div
+                v-html="eventProp ? truncatedDescription(newTab(event.text.value)) : $sanitize(newTab(event.text.value))"
+              >
+              </div>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <!-- Show more button -->
+      <v-row
+        class="align-self-end"
+        v-if="eventProp"
+      >
+        <v-col
+          cols="12"
+        >
+          <v-card-actions
+            class="px-4"
+          >
+            <v-btn
+              block
+              variant="elevated"
+              class="text-customGrey"
+              :to="{ name: 'Event', params: { event: event._id }}"
+            >
+              {{$t('viewButton')}}
+              <v-icon
+                class="ml-3"
+                size="18"
+                color="customGrey"
+              >
+                fas fa-arrow-right
+              </v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-card>
 </template>
 

@@ -163,7 +163,6 @@
                       <span
                         class="pointer"
                         v-bind="props"
-                        v-on="on"
                       >
                       <v-icon
                         color="customGrey"

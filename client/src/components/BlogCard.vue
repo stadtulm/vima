@@ -1,107 +1,37 @@
 <template>
   <v-card
     color="customGreyUltraLight"
-    v-if="computedBlogEntry"
+    v-if="blog"
+    height="100%"
   >
-    <v-card-text
-      :class="blogProp ? 'pa-0' : ''"
+    <v-container
+      class="fill-height pa-0 pb-3"
+      fluid
     >
-      <v-carousel
-        v-if="computedBlogEntry.pics.length > 0"
-        v-model="picsCarousel"
-        hide-delimiters
-        :show-arrows="computedBlogEntry.pics.length > 1"
-        :show-arrows-on-hover="computedBlogEntry.pics.length > 1"
-        :cycle="false"
-        :height="blogProp ? 250 : '100%'"
-        class="mb-3 white"
-      >
-        <template
-          v-slot:prev="{ on, attrs }"
-        >
-        <v-btn
-          icon
-          v-bind="attrs"
-          v-on="on"
-        >
-          <v-icon>
-            fas fa-chevron-left
-          </v-icon>
-        </v-btn>
-        </template>
-        <template
-          v-slot:next="{ on, attrs }"
-        >
-        <v-btn
-          icon
-          v-bind="attrs"
-          v-on="on"
-        >
-          <v-icon>
-            fas fa-chevron-right
-          </v-icon>
-        </v-btn>
-        </template>
-        <v-carousel-item
-          v-for="pic in computedBlogEntry.pics"
-          :key="pic.url"
-        >
-          <v-img
-            :height="blogProp ? 250 : 350"
-            :src="s3 + pic.url"
-            :contain="blogProp ? false : true"
-            :alt="$t('blogPic')"
-            :title="pic.credit ? '© ' + pic.credit : ''"
-          ></v-img>
-        </v-carousel-item>
-      </v-carousel>
-    </v-card-text>
-    <v-card-subtitle
-      class="pb-0"
-    >
-      {{$moment(computedBlogEntry.createdAt).format('DD.MM.YYYY')}}
-    </v-card-subtitle>
-    <v-card-title
-      class="word-wrap"
-    >
-      {{computedBlogEntry.title.value}}
-    </v-card-title>
-    <v-card-subtitle>
-      {{computedBlogEntry.subTitle.value}}
-    </v-card-subtitle>
-      <v-card-text>
-      <v-row>
-        <v-col
-          class="text-body-1"
-        >
-          <div
-            v-html="blogProp ? truncatedDescription(newTab(computedBlogEntry.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(computedBlogEntry.text.value.replace(/\{(.+?)\}/g, '')))"
-          >
-          </div>
-        </v-col>
-      </v-row>
       <v-row
-        v-if="!blogProp"
+        class="align-self-start"
+        style="width: 100%"
       >
         <v-col
           cols="12"
         >
+          <!-- Carousel -->
           <v-carousel
-            v-if="computedBlogEntry.videos.length > 0"
-            v-model="videosCarousel"
+            v-if="blog.pics.length > 0"
+            v-model="picsCarousel"
             hide-delimiters
-            :show-arrows="computedBlogEntry.videos.length > 1"
-            :show-arrows-on-hover="computedBlogEntry.videos.length > 1"
+            :show-arrows="blog.pics.length > 1"
+            :show-arrows-on-hover="blog.pics.length > 1"
             :cycle="false"
-            :height="blogProp ? 250 : '100%'"
+            :height="blogProp ? 250 : 350"
+            class="mb-3 white"
           >
             <template
-              v-slot:prev="{ on, attrs }"
+              v-slot:prev="{ props }"
             >
             <v-btn
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>
                 fas fa-chevron-left
@@ -109,12 +39,11 @@
             </v-btn>
             </template>
             <template
-              v-slot:next="{ on, attrs }"
+              v-slot:next="{ props }"
             >
             <v-btn
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>
                 fas fa-chevron-right
@@ -122,76 +51,164 @@
             </v-btn>
             </template>
             <v-carousel-item
-              v-for="video in computedBlogEntry.videos"
-              :key="video.id"
+              v-for="pic in blog.pics"
+              :key="pic.url"
             >
-              <v-sheet
-                height="100%"
-                color="secondaryCustom"
-              >
-                <v-container
-                  fluid
-                  fill-height
-                  >
-                  <v-row>
-                    <v-col
-                      class="pa-0"
-                      align="center"
-                      justify="center"
-                    >
-                      <div
-                        class="responsive-video"
-                      >
-                        <template
-                          v-if="video.type === 'youtube'"
-                        >
-                          <youtube
-                            width="100%"
-                            :video-id="video.id"
-                            nocookie
-                          ></youtube>
-                        </template>
-                        <template
-                          v-else-if="video.type === 'vimeo'"
-                        >
-                          <vimeo-player
-                            width="100%"
-                            :video-id="video.id"
-                            :byline="false"
-                            :dnt="true"
-                          >
-                          </vimeo-player>
-                        </template>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-sheet>
+              <v-img
+                :height="blogProp ? 250 : 350"
+                :src="s3 + pic.url"
+                :contain="blogProp ? false : true"
+                :alt="$t('blogPic')"
+                :title="pic.credit ? '© ' + pic.credit : ''"
+                style="background-color: #fff"
+              ></v-img>
             </v-carousel-item>
           </v-carousel>
+          <!-- Title -->
+          <v-card-subtitle
+            class="mt-6"
+          >
+            {{$moment(blog.createdAt).format('DD.MM.YYYY')}}
+          </v-card-subtitle>
+          <div
+            class="mx-4 my-3 text-h6 font-weight-bold"
+          >
+            {{blog.title.value}}
+          </div>
+          <v-card-subtitle
+            v-if="blog.subTitle?.value"
+          >
+            {{blog.subTitle.value}}
+          </v-card-subtitle>
+          <!-- Description -->
+          <v-row
+            class="ma-1"
+          >
+            <v-col
+              class="text-body-1"
+            >
+              <div
+                v-html="blogProp ? truncatedDescription(newTab(blog.text.value.replace(/\{(.+?)\}/g, ''))) : $sanitize(newTab(blog.text.value.replace(/\{(.+?)\}/g, '')))"
+              >
+              </div>
+            </v-col>
+          </v-row>
+          <v-row
+            v-if="!blogProp"
+          >
+            <v-col
+              cols="12"
+            >
+              <v-carousel
+                v-if="blog.videos.length > 0"
+                v-model="videosCarousel"
+                hide-delimiters
+                :show-arrows="blog.videos.length > 1"
+                :show-arrows-on-hover="blog.videos.length > 1"
+                :cycle="false"
+                :height="blogProp ? 250 : 350"
+              >
+                <template
+                  v-slot:prev="{ props }"
+                >
+                <v-btn
+                  icon
+                  v-bind="props"
+                >
+                  <v-icon>
+                    fas fa-chevron-left
+                  </v-icon>
+                </v-btn>
+                </template>
+                <template
+                  v-slot:next="{ props }"
+                >
+                <v-btn
+                  icon
+                  v-bind="props"
+                >
+                  <v-icon>
+                    fas fa-chevron-right
+                  </v-icon>
+                </v-btn>
+                </template>
+                <v-carousel-item
+                  v-for="video in blog.videos"
+                  :key="video.id"
+                >
+                  <v-sheet
+                    height="100%"
+                    color="transparent"
+                  >
+                    <v-container
+                      fluid
+                      fill-height
+                    >
+                      <v-row>
+                        <v-col
+                          align="center"
+                          justify="center"
+                        >
+                          <div>
+                            <template
+                              v-if="video.type === 'youtube'"
+                            >
+                              <youtube
+                                :src="video.id"
+                                :vars="{ rel: 0, modestbranding: 1, }"
+                                nocookie
+                              ></youtube>
+                            </template>
+                            <template
+                              v-else-if="video.type === 'vimeo'"
+                            >
+                              <vimeo-player
+                                :video-id="video.id"
+                                :options="{ byline: false, dnt: true }"
+                              >
+                              </vimeo-player>
+                            </template>
+                          </div>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-sheet>
+                </v-carousel-item>
+              </v-carousel>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
-    </v-card-text>
-    <v-card-actions
-      class="mx-2 pb-4"
-      v-if="blogProp"
-    >
-      <v-btn
-        large
-        block
-        class="text-customGrey"
-        :to="{ name: 'BlogEntry', params: { id: computedBlogEntry._id } }"
+      <!-- Show more button -->
+      <v-row
+        class="align-self-end"
+        v-if="blogProp"
       >
-        {{$t('viewButton')}}
-        <v-icon
-          class="ml-3"
-          size="18"
-          color="customGrey"
+        <v-col
+          cols="12"
         >
-          fas fa-arrow-right
-        </v-icon>
-      </v-btn>
-    </v-card-actions>
+          <v-card-actions
+            class="px-4"
+          >
+            <v-btn
+              variant="elevated"
+              block
+              class="text-customGrey"
+              :to="{ name: 'BlogEntry', params: { id: blog._id } }"
+            >
+              {{$t('viewButton')}}
+              <v-icon
+                class="ml-3"
+                size="18"
+                color="customGrey"
+              >
+                fas fa-arrow-right
+              </v-icon>
+            </v-btn>
+          </v-card-actions>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-card>
 </template>
 
@@ -212,16 +229,39 @@ export default {
   data: () => ({
     videosCarousel: 0,
     picsCarousel: 0,
-    message: undefined
+    message: undefined,
+    blog: undefined
   }),
 
   async mounted () {
+    await this.loadBlog()
   },
 
   methods: {
     ...mapActions('blog', {
       requestBlog: 'get'
     }),
+    async loadBlog () {
+      if (this.blogProp) {
+        this.blog = this.blogProp
+      } else {
+        if (this.$route.name === 'BlogEntry' && this.$route.params.id && !this.blogProp) {
+          let selectedBlog = this.getBlog(this.$route.params.id)
+          if (!selectedBlog) {
+            try {
+              selectedBlog = await this.requestBlog(
+                this.$route.params.id
+              )
+            } catch (e) {
+              if (e.code === 403) {
+                this.$router.push({ name: 'Forbidden' })
+              }
+            }
+          }
+          this.blog = selectedBlog
+        }
+      }
+    },
     truncatedDescription (text) {
       const len = 200
       text = this.$sanitize(text)
@@ -248,22 +288,6 @@ export default {
     ...mapGetters('blog', {
       getBlog: 'get'
     })
-  },
-
-  asyncComputed: {
-    async computedBlogEntry () {
-      if (this.blogProp) {
-        return this.blogProp
-      } else {
-        if (this.$route.params.id && !this.blogProp) {
-          let selectedBlogEntry = this.getBlog(this.$route.params.id)
-          if (!selectedBlogEntry) {
-            selectedBlogEntry = await this.requestBlog([this.$route.params.id])
-          }
-          return selectedBlogEntry
-        }
-      }
-    }
   }
 }
 </script>

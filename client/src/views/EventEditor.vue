@@ -24,45 +24,137 @@
               v-model="isValid"
               ref="eventEditorForm"
             >
+              <v-card
+                class="mt-6 mb-8"
+                color="rgb(228,230,232)"
+              >
+                <v-card-text>
+                  <v-row
+                    dense
+                    v-if="title"
+                  >
+                    <v-col
+                      cols="12"
+                    >
+                      <v-text-field
+                        ref="tabStart"
+                        density="compact"
+                        :label="$t('title')"
+                        v-model="title.find(obj => obj.lang === currentLanguage).value"
+                        :rules="[v => title.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
+                      >
+                        <template v-slot:prepend>
+                          <LanguageSelect
+                            :currentLanguage="currentLanguage"
+                            :languageObjects="title"
+                            @update:setLanguage="(l) => { currentLanguage = l }"
+                          ></LanguageSelect>
+                        </template>
+                      </v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
               <v-row
+                v-if="text"
                 dense
-                v-if="title"
+                class="mb-6"
               >
                 <v-col
                   cols="12"
                 >
-                  <v-text-field
-                    ref="tabStart"
-                    density="compact"
-                    :label="$t('title')"
-                    v-model="title.find(obj => obj.lang === currentLanguage).value"
-                    :rules="[v => title.find(obj => obj.type === 'default').value !== '' || $t('defaultLanguageRequired')]"
+                  <v-card
+                    color="rgb(228,230,232)"
                   >
-                    <template v-slot:prepend>
-                      <LanguageSelect
-                        :currentLanguage="currentLanguage"
-                        :languageObjects="title"
-                        @update:setLanguage="(l) => { currentLanguage = l }"
-                      ></LanguageSelect>
-                    </template>
-                  </v-text-field>
+                    <v-card-text>
+                      <v-row>
+                          <v-col
+                            class="text-subtitle-1"
+                            cols="12"
+                          >
+                            {{$t('description')}}
+                          </v-col>
+                        </v-row>
+                        <v-row
+                          dense
+                        >
+                          <v-col
+                            cols="12"
+                          >
+                            <v-input
+                              :rules="[v => (text.find(obj => obj.type === 'default').value !== '' && text.find(obj => obj.type === 'default').value !== '<p></p>') || $t('defaultLanguageRequired')]"
+                              v-model="text.find(obj => obj.lang === currentLanguage).value"
+                              width="100%"
+                            >
+                              <template v-slot:prepend>
+                                <LanguageSelect
+                                  :currentLanguage="currentLanguage"
+                                  :languageObjects="text"
+                                  @update:setLanguage="(l) => { currentLanguage = l }"
+                                ></LanguageSelect>
+                              </template>
+                              <template v-slot:default>
+                                <custom-tiptap
+                                  v-model="text.find(obj => obj.lang === currentLanguage).value"
+                                  :extensions="['bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList']"
+                                >
+                                </custom-tiptap>
+                              </template>
+                            </v-input>
+                          </v-col>
+                        </v-row>
+                    </v-card-text>
+                  </v-card>
                 </v-col>
               </v-row>
+              <v-card
+                class="mt-6 mb-8"
+                color="rgb(228,230,232)"
+              >
+                <v-card-text>
+                  <v-row>
+                    <v-col
+                      class="text-subtitle-1 pb-0 mb-0"
+                      cols="12"
+                    >
+                      {{$t('start') + ' & ' + $t('end')}}
+                    </v-col>
+                    <v-col>
+                      <DatePicker
+                        :teleport="true"
+                        v-model="eventDate"
+                        range
+                        time-picker-inline
+                        :locale="$i18n.locale"
+                        :select-text="$t('done')"
+                        :cancel-text="$t('cancelButton')"
+                        format="dd/MM/yyyy HH:mm"
+                      >
+                          <template #trigger>
+                            <v-sheet
+                              class="pa-3 pointer"
+                              color="customGreyUltraLight"
+                              style="border-bottom: 1px solid rgba(118,118,118);"
+                            >
+                              {{ $moment(eventDate[0]).format('DD.MM.YYYY, HH:mm') + ' --> ' + $moment(eventDate[1]).format('DD.MM.YYYY, HH:mm') }}
+                            </v-sheet>
+                          </template>
+                      </DatePicker>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
               <v-row
                 dense
               >
                 <v-col>
                   <v-select
-                    dense
-                    color="customGrey"
-                    item-color="customGrey"
-                    background-color="#fff"
-                    outlined
+                    density="compact"
                     v-model="organisation"
-                    item-text="name"
+                    item-title="name"
                     item-value="_id"
                     :label="$t('organisation')"
-                    :items="computedUserOrganisationItems"
+                    :items="userOrganisations"
                     :rules="[rules.required]"
                   >
                   </v-select>
@@ -75,11 +167,8 @@
                   cols="12"
                 >
                   <v-text-field
-                    dense
-                    outlined
+                    density="compact"
                     :label="$t('location')"
-                    color="customGrey"
-                    background-color="#fff"
                     v-model="location"
                     :rules="[rules.shortText]"
                   >
@@ -89,89 +178,12 @@
               <v-row
                 dense
               >
-                <v-col
-                  cols="12"
-                  sm="6"
-                >
-                  <v-input
-                    :rules="[rules.required]"
-                    v-model="durationStart"
-                    width="100%"
-                  >
-                    <template slot="default">
-                      <DatetimePicker
-                        :label="$t('start')"
-                        v-model="durationStart"
-                        :clearText="$t('reset')"
-                        :okText="$t('save')"
-                        dateFormat="dd.MM.yyyy,"
-                        :timeFormat="'HH:mm \'' + $t('oClock') + '\''"
-                        color="error"
-                        :datePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)' }"
-                        :timePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)', 'format': '24hr' }"
-                      >
-                        <template slot="dateIcon">
-                          <v-icon>
-                            fas fa-calendar-day
-                          </v-icon>
-                        </template>
-                        <template slot="timeIcon">
-                          <v-icon>
-                            fas fa-clock
-                          </v-icon>
-                        </template>
-                      </DatetimePicker>
-                    </template>
-                  </v-input>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
-                >
-                  <v-input
-                    :rules="[rules.required, v => $moment(v).isSameOrAfter($moment(durationStart)) === true || this.$t('endBeforeStart')]"
-                    v-model="durationEnd"
-                    width="100%"
-                  >
-                    <DatetimePicker
-                      :error="durationEnd && durationStart && $moment(durationEnd).isBefore(durationStart) ? this.$t('endBeforeStart'): undefined"
-                      :label="$t('end')"
-                      v-model="durationEnd"
-                      :clearText="$t('reset')"
-                        :okText="$t('save')"
-                      dateFormat="dd.MM.yyyy,"
-                      :timeFormat="'HH:mm \'' + $t('oClock') + '\''"
-                      color="error"
-                      :datePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)' }"
-                      :timePickerProps="{ 'header-color': 'rgba(0, 0, 0, 0.54)', 'format': '24hr' }"
-                    >
-                      <template slot="dateIcon">
-                        <v-icon>
-                          fas fa-calendar-day
-                        </v-icon>
-                      </template>
-                      <template slot="timeIcon">
-                        <v-icon>
-                          fas fa-clock
-                        </v-icon>
-                      </template>
-                    </DatetimePicker>
-                  </v-input>
-                </v-col>
-              </v-row>
-              <v-row
-                dense
-              >
                 <v-col>
                   <v-select
-                    dense
+                    density="compact"
                     multiple
-                    color="customGrey"
-                    item-color="customGrey"
-                    background-color="#fff"
-                    outlined
                     v-model="selectedCategories"
-                    item-text="text.value"
+                    item-title="text.value"
                     item-value="_id"
                     :label="$t('categories')"
                     :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
@@ -187,17 +199,13 @@
                   cols="12"
                 >
                   <v-autocomplete
-                    dense
+                    density="compact"
                     multiple
                     chips
                     closable-chips
                     auto-select-first
-                    color="customGrey"
-                    item-color="customGrey"
-                    background-color="#fff"
-                    outlined
                     v-model="selectedTags"
-                    item-text="text"
+                    item-title="text"
                     item-value="_id"
                     :label="$t('tags') + ' ' + $t('optionalLabelExtension')"
                     :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
@@ -222,65 +230,6 @@
                       fas fa-plus
                     </v-icon>
                   </v-btn>
-                </v-col>
-              </v-row>
-              <v-row
-                v-if="text"
-                dense
-                class="mb-6"
-              >
-                <v-col
-                  cols="12"
-                >
-                  <v-card
-                    flat
-                    color="customGreyUltraLight"
-                  >
-                    <v-row>
-                      <v-col
-                        class="text-subtitle-1"
-                        cols="12"
-                      >
-                        {{$t('description')}}
-                      </v-col>
-                    </v-row>
-                    <v-row
-                      dense
-                    >
-                      <v-col
-                        cols="12"
-                      >
-                        <v-input
-                          :rules="[v => (text.find(obj => obj.type === 'default').value !== '' && text.find(obj => obj.type === 'default').value !== '<p></p>') || $t('defaultLanguageRequired')]"
-                          v-model="text.find(obj => obj.lang === currentLanguage).value"
-                          width="100%"
-                        >
-                          <template v-slot:prepend>
-                            <LanguageSelect
-                              :currentLanguage="currentLanguage"
-                              :languageObjects="text"
-                              @update:setLanguage="(l) => { currentLanguage = l }"
-                            ></LanguageSelect>
-                          </template>
-                          <template slot="default">
-                            <VuetifyTiptap
-                              :editor-properties="{
-                                disableInputRules: true,
-                                disablePasteRules: true
-                              }"
-                              color="customGreyUltraLight"
-                              v-model="text.find(obj => obj.lang === currentLanguage).value"
-                              :card-props="{ tile: true, flat: true }"
-                              style="border: 1px solid #aaa"
-                              :extensions="extensions"
-                              :placeholder="$t('enterText')"
-                            >
-                            </VuetifyTiptap>
-                          </template>
-                        </v-input>
-                      </v-col>
-                    </v-row>
-                  </v-card>
                 </v-col>
               </v-row>
               <v-row
@@ -336,22 +285,24 @@
                   </v-checkbox>
                 </v-col>
               </v-row>
-              <v-divider class="mt-6 mb-9"></v-divider>
-            </v-form>
-            <v-card-actions
-              class="px-0"
-            >
-              <v-btn
-                block
-                :dark="isValid"
-                color="customGrey"
-                :loading="isLoading"
-                :disabled="!isValid"
-                @click="saveEvent()"
+              <v-divider class="mb-6"></v-divider>
+              <v-toolbar
+                class="mt-4"
+                color="transparent"
               >
-                {{$t('saveDataButton')}}
-              </v-btn>
-            </v-card-actions>
+                <v-btn
+                  block
+                  variant="elevated"
+                  color="customGrey"
+                  :loading="isLoading"
+                  :disabled="!isValid"
+                  @click="saveEvent()"
+                  class="mx-0"
+                >
+                  {{$t('saveDataButton')}}
+                </v-btn>
+              </v-toolbar>
+            </v-form>
           </v-card-text>
         </v-card>
       </v-col>
@@ -417,9 +368,9 @@
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TagProposalDialog from '@/components/TagProposalDialog.vue'
-import DatetimePicker from '@/components/DatetimePicker.vue'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 import FileUpload from '@/components/FileUpload.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 export default {
   name: 'EventEditor',
@@ -427,11 +378,12 @@ export default {
   components: {
     FileUpload,
     TagProposalDialog,
-    DatetimePicker,
-    LanguageSelect
+    LanguageSelect,
+    CustomTiptap
   },
 
   data: () => ({
+    eventDate: [],
     durationStart: undefined,
     durationEnd: undefined,
     showTagProposalDialog: false,
@@ -446,13 +398,16 @@ export default {
     organisation: undefined,
     pics: [],
     isActive: true,
-    currentLanguage: 'en'
+    currentLanguage: 'en',
+    userOrganisations: [],
+    location: undefined
   }),
 
   async mounted () {
     this.currentLanguage = this.$i18n.locale
     await this.adapt()
     this.$refs.tabStart.focus()
+    this.loadUserOrganisations()
   },
 
   methods: {
@@ -470,6 +425,46 @@ export default {
     ...mapActions('uploads', {
       removeUpload: 'remove'
     }),
+    async loadUserOrganisations () {
+      let ids
+      if (this.user.role === 'admins') {
+        const tmpContainers = await this.findStatusContainers(
+          {
+            query: {
+              type: 'organisations',
+              tmpPopulateReference: true
+            }
+          }
+        )
+        this.userOrganisations = tmpContainers
+          .filter((v, i, a) => a.findLastIndex(v2 => (v2.reference === v.reference)) === i)
+          .filter(v => !!v)
+          .map(obj => this.getOrganisation(obj.reference))
+          .filter(v => !!v)
+      } else {
+        ids = this.statusContainers.filter(obj =>
+          obj.user === this.user._id &&
+          obj.type === 'organisations' &&
+          (obj.relation === 'member' || obj.relation === 'owner')
+        ).map(obj => obj._id)
+        const tmpContainers = await this.findStatusContainers(
+          {
+            query: {
+              _id: {
+                $in: ids
+              },
+              user: this.user._id,
+              tmpPopulateReference: true
+            }
+          }
+        )
+        this.userOrganisations = tmpContainers
+          .filter((v, i, a) => a.findLastIndex(v2 => (v2.reference === v.reference)) === i)
+          .filter(v => !!v)
+          .map(obj => this.getOrganisation(obj.reference))
+          .filter(v => !!v)
+      }
+    },
     prepareSaveEvent () {
       this.showAcceptDialog = false
       this.saveEvent()
@@ -509,8 +504,7 @@ export default {
         this.organisation = this.selectedEvent.organisation
         this.location = this.selectedEvent.location
         if (this.selectedEvent.duration) {
-          this.durationStart = new Date(this.selectedEvent.duration.start)
-          this.durationEnd = new Date(this.selectedEvent.duration.end)
+          this.eventDate = [new Date(this.selectedEvent.duration.start), new Date(this.selectedEvent.duration.end)]
         }
         if (this.selectedEvent.pics) {
           this.pics = this.selectedEvent.pics
@@ -540,8 +534,8 @@ export default {
         categories: this.selectedCategories,
         tags: this.selectedTags,
         duration: {
-          start: this.durationStart,
-          end: this.durationEnd
+          start: this.eventDate[0],
+          end: this.eventDate[1]
         }
       }
       if (this.pics) {
@@ -593,48 +587,6 @@ export default {
           value: this.$sanitize(language.value)
         }
       })
-    },
-    computedUserOrganisationItems () {
-      if (this.computedUserOrganisations) {
-        return this.computedUserOrganisations
-      } else {
-        return []
-      }
-    }
-  },
-
-  asyncComputed: {
-    async computedUserOrganisations () {
-      let ids
-      if (this.user.role === 'admins') {
-        const tmpContainers = await this.findStatusContainers(
-          {
-            query: {
-              type: 'organisations',
-              tmpPopulateReference: true
-            }
-          }
-        )
-        return [...new Set(tmpContainers)].map(obj => this.getOrganisation(obj.reference))
-      } else {
-        ids = this.statusContainers.filter(obj =>
-          obj.user === this.user._id &&
-          obj.type === 'organisations' &&
-          (obj.relation === 'member' || obj.relation === 'owner')
-        ).map(obj => obj._id)
-        const tmpContainers = await this.findStatusContainers(
-          {
-            query: {
-              _id: {
-                $in: ids
-              },
-              user: this.user._id,
-              tmpPopulateReference: true
-            }
-          }
-        )
-        return [...new Set(tmpContainers)].map(obj => this.getOrganisation(obj.reference))
-      }
     }
   }
 }

@@ -54,7 +54,7 @@
           </span>
           <span
             v-if="user"
-            class="my-3 mr-3"
+            class="my-3 mr-1"
           >
             <v-btn
               :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1, $route.params.type.length - 2) + 'Editor' }"

@@ -27,6 +27,7 @@
     "@tiptap/starter-kit": "^2.1.8",
     "@tiptap/suggestion": "^2.1.8",
     "@tiptap/vue-3": "^2.1.8",
+    "@vuepic/vue-datepicker": "^7.4.1",
     "core-js": "^3.8.3",
     "date-fns": "^2.30.0",
     "feathers-hooks-common": "^5.0.6",
@@ -45,10 +46,10 @@
     "vue-matomo": "^4.2.0",
     "vue-router": "^4.0.3",
     "vue-router-multiguard": "^1.0.3",
-    "vue-vimeo-player": "^0.2.2",
+    "vue-vimeo-player": "^1.1.2",
     "vue3-tour": "^0.3.4",
     "vue3-youtube": "^0.1.9",
-    "vuetify": "v3.4.0",
+    "vuetify": "v3.4.11",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

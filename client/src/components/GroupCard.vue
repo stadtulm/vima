@@ -3,12 +3,17 @@
     color="customGreyUltraLight"
     v-if="computedGroup"
     height="100%"
-    :to="groupProp ? { name: 'Group', params: { group: computedGroup._id } } : ''"
   >
-    <v-card-text>
-      <v-row>
+    <v-container
+      class="fill-height pa-0 pb-4"
+      fluid
+    >
+      <v-row
+        class="align-self-start"
+        style="width: 100%"
+      >
         <v-col
-          :class="groupProp ? 'pa-0' : ''"
+          cols="12"
         >
           <v-row>
             <v-col
@@ -265,7 +270,7 @@
                 :show-arrows="computedPics.length > 1"
                 :show-arrows-on-hover="computedPics.length > 1"
                 :cycle="false"
-                :height="groupProp ? 250 : '100%'"
+                :height="groupProp ? 200 : 350"
                 class="mb-3 white"
               >
                 <v-carousel-item
@@ -391,7 +396,7 @@
                 v-if="!computedCategory"
               >
                 <v-divider
-                  class="mb-6 mt-10 mx-6"
+                  class="mb-6 mt-3 mx-6"
                 ></v-divider>
                 <v-row>
                   <v-col
@@ -495,23 +500,23 @@
       <!-- View more button -->
       <v-row
         class="align-self-end"
+        v-if="groupProp"
       >
         <v-col>
           <v-card-actions
-            class="pb-4 grow"
-            v-if="groupProp"
+            class="px-4"
           >
             <v-btn
-              large
               block
-              :style="'color:' + $settings.modules.groups.color"
+              theme="dark"
+              variant="elevated"
+              :color="$settings.modules.groups.color"
               :to="{ name: 'Group', params: { group: computedGroup._id }}"
             >
               {{$t('viewButton')}}
               <v-icon
                 class="ml-3"
                 size="18"
-                :color="$settings.modules.groups.color"
               >
                 fas fa-arrow-right
               </v-icon>
@@ -519,102 +524,102 @@
           </v-card-actions>
         </v-col>
       </v-row>
-    </v-card-text>
-    <!-- Apply dialog -->
-    <v-dialog
-      v-model="showApplyDialog"
-      max-width="600"
-    >
-      <v-card
-        color="customGreyUltraLight"
-        tile
+      <!-- Apply dialog -->
+      <v-dialog
+        v-model="showApplyDialog"
+        max-width="600"
       >
-        <v-card-text
-          class="pa-8"
+        <v-card
+          color="customGreyUltraLight"
+          tile
         >
-          <template
-            v-if="applicantDialogMode === 'message'"
+          <v-card-text
+            class="pa-8"
           >
-            <v-row>
-              <v-col
-                class="text-h5 font-weight-bold"
-              >
-                {{$t('applyMessageDialogTitle')}}
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                class="text-body-1"
-              >
-                {{$t('applyMessageDialogBody')}}
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-textarea
-                  :label="$t('writeNewMessage') + ' ...'"
-                  v-model="message"
-                  auto-grow
-                  multi-line
-                  hide-details
+            <template
+              v-if="applicantDialogMode === 'message'"
+            >
+              <v-row>
+                <v-col
+                  class="text-h5 font-weight-bold"
                 >
-                </v-textarea>
-              </v-col>
-            </v-row>
-            <v-card-actions
-              class="mt-8 pa-0"
+                  {{$t('applyMessageDialogTitle')}}
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  class="text-body-1"
+                >
+                  {{$t('applyMessageDialogBody')}}
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-textarea
+                    :label="$t('writeNewMessage') + ' ...'"
+                    v-model="message"
+                    auto-grow
+                    multi-line
+                    hide-details
+                  >
+                  </v-textarea>
+                </v-col>
+              </v-row>
+              <v-card-actions
+                class="mt-8 pa-0"
+              >
+                <v-btn
+                  variant="elevated"
+                  @click="showApplyDialog = false"
+                >
+                  {{$t('cancelButton')}}
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                  variant="elevated"
+                  @click="applyForGroupMembership()"
+                  :color="$settings.modules.groups.color"
+                  :loading="isLoading"
+                  :disabled="!message"
+                >
+                  {{$t('sendButton')}}
+                </v-btn>
+              </v-card-actions>
+            </template>
+            <template
+              v-else-if="applicantDialogMode === 'sent'"
             >
-              <v-btn
-                variant="elevated"
-                @click="showApplyDialog = false"
+              <v-row>
+                <v-col
+                  class="text-h5 font-weight-bold"
+                >
+                  {{$t('applyDialogTitle')}}
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  class="text-body-1"
+                >
+                  {{$t('applyDialogBody')}}
+                </v-col>
+              </v-row>
+              <v-card-actions
+                class="mt-6 pa-0"
               >
-                {{$t('cancelButton')}}
-              </v-btn>
-              <v-spacer></v-spacer>
-              <v-btn
-                variant="elevated"
-                @click="applyForGroupMembership()"
-                :color="$settings.modules.groups.color"
-                :loading="isLoading"
-                :disabled="!message"
-              >
-                {{$t('sendButton')}}
-              </v-btn>
-            </v-card-actions>
-          </template>
-          <template
-            v-else-if="applicantDialogMode === 'sent'"
-          >
-            <v-row>
-              <v-col
-                class="text-h5 font-weight-bold"
-              >
-                {{$t('applyDialogTitle')}}
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                class="text-body-1"
-              >
-                {{$t('applyDialogBody')}}
-              </v-col>
-            </v-row>
-            <v-card-actions
-              class="mt-6 pa-0"
-            >
-              <v-spacer></v-spacer>
-              <v-btn
-                variant="elevated"
-                @click="showApplyDialog = false"
-                :color="$settings.modules.groups.color"
-              >
-                {{$t('understoodButton')}}
-              </v-btn>
-            </v-card-actions>
-          </template>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+                <v-spacer></v-spacer>
+                <v-btn
+                  variant="elevated"
+                  @click="showApplyDialog = false"
+                  :color="$settings.modules.groups.color"
+                >
+                  {{$t('understoodButton')}}
+                </v-btn>
+              </v-card-actions>
+            </template>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </v-container>
   </v-card>
 </template>
 

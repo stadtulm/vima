@@ -2,39 +2,38 @@
   <div>
     <v-row>
       <v-col
-        class="mb-4"
+        class="d-flex mx-3 mb-4"
       >
         <v-row>
-          <v-col
-            class="text-h5 font-weight-bold text-customGrey text-uppercase"
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
             <div
               v-html="$t('eventsTitle')"
             >
             </div>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-3"
           >
             <v-btn
               v-if="computedFiltersDirty"
-              text
+              variant="text"
               color="customGrey"
               @click="resetFilters()"
             >
               {{$t('resetFilters')}}
             </v-btn>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-1"
           >
             <v-badge
-              :value="computedFiltersDirty"
+              :model-value="computedFiltersDirty"
               color="customGrey"
-              overlap
             >
               <v-btn
-                outlined
+                variant="outlined"
                 color="customGrey"
                 @click="showFilters = !showFilters"
               >
@@ -47,7 +46,7 @@
                 </v-icon>
               </v-btn>
             </v-badge>
-          </v-col>
+          </span>
         </v-row>
       </v-col>
     </v-row>
@@ -63,12 +62,10 @@
           sm="6"
         >
           <v-text-field
-            v-model="search"
-            color="black"
+            v-model="queryObject.query"
             :label="$t('filterByTitleLabel')"
             hide-details
-            outlined
-            dense
+            density="compact"
           ></v-text-field>
         </v-col>
         <v-col
@@ -76,12 +73,10 @@
           sm="6"
         >
           <v-text-field
-            v-model="location"
-            color="black"
+            v-model="queryObject.location"
             :label="$t('filterByLocationLabel')"
             hide-details
-            outlined
-            dense
+            density="compact"
           ></v-text-field>
         </v-col>
         <v-col
@@ -89,21 +84,17 @@
           sm="6"
         >
           <v-select
-            v-model="combinedSort"
-            color="black"
-            item-color="customGrey"
+            v-model="rawSortBy"
             :label="$t('sortByLabel')"
-            outlined
-            dense
+            density="compact"
             hide-details
             :items="[
-
-              { text: $t('sortEventDateDesc'), value: [['duration.end'], 1]},
-              { text: $t('sortEventDateAsc'), value: [['duration.end'], -1]},
-              { text: $t('sortTitleAsc'), value: [['title.value'], 1] },
-              { text: $t('sortTitleDesc'), value: [['title.value'], -1] },
-              { text: $t('sortDateAsc'), value: [['createdAt'], -1]},
-              { text: $t('sortDateDesc'), value: [['createdAt'], 1]},
+              { title: $t('sortEventDateDesc'), value: { key: 'duration.end', order: 'desc' } },
+              { title: $t('sortEventDateAsc'), value: { key: 'duration.end', order: 'asc' } },
+              { title: $t('sortTitleAsc'), value: { key: 'title.value', order: 'desc' } },
+              { title: $t('sortTitleDesc'), value: { key: 'title.value', order: 'asc' } },
+              { title: $t('sortDateAsc'), value: { key: 'createdAt', order: 'asc' } },
+              { title: $t('sortDateDesc'), value: { key: 'createdAt', order: 'desc' } }
             ]"
           ></v-select>
         </v-col>
@@ -128,16 +119,17 @@
       <v-row>
         <v-col>
           <v-pagination
+            variant="outlined"
             color="customGrey"
-            v-model="page"
-            :length="Math.ceil(total / itemsPerPage)"
+            v-model="queryObject.page"
+            :length="Math.ceil(computedTotal / queryObject.itemsPerPage)"
             :total-visible="6"
           ></v-pagination>
         </v-col>
       </v-row>
     </template>
     <template
-      v-else-if="!isFindEventsPending"
+      v-else-if="!loading"
     >
       <v-row>
         <v-col
@@ -184,32 +176,24 @@ export default {
   },
 
   data: () => ({
+    rawSortBy: undefined,
     showFilters: false,
-    init: true,
-    manualLoad: false,
-    isFindEventsPending: false,
-    triggerReload: 1,
-    page: 1,
     loading: true,
-    categoriesList: [],
-    tagsList: [],
-    search: '',
-    location: '',
-    locationDefault: '',
-    categoriesListDefault: [],
-    tagsListDefault: [],
+    eventsResponse: undefined,
     searchDefault: '',
-    total: 0,
-    itemsPerPage: 12,
-    combinedSort: [['duration.end'], -1],
-    sortBy: ['duration.end'],
-    sortDesc: -1
+    locationDefault: '',
+    queryObject: {
+      query: '',
+      location: '',
+      page: 1,
+      itemsPerPage: 25,
+      sortBy: [{ key: 'duration.end', order: 'desc' }]
+    }
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    this.rawSortBy = this.queryObject.sortBy[0]
+    await this.adaptQuery()
   },
 
   methods: {
@@ -217,192 +201,129 @@ export default {
       findEvents: 'find'
     }),
     resetFilters () {
-      this.categoriesList = this.categoriesListDefault
-      this.tagsList = this.tagsListDefault
-      this.search = this.searchDefault
-      this.location = this.locationDefault
+      this.queryObject.query = this.searchDefault
+      this.queryObject.location = this.locationDefault
     },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
+    async loadDataTableEntities () {
+      this.loading = true
+      try {
+        this.eventsResponse = await this.findEvents(
+          this.eventsParams
+        )
+      } catch (e) {
+        if (e.code === 403) {
+          this.$router.push({ name: 'Forbidden' })
+        }
+        return []
       }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
-      if (this.$route.query.s) {
-        this.sortBy = this.$route.query.s.split(',')
-      }
-      if (this.$route.query.d) {
-        this.sortDesc = parseInt(this.$route.query.d)
-      }
-      if (this.$route.query.d || this.$route.query.s) {
-        this.combinedSort = [this.sortBy, this.sortDesc]
-      }
-      if (this.$route.query.c) {
-        this.categoriesList = this.$route.query.c.split(',')
-      }
-      if (this.$route.query.t) {
-        this.tagsList = this.$route.query.t.split(',')
-      }
+      this.loading = false
     }
   },
 
   computed: {
-    ...mapGetters('auth', {
-      user: 'user'
-    }),
-    ...mapGetters('events', {
-      allEvents: 'list'
-    }),
+    ...mapGetters([
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryLocation',
+      'updateQueryPage',
+      'updateQueryItemsPerPage',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
+    ]),
     computedFiltersDirty () {
-      if (this.search !== this.searchDefault || this.location !== this.locationDefault) {
+      if (this.queryObject.query !== this.searchDefault || this.queryObject.location !== this.locationDefault) {
         return true
       } else {
         return false
       }
     },
-    computedEvents () {
-      if (this.computedEventsData && this.computedEventsData.data) {
-        return this.computedEventsData.data
-      } else {
-        return []
-      }
-    }
-  },
-  asyncComputed: {
-    async computedEventsData () {
-      if (this.triggerReload) {}
-      this.isFindEventsPending = true
+    eventsParams () {
       const query = {
         isActive: true,
-        $limit: this.itemsPerPage,
-        $skip: (this.page - 1) * this.itemsPerPage,
-        $sort: { [this.sortBy]: this.sortDesc }
+        $limit: this.computedLimit,
+        $skip: this.queryObject.query || this.queryObject.location ? 0 : this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder } //,
+        // 'duration.end': { $gte: this.$moment().subtract(7, 'days') }
       }
-      if (this.search && this.search !== '') {
+      if (this.queryObject.query) {
         query.title = {
           $elemMatch: {
             $and: [
-              { value: { $regex: this.search, $options: 'i' } },
-              {
-                $or: [
-                  { lang: this.$i18n.locale },
-                  { type: 'default' }
-                ]
-              }
+              { value: { $regex: this.queryObject.query, $options: 'i' } },
+              { type: 'default' }
             ]
           }
         }
       }
-      if (this.location && this.location !== '') {
+      if (this.queryObject.location) {
         query.location = { $regex: this.location, $options: 'i' }
       }
-      return await this.findEvents(
-        {
-          query
-        }
-      )
+      return { query }
+    },
+    computedEvents () {
+      if (this.eventsResponse?.data) {
+        return this.eventsResponse.data
+      } else {
+        return []
+      }
+    },
+    computedTotal () {
+      if (this.eventsResponse) {
+        return this.eventsResponse.total
+      } else {
+        return 0
+      }
+    },
+    computedLimit () {
+      if (this.queryObject.itemsPerPage === -1) {
+        return 1000000
+      } else {
+        return this.queryObject.itemsPerPage
+      }
+    },
+    computedSkip () {
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
+      }
+      return (this.queryObject.page - 1) * tmpSkip
+    },
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
+        return 1
+      } else {
+        return -1
+      }
     }
   },
 
   watch: {
-    combinedSort (newValue, oldValue) {
-      if (newValue && newValue !== oldValue) {
-        this.sortBy = this.combinedSort[0]
-        this.sortDesc = this.combinedSort[1]
-      }
+    rawSortBy () {
+      this.queryObject.sortBy[0] = this.rawSortBy
     },
-    page () {
-      if (parseInt(this.$route.query.p) !== this.page) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc
-            }
-          }
-        )
-      }
-    },
-    itemsPerPage () {
-      if (parseInt(this.$route.query.i) !== this.itemsPerPage) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc
-            }
-          }
-        )
-      }
-    },
-    sortBy () {
-      let tmpData
-      if (Array.isArray(this.sortBy)) {
-        tmpData = this.sortBy.join(',')
-      } else {
-        tmpData = this.sortBy
-      }
-      if (this.sortBy && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc
-          }
-        })
-      } else if (!this.sortBy) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc
-          }
-        })
-      }
-    },
-    sortDesc () {
-      if (parseInt(this.$route.query.d) !== this.sortDesc) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(',')
-            }
-          }
-        )
-      }
-    },
-    allEvents: {
+    'queryObject.sortBy': {
       deep: true,
-      handler (newValue, oldValue) {
-        if (!this.init && !this.manualLoad) {
-          this.triggerReload = Date.now()
-          this.manualLoad = true
-        }
+      async handler () {
+        this.updateQuerySortBy(this.queryObject.sortBy[0].key)
+        this.updateQuerySortOrder(this.queryObject.sortBy[0].order)
+        await this.loadDataTableEntities()
       }
     },
-    computedEvents (newValue, oldValue) {
-      //
-      this.total = this.computedEventsData.total
-      //
-      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
-        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
-      }
-      //
-      this.isFindEventsPending = false
-      this.init = false
-      this.manualLoad = false
+    async 'queryObject.query' () {
+      this.updateQueryQuery(this.queryObject.query)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.location' () {
+      this.updateQueryLocation(this.queryObject.location)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.page' () {
+      this.updateQueryPage(this.queryObject.page)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.itemsPerPage' () {
+      this.updateQueryItemsPerPage(this.queryObject.itemsPerPage)
+      await this.loadDataTableEntities()
     }
   }
 }

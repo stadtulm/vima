@@ -2,19 +2,19 @@
   <div>
     <v-row>
       <v-col
-        class="mb-4"
+        class="d-flex mx-3 mb-4"
       >
         <v-row>
-          <v-col
-            class="text-h5 font-weight-bold text-customGrey text-uppercase"
+          <span
+            class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
             <div
               v-html="$t('sponsorsTitle')"
             >
             </div>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-3"
           >
             <v-btn
               v-if="computedFiltersDirty"
@@ -24,17 +24,16 @@
             >
               {{$t('resetFilters')}}
             </v-btn>
-          </v-col>
-          <v-col
-            class="shrink align-self-center"
+          </span>
+          <span
+            class="my-3 mr-1"
           >
             <v-badge
-              :value="computedFiltersDirty"
+              :model-value="computedFiltersDirty"
               color="customGrey"
-              overlap
             >
               <v-btn
-                outlined
+                variant="outlined"
                 color="customGrey"
                 @click="showFilters = !showFilters"
               >
@@ -47,7 +46,7 @@
                 </v-icon>
               </v-btn>
             </v-badge>
-          </v-col>
+          </span>
         </v-row>
       </v-col>
     </v-row>
@@ -62,18 +61,16 @@
           cols="12"
         >
           <v-text-field
-            v-model="search"
-            color="black"
+            v-model="queryObject.query"
             :label="$t('filterBySponsorNameLabel')"
             hide-details
-            outlined
-            dense
+            density="compact"
           ></v-text-field>
         </v-col>
       </v-row>
     </v-expand-transition>
     <template
-      v-if="computedSponsors && computedSponsors.length > 0"
+      v-if="computedSponsors?.length > 0"
     >
       <v-row
         class="mt-4"
@@ -86,7 +83,8 @@
           md="4"
         >
           <v-card
-            class="pointer pa-4"
+            class="pa-4"
+            :class="sponsor.link ? 'pointer': ''"
             :href="sponsor.link"
             target="_blank"
             height="100%"
@@ -99,7 +97,7 @@
               :src="s3 + sponsor.pic.url"
             ></v-img>
             <v-divider
-              class="mt-7 mb-0"
+              class="mt-7 mb-2"
             ></v-divider>
             <v-card-text
               class="pa-0"
@@ -116,16 +114,17 @@
       <v-row>
         <v-col>
           <v-pagination
+            variant="outlined"
             color="customGrey"
-            v-model="page"
-            :length="Math.ceil(total / itemsPerPage)"
+            v-model="queryObject.page"
+            :length="Math.ceil(computedTotal / queryObject.itemsPerPage)"
             :total-visible="6"
           ></v-pagination>
         </v-col>
       </v-row>
     </template>
     <template
-      v-else-if="!isFindSponsorsPending"
+      v-else-if="!loading"
     >
       <v-row>
         <v-col
@@ -171,25 +170,19 @@ export default {
 
   data: () => ({
     showFilters: false,
-    init: true,
-    manualLoad: false,
-    isFindSponsorsPending: false,
-    triggerReload: 1,
-    page: 1,
     loading: true,
-    search: '',
     searchDefault: '',
-    total: 0,
-    itemsPerPage: 12,
-    combinedSort: [['position'], 1],
-    sortBy: ['position'],
-    sortDesc: 1
+    sponsorsResponse: undefined,
+    queryObject: {
+      query: '',
+      page: 1,
+      itemsPerPage: 12,
+      sortBy: [{ key: 'position', order: 'asc' }]
+    }
   }),
 
   async mounted () {
-    // Save current query
-    this.$router.options.tmpQuery = this.$route.query
-    this.initQuery()
+    await this.adaptQuery()
   },
 
   methods: {
@@ -197,161 +190,92 @@ export default {
       findSponsors: 'find'
     }),
     resetFilters () {
-      this.search = this.searchDefault
+      this.queryObject.query = this.searchDefault
     },
-    initQuery () {
-      // Process query
-      if (this.$route.query.i) {
-        this.itemsPerPage = parseInt(this.$route.query.i)
+    async loadDataTableEntities () {
+      this.loading = true
+      try {
+        this.sponsorsResponse = await this.findSponsors(
+          this.sponsorParams
+        )
+      } catch (e) {
+        if (e.code === 403) {
+          this.$router.push({ name: 'Forbidden' })
+        }
+        return []
       }
-      if (this.$route.query.p) {
-        this.page = parseInt(this.$route.query.p)
-      }
+      this.loading = false
     }
   },
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'adaptQuery',
+      'updateQueryQuery',
+      'updateQueryPage',
+      'updateQueryItemsPerPage'
     ]),
-    ...mapGetters('auth', {
-      user: 'user'
-    }),
-    ...mapGetters('sponsors', {
-      allSponsors: 'list'
-    }),
     computedFiltersDirty () {
-      if (this.search !== this.searchDefault) {
+      if (this.queryObject.query !== this.searchDefault) {
         return true
       } else {
         return false
       }
     },
+    sponsorParams () {
+      const query = {
+        $limit: this.computedLimit,
+        $skip: this.queryObject.query ? 0 : this.computedSkip,
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
+      }
+      if (this.queryObject.query) {
+        query.name = { $regex: this.queryObject.query, $options: 'i' }
+      }
+      return { query }
+    },
     computedSponsors () {
-      if (this.computedSponsorsData && this.computedSponsorsData.data) {
-        return this.computedSponsorsData.data
+      if (this.sponsorsResponse?.data) {
+        return this.sponsorsResponse.data
       } else {
         return []
       }
-    }
-  },
-  asyncComputed: {
-    async computedSponsorsData () {
-      if (this.triggerReload) {}
-      this.isFindSponsorsPending = true
-      const query = {
-        $limit: this.itemsPerPage,
-        $skip: (this.page - 1) * this.itemsPerPage,
-        $sort: { [this.sortBy]: this.sortDesc }
+    },
+    computedTotal () {
+      if (this.sponsorsResponse) {
+        return this.sponsorsResponse.total
+      } else {
+        return 0
       }
-      if (this.search && this.search !== '') {
-        query.name = { $regex: this.search, $options: 'i' }
+    },
+    computedLimit () {
+      if (this.queryObject.itemsPerPage === -1) {
+        return 1000000
+      } else {
+        return this.queryObject.itemsPerPage
       }
-      return await this.findSponsors(
-        {
-          query
-        }
-      )
+    },
+    computedSkip () {
+      let tmpSkip = 0
+      if (this.queryObject.itemsPerPage !== -1) {
+        tmpSkip = this.queryObject.itemsPerPage
+      }
+      return (this.queryObject.page - 1) * tmpSkip
     }
   },
 
   watch: {
-    combinedSort (newValue, oldValue) {
-      if (newValue && newValue !== oldValue) {
-        this.sortBy = this.combinedSort[0]
-        this.sortDesc = this.combinedSort[1]
-      }
+    async 'queryObject.query' () {
+      this.updateQueryQuery(this.queryObject.query)
+      await this.loadDataTableEntities()
     },
-    page () {
-      if (parseInt(this.$route.query.p) !== this.page) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc
-            }
-          }
-        )
-      }
+    async 'queryObject.page' () {
+      this.updateQueryPage(this.queryObject.page)
+      await this.loadDataTableEntities()
     },
-    itemsPerPage () {
-      if (parseInt(this.$route.query.i) !== this.itemsPerPage) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc
-            }
-          }
-        )
-      }
-    },
-    sortBy () {
-      let tmpData
-      if (Array.isArray(this.sortBy)) {
-        tmpData = this.sortBy.join(',')
-      } else {
-        tmpData = this.sortBy
-      }
-      if (this.sortBy && this.$route.query.s !== tmpData) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            s: tmpData,
-            d: this.sortDesc
-          }
-        })
-      } else if (!this.sortBy) {
-        this.$router.replace({
-          query: {
-            p: this.page,
-            i: this.itemsPerPage,
-            d: this.sortDesc
-          }
-        })
-      }
-    },
-    sortDesc () {
-      if (parseInt(this.$route.query.d) !== this.sortDesc) {
-        this.$router.replace(
-          {
-            query: {
-              p: this.page,
-              i: this.itemsPerPage,
-              s: this.sortBy.join(','),
-              d: this.sortDesc,
-              c: this.categoriesList.join(','),
-              t: this.tagsList.join(',')
-            }
-          }
-        )
-      }
-    },
-    allSponsors: {
-      deep: true,
-      handler (newValue, oldValue) {
-        if (!this.init && !this.manualLoad) {
-          this.triggerReload = Date.now()
-          this.manualLoad = true
-        }
-      }
-    },
-    computedSponsors (newValue, oldValue) {
-      //
-      this.total = this.computedSponsorsData.total
-      //
-      if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
-        this.page = Math.ceil(this.total / this.itemsPerPage) + 1
-      }
-      //
-      this.isFindSponsorsPending = false
-      this.init = false
-      this.manualLoad = false
+    async 'queryObject.itemsPerPage' () {
+      this.updateQueryItemsPerPage(this.queryObject.itemsPerPage)
+      await this.loadDataTableEntities()
     }
   }
 }

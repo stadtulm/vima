@@ -49,7 +49,7 @@
           </span>
           <span
             v-if="user"
-            class="my-3 mr-3"
+            class="my-3 mr-1"
           >
             <v-btn
               :to="{ name: 'AdEditor' }"
@@ -159,7 +159,7 @@
       </v-row>
     </v-expand-transition>
     <template
-      v-if="computedAds && computedAds.length > 0"
+      v-if="computedAds?.length > 0"
     >
       <v-row>
         <v-col
@@ -244,7 +244,6 @@ export default {
 
   data: () => ({
     rawSortBy: undefined,
-    type: 'all',
     showFilters: false,
     loading: true,
     categoriesListDefault: [],

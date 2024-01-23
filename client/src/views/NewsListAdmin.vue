@@ -14,7 +14,6 @@
         <v-btn
           variant="elevated"
           :to="{ name: 'NewsEditor' }"
-          dark
           color="customGrey"
         >
           {{$t('newNewsButton')}}

@@ -36,12 +36,11 @@
             height="100%"
           >
             <template
-              v-slot:prev="{ on, attrs }"
+              v-slot:prev="{ props }"
             >
             <v-btn
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>
                 fas fa-chevron-left
@@ -49,12 +48,11 @@
             </v-btn>
             </template>
             <template
-              v-slot:next="{ on, attrs }"
+              v-slot:next="{ props }"
             >
             <v-btn
               icon
-              v-bind="attrs"
-              v-on="on"
+              v-bind="props"
             >
               <v-icon>
                 fas fa-chevron-right
@@ -67,7 +65,7 @@
             >
               <v-sheet
                 height="100%"
-                color="secondaryCustom"
+                color="transparent"
               >
                 <v-container
                   fluid
@@ -85,20 +83,18 @@
                         <template
                           v-if="video.type === 'youtube'"
                         >
-                          <YouTube
-                            width="100%"
-                            :video-id="video.id"
+                          <youtube
+                            :src="video.id"
+                            :vars="{ rel: 0, modestbranding: 1, }"
                             nocookie
-                          ></YouTube>
+                          ></youtube>
                         </template>
                         <template
                           v-else-if="video.type === 'vimeo'"
                         >
                           <vimeo-player
-                            width="100%"
                             :video-id="video.id"
-                            :byline="false"
-                            :dnt="true"
+                            :options="{ byline: false, dnt: true }"
                           >
                           </vimeo-player>
                         </template>

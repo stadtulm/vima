@@ -139,7 +139,7 @@
                                   v-model="video.type"
                                   :label="$t('type')"
                                   :items="videoTypeItems"
-                                  :item-text="(item) => $t(item.textKey)"
+                                  :item-title="(item) => $t(item.textKey)"
                                   :rules="[rules.required]"
                                 >
                                 </v-select>
@@ -182,7 +182,7 @@
                                 v-model="video.type"
                                 :label="$t('type')"
                                 :items="videoTypeItems"
-                                :item-text="(item) => $t(item.textKey)"
+                                :item-title="(item) => $t(item.textKey)"
                                 :rules="[rules.required]"
                               >
                               </v-select>
@@ -222,7 +222,7 @@
                                 v-model="videoType"
                                 :label="$t('type')"
                                 :items="videoTypeItems"
-                                :item-text="(item) => $t(item.textKey)"
+                                :item-title="(item) => $t(item.textKey)"
                                 :rules="videoId || videoType ? [rules.required] : []"
                               >
                               </v-select>

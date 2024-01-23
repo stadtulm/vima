@@ -2648,24 +2648,6 @@ export default {
     padding: 0px !important;
   }
 
-  .responsive-video iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .responsive-video {
-    position: relative;
-    padding-bottom: 56.25%;
-    padding-top: 0px;
-    height: 0;
-    overflow: hidden;
-    border: 3px solid white;
-    background-color: #fff;
-  }
-
   .pointer {
     cursor: pointer;
   }

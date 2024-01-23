@@ -49,8 +49,8 @@
                 </v-col>
               </v-row>
               <v-row
-                dense
                 v-if="subTitle"
+                dense
               >
                 <v-col
                   cols="12"
@@ -190,13 +190,10 @@
                           cols="5"
                         >
                           <v-text-field
-                            dense
-                            color="customGrey"
+                            density="compact"
                             v-model="video.id"
-                            outlined
                             :label="$t('videoIdLabel')"
                             :rules="[rules.required]"
-                            background-color="#fff"
                           >
                           </v-text-field>
                         </v-col>
@@ -204,16 +201,12 @@
                           cols="5"
                         >
                           <v-select
-                            dense
-                            color="customGrey"
-                            item-color="customGrey"
+                            density="compact"
                             v-model="video.type"
                             :label="$t('type')"
-                            outlined
                             :items="videoTypeItems"
-                            :item-text="(item) => $t(item.textKey)"
+                            :item-title="(item) => $t(item.textKey)"
                             :rules="[rules.required]"
-                            background-color="#fff"
                           >
                           </v-select>
                         </v-col>
@@ -243,13 +236,10 @@
                         cols="5"
                       >
                         <v-text-field
-                          dense
-                          color="customGrey"
+                          density="compact"
                           v-model="video.id"
-                          outlined
                           :label="$t('videoIdLabel')"
                           :rules="[rules.required]"
-                          background-color="#fff"
                         >
                         </v-text-field>
                       </v-col>
@@ -257,16 +247,12 @@
                         cols="5"
                       >
                         <v-select
-                          dense
-                          color="customGrey"
-                          item-color="customGrey"
+                          density="compact"
                           v-model="video.type"
                           :label="$t('type')"
-                          outlined
                           :items="videoTypeItems"
-                          :item-text="(item) => $t(item.textKey)"
+                          :item-title="(item) => $t(item.textKey)"
                           :rules="[rules.required]"
-                          background-color="#fff"
                         >
                         </v-select>
                       </v-col>
@@ -293,12 +279,9 @@
                         cols="5"
                       >
                         <v-text-field
-                          dense
-                          color="customGrey"
+                          density="compact"
                           v-model="videoId"
-                          outlined
                           :label="$t('videoIdLabel')"
-                          background-color="#fff"
                           :rules="videoId || videoType ? [rules.required] : []"
                         >
                         </v-text-field>
@@ -307,16 +290,12 @@
                         cols="5"
                       >
                         <v-select
-                          dense
-                          color="customGrey"
-                          item-color="customGrey"
+                          density="compact"
                           v-model="videoType"
                           :label="$t('type')"
-                          outlined
                           :items="videoTypeItems"
-                          :item-text="(item) => $t(item.textKey)"
+                          :item-title="(item) => $t(item.textKey)"
                           :rules="videoId || videoType ? [rules.required] : []"
-                          background-color="#fff"
                         >
                         </v-select>
                       </v-col>
@@ -393,7 +372,6 @@
             >
               <v-btn
                 block
-                size="large"
                 variant="elevated"
                 color="customGrey"
                 :loading="isLoading"
