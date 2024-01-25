@@ -160,19 +160,6 @@ module.exports = {
     find: [],
     get: [],
     create: [
-      // Patch reference message if created message is a reply
-      async (context) => {
-        if (context.result.repliesTo) {
-          await context.app.service('chat-messages').patch(
-            context.result.repliesTo,
-            {
-              $push: {
-                replies: context.result._id
-              }
-            }
-          )
-        }
-      },
       // Add unread flag to status containers of other users
       async (context) => {
         const userStatusContainers = await context.app.service('status-containers').patch(
@@ -217,42 +204,6 @@ module.exports = {
       }
     ],
     remove: [
-      // If it is a reply - remove reply from reference message
-      async (context) => {
-        if (context.result.repliesTo) {
-          await context.app.service('chat-messages').patch(
-            context.result.repliesTo,
-            {
-              $pull: {
-                replies: context.result._id
-              }
-            }
-          )
-        }
-      },
-      // If it has replies - remove all replies
-      async (context) => {
-        if (context.result.replies && context.result.replies.length > 0) {
-          const chatMessageIds = await context.app.service('chat-messages').find(
-            {
-              paginate: false,
-              query: {
-                repliesTo: context.result._id,
-                $select: ['_id']
-              }
-            }
-          )
-          await context.app.service('chat-messages').remove(
-            null,
-            {
-              query: {
-                _id: { $in: context.result.replies }
-              },
-              many: chatMessageIds.map(obj => obj._id)
-            }
-          )
-        }
-      },
       // Remove message flag and all reply flags from status containers
       async (context) => {
         if (context.result._id) {

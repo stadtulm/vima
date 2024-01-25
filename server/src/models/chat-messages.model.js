@@ -31,16 +31,6 @@ module.exports = function (app) {
         credit: { type: String }
       }
     ],
-    repliesTo: {
-      type: ObjectId,
-      ref: 'chatMessages'
-    },
-    replies: [
-      {
-        type: ObjectId,
-        ref: 'chatMessages'
-      }
-    ],
     editedAt: { type: Date },
     translationSum: {
       type: String

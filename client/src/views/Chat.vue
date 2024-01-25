@@ -459,6 +459,7 @@
           :isReplyMessage="isReplyMessage"
           @update:resetInput="resetInput"
           @update:checkVisibleMessages="checkVisibleMessages()"
+          @create:chat="$event => selectedChat = $event"
         ></chat-send>
       </v-col>
     </v-row>
@@ -540,6 +541,7 @@ export default {
       // No chat found
       if (!this.selectedChat) {
         this.isLoading = false
+        this.init = false
         return
       } else {
         this.$nextTick(() => {
@@ -576,9 +578,7 @@ export default {
       createTranslation: 'create'
     }),
     ...mapActions('chats', {
-      requestChat: 'get',
-      requestChats: 'find',
-      createChat: 'create'
+      requestChat: 'get'
     }),
     ...mapActions('chat-messages', {
       findChatMessages: 'find',
