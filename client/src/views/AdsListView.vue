@@ -263,8 +263,8 @@ export default {
   }),
 
   async mounted () {
-    this.rawSortBy = this.queryObject.sortBy[0]
     await this.adaptQuery()
+    this.rawSortBy = this.queryObject.sortBy[0]
   },
 
   methods: {

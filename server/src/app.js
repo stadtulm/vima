@@ -58,7 +58,7 @@ app.configure(
   socketio(
     {
       maxHttpBufferSize: 1e8,
-      transports: ["websocket"]
+      transports: ['websocket']
     },
     io => {
       io.use((socket, next) => {
@@ -136,226 +136,35 @@ module.exports = app
 
 /*
 
-// Migration
-const JSum = require('jsum')
+Migration
 
-app.service('users').find({ paginate: false }).then(users => {
-  for (const user of users) {
-    user.language = 'de'
-    app.service('users').update(user._id, user).catch(e => {
-      console.log(e)
-    })
+*/
+
+// Remove replies from chat messages
+/*
+app.service('chat-messages').find({ paginate: false, query: { _id: '60b8e13007805b546ce240ee' } }).then(async messages => {
+  for (const message of messages) {
+    if (message.repliesTo) {
+      console.log('Child Message:', message._id, ' - parent message:', message.repliesTo)
+      const parentMessage = await app.service('chat-messages').get(message.repliesTo)
+      console.log('PARENT MESSAGE', parentMessage)
+      if (parentMessage) {
+        const parentText = parentMessage.text?.find(t => t.type === 'default').value
+        if (parentText) {
+          const newMessage = {
+            text: [
+              {
+                value: '<blockquote class="blockquote">' + parentText + '</blockquote>' + message.text?.find(t => t.type === 'default').value,
+                type: 'default'
+              }
+            ]
+          }
+          app.service('chat-messages').patch(message._id, newMessage).catch(e => {
+            console.log(e)
+          })
+        }
+      }
+    }
   }
-})
-
-// ad-messages
-app.service('ad-messages').find({ paginate: false }).then(adMessages => {
-  for (const adMessage of adMessages.slice(0, 1)) {
-    adMessage.text = [{
-      type: 'default',
-      value: adMessage.text
-    }]
-    adMessage.translationSum = JSum.digest(JSON.parse(JSON.stringify(adMessage.text)), 'SHA256', 'hex')
-    app.service('ad-messages').update(adMessage._id, adMessage).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// ads
-app.service('ads').find({ paginate: false }).then(ads => {
-  for (const ad of ads) {
-    ad.text = [{
-      type: 'default',
-      value: ad.text
-    }]
-    ad.title = [{
-      type: 'default',
-      value: ad.title
-    }]
-    ad.translationSum = JSum.digest([JSON.parse(JSON.stringify(ad.title)), JSON.parse(JSON.stringify(ad.text))], 'SHA256', 'hex')
-    app.service('ads').update(ad._id, ad).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// blog
-app.service('blog').find({ paginate: false }).then(blog => {
-  for (const blogEntry of blog) {
-    blogEntry.title = [{
-      type: 'default',
-      lang: 'de',
-      value: blogEntry.text
-    }]
-    blogEntry.subTitle = [{
-      type: 'default',
-      lang: 'de',
-      value: blogEntry.title
-    }]
-    blogEntry.text = [{
-      type: 'default',
-      lang: 'de',
-      value: blogEntry.text
-    }]
-    app.service('blog').update(blogEntry._id, blogEntry).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// categories
-app.service('categories').find({ paginate: false }).then(categories => {
-  for (const category of categories) {
-    category.text = [{
-      type: 'default',
-      lang: 'de',
-      value: category.name // name is old property name
-    }]
-    category.description = [{
-      type: 'default',
-      lang: 'de',
-      value: category.description
-    }]
-    app.service('categories').update(category._id, category).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// chat-messages
-app.service('chat-messages').find({ paginate: false }).then(chatMessages => {
-  for (const chatMessage of chatMessages) {
-    chatMessage.text = [{
-      type: 'default',
-      value: chatMessage.text
-    }]
-    chatMessage.translationSum = JSum.digest(JSON.parse(JSON.stringify(chatMessage.text)), 'SHA256', 'hex')
-    app.service('chat-messages').update(chatMessage._id, chatMessage).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// discussion-messages
-app.service('discussion-messages').find({ paginate: false }).then(discussionMessages => {
-  for (const discussionMessage of discussionMessages) {
-    discussionMessage.text = [{
-      type: 'default',
-      value: discussionMessage.text
-    }]
-    discussionMessage.translationSum = JSum.digest(JSON.parse(JSON.stringify(discussionMessage.text)), 'SHA256', 'hex')
-    app.service('discussion-messages').update(discussionMessage._id, discussionMessage).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// discussions
-app.service('discussions').find({ paginate: false }).then(discussions => {
-  for (const discussion of discussions) {
-    discussion.description = [{
-      type: 'default',
-      value: discussion.description
-    }]
-    discussion.title = [{
-      type: 'default',
-      value: discussion.title
-    }]
-    discussion.translationSum = JSum.digest([JSON.parse(JSON.stringify(discussion.title)), JSON.parse(JSON.stringify(discussion.description))], 'SHA256', 'hex')
-    app.service('discussions').update(discussion._id, discussion).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// events
-app.service('events').find({ paginate: false }).then(events => {
-  for (const event of events) {
-    event.text = [{
-      type: 'default',
-      value: event.text,
-      lang: 'de'
-    }]
-    event.title = [{
-      type: 'default',
-      value: event.title,
-      lang: 'de'
-    }]
-    app.service('events').update(event._id, event).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// groups
-app.service('groups').find({ paginate: false }).then(groups => {
-  for (const group of groups) {
-    group.description = [{
-      type: 'default',
-      value: group.description
-    }]
-    group.title = [{
-      type: 'default',
-      value: group.title
-    }]
-    group.translationSum = JSum.digest([JSON.parse(JSON.stringify(group.title)), JSON.parse(JSON.stringify(group.description))], 'SHA256', 'hex')
-    app.service('groups').update(group._id, group).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// news
-app.service('news').find({ paginate: false }).then(news => {
-  for (const newsEntry of news) {
-    newsEntry.text = [{
-      type: 'default',
-      lang: 'de',
-      value: newsEntry.text
-    }]
-    newsEntry.title = [{
-      type: 'default',
-      lang: 'de',
-      value: newsEntry.title
-    }]
-    newsEntry.subTitle = [{
-      type: 'default',
-      lang: 'de',
-      value: newsEntry.subTitle
-    }]
-    app.service('news').update(newsEntry._id, newsEntry).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// sites
-app.service('sites').find({ paginate: false }).then(sites => {
-  for (const site of sites) {
-    site.text = [{
-      type: 'default',
-      lang: 'de',
-      value: site.text
-    }]
-    app.service('sites').update(site._id, site).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
-// tags
-app.service('tags').find({ paginate: false }).then(els => {
-  for (const el of els) {
-    el.text = [{
-      type: 'default',
-      lang: 'de',
-      value: el.name
-    }]
-    app.service('tags').update(el._id, el).catch(e => {
-      console.log(e)
-    })
-  }
-})
-
+}).catch(e => console.log(e))
 */

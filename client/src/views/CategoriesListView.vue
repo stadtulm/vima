@@ -228,6 +228,8 @@ export default {
         const type = this.$route.params.type[0].toUpperCase() + this.$route.params.type.substr(1) + 'ListView'
         this.$router.replace({ params: { type: null } })
         this.$router.push({ name: type })
+      } else {
+        this.$route.params.type = 'ads'
       }
     }
     await this.adaptQuery()

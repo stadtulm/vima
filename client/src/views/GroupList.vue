@@ -282,11 +282,38 @@
           <template
             v-slot:[`item.title.value`]="{ item }"
           >
-            <span
-              class="font-weight-bold"
+            <TranslatableText
+              ownField="title"
+              :allFields="['title']"
+              type="groups"
+              :textParent="item"
+              :allIds="
+                computedGroups.map(
+                  obj => ({
+                    id: obj._id,
+                    translationSum: obj.translationSum
+                  })
+                )
+              "
             >
-              {{item.title.value}}
-            </span>
+              <template
+                v-slot:defaultLangText="{ computedText }"
+              >
+                <span
+                  class="font-weight-bold"
+                  v-html="$sanitize(computedText.value)"
+                >
+                </span>
+              </template>
+              <template
+                v-slot:translatedLangText="{ computedText }"
+              >
+                <span
+                  v-html="$sanitize(computedText.value)"
+                >
+                </span>
+              </template>
+            </TranslatableText>
           </template>
           <template
             v-slot:[`item.relation`]="{ item }"
@@ -771,6 +798,7 @@ import UserTable from '@/components/UserTable.vue'
 import FileUploadEditor from '@/components/FileUploadEditor.vue'
 import DiscussionsList from '@/components/DiscussionsList.vue'
 import ViolationsList from '@/components/ViolationsList.vue'
+import TranslatableText from '@/components/TranslatableText.vue'
 
 export default {
   name: 'GroupList',
@@ -779,7 +807,8 @@ export default {
     UserTable,
     FileUploadEditor,
     DiscussionsList,
-    ViolationsList
+    ViolationsList,
+    TranslatableText
   },
 
   data: () => ({

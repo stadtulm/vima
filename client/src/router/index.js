@@ -852,7 +852,7 @@ const routes = [
   },
   // Allgemeine Überblicke
   {
-    path: '/kategorien/:type',
+    path: '/kategorien/:type?',
     name: 'CategoryList',
     component: CategoriesListView,
     meta: {

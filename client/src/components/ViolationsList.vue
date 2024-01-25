@@ -192,7 +192,7 @@ export default {
     }
     setTimeout(async () => {
       await this.checkNewViolations()
-    }, 10000)
+    }, 500)
   },
 
   methods: {

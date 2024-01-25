@@ -2231,7 +2231,7 @@ export default {
         const items = []
         if (this.$route.meta.breadCrumbPredecessors) {
           for (const crumbArray of this.$route.meta.breadCrumbPredecessors) {
-            let params
+            let params = {}
             let indexOfMetaInPrev = -1
             let finalCrumb = crumbArray[0].startsWith('$') ? crumbArray[0].substr(1) : crumbArray[0]
             let isEnd = false
