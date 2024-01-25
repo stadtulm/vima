@@ -252,7 +252,6 @@ export default {
         this.loaders[id + 'delete'] = undefined
       }
     },
-    // TODO: Test
     itemRowBackground (props) {
       if (
         this.adminAdStatusContainer &&

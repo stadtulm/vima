@@ -11,7 +11,7 @@
             {{$t('myDiscussionsDetail')}}
           </span>
           <span
-            v-if="user"
+            v-if="user?.role === 'admin'"
             class="my-3 mr-3"
           >
             <v-btn
@@ -521,7 +521,7 @@ export default {
     headers () {
       return [
         { title: this.$t('title'), key: 'title.value' },
-        { title: this.$t('role'), key: 'relation', width: 200 },
+        { title: this.$t('role'), key: 'relation', minWidth: 200 },
         { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('group'), key: 'group', sortable: false },
         { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
@@ -549,7 +549,7 @@ export default {
           items.push({
             value: key,
             title: this.$t(this.relationItems[key].textKey),
-            props: { disabled: key === 'owner' } // TODO: Check
+            props: { disabled: key === 'owner' }
           })
         }
         tmpRelationItems[discussion._id] = items

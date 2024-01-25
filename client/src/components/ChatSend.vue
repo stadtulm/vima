@@ -194,7 +194,6 @@ export default {
             })
           })
         } catch (e) {
-          console.log(e)
           this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })
         }
       } else {

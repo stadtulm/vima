@@ -305,7 +305,6 @@
                   <v-tooltip
                     bottom
                   >
-                  // TODO : TAB OFFENE ANFRAGE TESTEN --> NACH GRUPPENANSICHTEN
                     <template v-slot:activator="{ props }">
                       <v-btn
                         v-bind="props"
@@ -612,40 +611,31 @@
                               </v-icon>
                             </v-avatar>
                           </template>
-                          <v-list-item-title>
+                          <v-list-item-title
+                            class="font-weight-bold"
+                          >
                             {{member.userName}}
                           </v-list-item-title>
                           <v-list-item-title>
-                            {{$t('messageToGroup')}} "{{memberStatusContainers.filter(obj => obj.relation === 'applicant')[i].customField}}"
+                            <i>{{$t('messageToGroup')}}</i> "{{memberStatusContainers.filter(obj => obj.relation === 'applicant')[i].customField}}"
                           </v-list-item-title>
-                          <v-list-item-action>
+                          <v-list-item-action
+                            class="py-3"
+                          >
                             <v-btn
                               @click="acceptMember(member)"
-                              fab
-                              small
-                              dark
+                              class="mr-3"
+                              icon="fas fa-check"
+                              size="x-small"
                               :color="$settings.modules.groups.color"
                             >
-                              <v-icon
-                                size="18"
-                              >
-                                fas fa-check
-                              </v-icon>
                             </v-btn>
-                          </v-list-item-action>
-                          <v-list-item-action>
                             <v-btn
                               @click="removeMember(member)"
-                              fab
-                              small
-                              dark
+                              icon="fas fa-times"
+                              size="x-small"
                               :color="$settings.modules.groups.color"
                             >
-                              <v-icon
-                                size="18"
-                              >
-                                fas fa-times
-                              </v-icon>
                             </v-btn>
                           </v-list-item-action>
                         </v-list-item>
@@ -1233,7 +1223,7 @@ export default {
     headers () {
       return [
         { title: this.$t('title'), key: 'title.value' },
-        { title: this.$t('role'), key: 'relation', width: 200 },
+        { title: this.$t('role'), key: 'relation', minWidth: 200 },
         { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },

@@ -285,11 +285,13 @@ export default {
       }
     },
     async loadDataTableEntities () {
-      this.loading = true
-      this.discussionsResponse = await this.findDiscussions(
-        this.discussionsParams
-      )
-      this.loading = false
+      if (!this.isAcceptList || (this.isAcceptList && this.group)) {
+        this.loading = true
+        this.discussionsResponse = await this.findDiscussions(
+          this.discussionsParams
+        )
+        this.loading = false
+      }
     },
     async deleteDiscussion (id) {
       this.loaders[id + 'delete'] = true
@@ -398,10 +400,6 @@ export default {
       } else {
         return this.$settings.modules.discussions.color
       }
-    },
-    // TODO
-    discussionsQueryWhen () {
-      return !this.isAcceptList || (this.isAcceptList && this.group)
     },
     discussionsParams () {
       const query = {

@@ -328,9 +328,9 @@ export default {
     headers () {
       return [
         { title: '', key: 'pic', sortable: false },
-        { title: this.$t('name'), key: 'text.value', width: '30%' },
+        { title: this.$t('name'), key: 'text.value', minWidth: '30%' },
         { title: this.$t('tags'), key: 'tags', sortable: false },
-        { title: this.$t('description'), key: 'description', width: '50%', sortable: false },
+        { title: this.$t('description'), key: 'description', minWidth: '50%', sortable: false },
         { title: this.$t('entries'), key: 'entries', align: 'center' }
       ]
     },

@@ -68,14 +68,14 @@
             v-slot:[`item.applicants`]="{ item }"
           >
             <v-badge
-              :model-value="isOwnAd(item._id) && getOwnStatusContainerOfAd(item._id).unread.length > 0"
+              :model-value="isOwnAd(item._id) && getOwnStatusContainerOfAd(item._id)?.unread.length > 0"
               :color="$settings.indicatorColor"
             >
               <template v-slot:badge>
                 <span
                   class="text-customGrey font-weight-bold"
                 >
-                  {{getOwnStatusContainerOfAd(item._id).unread.length}}
+                  {{getOwnStatusContainerOfAd(item._id)?.unread.length}}
                 </span>
               </template>
               <v-btn
@@ -275,7 +275,7 @@
               <v-data-table
                 :items="computedAdMessages.filter(obj => !obj.repliesTo)"
                 :headers="[
-                  { title: '', key: 'pic.url', width: 50, sortable: false },
+                  { title: '', key: 'pic.url', minWidth: 50, sortable: false },
                   { title: this.$t('userName'), key: 'userName' },
                   { title: this.$t('createdAt'), key: 'createdAt' },
                   { title: this.$t('message'), key: 'message', sortable: false },
@@ -678,7 +678,7 @@ export default {
       return this.statusContainers.find(obj => obj.reference === adId && obj.user === this.user._id)
     },
     isOwnAd (adId) {
-      return this.getOwnStatusContainerOfAd(adId).relation === 'owner'
+      return this.getOwnStatusContainerOfAd(adId)?.relation === 'owner'
     },
     async checkAcceptedAds () {
       const visibleAds = this.computedAds.map(obj => obj._id)

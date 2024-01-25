@@ -201,8 +201,8 @@ export default {
     headers () {
       return [
         { title: this.$t('title'), key: 'title.value' },
-        { title: this.$t('createdAt'), key: 'createdAt', width: 170 },
-        { title: this.$t('updatedAt'), key: 'updatedAt', width: 170 },
+        { title: this.$t('createdAt'), key: 'createdAt', minWidth: 170 },
+        { title: this.$t('updatedAt'), key: 'updatedAt', minWidth: 170 },
         { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
         { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
         { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }

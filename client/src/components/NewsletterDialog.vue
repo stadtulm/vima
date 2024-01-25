@@ -4,7 +4,7 @@
     <v-dialog
       max-width="600"
       persistent
-      :value="showNewsletterDialog"
+      :model-value="showNewsletterDialog"
       @click:outside="closeDialog()"
     >
       <v-card
@@ -45,10 +45,10 @@
             <v-row dense>
               <v-col>
                 <v-text-field
+                  density="compact"
                   v-model="newsletterEmail"
                   :label="$t('email')"
                   :rules="[rules.email, rules.required]"
-                  color="customGrey"
                   :error-messages="emailError"
                 ></v-text-field>
               </v-col>
@@ -56,11 +56,11 @@
             <v-row dense>
               <v-col>
                 <v-select
+                  density="compact"
                   v-model="language"
                   :label="$t('languageButton')"
                   :rules="[rules.required]"
-                  :items="$settings.languages.map(lang => ({ text: $t(lang), value: lang}))"
-                  color="customGrey"
+                  :items="$settings.languages.map(lang => ({ title: $t(lang), value: lang}))"
                 ></v-select>
               </v-col>
             </v-row>

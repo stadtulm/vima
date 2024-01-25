@@ -326,8 +326,8 @@ export default {
       const headers = [
         { title: this.$t('submittedBy'), key: 'responses.0' },
         { title: this.$t('closed'), key: 'isClosed', align: 'center' },
-        { title: this.$t('createdAt'), key: 'createdAt', width: 170 },
-        { title: this.$t('updatedAt'), key: 'updatedAt', width: 170 },
+        { title: this.$t('createdAt'), key: 'createdAt', minWidth: 170 },
+        { title: this.$t('updatedAt'), key: 'updatedAt', minWidth: 170 },
         { title: this.$t('details'), key: 'edit', sortable: false, align: 'center' },
         { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' }
       ]

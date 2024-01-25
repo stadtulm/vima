@@ -116,9 +116,6 @@ export default {
     }
   },
 
-  asyncComputed: {
-  },
-
   watch: {
     currentLanguage () {
       this.selectedLanguage = this.currentLanguage

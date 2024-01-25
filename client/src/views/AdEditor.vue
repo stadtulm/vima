@@ -289,7 +289,7 @@
     </v-dialog>
     <TagProposalDialog
       :showTagProposalDialog="showTagProposalDialog"
-      @closeTagProposalDialog="showTagProposalDialog = false"
+      @update:closeTagProposalDialog="showTagProposalDialog = false"
     ></TagProposalDialog>
   </div>
 </template>

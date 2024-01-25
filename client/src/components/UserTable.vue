@@ -164,7 +164,7 @@ export default {
     }),
     headers () {
       return [
-        { title: '', key: 'pic.url', width: 50, sortable: false },
+        { title: '', key: 'pic.url', minWidth: 50, sortable: false },
         { title: this.$t('userName'), key: 'userName', sortable: true }
       ]
     },

@@ -84,16 +84,6 @@ module.exports = {
     patch: [
       commonHooks.iff(
         commonHooks.isProvider('external'),
-        commonHooks.preventChanges(true,
-          'isVerified.' +
-          'verifyToken.' +
-          'verifyShortToken.' +
-          'verifyExpires.' +
-          'verifyChanges.' +
-          'resetToken.' +
-          'resetShortToken.' +
-          'resetExpires'
-        ),
         async (context) => {
           // Confirm subscription
           if (context.data.tmpAction === 'confirmSignup' && context.data.tmpValue) {

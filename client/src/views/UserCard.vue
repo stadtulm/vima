@@ -87,15 +87,36 @@ export default {
   name: 'UserCard',
 
   data: () => ({
+    ageItems: {
+      0: '<21',
+      1: '21-30',
+      2: '31-40',
+      3: '41-50',
+      4: '51-60',
+      5: '61-70',
+      6: '>70'
+    },
+    genderItems: {
+      m: this.$t('male'),
+      f: this.$t('female'),
+      d: this.$t('diverse')
+    }
   }),
 
   async mounted () {
+    if (this.$route.name === 'User' && this.$route.params.user) {
+      await this.loadUser()
+    }
   },
 
   methods: {
     ...mapActions('users', {
       requestUser: 'get'
-    })
+    }),
+    async loadUser () {
+      const tmpUser = await this.requestUser([this.$route.params.user])
+      this.user = tmpUser
+    }
   },
 
   computed: {
@@ -105,33 +126,6 @@ export default {
     ...mapGetters('auth', {
       user: 'user'
     })
-  },
-
-  asyncComputed: {
-    async computedUser () {
-      if (this.$route.name === 'User' && this.$route.params.user) {
-        const tmpUser = await this.requestUser([this.$route.params.user])
-        return tmpUser
-      }
-    },
-    genderItems () {
-      return {
-        m: this.$t('male'),
-        f: this.$t('female'),
-        d: this.$t('diverse')
-      }
-    },
-    ageItems () {
-      return {
-        0: '<21',
-        1: '21-30',
-        2: '31-40',
-        3: '41-50',
-        4: '51-60',
-        5: '61-70',
-        6: '>70'
-      }
-    }
   }
 }
 </script>

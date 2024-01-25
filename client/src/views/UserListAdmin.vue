@@ -413,7 +413,7 @@ export default {
           key: 'pic.url',
           align: 'start',
           sortable: false,
-          width: 50
+          minWidth: 50
         },
         { title: this.$t('userName'), key: 'userName' },
         { title: this.$t('firstName'), key: 'firstName' },
@@ -429,7 +429,7 @@ export default {
           key: 'createdAt',
           align: 'center'
         },
-        { title: this.$t('role'), width: 150, key: 'role' },
+        { title: this.$t('role'), minWidth: 150, key: 'role' },
         { title: this.$t('verified'), key: 'isVerified', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
         { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },

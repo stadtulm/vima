@@ -2628,7 +2628,7 @@ export default {
   }
 
   .foreign-sheet, .v-data-table__tr {
-    transition: background-color 3s !important;
+    transition: background-color 6s !important;
   }
 
   .v-data-table__tr.new, .foreign-sheet.new {

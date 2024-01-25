@@ -19,18 +19,14 @@ class Service {
 
   async create (body, params, cb) {
     debug('create', body, params)
-
-    // TODO maybe body should be text/html field
-    // and params is rest of options
-
-    // https://github.com/nodemailer/nodemailer#set-up-smtp says:
-    // If callback argument is not set then the method returns a Promise object.
-
     // TODO: Remove fake to field
+    /*
     return await this.transporter.sendMail({
       ...body,
       to: 'falko@widerstand.digital'
     })
+    */
+    console.log(body)
   }
 }
 

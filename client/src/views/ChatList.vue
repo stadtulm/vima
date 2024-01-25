@@ -333,7 +333,7 @@ export default {
     }),
     headers () {
       return [
-        { title: '', value: 'pic', width: 50, sortable: false },
+        { title: '', value: 'pic', minWidth: 50, sortable: false },
         { title: this.$t('userName'), value: 'userName' },
         { title: this.$t('block') + ' / ' + this.$t('unblock'), value: 'status' },
         // { title: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },

@@ -379,7 +379,7 @@ export default {
     }),
     headers () {
       return [
-        { title: this.$t('name'), key: 'name', width: 350 },
+        { title: this.$t('name'), key: 'name', minWidth: 350 },
         { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('updatedAt'), key: 'updatedAt' },
         { title: this.$t('position'), key: 'position' },

@@ -434,7 +434,6 @@ export default {
         await this.removeMessage(messageId)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
       } catch (e) {
-        console.log(e)
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
       }
     },

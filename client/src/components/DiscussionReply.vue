@@ -129,7 +129,7 @@
               class="text-left"
               cols="12"
             >
-              <!-- TODO: This belongs into tiptap - is from mention stash -->
+              <!-- TODO mentions: This belongs into tiptap - is from mention stash -->
               <!-- :mention="slug" ref="main_test" -->
               <custom-tiptap
                 :placeholder="$t('writeNewAnswer') + ' ...'"
@@ -258,7 +258,7 @@ export default {
         this.slug = this.messageText.replaceAll('@' + this.search, '<span data-type="mention" data-label="' + e.userName + '" data-id="' + e._id + '"></span>&nbsp;')
         await this.$nextTick()
         this.messageText = this.slug
-        // TODO: Set focus
+        // TODO mentions: Set focus
         // document.querySelector('#messageInput_main').childNodes[2].childNodes[3].childNodes[0].focus()
       }
     },
@@ -374,7 +374,7 @@ export default {
       if (!this.showSuggestions) return
       if (!this.messageText) return
       const pattern = /\B@[a-z0-9_-]+/gi
-      // TODO: Solve problem which @ to check ...
+      // TODO mentions: Solve problem which @ to check ...
       // Maybe compare old vs new?
       const grep = this.messageText.match(pattern)
       if (grep && grep.length > 0) {

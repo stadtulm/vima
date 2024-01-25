@@ -159,7 +159,7 @@ module.exports = {
           (context) => context.params.user?.role !== 'admins',
           // Check if user is ad owner
           async context => {
-            // Get ad to patch
+            // Get ad to delete
             const ad = await context.app.service('ads').get(
               context.arguments[0],
               {

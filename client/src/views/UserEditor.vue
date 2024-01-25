@@ -334,7 +334,6 @@
           </v-row>
           <v-row>
             <v-col>
-              // TODO: CHECK VERIFICATION OF PW WHEN DELETING USER! COULD BE DELETED ANYWAY
               <v-text-field
                 dense
                 outlined
@@ -343,6 +342,7 @@
                 v-model="oldPw"
                 :label="$t('password')"
                 type="password"
+                :error-messages="pwErrors"
               >
               </v-text-field>
             </v-col>
@@ -361,7 +361,6 @@
               variant="elevated"
               :disabled="!oldPw"
               @click="deleteUser()"
-              :dark="oldPw ? true : false"
               color="error"
               :loading="isDeleting"
             >
@@ -408,6 +407,7 @@
                 v-model="oldPw"
                 :label="$t('password')"
                 type="password"
+                :error-messages="pwErrors"
               >
               </v-text-field>
             </v-col>
@@ -450,6 +450,7 @@ export default {
   },
 
   data: () => ({
+    pwErrors: [],
     isDeleting: false,
     showPasswordDialog: undefined,
     oldPw: undefined,
@@ -549,6 +550,11 @@ export default {
         this.isDeleting = false
         this.$router.push({ name: 'Participate' })
       } catch (e) {
+        if (e.message === 'Wrong confirmation password') {
+          this.pwErrors = [this.$t('changePasswordHeadline')]
+        } else {
+          this.pwErrors = [e.message]
+        }
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
         this.isDeleting = false
       }
@@ -575,7 +581,6 @@ export default {
       }
     },
     async saveUser () {
-      this.showPasswordDialog = false
       this.emailError = undefined
       this.userNameError = undefined
       this.isLoading = true
@@ -618,13 +623,20 @@ export default {
         }
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.showPasswordDialog = false
         this.$router.go(-1)
       } catch (e) {
         this.isLoading = false
         if (e.errors && e.errors.email) {
           this.emailError = [this.$t('emailExistsError')]
+          this.showPasswordDialog = false
         } else if (e.errors && e.errors.userName) {
+          this.showPasswordDialog = false
           this.userNameError = [this.$t('accountExistsError')]
+        } else if (e.message === 'Wrong confirmation password') {
+          this.pwErrors = [this.$t('changePasswordHeadline')]
+        } else {
+          this.showPasswordDialog = false
         }
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
@@ -673,6 +685,9 @@ export default {
     },
     '$route.params.user' () {
       this.adapt()
+    },
+    oldPw () {
+      this.pwErrors = []
     }
   }
 }

@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: Can not jump to this editor in browser directly -->
   <div>
     <v-row
       class="d-flex mx-0 mb-4"
@@ -318,7 +317,7 @@
     </v-dialog>
     <TagProposalDialog
       :showTagProposalDialog="showTagProposalDialog"
-      @closeTagProposalDialog="showTagProposalDialog = false"
+      @update:closeTagProposalDialog="showTagProposalDialog = false"
     ></TagProposalDialog>
   </div>
 </template>

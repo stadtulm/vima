@@ -176,7 +176,7 @@ export default {
           key: 'pic.url',
           align: 'start',
           sortable: false,
-          width: 50
+          minWidth: 50
         },
         {
           title: this.$t('userName'),

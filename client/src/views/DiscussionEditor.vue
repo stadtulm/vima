@@ -65,7 +65,7 @@
                     item-title="title"
                     item-value="_id"
                     :label="$t('group')"
-                    :items="[{ title: $t('none'), _id: null}].concat(computedGroups.map(group => ({ _id: group._id, title: group.title.value })))"
+                    :items="[{ title: $t('none'), _id: null}].concat(groups.map(group => ({ _id: group._id, title: group.title.value })))"
                     :disabled="user.role !== 'admins'"
                   >
                   </v-select>
@@ -301,7 +301,7 @@
     </v-dialog>
     <TagProposalDialog
       :showTagProposalDialog="showTagProposalDialog"
-      @closeTagProposalDialog="showTagProposalDialog = false"
+      @update:closeTagProposalDialog="showTagProposalDialog = false"
     ></TagProposalDialog>
   </div>
 </template>
@@ -311,13 +311,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FileUpload from '@/components/FileUpload.vue'
 import TagProposalDialog from '@/components/TagProposalDialog.vue'
+import CustomTiptap from '@/components/CustomTiptap.vue'
 
 export default {
   name: 'DiscussionEditor',
 
   components: {
     TagProposalDialog,
-    FileUpload
+    FileUpload,
+    CustomTiptap
   },
 
   data: () => ({
@@ -332,11 +334,13 @@ export default {
     isValid: false,
     title: undefined,
     description: undefined,
-    pics: []
+    pics: [],
+    groups: []
   }),
 
   async mounted () {
     await this.adapt()
+    await this.loadGroups()
     this.$refs.tabStart.focus()
   },
 
@@ -358,6 +362,26 @@ export default {
     ...mapActions('groups', {
       findGroups: 'find'
     }),
+    async loadGroups () {
+      const tmpGroups = await this.findGroups(
+        {
+          query: {
+            _id: {
+              $in: [...new Set(this.statusContainers.filter(
+                obj => obj.type === 'groups' &&
+                  obj.user === this.user._id &&
+                  (
+                    obj.relation === 'owner' ||
+                    obj.relation === 'member'
+                  )
+              ).map(obj => obj.reference))]
+            }
+          },
+          $paginate: false
+        }
+      )
+      this.groups = tmpGroups || []
+    },
     async patchFileRemove (file) {
       this.isLoading = true
       try {
@@ -498,36 +522,7 @@ export default {
     }),
     ...mapGetters('tags', {
       tags: 'list'
-    }),
-    computedGroups () {
-      if (this.requestedGroups) {
-        return this.requestedGroups
-      } else {
-        return []
-      }
-    }
-  },
-
-  asyncComputed: {
-    async requestedGroups () {
-      return await this.findGroups(
-        {
-          query: {
-            _id: {
-              $in: [...new Set(this.statusContainers.filter(
-                obj => obj.type === 'groups' &&
-                  obj.user === this.user._id &&
-                  (
-                    obj.relation === 'owner' ||
-                    obj.relation === 'member'
-                  )
-              ).map(obj => obj.reference))]
-            }
-          },
-          $paginate: false
-        }
-      )
-    }
+    })
   },
 
   watch: {

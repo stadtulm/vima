@@ -578,7 +578,6 @@ export default {
         this.manualLoad = 'delete'
         this.triggerNewMessage = Date.now()
       } catch (e) {
-        console.log(e)
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
       }
     },

@@ -53,7 +53,7 @@ module.exports = {
           'User:',
           context.params.user ? context.params.user._id + '(' + context.params.user.firstName + ' ' + context.params.user.lastName + ')' : 'anonymous' + ',',
           'Hook:',
-          context.error.hook.type, context.error.hook.method, context.error.hook.path + ', ',
+          context.error.hook?.type, context.error.hook?.method, context.error.hook?.path + ', ',
           'Args:',
           JSON.stringify(context.arguments[0], replacePw) + ',',
           'Data:',
