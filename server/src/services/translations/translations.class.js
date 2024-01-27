@@ -140,5 +140,6 @@ async function createTranslations (app, translator, messages, data) {
 
 const googleLanguageCodesMap = {
   ua: 'uk',
-  rs: 'sr'
+  rs: 'sr',
+  si: 'sl'
 }
