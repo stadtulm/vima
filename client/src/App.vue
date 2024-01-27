@@ -2037,7 +2037,7 @@ export default {
       return this.settings[0]
     },
     computedShowHelpButton () {
-      return showHelpButton
+      return parseInt(showHelpButton)
     },
     stepColors () {
       if (this.settings && this.settings.length === 1) {
