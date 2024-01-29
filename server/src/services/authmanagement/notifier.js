@@ -37,7 +37,6 @@ module.exports = function (app) {
         { text: app.i18n.__({ phrase: 'admin', locale: user.language || app.customSettings.defaultLanguage }), value: 'admins' }
       ]
       switch (type) {
-        // TODO: Will not work anymore
         case 'verifySubscriberSignup':
           tokenLink = getLink('bestaetigen', user._id + '/' + user.verifyToken)
           email = {
