@@ -37,7 +37,7 @@
                 '#ffeac2' :
                 replyColors[level - 1]
             ) :
-            (computedOwnSubscriberStatusContainer && computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(message._id)) ?
+            (computedOwnSubscriberStatusContainer?.unread.map(unread => unread.id).includes(message._id)) ?
               $settings.indicatorColor:
               replyColors[level - 1]
           "

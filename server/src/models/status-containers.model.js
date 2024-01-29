@@ -14,7 +14,7 @@ module.exports = function (app) {
     },
     relation: {
       type: String,
-      enum: ['owner', 'applicant', 'subscriber', 'moderator', 'admin', 'member', 'invitation']
+      enum: ['owner', 'applicant', 'subscriber', 'moderator', 'admin', 'member', 'invitation', 'mentions']
     },
     type: {
       type: String,

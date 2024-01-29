@@ -32,7 +32,8 @@ module.exports = function (app) {
     newAcceptedGroupDiscussions: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] },
     newViolationsToProve: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] },
     newGroupViolationsToProve: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] },
-    newUser: { type: String, enum: ['emailAlways', 'emailOff'] }
+    newUser: { type: String, enum: ['emailAlways', 'emailOff'] },
+    newMention: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] }
   }, {
     timestamps: true,
     collation: { locale: 'en', strength: 1 }

@@ -1,9 +1,10 @@
-const { notifyNewMessages } = require('../mailer/generator')
+const { notifyNewMessages, notifyUsers } = require('../mailer/generator')
 const commonHooks = require('feathers-hooks-common')
 const { authenticate } = require('@feathersjs/authentication').hooks
 const allowAnonymous = require('../authmanagement/anonymous')
 const Errors = require('@feathersjs/errors')
 const JSum = require('jsum')
+const cheerio = require('cheerio')
 
 module.exports = {
   before: {
@@ -302,6 +303,50 @@ module.exports = {
           }
         )
         await notifyNewMessages(context.app, 'discussionMessages', 'create', context.result, userStatusContainers)
+      },
+      async (context) => {
+        // Parse message for mention tags then
+        const $ = await cheerio.load(context.result.text.value)
+        const targetUserIds = await $('span[data-type="mention"]').map((i, x) => $(x).attr('data-id')).toArray()
+        // Send notifications
+        await notifyUsers(context.app, 'newMention', 'create', context.result, targetUserIds)
+        // Add to status-containers
+        for (const userId of targetUserIds) {
+          const mentionContainer = await context.app.service('status-containers').find(
+            {
+              query: {
+                user: userId,
+                type: 'discussions',
+                relation: 'mentions'
+              }
+            }
+          )
+          if (mentionContainer.length > 1) {
+            throw new Error('Too many mention containers exist for user ' + userId)
+          } else if (mentionContainer.length === 0) {
+            await context.app.service('status-containers').create({
+              type: 'discussions',
+              reference: context.result.discussion,
+              user: userId,
+              unread: [
+                {
+                  type: 'discussion-messages',
+                  id: context.result._id
+                }
+              ],
+              relation: 'mentions'
+            })
+          } else {
+            await context.app.service('status-containers').patch(
+              mentionContainer[0]._id,
+              {
+                $push: {
+                  unread: { type: 'discussion-messages', id: context.result._id }
+                }
+              }
+            )
+          }
+        }
       }
     ],
     update: [],
@@ -374,6 +419,7 @@ module.exports = {
         }
       },
       // Remove message unread-flag and all reply unread-flags from status containers
+      // TODO: Test if pulls form unread and mention work when deleting a message
       async (context) => {
         if (context.result._id) {
           await context.app.service('status-containers').patch(
@@ -388,7 +434,7 @@ module.exports = {
             {
               query: {
                 reference: context.result.discussion,
-                relation: 'subscriber'
+                relation: { $in: ['subscriber', 'mentions'] }
               }
             }
           )
@@ -405,7 +451,7 @@ module.exports = {
             {
               query: {
                 type: 'discussions',
-                relation: 'subscriber'
+                relation: { $in: ['subscriber', 'mentions'] }
               }
             }
           )

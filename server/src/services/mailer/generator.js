@@ -17,8 +17,18 @@ module.exports = {
       }
     )
     // Custom
-    const tmpMailBodyType = type
-    if (type === 'newTagsToAccept') {
+    let tmpMailBodyType = type
+    if (type === 'newMention') {
+      item.discussion = await app.service('discussions').get(item.discussion)
+      if (item.discussion?.group) {
+        item.group = await app.service('groups').get(item.discussion.group)
+      }
+      if (item.group) {
+        tmpMailBodyType = 'newMentionGroup'
+      } else {
+        tmpMailBodyType = 'newMentionDiscussion'
+      }
+    } else if (type === 'newTagsToAccept') {
       item.tag = {}
       item.tag.text = item.text[0].value
       item.tag._id = item._id
@@ -351,7 +361,7 @@ function returnMailBody (app, type, action, language) {
       create: {
         from: process.env.FROM_EMAIL,
         to: '{{recipient}}',
-        subject: 'Eine neuer Diskussionsforums-Beitrag',
+        subject: app.i18n.__({ phrase: 'newDiscussionPost', locale: language }),
         html: app.i18n.__({ phrase: 'hello', locale: language }) +
           ' {{firstName}} {{lastName}}!<br><br>' +
           app.i18n.__({ phrase: 'checkDiscussionPost1', locale: language }) +
@@ -492,6 +502,32 @@ function returnMailBody (app, type, action, language) {
           'Name: {{newUserName}}<br>' +
           'User-Name: {{newUserUserName}}<br>' +
           'E-Mail: {{newUserEmail}}<br><br>' +
+          app.i18n.__({ phrase: 'bestRegards', locale: language })
+      }
+    },
+    newMentionDiscussion: {
+      create: {
+        from: process.env.FROM_EMAIL,
+        to: '{{recipient}}',
+        subject: app.i18n.__({ phrase: 'newMentionNotification', locale: language }),
+        html: app.i18n.__({ phrase: 'hello', locale: language }) +
+          ' {{firstName}} {{lastName}}!<br><br>' +
+          app.i18n.__({ phrase: 'checkMention1', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + 'diskussionsforen/{{discussionId}}">' +
+          app.i18n.__({ phrase: 'checkMention2', locale: language }) +
+          app.i18n.__({ phrase: 'bestRegards', locale: language })
+      }
+    },
+    newMentionGroup: {
+      create: {
+        from: process.env.FROM_EMAIL,
+        to: '{{recipient}}',
+        subject: app.i18n.__({ phrase: 'newMentionNotification', locale: language }),
+        html: app.i18n.__({ phrase: 'hello', locale: language }) +
+          ' {{firstName}} {{lastName}}!<br><br>' +
+          app.i18n.__({ phrase: 'checkMention1', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">' +
+          app.i18n.__({ phrase: 'checkMention2', locale: language }) +
           app.i18n.__({ phrase: 'bestRegards', locale: language })
       }
     }

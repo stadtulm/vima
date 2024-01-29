@@ -210,35 +210,11 @@
           <template
             v-slot:[`item.link`]="{ item }"
           >
-            <v-badge
-              :model-value="
-                (
-                  getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber') ?
-                    true :
-                    false
-                ) &&
-                (
-                  getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber').unread.length > 0 ?
-                    true :
-                    false
-                )
-              "
-              :color="$settings.indicatorColor"
-              overlap
-            >
-              <template
-                v-slot:badge
-                v-if="getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber')"
-              >
-                <span
-                  class="text-customGrey font-weight-bold"
-                >
-                  {{getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber').unread.length}}
-                </span>
-              </template>
+            <v-span class="d-flex align-center">
               <v-btn
                 icon="fa fa-arrow-right"
                 size="small"
+                class="mr-1"
                 :color="computedColor"
                 :disabled="
                   !item.isActive ||
@@ -260,7 +236,29 @@
                   "
               >
               </v-btn>
-            </v-badge>
+              <v-chip
+                :color="$settings.indicatorColor"
+                size="small"
+                variant="flat"
+                v-if="getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber')?.unread?.length > 0"
+              >
+                <div class="text-customGrey">
+                  <v-icon class="mr-1">fas fa-comment-dots</v-icon>
+                  {{getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber').unread.length}}
+                </div>
+              </v-chip>
+              <v-chip
+                :color="$settings.indicatorColor"
+                size="small"
+                variant="flat"
+                v-if="getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'mentions')?.unread?.length > 0"
+              >
+                <div class="text-customGrey">
+                  <v-icon class="mr-1">fas fa-at</v-icon>
+                  {{getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'mentions').unread.length}}
+                </div>
+              </v-chip>
+            </v-span>
           </template>
         </v-data-table-server>
       </v-col>
@@ -539,6 +537,7 @@ export default {
         delete tmpItems.applicant
         delete tmpItems.member
         delete tmpItems.apply
+        delete tmpItems.mentions
         delete tmpItems.subscribe
         delete tmpItems.moderator
         delete tmpItems.invitation
@@ -559,7 +558,9 @@ export default {
     computedDiscussionRelations () {
       const tmpDiscussionRelations = {}
       for (const discussion of this.computedDiscussions) {
-        tmpDiscussionRelations[discussion._id] = this.statusContainers.filter(obj => obj.user === this.user._id && obj.reference === discussion._id).map(obj => obj.relation)
+        tmpDiscussionRelations[discussion._id] = this.statusContainers
+          .filter(obj => obj.user === this.user._id && obj.reference === discussion._id).map(obj => obj.relation)
+          .filter(obj => obj !== 'mentions')
       }
       return tmpDiscussionRelations
     },

@@ -25,6 +25,7 @@
         :computedGroupStatus="computedGroupStatus"
         :isEditMessage="isEditMessage"
         @update:resetInput="resetInput()"
+        @update:message="triggerNewMessage = Date.now()"
       >
       </DiscussionReply>
     </v-row>
@@ -383,6 +384,7 @@
         :computedGroupStatus="computedGroupStatus"
         :isEditMessage="isEditMessage"
         @update:resetInput="resetInput()"
+        @update:message="triggerNewMessage = Date.now()"
       >
       </DiscussionReply>
     </v-row>
@@ -453,7 +455,7 @@ export default {
   }),
 
   async mounted () {
-    this.discussionMessagesData = await this.loadDiscussionMessagesData()
+    await this.loadDiscussionMessagesData()
     if (this.init) {
       // Init listeners
       this.$nextTick(() => {
@@ -496,7 +498,7 @@ export default {
     }),
     async loadDiscussionMessagesData () {
       this.isFindDiscussionMessagesPending = true
-      return await this.findDiscussionMessages(
+      this.discussionMessagesData = await this.findDiscussionMessages(
         {
           query: {
             discussion: this.discussion._id,
@@ -558,6 +560,9 @@ export default {
         } else {
           if (this.computedOwnSubscriberStatusContainer?.unread.map(unread => unread.id).includes(message._id)) {
             return this.$settings.indicatorColor
+          } else if (this.computedOwnMentionStatusContainer?.unread.map(unread => unread.id).includes(message._id)) {
+            // TODO: Make colors work
+            return '#eb34c6'
           } else {
             return '#f6f6f6'
           }
@@ -597,6 +602,7 @@ export default {
           this.isVisibleInsideContainer(message, document.querySelector('#messageContainer'))
         ) {
           const tmpDiscussionMessage = this.allDiscussionMessages.find(obj => obj._id === message.getAttribute('name'))
+          // Pull unread
           if (
             tmpDiscussionMessage &&
             !this.isUpdating &&
@@ -615,6 +621,25 @@ export default {
             )
             this.isUpdating = false
           }
+          // Pull mentions
+          if (
+            tmpDiscussionMessage &&
+            !this.isUpdating &&
+            !this.isOwnMessage(tmpDiscussionMessage) &&
+            this.computedOwnMentionStatusContainer?.unread.map(unread => unread.id).includes(tmpDiscussionMessage._id)
+          ) {
+            this.isUpdating = true
+            await this.patchDiscussionMessageNotifications(
+              [
+                'pullUnreadById',
+                {
+                  containerId: this.computedOwnMentionStatusContainer._id,
+                  ids: [tmpDiscussionMessage._id]
+                }
+              ]
+            )
+            this.isUpdating = false
+          }
         }
       })
       document.querySelectorAll('.reply').forEach(async message => {
@@ -624,12 +649,12 @@ export default {
           this.isVisibleInsideContainer(message, document.querySelector('#replyContainer'))
         ) {
           const tmpDiscussionMessage = this.allDiscussionMessages.find(obj => obj._id === message.getAttribute('name'))
+          // Pull unread
           if (
             tmpDiscussionMessage &&
             !this.isUpdating &&
             !this.isOwnMessage(tmpDiscussionMessage) &&
-            this.computedOwnSubscriberStatusContainer &&
-            this.computedOwnSubscriberStatusContainer.unread.map(unread => unread.id).includes(tmpDiscussionMessage._id)
+            this.computedOwnSubscriberStatusContainer?.unread.map(unread => unread.id).includes(tmpDiscussionMessage._id)
           ) {
             this.isUpdating = true
             await this.patchDiscussionMessageNotifications(
@@ -637,6 +662,25 @@ export default {
                 'pullUnreadById',
                 {
                   containerId: this.computedOwnSubscriberStatusContainer._id,
+                  ids: [tmpDiscussionMessage._id]
+                }
+              ]
+            )
+            this.isUpdating = false
+          }
+          // Pull mentions
+          if (
+            tmpDiscussionMessage &&
+            !this.isUpdating &&
+            !this.isOwnMessage(tmpDiscussionMessage) &&
+            this.computedOwnMentionStatusContainer?.unread.map(unread => unread.id).includes(tmpDiscussionMessage._id)
+          ) {
+            this.isUpdating = true
+            await this.patchDiscussionMessageNotifications(
+              [
+                'pullUnreadById',
+                {
+                  containerId: this.computedOwnMentionStatusContainer._id,
                   ids: [tmpDiscussionMessage._id]
                 }
               ]
@@ -692,6 +736,9 @@ export default {
     computedOwnSubscriberStatusContainer () {
       return this.computedOwnStatusContainers.find(obj => obj.relation === 'subscriber')
     },
+    computedOwnMentionStatusContainer () {
+      return this.computedOwnStatusContainers.find(obj => obj.relation === 'mentions')
+    },
     computedDiscussionMessages () {
       if (this.discussionMessagesData && this.discussionMessagesData.data) {
         return this.discussionMessagesData.data
@@ -722,9 +769,10 @@ export default {
   },
   watch: {
     async triggerNewMessage () {
-      this.discussionMessagesData = await this.loadDiscussionMessagesData()
+      await this.loadDiscussionMessagesData()
     },
     page () {
+      this.loadDiscussionMessagesData()
       if (this.page === Math.ceil(this.total / this.itemsPerPage)) {
         this.hasNewMessages = false
       }
@@ -732,7 +780,12 @@ export default {
     allDiscussionMessages (newValue, oldValue) {
       const newDiscussionValue = newValue.filter(obj => obj.discussion === this.discussion._id)
       const oldDiscussionValue = oldValue.filter(obj => obj.discussion === this.discussion._id)
-      if (!this.isFindDiscussionMessagesPending && oldDiscussionValue.filter(obj => !obj.repliesTo).length !== newDiscussionValue.filter(obj => !obj.repliesTo).length && !this.init && !this.manualLoad) {
+      if (
+        !this.isFindDiscussionMessagesPending &&
+        oldDiscussionValue.filter(obj => !obj.repliesTo).length !== newDiscussionValue.filter(obj => !obj.repliesTo).length &&
+        !this.init &&
+        !this.manualLoad
+      ) {
         this.triggerNewMessage = Date.now()
         this.checkForNewPage = true
       }

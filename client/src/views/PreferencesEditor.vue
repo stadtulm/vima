@@ -503,6 +503,29 @@
                         ></v-select>
                       </v-col>
                     </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newMentionLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newMention"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
                   </v-card-text>
                 </v-card>
                 </v-col>
@@ -731,6 +754,7 @@ export default {
     newAcceptedDiscussions: 'emailOffline',
     newViolationsToProve: 'emailOffline',
     newGroupViolationsToProve: 'emailOffline',
+    newMention: 'emailOffline',
     newUser: 'emailOff'
   }),
 
@@ -796,6 +820,7 @@ export default {
         this.newAcceptedGroupDiscussions = this.selectedPreferences.newAcceptedGroupDiscussions || this.newAcceptedGroupDiscussions
         this.newViolationsToProve = this.selectedPreferences.newViolationsToProve || this.newViolationsToProve
         this.newGroupViolationsToProve = this.selectedPreferences.newGroupViolationsToProve || this.newGroupViolationsToProve
+        this.newMention = this.selectedPreferences.newMention || this.newMention
         this.newUser = this.selectedPreferences.newUser || this.newUser
       }
     },
@@ -826,6 +851,7 @@ export default {
         newAcceptedGroupDiscussions: this.newAcceptedGroupDiscussions,
         newViolationsToProve: this.newViolationsToProve,
         newGroupViolationsToProve: this.newGroupViolationsToProve,
+        newMention: this.newMention,
         newUser: this.newUser
       }
       try {

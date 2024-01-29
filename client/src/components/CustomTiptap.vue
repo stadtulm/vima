@@ -221,7 +221,6 @@ export default {
       type: String,
       default: ''
     },
-    mention: {},
     extensions: {
       type: Array,
       default: () => []
@@ -278,6 +277,35 @@ export default {
   },
 
   mounted () {
+    const tmpExtensions = [
+      StarterKit,
+      Underline,
+      Blockquote.configure({
+        HTMLAttributes: {
+          class: 'blockquote'
+        }
+      }),
+      Link.configure({
+        openOnClick: false,
+        autolink: false
+      }),
+      Heading.configure({
+        levels: [1, 2, 3]
+      })
+    ]
+    if (this.extensions.includes('mentions')) {
+      tmpExtensions.push(
+        Mention.configure({
+          HTMLAttributes: {
+            class: 'mention'
+          },
+          renderLabel ({ options, node }) {
+            return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
+          },
+          suggestion
+        })
+      )
+    }
     this.editor = new Editor({
       content: this.modelValue,
       editorProps: {
@@ -294,28 +322,7 @@ export default {
       onUpdate: () => {
         this.$emit('update:modelValue', this.editor.getHTML())
       },
-      extensions: [
-        StarterKit,
-        Underline,
-        Blockquote.configure({
-          HTMLAttributes: {
-            class: 'blockquote'
-          }
-        }),
-        Link.configure({
-          openOnClick: false,
-          autolink: false
-        }),
-        Mention.configure({
-          HTMLAttributes: {
-            class: 'mention'
-          },
-          suggestion
-        }),
-        Heading.configure({
-          levels: [1, 2, 3]
-        })
-      ]
+      extensions: tmpExtensions
     })
   },
 
@@ -324,18 +331,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.tiptap {
-  > * + * {
-    margin-top: 0.75em;
-  }
-}
-
-.mention {
-  border: 1px solid #000;
-  border-radius: 0.4rem;
-  padding: 0.1rem 0.3rem;
-  box-decoration-break: clone;
-}
-</style>

@@ -664,6 +664,30 @@
                 </template>
                 {{$t('newDiscussionMessages')}}
               </v-tooltip>
+              <v-tooltip
+                left
+                color="customGrey"
+                v-if="computedUnreadMentions > 0"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="flat"
+                    color="customGrey"
+                    rounded="xl"
+                    size="small"
+                    class="mx-1"
+                  >
+                    <span
+                      class="mr-1"
+                    >
+                      {{computedUnreadMentions}}
+                    </span>
+                    @
+                  </v-btn>
+                </template>
+                {{$t('newMention')}}
+              </v-tooltip>
             </v-list-item-title>
           </v-list-item>
           <v-list-item
@@ -2285,6 +2309,7 @@ export default {
         this.computedUnreadDiscussionAccepts > 0 ||
         this.computedUnreadDiscussionsToAccept > 0 ||
         this.computedUnreadDiscussionMessages > 0 ||
+        this.computedUnreadMentions > 0 ||
         this.computedUnreadDiscussionModerator > 0 ||
         this.computedUnreadGroupAccepts > 0 ||
         this.computedUnreadGroupsToAccept > 0 ||
@@ -2341,9 +2366,24 @@ export default {
     },
     // New discussion messages
     computedUnreadDiscussionMessages () {
-      if (this.statusContainerTrigger && this.statusContainers && this.statusContainers.length > 0) {
+      if (this.statusContainerTrigger && this.statusContainers?.length > 0) {
         const containers = this.statusContainers
           .filter(obj => obj.user === this.user._id && obj.type === 'discussions' && obj.relation === 'subscriber')
+          .map(obj => obj.unread)
+        let sum = 0
+        for (const container of containers) {
+          sum += container.length
+        }
+        return sum
+      } else {
+        return 0
+      }
+    },
+    // New mentions
+    computedUnreadMentions () {
+      if (this.statusContainerTrigger && this.statusContainers?.length > 0) {
+        const containers = this.statusContainers
+          .filter(obj => obj.user === this.user._id && obj.type === 'discussions' && obj.relation === 'mentions')
           .map(obj => obj.unread)
         let sum = 0
         for (const container of containers) {
@@ -2655,10 +2695,15 @@ export default {
   .no-pointer {
     cursor: default !important;
   }
-  /* TODO */
+
+  /* TODO: Make customizable */
   .mention {
     font-weight: bold;
-    color: green;
+    color: #eb34c6;
+    border: 1px solid #eb34c6;
+    border-radius: 0.1rem;
+    padding: 0.1rem 0.3rem;
+    box-decoration-break: clone;
   }
 
 </style>

@@ -1,13 +1,40 @@
 import { VueRenderer } from '@tiptap/vue-3'
 import tippy from 'tippy.js'
+import Store from '@/store'
 
 import MentionList from '@/components/MentionList.vue'
 
+const usersParams = {
+  query: {
+    _id: { $ne: null },
+    role: { $ne: 'deleted' },
+    isVerified: true,
+    isActive: true,
+    $limit: 480,
+    $skip: 0,
+    $sort: { userName: 1 }
+  }
+}
+
+async function loadUsers () {
+  usersParams.query._id.$ne = Store.getters['auth/user']?._id
+  const result = await Store.dispatch('users/find', usersParams)
+  let tmpUsers = result.data
+  let reloads = 0
+  while (tmpUsers.length < result.total) {
+    reloads += 1
+    usersParams.query.$skip = reloads * result.limit
+    tmpUsers = tmpUsers.concat((await Store.dispatch('users/find', usersParams)).data)
+  }
+  usersParams.query.$skip = 0
+  return tmpUsers.map(user => ({ _id: user._id, userName: user.userName }))
+}
+
 export default {
-  items: ({ query }) => {
+  items: async ({ query }) => {
     return [
-      'Lea Thompson', 'Cyndi Lauper', 'Tom Cruise', 'Madonna', 'Jerry Hall', 'Joan Collins', 'Winona Ryder', 'Christina Applegate', 'Alyssa Milano', 'Molly Ringwald', 'Ally Sheedy', 'Debbie Harry', 'Olivia Newton-John', 'Elton John', 'Michael J. Fox', 'Axl Rose', 'Emilio Estevez', 'Ralph Macchio', 'Rob Lowe', 'Jennifer Grey', 'Mickey Rourke', 'John Cusack', 'Matthew Broderick', 'Justine Bateman', 'Lisa Bonet'
-    ].filter(item => item.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5)
+      ...(await loadUsers())
+    ].filter(item => item.userName.toLowerCase().startsWith(query.toLowerCase()))
   },
 
   render: () => {
