@@ -7,6 +7,7 @@ module.exports = function (app) {
   const modelName = 'users'
   const mongooseClient = app.get('mongooseClient')
   const { Schema } = mongooseClient
+  const ObjectId = Schema.ObjectId
   const schema = new Schema({
     email: {
       lowercase: true,
@@ -55,6 +56,12 @@ module.exports = function (app) {
     residence: {
       type: String
     },
+    favoriteCategories: [
+      {
+        type: ObjectId,
+        ref: 'categories'
+      }
+    ],
     language: {
       type: String
     },

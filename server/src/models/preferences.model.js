@@ -12,6 +12,7 @@ module.exports = function (app) {
     receiveNewsletter: { type: Boolean },
     publishGender: { type: String, enum: ['all', 'users', 'none'] },
     publishAge: { type: String, enum: ['all', 'users', 'none'] },
+    publishFavoriteCategories: { type: String, enum: ['all', 'users', 'none'] },
     publishResidence: { type: String, enum: ['all', 'users', 'none'] },
     newChats: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] },
     newChatMessages: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] },
@@ -33,7 +34,8 @@ module.exports = function (app) {
     newViolationsToProve: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] },
     newGroupViolationsToProve: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] },
     newUser: { type: String, enum: ['emailAlways', 'emailOff'] },
-    newMention: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] }
+    newMention: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] },
+    newFavoriteCategoryContent: { type: String, enum: ['emailAlways', 'emailOffline', 'emailOff'] }
   }, {
     timestamps: true,
     collation: { locale: 'en', strength: 1 }

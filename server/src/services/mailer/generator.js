@@ -18,7 +18,27 @@ module.exports = {
     )
     // Custom
     let tmpMailBodyType = type
-    if (type === 'newMention') {
+    if (type === 'newFavoriteCategoryGroup') {
+      item.group = {}
+      item.group.title = item.title.value
+      item.group._id = item._id
+    } else if (type === 'newFavoriteCategoryAd') {
+      item.ad = {}
+      item.ad.title = item.title.value
+      item.ad._id = item._id
+    } else if (type === 'newFavoriteCategoryDiscussion') {
+      item.discussion = {}
+      item.discussion.title = item.title.value
+      item.discussion._id = item._id
+    } else if (type === 'newFavoriteCategoryGroupDiscussion') {
+      item.discussion = {}
+      item.discussion.title = item.title.value
+      item.discussion._id = item._id
+      const tmpGroup = await app.service('groups').get(item.group)
+      item.group = {}
+      item.group.title = tmpGroup.title
+      item.group._id = tmpGroup._id
+    } else if (type === 'newMention') {
       item.discussion = await app.service('discussions').get(item.discussion)
       if (item.discussion?.group) {
         item.group = await app.service('groups').get(item.discussion.group)
@@ -79,7 +99,11 @@ module.exports = {
         '<a href="' + process.env.CLIENT_URL + 'mitglieder/einstellungen/editor/' + user._id + '">' +
         app.i18n.__({ phrase: 'notificationSettingsNote2', locale: user.language || app.customSettings.defaultLanguage })
       tmpBody = JSON.stringify(tmpBody)
-      if (!shouldSend(user, type)) {
+      let tmpType = type
+      if (type.startsWith('newFavorite')) {
+        tmpType = 'newFavoriteCategoryContent'
+      }
+      if (!shouldSend(user, tmpType)) {
         continue
       }
       tmpBody = tmpBody
@@ -528,6 +552,58 @@ function returnMailBody (app, type, action, language) {
           app.i18n.__({ phrase: 'checkMention1', locale: language }) +
           '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">' +
           app.i18n.__({ phrase: 'checkMention2', locale: language }) +
+          app.i18n.__({ phrase: 'bestRegards', locale: language })
+      }
+    },
+    newFavoriteCategoryAd: {
+      create: {
+        from: process.env.FROM_EMAIL,
+        to: '{{recipient}}',
+        subject: app.i18n.__({ phrase: 'newFavoriteCategoryAdNotification', locale: language }),
+        html: app.i18n.__({ phrase: 'hello', locale: language }) +
+          ' {{firstName}} {{lastName}}!<br><br>' +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryAd1', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">' +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryAd2', locale: language }) +
+          app.i18n.__({ phrase: 'bestRegards', locale: language })
+      }
+    },
+    newFavoriteCategoryGroup: {
+      create: {
+        from: process.env.FROM_EMAIL,
+        to: '{{recipient}}',
+        subject: app.i18n.__({ phrase: 'newFavoriteCategoryGroupNotification', locale: language }),
+        html: app.i18n.__({ phrase: 'hello', locale: language }) +
+          ' {{firstName}} {{lastName}}!<br><br>' +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryGroup1', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">' +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryGroup2', locale: language }) +
+          app.i18n.__({ phrase: 'bestRegards', locale: language })
+      }
+    },
+    newFavoriteCategoryDiscussion: {
+      create: {
+        from: process.env.FROM_EMAIL,
+        to: '{{recipient}}',
+        subject: app.i18n.__({ phrase: 'newFavoriteCategoryDiscussionNitification', locale: language }),
+        html: app.i18n.__({ phrase: 'hello', locale: language }) +
+          ' {{firstName}} {{lastName}}!<br><br>' +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryDiscussion1', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + '/diskussionsforen/{{discussionId}}">' +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryDiscussion2', locale: language }) +
+          app.i18n.__({ phrase: 'bestRegards', locale: language })
+      }
+    },
+    newFavoriteCategoryGroupDiscussion: {
+      create: {
+        from: process.env.FROM_EMAIL,
+        to: '{{recipient}}',
+        subject: app.i18n.__({ phrase: 'newFavoriteCategoryGroupDiscussionNotification', locale: language }),
+        html: app.i18n.__({ phrase: 'hello', locale: language }) +
+          ' {{firstName}} {{lastName}}!<br><br>' +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryGroupDiscussion1', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">' +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryGroupDiscussion2', locale: language }) +
           app.i18n.__({ phrase: 'bestRegards', locale: language })
       }
     }

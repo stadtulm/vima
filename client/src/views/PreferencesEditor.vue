@@ -59,7 +59,6 @@
                             :items="[
                               { title: $t('administrators'), value: 'none' },
                               { title: $t('registratedUsers'), value: 'users' }
-                              /*, { text: $t('publicly'), value: 'all' }*/
                             ]"
                             v-model="publishAge"
                           ></v-select>
@@ -86,7 +85,6 @@
                             :items="[
                               { title: $t('administrators'), value: 'none' },
                               { title: $t('registratedUsers'), value: 'users' }
-                              /*, { text: $t('publicly'), value: 'all' }*/
                             ]"
                             v-model="publishGender"
                           ></v-select>
@@ -113,9 +111,34 @@
                             :items="[
                               { title: $t('administrators'), value: 'none' },
                               { title: $t('registratedUsers'), value: 'users'}
-                              /*, { text: $t('publicly'), value: 'all' }*/
                             ]"
                             v-model="publishResidence"
+                          ></v-select>
+                        </v-col>
+                      </v-row>
+                      <v-row
+                        dense
+                      >
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          class="text-body-1 align-self-center"
+                        >
+                            {{$t('publishFavoriteCategoriesLabel')}}
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                        >
+                          <v-select
+                            density="compact"
+                            :label="$t('visibility')"
+                            class="min-width"
+                            :items="[
+                              { title: $t('administrators'), value: 'none' },
+                              { title: $t('registratedUsers'), value: 'users'}
+                            ]"
+                            v-model="publishFavoriteCategories"
                           ></v-select>
                         </v-col>
                       </v-row>
@@ -526,6 +549,29 @@
                         ></v-select>
                       </v-col>
                     </v-row>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                        sm="6"
+                        class="text-body-1 align-self-center"
+                      >
+                        {{$t('newFavoriteCategoryContentLabel')}}
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        sm="6"
+                      >
+                        <v-select
+                          :label="$t('notification')"
+                          density="compact"
+                          class="min-width"
+                          :items="items"
+                          v-model="newFavoriteCategoryContent"
+                        ></v-select>
+                      </v-col>
+                    </v-row>
                   </v-card-text>
                 </v-card>
                 </v-col>
@@ -731,6 +777,7 @@ export default {
     publishAge: 'none',
     publishGender: 'none',
     publishResidence: 'none',
+    publishFavoriteCategories: 'none',
     selectedPreferences: undefined,
     isLoading: false,
     isValid: false,
@@ -755,6 +802,7 @@ export default {
     newViolationsToProve: 'emailOffline',
     newGroupViolationsToProve: 'emailOffline',
     newMention: 'emailOffline',
+    newFavoriteCategoryContent: 'emailOffline',
     newUser: 'emailOff'
   }),
 
@@ -801,6 +849,7 @@ export default {
         this.publishAge = this.selectedPreferences.publishAge || this.publishAge
         this.publishGender = this.selectedPreferences.publishGender || this.publishGender
         this.publishResidence = this.selectedPreferences.publishResidence || this.publishResidence
+        this.publishFavoriteCategories = this.selectedPreferences.publishFavoriteCategories || this.publishFavoriteCategories
         this.newChats = this.selectedPreferences.newChats || this.newChats
         this.newChatMessages = this.selectedPreferences.newChatMessages || this.newChatMessages
         this.newDiscussionMessages = this.selectedPreferences.newDiscussionMessages || this.newDiscussionMessages
@@ -821,6 +870,7 @@ export default {
         this.newViolationsToProve = this.selectedPreferences.newViolationsToProve || this.newViolationsToProve
         this.newGroupViolationsToProve = this.selectedPreferences.newGroupViolationsToProve || this.newGroupViolationsToProve
         this.newMention = this.selectedPreferences.newMention || this.newMention
+        this.newFavoriteCategoryContent = this.selectedPreferences.newFavoriteCategoryContent || this.newFavoriteCategoryContent
         this.newUser = this.selectedPreferences.newUser || this.newUser
       }
     },
@@ -832,6 +882,7 @@ export default {
         publishAge: this.publishAge,
         publishGender: this.publishGender,
         publishResidence: this.publishResidence,
+        publishFavoriteCategories: this.publishFavoriteCategories,
         newChats: this.newChats,
         newChatMessages: this.newChatMessages,
         newDiscussionMessages: this.newDiscussionMessages,
@@ -852,6 +903,7 @@ export default {
         newViolationsToProve: this.newViolationsToProve,
         newGroupViolationsToProve: this.newGroupViolationsToProve,
         newMention: this.newMention,
+        newFavoriteCategoryContent: this.newFavoriteCategoryContent,
         newUser: this.newUser
       }
       try {
@@ -862,7 +914,6 @@ export default {
         }
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-        this.$router.go(-1)
       } catch (e) {
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })

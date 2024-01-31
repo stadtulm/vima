@@ -2,6 +2,21 @@ const mongoose = require('mongoose')
 const path = require('path')
 
 module.exports = {
+  async findUsersForFavoriteCategorieContentNotifications (context) {
+    const params = {
+      query: {
+        favoriteCategories: { $in: context.result.categories },
+        role: { $ne: 'deleted' },
+        isVerified: true,
+        isActive: true,
+        $select: { _id: 1 },
+        $limit: 480,
+        $skip: 0
+      },
+      paginate: false
+    }
+    return (await context.app.service('users').find(params)).map(user => user._id)
+  },
 
   createModuleVisibilities (app, settings) {
     // Add settings

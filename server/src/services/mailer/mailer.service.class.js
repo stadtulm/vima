@@ -20,8 +20,7 @@ class Service {
   async create (body, params, cb) {
     debug('create', body, params)
     return await this.transporter.sendMail({
-      ...body //,
-      // to: 'falko@widerstand.digital'
+      ...body
     })
   }
 }

@@ -279,6 +279,17 @@ module.exports = {
             )
             await notifyUsers(context.app, 'newGroupsToAccept', 'create', context.result, tmpUsers.map(obj => obj.user))
           }
+        },
+        // Notify users with favorite category
+        async (context) => {
+          if (
+            context.result.accepted.isAccepted &&
+            context.result.isActive &&
+            context.result.visibility !== 'hidden'
+          ) {
+            const matchingUserIds = await util.findUsersForFavoriteCategorieContentNotifications(context)
+            await notifyUsers(context.app, 'newFavoriteCategoryGroup', 'create', context.result, matchingUserIds)
+          }
         }
       )
     ],
@@ -324,6 +335,11 @@ module.exports = {
                 }
               )
               await notifyUsers(context.app, 'newAcceptedGroups', 'accepted', context.result, [context.params.tmpGroupOwnerId])
+              // Notify users with favorite category
+              if (context.result.visibility !== 'hidden') {
+                const matchingUserIds = await util.findUsersForFavoriteCategorieContentNotifications(context)
+                await notifyUsers(context.app, 'newFavoriteCategoryGroup', 'create', context.result, matchingUserIds)
+              }
             }
           }
           if (!context.data.accepted?.isAccepted) {

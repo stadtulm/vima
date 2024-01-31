@@ -282,6 +282,16 @@ module.exports = {
           )
           await notifyUsers(context.app, 'newAdsToAccept', 'create', context.result, tmpUsers.map(obj => obj.user))
         }
+      },
+      // Notify users with favorite category
+      async (context) => {
+        if (
+          context.result.accepted.isAccepted &&
+          context.result.isActive
+        ) {
+          const matchingUserIds = await util.findUsersForFavoriteCategorieContentNotifications(context)
+          await notifyUsers(context.app, 'newFavoriteCategoryAd', 'create', context.result, matchingUserIds)
+        }
       }
     ],
     update: [],
@@ -329,6 +339,11 @@ module.exports = {
                 }
               }
             )
+            // Notify users with favorite category
+            if (context.result.visibility !== 'hidden') {
+              const matchingUserIds = await util.findUsersForFavoriteCategorieContentNotifications(context)
+              await notifyUsers(context.app, 'newFavoriteCategoryAd', 'create', context.result, matchingUserIds)
+            }
           }
         ),
         // If ad is not accepted anymore remove ad from owner's "new accepted" notifications

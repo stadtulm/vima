@@ -212,6 +212,21 @@
                   >
                   </v-text-field>
                 </v-col>
+                <v-col
+                  cols="12"
+                >
+                  <v-select
+                    density="compact"
+                    multiple
+                    v-model="favoriteCategories"
+                    item-title="text.value"
+                    item-value="_id"
+                    :label="$t('favoriteCategories') + ' ' + $t('optionalLabelExtension')"
+                    :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+                    :rules="[rules.minOneCategory, rules.maxThreeCategories]"
+                  >
+                  </v-select>
+                </v-col>
               </v-row>
               <v-divider
                 class="mb-9 mt-3"
@@ -470,7 +485,8 @@ export default {
     description: undefined,
     emailError: undefined,
     userNameError: undefined,
-    pic: undefined
+    pic: undefined,
+    favoriteCategories: []
   }),
 
   async mounted () {
@@ -578,6 +594,7 @@ export default {
         this.age = this.selectedUser.age
         this.gender = this.selectedUser.gender
         this.residence = this.selectedUser.residence
+        this.favoriteCategories = this.selectedUser.favoriteCategories || []
       }
     },
     async saveUser () {
@@ -602,7 +619,8 @@ export default {
         role: this.role,
         age: this.age,
         gender: this.gender,
-        residence: this.residence
+        residence: this.residence,
+        favoriteCategories: this.favoriteCategories
       }
       if (this.pic && this.pic.url && this.pic.credit) {
         map.pic = this.pic
@@ -654,6 +672,9 @@ export default {
     ]),
     ...mapGetters('users', {
       getUser: 'get'
+    }),
+    ...mapGetters('categories', {
+      categories: 'list'
     }),
     pwRule () {
       return v => (!!v && v) === this.pw || this.$t('passwordsDoNotMatchError')

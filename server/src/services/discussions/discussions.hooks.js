@@ -411,6 +411,21 @@ module.exports = {
           reference: context.result._id,
           relation: 'owner'
         })
+      },
+      // Notify users with favorite category
+      async (context) => {
+        if (
+          context.result.isActive
+        ) {
+          const matchingUserIds = await util.findUsersForFavoriteCategorieContentNotifications(context)
+          let type
+          if (context.result.group) {
+            type = 'newFavoriteCategoryGroupDiscussion'
+          } else {
+            type = 'newFavoriteCategoryDiscussion'
+          }
+          await notifyUsers(context.app, type, 'create', context.result, matchingUserIds)
+        }
       }
     ],
     update: [],
