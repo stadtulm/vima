@@ -549,9 +549,8 @@ function returnMailBody (app, type, action, language) {
         subject: app.i18n.__({ phrase: 'newMentionNotification', locale: language }),
         html: app.i18n.__({ phrase: 'hello', locale: language }) +
           ' {{firstName}} {{lastName}}!<br><br>' +
-          app.i18n.__({ phrase: 'checkMention1', locale: language }) +
-          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">' +
-          app.i18n.__({ phrase: 'checkMention2', locale: language }) +
+          app.i18n.__({ phrase: 'checkMention', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">{{discussionTitle}}</a><br><br>' +
           app.i18n.__({ phrase: 'bestRegards', locale: language })
       }
     },
@@ -562,9 +561,8 @@ function returnMailBody (app, type, action, language) {
         subject: app.i18n.__({ phrase: 'newFavoriteCategoryAdNotification', locale: language }),
         html: app.i18n.__({ phrase: 'hello', locale: language }) +
           ' {{firstName}} {{lastName}}!<br><br>' +
-          app.i18n.__({ phrase: 'checkFavoriteCategoryAd1', locale: language }) +
-          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">' +
-          app.i18n.__({ phrase: 'checkFavoriteCategoryAd2', locale: language }) +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryAd', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + '/suchebiete/{{adId}}">{{adTitle}}</a><br><br>' +
           app.i18n.__({ phrase: 'bestRegards', locale: language })
       }
     },
@@ -575,9 +573,8 @@ function returnMailBody (app, type, action, language) {
         subject: app.i18n.__({ phrase: 'newFavoriteCategoryGroupNotification', locale: language }),
         html: app.i18n.__({ phrase: 'hello', locale: language }) +
           ' {{firstName}} {{lastName}}!<br><br>' +
-          app.i18n.__({ phrase: 'checkFavoriteCategoryGroup1', locale: language }) +
-          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">' +
-          app.i18n.__({ phrase: 'checkFavoriteCategoryGroup2', locale: language }) +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryGroup', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}">{{groupTitle}}</a><br><br>' +
           app.i18n.__({ phrase: 'bestRegards', locale: language })
       }
     },
@@ -588,9 +585,8 @@ function returnMailBody (app, type, action, language) {
         subject: app.i18n.__({ phrase: 'newFavoriteCategoryDiscussionNitification', locale: language }),
         html: app.i18n.__({ phrase: 'hello', locale: language }) +
           ' {{firstName}} {{lastName}}!<br><br>' +
-          app.i18n.__({ phrase: 'checkFavoriteCategoryDiscussion1', locale: language }) +
-          '<a href="' + process.env.CLIENT_URL + '/diskussionsforen/{{discussionId}}">' +
-          app.i18n.__({ phrase: 'checkFavoriteCategoryDiscussion2', locale: language }) +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryDiscussion', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + '/diskussionsforen/{{discussionId}}">{{discussionTitle}}</a><br><br>' +
           app.i18n.__({ phrase: 'bestRegards', locale: language })
       }
     },
@@ -601,9 +597,8 @@ function returnMailBody (app, type, action, language) {
         subject: app.i18n.__({ phrase: 'newFavoriteCategoryGroupDiscussionNotification', locale: language }),
         html: app.i18n.__({ phrase: 'hello', locale: language }) +
           ' {{firstName}} {{lastName}}!<br><br>' +
-          app.i18n.__({ phrase: 'checkFavoriteCategoryGroupDiscussion1', locale: language }) +
-          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">' +
-          app.i18n.__({ phrase: 'checkFavoriteCategoryGroupDiscussion2', locale: language }) +
+          app.i18n.__({ phrase: 'checkFavoriteCategoryGroupDiscussion', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + 'interessengruppen/{{groupId}}/gruppendiskussionen/{{discussionId}}">{{discussionTitle}}</a><br><br>' +
           app.i18n.__({ phrase: 'bestRegards', locale: language })
       }
     }
