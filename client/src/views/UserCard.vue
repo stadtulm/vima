@@ -36,10 +36,10 @@
           </v-card-subtitle>
           <v-row>
             <v-col
-              v-if="computedUser.age !== undefined"
+              v-if="computedUser.age !== undefined && computedUser.age !== null"
               cols="12"
             >
-              {{$t('age')}}: {{ageItems[computedUser.age]}}
+              {{$t('age')}}: {{ageItems[String(computedUser.age)]}}
             </v-col>
             <v-col
               v-if="computedUser.gender"
@@ -52,6 +52,12 @@
               cols="12"
             >
               {{$t('residence')}}: {{computedUser.residence}}
+            </v-col>
+            <v-col
+              v-if="computedUser.favoriteCategories"
+              cols="12"
+            >
+              {{$t('favoriteCategories')}}: {{getCategories(computedUser.favoriteCategories).map(c => c.text.value).join(', ')}}
             </v-col>
           </v-row>
           <v-row
@@ -87,6 +93,7 @@ export default {
   name: 'UserCard',
 
   data: () => ({
+    computedUser: undefined,
     ageItems: {
       0: '<21',
       1: '21-30',
@@ -95,11 +102,6 @@ export default {
       4: '51-60',
       5: '61-70',
       6: '>70'
-    },
-    genderItems: {
-      m: this.$t('male'),
-      f: this.$t('female'),
-      d: this.$t('diverse')
     }
   }),
 
@@ -114,18 +116,25 @@ export default {
       requestUser: 'get'
     }),
     async loadUser () {
-      const tmpUser = await this.requestUser([this.$route.params.user])
-      this.user = tmpUser
+      this.computedUser = await this.requestUser([this.$route.params.user])
     }
   },
 
   computed: {
     ...mapGetters([
-      's3'
+      's3',
+      'getCategories'
     ]),
     ...mapGetters('auth', {
       user: 'user'
-    })
+    }),
+    genderItems () {
+      return {
+        m: this.$t('male'),
+        f: this.$t('female'),
+        d: this.$t('diverse')
+      }
+    }
   }
 }
 </script>

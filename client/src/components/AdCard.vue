@@ -566,8 +566,7 @@ export default {
       statusContainers: 'list'
     }),
     ...mapGetters('categories', {
-      categories: 'list',
-      getCategory: 'get'
+      categories: 'list'
     }),
     ...mapGetters('tags', {
       getTag: 'get'

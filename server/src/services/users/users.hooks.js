@@ -396,10 +396,10 @@ async function filterUser (context, user) {
       pic: tmpUser.pic
     }
     // Add properties based on preferences
-    for (const key of ['Gender', 'Age', 'Residence']) {
+    for (const key of ['Gender', 'Age', 'Residence', 'FavoriteCategories']) {
       if (
         preferences &&
-        tmpUser[key.toLowerCase()] !== undefined &&
+        tmpUser[key[0].toLowerCase() + key.substr(1)] !== undefined &&
         (
           preferences['publish' + key] === 'all' ||
           (
@@ -409,7 +409,7 @@ async function filterUser (context, user) {
           )
         )
       ) {
-        user[key.toLowerCase()] = tmpUser[key.toLowerCase()]
+        user[key[0].toLowerCase() + key.substr(1)] = tmpUser[key[0].toLowerCase() + key.substr(1)]
       }
     }
   }
