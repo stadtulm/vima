@@ -536,9 +536,8 @@ function returnMailBody (app, type, action, language) {
         subject: app.i18n.__({ phrase: 'newMentionNotification', locale: language }),
         html: app.i18n.__({ phrase: 'hello', locale: language }) +
           ' {{firstName}} {{lastName}}!<br><br>' +
-          app.i18n.__({ phrase: 'checkMention1', locale: language }) +
-          '<a href="' + process.env.CLIENT_URL + 'diskussionsforen/{{discussionId}}">' +
-          app.i18n.__({ phrase: 'checkMention2', locale: language }) +
+          app.i18n.__({ phrase: 'checkMention', locale: language }) +
+          '<a href="' + process.env.CLIENT_URL + 'diskussionsforen/{{discussionId}}">{{discussionTitle}}</a><br><br>' +
           app.i18n.__({ phrase: 'bestRegards', locale: language })
       }
     },
