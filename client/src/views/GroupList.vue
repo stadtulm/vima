@@ -65,219 +65,264 @@
           <template
             v-slot:[`item.moderators`]="{ item }"
           >
-            <v-btn
-              icon="fas fa-users"
-              size="small"
-              class="pr-1"
-              :color="$settings.modules.groups.color"
-              @click="moderatorsDialogItem = item"
-              :disabled="
-                !isOwnGroup(item._id) ||
-                !item.accepted?.isAccepted
-              "
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fas fa-users"
+                    size="small"
+                    class="pr-1"
+                    :color="$settings.modules.groups.color"
+                    @click="moderatorsDialogItem = item"
+                    :disabled="
+                      !isOwnGroup(item._id) ||
+                      !item.accepted?.isAccepted
+                    "
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('moderators')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.members`]="{ item }"
           >
-            <v-badge
-              :color="$settings.indicatorColor"
-              :model-value="
-                statusContainers.find(obj =>
-                  obj.user === user._id &&
-                  obj.reference === item._id &&
-                  obj.relation !== 'applicant' &&
-                  obj.relation !== 'member'
-                ) &&
-                statusContainers.find(obj =>
-                  obj.user === user._id &&
-                  obj.reference === item._id &&
-                  obj.relation !== 'applicant' &&
-                  obj.relation !== 'member'
-                ).unread.filter(obj => obj.type === 'users').length > 0
-                ? true : false
-              "
-            >
-              <template v-slot:badge>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
                 <span
-                  class="text-customGrey font-weight-bold"
+                  v-bind="props"
                 >
-                  {{
-                    statusContainers.find(
-                      obj => obj.user === user._id &&
-                      obj.reference === item._id &&
-                      obj.relation !== 'applicant' &&
-                      obj.relation !== 'member'
-                    ) ?
-                    statusContainers.find(
-                      obj => obj.user === user._id &&
-                      obj.reference === item._id &&
-                      obj.relation !== 'applicant' &&
-                      obj.relation !== 'member'
-                    ).unread.filter(obj => obj.type === 'users').length
-                    :
-                    ''
-                  }}
+                  <v-badge
+                    :color="$settings.indicatorColor"
+                    :model-value="
+                      statusContainers.find(obj =>
+                        obj.user === user._id &&
+                        obj.reference === item._id &&
+                        obj.relation !== 'applicant' &&
+                        obj.relation !== 'member'
+                      ) &&
+                      statusContainers.find(obj =>
+                        obj.user === user._id &&
+                        obj.reference === item._id &&
+                        obj.relation !== 'applicant' &&
+                        obj.relation !== 'member'
+                      ).unread.filter(obj => obj.type === 'users').length > 0
+                      ? true : false
+                    "
+                  >
+                    <template v-slot:badge>
+                      <span
+                        class="text-customGrey font-weight-bold"
+                      >
+                        {{
+                          statusContainers.find(
+                            obj => obj.user === user._id &&
+                            obj.reference === item._id &&
+                            obj.relation !== 'applicant' &&
+                            obj.relation !== 'member'
+                          ) ?
+                          statusContainers.find(
+                            obj => obj.user === user._id &&
+                            obj.reference === item._id &&
+                            obj.relation !== 'applicant' &&
+                            obj.relation !== 'member'
+                          ).unread.filter(obj => obj.type === 'users').length
+                          :
+                          ''
+                        }}
+                      </span>
+                    </template>
+                    <v-btn
+                      icon="fas fa-list"
+                      size="small"
+                      :color="$settings.modules.groups.color"
+                      @click="membersDialogItem = item"
+                      :disabled="
+                        (
+                          !isOwnGroup(item._id) &&
+                          !isModeratorGroup(item._id)
+                        ) ||
+                        !item.accepted?.isAccepted
+                      "
+                    >
+                    </v-btn>
+                  </v-badge>
                 </span>
               </template>
-              <v-btn
-                icon="fas fa-list"
-                size="small"
-                :color="$settings.modules.groups.color"
-                @click="membersDialogItem = item"
-                :disabled="
-                  (
-                    !isOwnGroup(item._id) &&
-                    !isModeratorGroup(item._id)
-                  ) ||
-                  !item.accepted?.isAccepted
-                "
-              >
-              </v-btn>
-            </v-badge>
+              {{$t('manageMembersButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.discussions`]="{ item }"
           >
-            <v-badge
-              :color="$settings.indicatorColor"
-              :model-value="
-                statusContainers.find(obj =>
-                  obj.user === user._id &&
-                  obj.reference === item._id &&
-                  obj.relation !== 'applicant' &&
-                  obj.relation !== 'member'
-                ) &&
-                statusContainers.find(obj =>
-                  obj.user === user._id &&
-                  obj.reference === item._id &&
-                  obj.relation !== 'applicant' &&
-                  obj.relation !== 'member'
-                ).unread.filter(obj => obj.type === 'discussions').length > 0
-                ? true : false
-              "
-            >
-              <template v-slot:badge>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
                 <span
-                  class="text-customGrey font-weight-bold"
+                  v-bind="props"
                 >
-                  {{
-                    statusContainers.find(obj =>
-                      obj.user === user._id &&
-                      obj.reference === item._id &&
-                      obj.relation !== 'applicant' &&
-                      obj.relation !== 'member'
-                    ) ?
-                    statusContainers.find(obj =>
-                      obj.user === user._id &&
-                      obj.reference === item._id &&
-                      obj.relation !== 'applicant' &&
-                      obj.relation !== 'member'
-                    ).unread.filter(obj => obj.type === 'discussions').length
-                    :
-                    ''
-                  }}
+                  <v-badge
+                    :color="$settings.indicatorColor"
+                    :model-value="
+                      statusContainers.find(obj =>
+                        obj.user === user._id &&
+                        obj.reference === item._id &&
+                        obj.relation !== 'applicant' &&
+                        obj.relation !== 'member'
+                      ) &&
+                      statusContainers.find(obj =>
+                        obj.user === user._id &&
+                        obj.reference === item._id &&
+                        obj.relation !== 'applicant' &&
+                        obj.relation !== 'member'
+                      ).unread.filter(obj => obj.type === 'discussions').length > 0
+                      ? true : false
+                    "
+                  >
+                    <template v-slot:badge>
+                      <span
+                        class="text-customGrey font-weight-bold"
+                      >
+                        {{
+                          statusContainers.find(obj =>
+                            obj.user === user._id &&
+                            obj.reference === item._id &&
+                            obj.relation !== 'applicant' &&
+                            obj.relation !== 'member'
+                          ) ?
+                          statusContainers.find(obj =>
+                            obj.user === user._id &&
+                            obj.reference === item._id &&
+                            obj.relation !== 'applicant' &&
+                            obj.relation !== 'member'
+                          ).unread.filter(obj => obj.type === 'discussions').length
+                          :
+                          ''
+                        }}
+                      </span>
+                    </template>
+                    <v-btn
+                      icon="fas fa-comments"
+                      size="small"
+                      class="pr-1"
+                      :color="$settings.modules.groups.color"
+                      @click="discussionsDialogItem = item"
+                      :disabled="
+                        (
+                          !isOwnGroup(item._id) &&
+                          !isModeratorGroup(item._id)
+                        ) ||
+                        !item.accepted?.isAccepted ||
+                        !item.isActive
+                      "
+                    >
+                    </v-btn>
+                  </v-badge>
                 </span>
               </template>
-              <v-btn
-                icon="fas fa-comments"
-                size="small"
-                class="pr-1"
-                :color="$settings.modules.groups.color"
-                @click="discussionsDialogItem = item"
-                :disabled="
-                  (
-                    !isOwnGroup(item._id) &&
-                    !isModeratorGroup(item._id)
-                  ) ||
-                  !item.accepted?.isAccepted ||
-                  !item.isActive
-                "
-              >
-              </v-btn>
-            </v-badge>
+              {{$t('groupDiscussions')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.violations`]="{ item }"
           >
-            <v-badge
-              :color="$settings.indicatorColor"
-              :model-value="
-                statusContainers.find(obj =>
-                  obj.user === user._id &&
-                  obj.type === 'groups' &&
-                  obj.reference === item._id &&
-                  obj.relation !== 'applicant' &&
-                  obj.relation !== 'member'
-                ) &&
-                statusContainers.find(obj =>
-                  obj.user === user._id &&
-                  obj.type === 'groups' &&
-                  obj.reference === item._id &&
-                  obj.relation !== 'applicant' &&
-                  obj.relation !== 'member'
-                ).unread.filter(obj => obj.type === 'violations').length > 0
-                ? true : false
-              "
-            >
-              <template v-slot:badge>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
                 <span
-                  class="text-customGrey font-weight-bold"
+                  v-bind="props"
                 >
-                  {{
-                    statusContainers.find(obj =>
-                      obj.user === user._id &&
-                      obj.type === 'groups' &&
-                      obj.reference === item._id &&
-                      obj.relation !== 'applicant' &&
-                      obj.relation !== 'member'
-                    ) ?
-                    statusContainers.find(obj =>
-                      obj.user === user._id &&
-                      obj.type === 'groups' &&
-                      obj.reference === item._id &&
-                      obj.relation !== 'applicant' &&
-                      obj.relation !== 'member'
-                    ).unread.filter(obj => obj.type === 'violations').length
-                    :
-                    ''
-                  }}
+                  <v-badge
+                    :color="$settings.indicatorColor"
+                    :model-value="
+                      statusContainers.find(obj =>
+                        obj.user === user._id &&
+                        obj.type === 'groups' &&
+                        obj.reference === item._id &&
+                        obj.relation !== 'applicant' &&
+                        obj.relation !== 'member'
+                      ) &&
+                      statusContainers.find(obj =>
+                        obj.user === user._id &&
+                        obj.type === 'groups' &&
+                        obj.reference === item._id &&
+                        obj.relation !== 'applicant' &&
+                        obj.relation !== 'member'
+                      ).unread.filter(obj => obj.type === 'violations').length > 0
+                      ? true : false
+                    "
+                  >
+                    <template v-slot:badge>
+                      <span
+                        class="text-customGrey font-weight-bold"
+                      >
+                        {{
+                          statusContainers.find(obj =>
+                            obj.user === user._id &&
+                            obj.type === 'groups' &&
+                            obj.reference === item._id &&
+                            obj.relation !== 'applicant' &&
+                            obj.relation !== 'member'
+                          ) ?
+                          statusContainers.find(obj =>
+                            obj.user === user._id &&
+                            obj.type === 'groups' &&
+                            obj.reference === item._id &&
+                            obj.relation !== 'applicant' &&
+                            obj.relation !== 'member'
+                          ).unread.filter(obj => obj.type === 'violations').length
+                          :
+                          ''
+                        }}
+                      </span>
+                    </template>
+                    <v-btn
+                      icon="fas fa-ban"
+                      size="small"
+                      :color="$settings.modules.groups.color"
+                      @click="violationsDialogItem = item"
+                      :disabled="
+                        (
+                          !isOwnGroup(item._id) &&
+                          !isModeratorGroup(item._id)
+                        ) ||
+                        !item.accepted?.isAccepted
+                      "
+                    >
+                    </v-btn>
+                  </v-badge>
                 </span>
               </template>
-              <v-btn
-                icon="fas fa-ban"
-                size="small"
-                :color="$settings.modules.groups.color"
-                @click="violationsDialogItem = item"
-                :disabled="
-                  (
-                    !isOwnGroup(item._id) &&
-                    !isModeratorGroup(item._id)
-                  ) ||
-                  !item.accepted?.isAccepted
-                "
-              >
-              </v-btn>
-            </v-badge>
+              {{$t('violations')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.files`]="{ item }"
           >
-            <v-btn
-              icon="fas fa-file"
-              size="small"
-              :color="$settings.modules.groups.color"
-              @click="filesDialogItem = item"
-              :disabled="
-                (
-                  !isOwnGroup(item._id) &&
-                  !isModeratorGroup(item._id)
-                ) ||
-                !item.accepted?.isAccepted
-              "
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fas fa-file"
+                    size="small"
+                    :color="$settings.modules.groups.color"
+                    @click="filesDialogItem = item"
+                    :disabled="
+                      (
+                        !isOwnGroup(item._id) &&
+                        !isModeratorGroup(item._id)
+                      ) ||
+                      !item.accepted?.isAccepted
+                    "
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('files')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.title.value`]="{ item }"
@@ -390,72 +435,117 @@
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
-              :color="$settings.modules.groups.color"
-              :loading="loaders[item._id + 'isActive'] === true"
-              :disabled="!isOwnGroup(item._id)"
-              @click="changeGroupProperty(
-                item._id,
-                'isActive',
-                !item.isActive
-              )"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="$settings.modules.groups.color"
+                    :loading="loaders[item._id + 'isActive'] === true"
+                    :disabled="!isOwnGroup(item._id)"
+                    @click="changeGroupProperty(
+                      item._id,
+                      'isActive',
+                      !item.isActive
+                    )"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('active')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.accepted.isAccepted`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
-              :color="$settings.modules.groups.color"
-              disabled
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="$settings.modules.groups.color"
+                    disabled
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('accepted')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-pen"
-              size="small"
-              :color="$settings.modules.groups.color"
-              class="my-4"
-              :to="{name: 'GroupEditor', params: { id: item._id } }"
-              :disabled="!isOwnGroup(item._id) && !isModeratorGroup(item._id)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-pen"
+                    size="small"
+                    :color="$settings.modules.groups.color"
+                    class="my-4"
+                    :to="{name: 'GroupEditor', params: { id: item._id } }"
+                    :disabled="!isOwnGroup(item._id) && !isModeratorGroup(item._id)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('editButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-trash"
-              size="small"
-              :color="$settings.modules.groups.color"
-              class="my-4"
-              :loading="loaders[item._id + 'delete'] === true"
-              :disabled="!isOwnGroup(item._id)"
-              @click="deleteGroup(item._id)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-trash"
+                    size="small"
+                    :color="$settings.modules.groups.color"
+                    class="my-4"
+                    :loading="loaders[item._id + 'delete'] === true"
+                    :disabled="!isOwnGroup(item._id)"
+                    @click="deleteGroup(item._id)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-arrow-right"
-              size="small"
-              :color="$settings.modules.groups.color"
-              :disabled="
-                !item.isActive ||
-                !item.accepted?.isAccepted
-              "
-              :to="{name: 'Group', params: { group: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-arrow-right"
+                    size="small"
+                    :color="$settings.modules.groups.color"
+                    :disabled="
+                      !item.isActive ||
+                      !item.accepted?.isAccepted
+                    "
+                    :to="{name: 'Group', params: { group: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('viewButton')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>
@@ -722,6 +812,8 @@
           <v-row>
             <v-col>
               <DiscussionsList
+                :preventFilters="true"
+                :isAcceptList="false"
                 :group="discussionsDialogItem"
               ></DiscussionsList>
             </v-col>

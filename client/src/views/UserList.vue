@@ -86,14 +86,23 @@
           <template
             v-slot:[`item.goToChat`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-comments"
-              size="small"
-              class="pr-1 pb-1"
-              color="customGrey"
-              :to="{ name: 'UserNameChat', params: { user: item._id, username: item.userName } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-comments"
+                    size="small"
+                    class="pr-1 pb-1"
+                    color="customGrey"
+                    :to="{ name: 'UserNameChat', params: { user: item._id, username: item.userName } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('goToChat')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>

@@ -95,66 +95,102 @@
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
-              :color="$settings.modules.groups.color"
-              :loading="loaders[item._id + 'isActive'] === true"
-              disabled
-              @click="changeGroupsProperty(
-                item,
-                'isActive',
-                !item.isActive
-              )"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="$settings.modules.groups.color"
+                    :loading="loaders[item._id + 'isActive'] === true"
+                    disabled
+                    @click="changeGroupsProperty(
+                      item,
+                      'isActive',
+                      !item.isActive
+                    )"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('active')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.accepted.isAccepted`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
-              :color="$settings.modules.groups.color"
-              :disabled="user.role !== 'admins'"
-              :loading="loaders[item._id + 'accepted'] === true"
-              @click="changeGroupsProperty(
-                item,
-                'accepted',
-                {
-                  isAccepted: item.accepted?.isAccepted ? false : true,
-                  dt: new Date(),
-                  user: user._id
-                }
-              )"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="$settings.modules.groups.color"
+                    :disabled="user.role !== 'admins'"
+                    :loading="loaders[item._id + 'accepted'] === true"
+                    @click="changeGroupsProperty(
+                      item,
+                      'accepted',
+                      {
+                        isAccepted: item.accepted?.isAccepted ? false : true,
+                        dt: new Date(),
+                        user: user._id
+                      }
+                    )"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('accepted')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-trash"
-              size="small"
-              :color="$settings.modules.groups.color"
-              class="my-4"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteGroup(item._id)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-trash"
+                    size="small"
+                    :color="$settings.modules.groups.color"
+                    class="my-4"
+                    :loading="loaders[item._id + 'delete'] === true"
+                    @click="deleteGroup(item._id)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-arrow-right"
-              size="small"
-              :color="$settings.modules.groups.color"
-              class="my-4"
-              :disabled="!item.isActive"
-              :to="{name: 'Group', params: { group: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-arrow-right"
+                    size="small"
+                    :color="$settings.modules.groups.color"
+                    class="my-4"
+                    :disabled="!item.isActive"
+                    :to="{name: 'Group', params: { group: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('viewButton')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>

@@ -78,48 +78,84 @@
           <template
             v-slot:[`item.members`]="{ item }"
           >
-            <v-btn
-              icon="fas fa-list"
-              size="small"
-              color="customGrey"
-              @click="membersDialogItem = item"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fas fa-list"
+                    size="small"
+                    color="customGrey"
+                    @click="membersDialogItem = item"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('manageMembersButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-pen"
-              size="small"
-              color="customGrey"
-              :to="{ name: 'OrganisationAdminEditor', params: { organisation: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-pen"
+                    size="small"
+                    color="customGrey"
+                    :to="{ name: 'OrganisationAdminEditor', params: { organisation: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('editButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-trash"
-              size="small"
-              color="customGrey"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteOrganisation(item._id)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-trash"
+                    size="small"
+                    color="customGrey"
+                    :loading="loaders[item._id + 'delete'] === true"
+                    @click="deleteOrganisation(item._id)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-arrow-right"
-              size="small"
-              color="customGrey"
-              class="my-3"
-              :to="{name: 'Organisation', params: { organisation: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-arrow-right"
+                    size="small"
+                    color="customGrey"
+                    class="my-3"
+                    :to="{name: 'Organisation', params: { organisation: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('viewButton')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>

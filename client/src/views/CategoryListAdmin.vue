@@ -78,27 +78,45 @@
           <template
             v-slot:[`item.edit`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-pen"
-              size="small"
-              color="customGrey"
-              class="my-3"
-              :to="{ name: 'CategoryEditor', params: { id: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-pen"
+                    size="small"
+                    color="customGrey"
+                    class="my-3"
+                    :to="{ name: 'CategoryEditor', params: { id: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('editButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-trash"
-              size="small"
-              color="customGrey"
-              class="my-4"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteCategory(item._id)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-trash"
+                    size="small"
+                    color="customGrey"
+                    class="my-4"
+                    :loading="loaders[item._id + 'delete'] === true"
+                    @click="deleteCategory(item._id)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
         </v-data-table>
       </v-col>

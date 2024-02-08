@@ -115,150 +115,195 @@
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
-              :color="computedColor"
-              :loading="loaders[item._id + 'isActive'] === true"
-              :disabled="
-                !isOwnDiscussion(item._id) ||
-                (
-                  item.group &&
-                  !statusContainers.find(obj =>
-                    obj.type === 'groups' &&
-                    obj.reference === item.group &&
-                    (
-                      obj.relation === 'owner' ||
-                      obj.relation === 'member'
-                    )
-                  )
-                )
-              "
-              @click="changeDiscussionProperty(
-                item._id,
-                'isActive',
-                !item.isActive
-              )"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="computedColor"
+                    :loading="loaders[item._id + 'isActive'] === true"
+                    :disabled="
+                      !isOwnDiscussion(item._id) ||
+                      (
+                        item.group &&
+                        !statusContainers.find(obj =>
+                          obj.type === 'groups' &&
+                          obj.reference === item.group &&
+                          (
+                            obj.relation === 'owner' ||
+                            obj.relation === 'member'
+                          )
+                        )
+                      )
+                    "
+                    @click="changeDiscussionProperty(
+                      item._id,
+                      'isActive',
+                      !item.isActive
+                    )"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('active')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.accepted.isAccepted`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
-              :color="computedColor"
-              disabled
-              :loading="loaders[item._id + 'accepted'] === true"
-              @click="changeDiscussionProperty(
-                item._id,
-                'accepted',
-                {
-                  isAccepted: item.accepted?.isAccepted ? false : true,
-                  dt: new Date(),
-                  user: user._id
-                }
-              )"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="computedColor"
+                    disabled
+                    :loading="loaders[item._id + 'accepted'] === true"
+                    @click="changeDiscussionProperty(
+                      item._id,
+                      'accepted',
+                      {
+                        isAccepted: item.accepted?.isAccepted ? false : true,
+                        dt: new Date(),
+                        user: user._id
+                      }
+                    )"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('accepted')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-pen"
-              size="small"
-              :color="computedColor"
-              class="my-4"
-              :to="
-                item.group ?
-                  { name: 'GroupDiscussionEditor', params: { group: item.group, id: item._id } } :
-                  { name: 'DiscussionEditor', params: { id: item._id } }
-                "
-              :disabled="
-                !isOwnDiscussion(item._id) ||
-                (
-                  item.group &&
-                  !statusContainers.find(obj =>
-                    obj.type === 'groups' &&
-                    obj.reference === item.group &&
-                    (
-                      obj.relation === 'owner' ||
-                      obj.relation === 'member'
-                    )
-                  )
-                )
-              "
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-pen"
+                    size="small"
+                    :color="computedColor"
+                    class="my-4"
+                    :to="
+                      item.group ?
+                        { name: 'GroupDiscussionEditor', params: { group: item.group, id: item._id } } :
+                        { name: 'DiscussionEditor', params: { id: item._id } }
+                      "
+                    :disabled="
+                      !isOwnDiscussion(item._id) ||
+                      (
+                        item.group &&
+                        !statusContainers.find(obj =>
+                          obj.type === 'groups' &&
+                          obj.reference === item.group &&
+                          (
+                            obj.relation === 'owner' ||
+                            obj.relation === 'member'
+                          )
+                        )
+                      )
+                    "
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('editButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-trash"
-              size="small"
-              :color="computedColor"
-              class="my-4"
-              :disabled="!isOwnDiscussion(item._id)"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteDiscussion(item._id)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-trash"
+                    size="small"
+                    :color="computedColor"
+                    class="my-4"
+                    :disabled="!isOwnDiscussion(item._id)"
+                    :loading="loaders[item._id + 'delete'] === true"
+                    @click="deleteDiscussion(item._id)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
-            <v-span class="d-flex align-center">
-              <v-btn
-                icon="fa fa-arrow-right"
-                size="small"
-                class="mr-1"
-                :color="computedColor"
-                :disabled="
-                  !item.isActive ||
-                  !item.accepted ||
-                  item.accepted.isAccepted !== true ||
-                  (
-                    getGroup(item.group) &&
-                    (
-                      !getGroup(item.group).isActive ||
-                      !getGroup(item.group).accepted ||
-                      !getGroup(item.group).accepted.isAccepted
-                    )
-                  )
-                "
-                :to="
-                  item.group ?
-                    { name: 'GroupDiscussion', params: { group: item.group, id: item._id } } :
-                    { name: 'Discussion', params: { id: item._id } }
-                  "
-              >
-              </v-btn>
-              <v-chip
-                :color="$settings.indicatorColor"
-                size="small"
-                variant="flat"
-                v-if="getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber')?.unread?.length > 0"
-              >
-                <div class="text-customGrey">
-                  <v-icon class="mr-1">fas fa-comment-dots</v-icon>
-                  {{getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber').unread.length}}
-                </div>
-              </v-chip>
-              <v-chip
-                :color="$settings.indicatorColor"
-                size="small"
-                variant="flat"
-                v-if="getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'mentions')?.unread?.length > 0"
-              >
-                <div class="text-customGrey">
-                  <v-icon class="mr-1">fas fa-at</v-icon>
-                  {{getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'mentions').unread.length}}
-                </div>
-              </v-chip>
-            </v-span>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <span class="d-flex align-center">
+                    <v-btn
+                      icon="fa fa-arrow-right"
+                      size="small"
+                      class="mr-1"
+                      :color="computedColor"
+                      :disabled="
+                        !item.isActive ||
+                        !item.accepted ||
+                        item.accepted.isAccepted !== true ||
+                        (
+                          getGroup(item.group) &&
+                          (
+                            !getGroup(item.group).isActive ||
+                            !getGroup(item.group).accepted ||
+                            !getGroup(item.group).accepted.isAccepted
+                          )
+                        )
+                      "
+                      :to="
+                        item.group ?
+                          { name: 'GroupDiscussion', params: { group: item.group, id: item._id } } :
+                          { name: 'Discussion', params: { id: item._id } }
+                        "
+                    >
+                    </v-btn>
+                    <v-chip
+                      :color="$settings.indicatorColor"
+                      size="small"
+                      variant="flat"
+                      v-if="getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber')?.unread?.length > 0"
+                    >
+                      <div class="text-customGrey">
+                        <v-icon class="mr-1">fas fa-comment-dots</v-icon>
+                        {{getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'subscriber').unread.length}}
+                      </div>
+                    </v-chip>
+                    <v-chip
+                      :color="$settings.indicatorColor"
+                      size="small"
+                      variant="flat"
+                      v-if="getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'mentions')?.unread?.length > 0"
+                    >
+                      <div class="text-customGrey">
+                        <v-icon class="mr-1">fas fa-at</v-icon>
+                        {{getOwnStatusContainersOfDiscussion(item._id).find(obj => obj.relation === 'mentions').unread.length}}
+                      </div>
+                    </v-chip>
+                  </span>
+                </span>
+              </template>
+              {{$t('viewButton')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>

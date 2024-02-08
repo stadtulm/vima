@@ -130,6 +130,7 @@
                 v-for="category in getCategories(item.categories)"
                 :key="category._id"
                 class="mr-1"
+                :disabled="preventFilters"
                 @click="selectCategory(category._id)"
               >
               {{category.text.value}}
@@ -142,6 +143,7 @@
                 v-for="tag in getTags(item.tags)"
                 :key="tag._id"
                 class="mr-1"
+                :disabled="preventFilters"
                 @click="selectTag(tag._id)"
               >
               {{tag.text}}
@@ -150,22 +152,31 @@
             <template
               v-slot:[`item.accepted.isAccepted`]="{ item }"
             >
-              <v-btn
-                variant="text"
-                :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
-                :color="'custom' + computedColor"
-                :loading="loaders[item._id + 'accepted'] === true"
-                @click="changeDiscussionProperty(
-                  item,
-                  'accepted',
-                  {
-                    isAccepted: !item.accepted?.isAccepted,
-                    dt: new Date(),
-                    user: user._id
-                  }
-                )"
-              >
-              </v-btn>
+              <v-tooltip>
+                <template v-slot:activator="{ props }">
+                  <span
+                    v-bind="props"
+                  >
+                    <v-btn
+                      variant="text"
+                      :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+                      :color="'custom' + computedColor"
+                      :loading="loaders[item._id + 'accepted'] === true"
+                      @click="changeDiscussionProperty(
+                        item,
+                        'accepted',
+                        {
+                          isAccepted: !item.accepted?.isAccepted,
+                          dt: new Date(),
+                          user: user._id
+                        }
+                      )"
+                    >
+                    </v-btn>
+                  </span>
+                </template>
+                {{$t('accepted')}}
+              </v-tooltip>
             </template>
             <template
               v-slot:[`item.isActive`]="{ item }"
@@ -181,27 +192,45 @@
             <template
               v-slot:[`item.delete`]="{ item }"
             >
-              <v-btn
-                icon="fa fa-trash"
-                size="small"
-                :color="computedColor"
-                class="my-4"
-                :loading="loaders[item._id + 'delete'] === true"
-                @click="deleteDiscussion(item._id)"
-              >
-              </v-btn>
+              <v-tooltip>
+                <template v-slot:activator="{ props }">
+                  <span
+                    v-bind="props"
+                  >
+                    <v-btn
+                      icon="fa fa-trash"
+                      size="small"
+                      :color="computedColor"
+                      class="my-4"
+                      :loading="loaders[item._id + 'delete'] === true"
+                      @click="deleteDiscussion(item._id)"
+                    >
+                    </v-btn>
+                  </span>
+                </template>
+                {{$t('active')}}
+              </v-tooltip>
             </template>
             <template
               v-slot:[`item.link`]="{ item }"
             >
-              <v-btn
-                icon="fa fa-arrow-right"
-                size="small"
-                class="my-3"
-                :color="computedColor"
-                :to="group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } }"
-              >
-              </v-btn>
+              <v-tooltip>
+                <template v-slot:activator="{ props }">
+                  <span
+                    v-bind="props"
+                  >
+                    <v-btn
+                      icon="fa fa-arrow-right"
+                      size="small"
+                      class="my-3"
+                      :color="computedColor"
+                      :to="group ? {name: 'GroupDiscussion', params: { group: group._id, id: item._id } } : {name: 'Discussion', params: { id: item._id } }"
+                    >
+                    </v-btn>
+                  </span>
+                </template>
+                {{$t('viewButton')}}
+              </v-tooltip>
             </template>
           </v-data-table-server>
         </v-card>
@@ -227,7 +256,8 @@ export default {
     'showFilters',
     'resetFilterTrigger',
     'isAcceptList',
-    'category'
+    'category',
+    'preventFilters'
   ],
 
   emits: ['update:filtersDirty'],
@@ -275,12 +305,14 @@ export default {
           categories: this.queryObject.categories,
           tags: this.queryObject.tags
         }
-        this.updateQueryQuery(this.queryObject.query)
-        this.updateQueryPage(this.queryObject.page)
-        this.updateQueryItemsPerPage(e.itemsPerPage)
-        if (e.sortBy[0]) {
-          this.updateQuerySortBy(e.sortBy[0].key)
-          this.updateQuerySortOrder(e.sortBy[0].order)
+        if (!this.preventFilters) {
+          this.updateQueryQuery(this.queryObject.query)
+          this.updateQueryPage(this.queryObject.page)
+          this.updateQueryItemsPerPage(e.itemsPerPage)
+          if (e.sortBy[0]) {
+            this.updateQuerySortBy(e.sortBy[0].key)
+            this.updateQuerySortOrder(e.sortBy[0].order)
+          }
         }
       }
     },
@@ -475,15 +507,21 @@ export default {
 
   watch: {
     'queryObject.query' () {
-      this.updateQueryQuery(this.queryObject.query)
+      if (!this.preventFilters) {
+        this.updateQueryQuery(this.queryObject.query)
+      }
     },
     async 'queryObject.categories' () {
-      this.updateQueryCategories(this.queryObject.categories.join(','))
-      await this.loadDataTableEntities()
+      if (!this.preventFilters) {
+        this.updateQueryCategories(this.queryObject.categories.join(','))
+        await this.loadDataTableEntities()
+      }
     },
     async 'queryObject.tags' () {
-      this.updateQueryTags(this.queryObject.tags.join(','))
-      await this.loadDataTableEntities()
+      if (!this.preventFilters) {
+        this.updateQueryTags(this.queryObject.tags.join(','))
+        await this.loadDataTableEntities()
+      }
     },
     discussionsParams: {
       deep: true,

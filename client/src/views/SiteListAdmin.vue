@@ -78,14 +78,23 @@
           <template
             v-slot:[`item.edit`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-pen"
-              size="small"
-              color="customGrey"
-              class="my-3"
-              :to="{ name: 'SiteEditor', params: { site: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-pen"
+                    size="small"
+                    color="customGrey"
+                    class="my-3"
+                    :to="{ name: 'SiteEditor', params: { site: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>

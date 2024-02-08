@@ -78,18 +78,27 @@
       <template
         v-slot:[`item.isClosed`]="{ item }"
       >
-        <v-btn
-          variant="text"
-          :icon="item.isClosed ? 'fas fa-check-square' : 'far fa-square'"
-          color="customGrey"
-          :loading="loaders[item._id + 'isClosed'] === true"
-          @click="changeViolationProperty(
-            item,
-            'isClosed',
-            !item.isClosed
-          )"
-        >
-        </v-btn>
+        <v-tooltip>
+          <template v-slot:activator="{ props }">
+            <span
+              v-bind="props"
+            >
+              <v-btn
+                variant="text"
+                :icon="item.isClosed ? 'fas fa-check-square' : 'far fa-square'"
+                color="customGrey"
+                :loading="loaders[item._id + 'isClosed'] === true"
+                @click="changeViolationProperty(
+                  item,
+                  'isClosed',
+                  !item.isClosed
+                )"
+              >
+              </v-btn>
+            </span>
+          </template>
+          {{$t('closed')}}
+        </v-tooltip>
       </template>
       <template
         v-slot:[`item.updatedAt`]="{ item }"
@@ -104,39 +113,66 @@
       <template
         v-slot:[`item.edit`]="{ item }"
       >
-        <v-btn
-          icon="fa fa-search"
-          size="small"
-          color="customGrey"
-          class="my-3"
-          @click="itemToReport = item"
-        >
-        </v-btn>
+        <v-tooltip>
+          <template v-slot:activator="{ props }">
+            <span
+              v-bind="props"
+            >
+              <v-btn
+                icon="fa fa-search"
+                size="small"
+                color="customGrey"
+                class="my-3"
+                @click="itemToReport = item"
+              >
+              </v-btn>
+            </span>
+          </template>
+          {{$t('details')}}
+        </v-tooltip>
       </template>
       <template
         v-slot:[`item.delete`]="{ item }"
       >
-        <v-btn
-          icon="fa fa-trash"
-          size="small"
-          color="customGrey"
-          class="my-3"
-          :loading="loaders[item._id + 'delete'] === true"
-          @click="deleteViolation(item._id)"
-        >
-        </v-btn>
+        <v-tooltip>
+          <template v-slot:activator="{ props }">
+            <span
+              v-bind="props"
+            >
+              <v-btn
+                icon="fa fa-trash"
+                size="small"
+                color="customGrey"
+                class="my-3"
+                :loading="loaders[item._id + 'delete'] === true"
+                @click="deleteViolation(item._id)"
+              >
+              </v-btn>
+            </span>
+          </template>
+          {{$t('deleteButton')}}
+        </v-tooltip>
       </template>
       <template
         v-slot:[`item.link`]="{ item }"
       >
-        <v-btn
-          v-if="item.discussion"
-          icon="fa fa-arrow-right"
-          size="small"
-          color="customGrey"
-          :to="item.link"
-        >
-        </v-btn>
+        <v-tooltip>
+          <template v-slot:activator="{ props }">
+            <span
+              v-bind="props"
+            >
+              <v-btn
+                v-if="item.discussion"
+                icon="fa fa-arrow-right"
+                size="small"
+                color="customGrey"
+                :to="item.link"
+              >
+              </v-btn>
+            </span>
+          </template>
+          {{$t('viewButton')}}
+        </v-tooltip>
       </template>
     </v-data-table-server>
     <ViolationDialog

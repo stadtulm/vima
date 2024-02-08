@@ -86,85 +86,121 @@
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
-              :color="$settings.modules.ads.color"
-              :loading="loaders[item._id + 'isActive'] === true"
-              disabled
-              @click="changeAdProperty(
-                item,
-                'isActive',
-                !item.isActive
-              )"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="$settings.modules.ads.color"
+                    :loading="loaders[item._id + 'isActive'] === true"
+                    disabled
+                    @click="changeAdProperty(
+                      item,
+                      'isActive',
+                      !item.isActive
+                    )"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('active')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.accepted.isAccepted`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
-              :color="$settings.modules.ads.color"
-              :disabled="user.role !== 'admins'"
-              :loading="loaders[item._id + 'accepted'] === true"
-              @click="changeAdProperty(
-                item,
-                'accepted',
-                {
-                  isAccepted: !item.accepted.isAccepted,
-                  dt: new Date(),
-                  user: user._id
-                }
-              )"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="$settings.modules.ads.color"
+                    :disabled="user.role !== 'admins'"
+                    :loading="loaders[item._id + 'accepted'] === true"
+                    @click="changeAdProperty(
+                      item,
+                      'accepted',
+                      {
+                        isAccepted: !item.accepted.isAccepted,
+                        dt: new Date(),
+                        user: user._id
+                      }
+                    )"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('accepted')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
-            <v-btn
-              icon
-              size="small"
-              :color="$settings.modules.ads.color"
-              class="my-4"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteAd(item._id)"
-            >
-              <template
-                v-slot:loader
-              >
-                <v-progress-circular
-                  color="white"
-                  width="3"
-                  indeterminate
-                ></v-progress-circular>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon
+                    size="small"
+                    :color="$settings.modules.ads.color"
+                    class="my-4"
+                    :loading="loaders[item._id + 'delete'] === true"
+                    @click="deleteAd(item._id)"
+                  >
+                    <template
+                      v-slot:loader
+                    >
+                      <v-progress-circular
+                        color="white"
+                        width="3"
+                        indeterminate
+                      ></v-progress-circular>
+                    </template>
+                    <v-icon
+                      color="white"
+                    >
+                      fa fa-trash
+                    </v-icon>
+                  </v-btn>
+                </span>
               </template>
-              <v-icon
-                color="white"
-              >
-                fa fa-trash
-              </v-icon>
-            </v-btn>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
-            <v-btn
-              icon
-              size="small"
-              :color="$settings.modules.ads.color"
-              class="my-4"
-              :disabled="!item.isActive"
-              :to="{name: 'Ad', params: { id: item._id } }"
-            >
-              <v-icon
-                color="white"
-              >
-                fa fa-arrow-right
-              </v-icon>
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon
+                    size="small"
+                    :color="$settings.modules.ads.color"
+                    class="my-4"
+                    :disabled="!item.isActive"
+                    :to="{name: 'Ad', params: { id: item._id } }"
+                  >
+                    <v-icon
+                      color="white"
+                    >
+                      fa fa-arrow-right
+                    </v-icon>
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('viewButton')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>

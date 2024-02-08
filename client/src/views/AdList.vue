@@ -67,31 +67,37 @@
           <template
             v-slot:[`item.applicants`]="{ item }"
           >
-            <v-badge
-              :model-value="isOwnAd(item._id) && getOwnStatusContainerOfAd(item._id)?.unread.length > 0"
-              :color="$settings.indicatorColor"
-            >
-              <template v-slot:badge>
-                <span
-                  class="text-customGrey font-weight-bold"
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <v-badge
+                  v-bind="props"
+                  :model-value="isOwnAd(item._id) && getOwnStatusContainerOfAd(item._id)?.unread.length > 0"
+                  :color="$settings.indicatorColor"
                 >
-                  {{getOwnStatusContainerOfAd(item._id)?.unread.length}}
-                </span>
+                  <template v-slot:badge>
+                    <span
+                      class="text-customGrey font-weight-bold"
+                    >
+                      {{getOwnStatusContainerOfAd(item._id)?.unread.length}}
+                    </span>
+                  </template>
+                  <v-btn
+                    icon="fas fa-list"
+                    size="small"
+                    class="text-white"
+                    :color="$settings.modules.ads.color"
+                    @click="applicantsDialogItem = item"
+                    :disabled="
+                      !isOwnAd(item._id) ||
+                      !item.accepted ||
+                      !item.accepted.isAccepted
+                    "
+                  >
+                  </v-btn>
+                </v-badge>
               </template>
-              <v-btn
-                icon="fas fa-list"
-                size="small"
-                class="text-white"
-                :color="$settings.modules.ads.color"
-                @click="applicantsDialogItem = item"
-                :disabled="
-                  !isOwnAd(item._id) ||
-                  !item.accepted ||
-                  !item.accepted.isAccepted
-                "
-              >
-              </v-btn>
-            </v-badge>
+              {{$t('applicants')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.title.value`]="{ item }"
@@ -155,87 +161,132 @@
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
-              :color="$settings.modules.ads.color"
-              :loading="loaders[item._id + 'isActive'] === true"
-              :disabled="!isOwnAd(item._id)"
-              @click="changeAdProperty(
-                item._id,
-                'isActive',
-                !item.isActive
-              )"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="$settings.modules.ads.color"
+                    :loading="loaders[item._id + 'isActive'] === true"
+                    :disabled="!isOwnAd(item._id)"
+                    @click="changeAdProperty(
+                      item._id,
+                      'isActive',
+                      !item.isActive
+                    )"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('active')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.accepted.isAccepted`]="{ item }"
           >
-            <v-btn
-              variant="text"
-              :icon="item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
-              :color="$settings.modules.ads.color"
-              disabled
-              :loading="loaders[item._id + 'accepted'] === true"
-              @click="changeAdProperty(
-                item._id,
-                'accepted',
-                {
-                  isAccepted: !item.accepted.isAccepted,
-                  dt: new Date(),
-                  user: user._id
-                }
-              )"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
+                    :color="$settings.modules.ads.color"
+                    disabled
+                    :loading="loaders[item._id + 'accepted'] === true"
+                    @click="changeAdProperty(
+                      item._id,
+                      'accepted',
+                      {
+                        isAccepted: !item.accepted.isAccepted,
+                        dt: new Date(),
+                        user: user._id
+                      }
+                    )"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('accepted')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-pen"
-              size="small"
-              :color="$settings.modules.ads.color"
-              class="my-4 text-white"
-              :to="{name: 'AdEditor', params: { id: item._id } }"
-              :disabled="!isOwnAd(item._id)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-pen"
+                    size="small"
+                    :color="$settings.modules.ads.color"
+                    class="my-4 text-white"
+                    :to="{name: 'AdEditor', params: { id: item._id } }"
+                    :disabled="!isOwnAd(item._id)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('editButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-trash"
-              size="small"
-              :color="$settings.modules.ads.color"
-              class="my-4 text-white"
-              :disabled="!isOwnAd(item._id)"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteItem = item._id"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-trash"
+                    size="small"
+                    :color="$settings.modules.ads.color"
+                    class="my-4 text-white"
+                    :disabled="!isOwnAd(item._id)"
+                    :loading="loaders[item._id + 'delete'] === true"
+                    @click="deleteItem = item._id"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-arrow-right"
-              size="small"
-              :color="$settings.modules.ads.color"
-              class="my-4 text-white"
-              :disabled="
-                !statusContainers.find(obj => obj.reference === item._id && obj.user === user._id && obj.relation === 'owner') &&
-                (
-                  !item.isActive ||
-                  !item.accepted ||
-                  !item.accepted.isAccepted
-                )
-              "
-              :to="{name: 'Ad', params: { id: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-arrow-right"
+                    size="small"
+                    :color="$settings.modules.ads.color"
+                    class="my-4 text-white"
+                    :disabled="
+                      !statusContainers.find(obj => obj.reference === item._id && obj.user === user._id && obj.relation === 'owner') &&
+                      (
+                        !item.isActive ||
+                        !item.accepted ||
+                        !item.accepted.isAccepted
+                      )
+                    "
+                    :to="{name: 'Ad', params: { id: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('viewButton')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>

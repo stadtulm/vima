@@ -143,46 +143,82 @@
           <template
             v-slot:[`item.isVerified`]="{ item }"
           >
-            <v-btn
-              :icon="item.isVerified ? 'far fa-check-square' : 'far fa-square'"
-              variant="flat"
-              @click="setProperty('isVerified', item._id, !item.isVerified)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    :icon="item.isVerified ? 'far fa-check-square' : 'far fa-square'"
+                    variant="flat"
+                    @click="setProperty('isVerified', item._id, !item.isVerified)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('verified')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.isActive`]="{ item }"
           >
-            <v-btn
-              :icon="item.isActive ? 'far fa-check-square' : 'far fa-square'"
-              variant="flat"
-              @click="item.isActive ? (setActiveItem = item) : setProperty('isActive', item._id, !item.isActive)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    :icon="item.isActive ? 'far fa-check-square' : 'far fa-square'"
+                    variant="flat"
+                    @click="item.isActive ? (setActiveItem = item) : setProperty('isActive', item._id, !item.isActive)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('active')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.edit`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-pen"
-              size="small"
-              color="customGrey"
-              class="my-3"
-              :to="{ name: 'UserAdminEditor', params: { user: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-pen"
+                    size="small"
+                    color="customGrey"
+                    class="my-3"
+                    :to="{ name: 'UserAdminEditor', params: { user: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('editButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-trash"
-              size="small"
-              color="customGrey"
-              class="my-4"
-              @click="deleteUser(item)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-trash"
+                    size="small"
+                    color="customGrey"
+                    class="my-4"
+                    @click="deleteUser(item)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.resend`]="{ item }"

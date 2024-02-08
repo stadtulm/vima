@@ -131,26 +131,35 @@
           <template
             v-slot:[`item.goToChat`]="{ item }"
           >
-            <v-badge
-              :model-value="statusContainers.find(obj => obj.reference === item._id).unread.length > 0"
-              :color="$settings.indicatorColor"
-            >
-              <template v-slot:badge>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
                 <span
-                  class="text-customGrey font-weight-bold"
+                  v-bind="props"
                 >
-                  {{statusContainers.find(obj => obj.reference === item._id).unread.length}}
+                  <v-badge
+                    :model-value="statusContainers.find(obj => obj.reference === item._id).unread.length > 0"
+                    :color="$settings.indicatorColor"
+                  >
+                    <template v-slot:badge>
+                      <span
+                        class="text-customGrey font-weight-bold"
+                      >
+                        {{statusContainers.find(obj => obj.reference === item._id).unread.length}}
+                      </span>
+                    </template>
+                    <v-btn
+                      :disabled="item.isBlocked ? true : false"
+                      icon="fa fa-arrow-right"
+                      size="small"
+                      color="customGrey"
+                      :to="{ name: 'IdChat', params: { chat: item._id } }"
+                    >
+                    </v-btn>
+                  </v-badge>
                 </span>
               </template>
-              <v-btn
-                :disabled="item.isBlocked ? true : false"
-                icon="fa fa-arrow-right"
-                size="small"
-                color="customGrey"
-                :to="{ name: 'IdChat', params: { chat: item._id } }"
-              >
-              </v-btn>
-            </v-badge>
+              {{$t('goToChat')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>

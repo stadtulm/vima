@@ -65,13 +65,22 @@
           <template
             v-slot:[`item.customAction`]="{ item }"
           >
-            <v-btn
-              :icon="customActionIcon"
-              size="small"
-              :color="customColor"
-              @click="$emit('update:customAction', item)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    :icon="customActionIcon"
+                    size="small"
+                    :color="customColor"
+                    @click="$emit('update:customAction', item)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{customActionText}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.customSecondaryAction`]="{ item }"

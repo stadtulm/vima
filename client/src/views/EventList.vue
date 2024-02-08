@@ -88,39 +88,66 @@
           <template
             v-slot:[`item.edit`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-pen"
-              size="small"
-              color="customGrey"
-              class="my-3"
-              :to="{ name: 'EventEditor', params: { organisation: computedUserOrganisationId, event: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-pen"
+                    size="small"
+                    color="customGrey"
+                    class="my-3"
+                    :to="{ name: 'EventEditor', params: { organisation: computedUserOrganisationId, event: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('editButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.delete`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-trash"
-              size="small"
-              color="customGrey"
-              class="my-3"
-              :loading="loaders[item._id + 'delete'] === true"
-              @click="deleteEvent(item._id)"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-trash"
+                    size="small"
+                    color="customGrey"
+                    class="my-3"
+                    :loading="loaders[item._id + 'delete'] === true"
+                    @click="deleteEvent(item._id)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('deleteButton')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.link`]="{ item }"
           >
-            <v-btn
-              icon="fa fa-arrow-right"
-              size="small"
-              color="customGrey"
-              class="my-4"
-              :to="{name: 'Event', params: { event: item._id } }"
-            >
-            </v-btn>
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-arrow-right"
+                    size="small"
+                    color="customGrey"
+                    class="my-4"
+                    :to="{name: 'Event', params: { event: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('viewButton')}}
+            </v-tooltip>
           </template>
         </v-data-table-server>
       </v-col>
