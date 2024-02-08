@@ -9,7 +9,6 @@ import Vuetify from '@/plugins/vuetify'
 
 import Home from '@/views/Home.vue'
 import Site from '@/views/Site.vue'
-import Faq from '@/views/Faq.vue'
 import CategoryListAdmin from '@/views/CategoryListAdmin.vue'
 import CategoryEditor from '@/views/CategoryEditor.vue'
 import SettingsEditor from '@/views/SettingsEditor.vue'
@@ -1216,7 +1215,7 @@ const routes = [
     name: 'Team',
     component: Site,
     meta: {
-      breadCrumbTextKey: 'teamTitle',
+      breadCrumbTextKey: 'team',
       breadCrumbPredecessors: [
         ['Participate']
       ]
@@ -1258,7 +1257,7 @@ const routes = [
   {
     path: '/haeufige-fragen',
     name: 'Faq',
-    component: Faq,
+    component: Site,
     meta: {
       breadCrumbTextKey: 'faq',
       breadCrumbPredecessors: [

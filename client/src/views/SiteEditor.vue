@@ -41,7 +41,8 @@
                       { title: $t('aboutVima'), value: 'vima', props: { disabled: types.includes('vima')} },
                       { title: $t('aboutVives'), value: 'vives', props: { disabled: types.includes('vives')} },
                       { title: $t('communicationRules'), value: 'communicationrules', props: { disabled: types.includes('communicationrules')} },
-                      { title: $t('teamTitle'), value: 'team', props: { disabled: types.includes('team')} }
+                      { title: $t('team'), value: 'team', props: { disabled: types.includes('team')} },
+                      { title: $t('faq'), value: 'faq', props: { disabled: types.includes('faq')} }
                     ] : []"
                   >
                   </v-select>

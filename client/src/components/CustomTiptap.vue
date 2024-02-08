@@ -123,7 +123,7 @@
             variant="outlined"
             @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
             :disabled="!editor.can().chain().focus().toggleHeading({ level: 1 }).run()"
-            :active="editor.isActive('heading', { level: 1 })"
+            :active="editor.isActive('heading', { level: 5 })"
           >
             H1
           </v-btn>
@@ -134,7 +134,7 @@
             variant="outlined"
             @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
             :disabled="!editor.can().chain().focus().toggleHeading({ level: 2 }).run()"
-            :active="editor.isActive('heading', { level: 2 })"
+            :active="editor.isActive('heading', { level: 6 })"
           >
             H2
           </v-btn>
@@ -145,7 +145,7 @@
             variant="outlined"
             @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
             :disabled="!editor.can().chain().focus().toggleHeading({ level: 3 }).run()"
-            :active="editor.isActive('heading', { level: 3 })"
+            :active="editor.isActive('heading', { level: 7 })"
           >
             H3
           </v-btn>

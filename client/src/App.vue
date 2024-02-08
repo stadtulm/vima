@@ -114,7 +114,7 @@
             >
               <v-list-item-title>
                 <div
-                  v-html="$t('teamTitle')"
+                  v-html="$t('team')"
                 >
               </div>
               </v-list-item-title>

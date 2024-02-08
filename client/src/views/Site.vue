@@ -6,9 +6,105 @@
     <v-card-text>
       <v-row>
         <v-col
-          class="word-wrap text-h5 font-weight-bold text-customGrey text-uppercase"
+          class="word-wrap text-h4 font-weight-bold text-customGrey text-uppercase"
         >
           {{$t(site.type === 'communicationrules' ? 'communicationRules' : site.type)}}
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          class="text-h6 text-customGrey"
+        >
+          {{$t('howToSwitchLanguage')}}
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          cols="12"
+          sm="6"
+          md="3"
+        >
+          <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_DE.pdf" target="_blank">
+            <v-icon
+              class="mr-2 mb-1"
+            >
+              fas fa-file-pdf
+            </v-icon>
+            DE
+          </a>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+          md="3"
+        >
+          <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_EN.pdf" target="_blank">
+            <v-icon
+              class="mr-2 mb-1"
+            >
+              fas fa-file-pdf
+            </v-icon>
+            EN
+          </a>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+          md="3"
+        >
+          <a href="/downloads/ViMA-Danube_How to translate_Tekste_UKR.pdf" target="_blank">
+            <v-icon
+              class="mr-2 mb-1"
+            >
+              fas fa-file-pdf
+            </v-icon>
+            UKR
+          </a>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+          md="3"
+        >
+          <a href="/downloads/ViMA-Danube_Anleitung Übersetzungen_RO.pdf" target="_blank">
+            <v-icon
+              class="mr-2 mb-1"
+            >
+              fas fa-file-pdf
+            </v-icon>
+            RO
+          </a>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+          md="3"
+        >
+          <a href="/downloads/ViMA-Danube_Translation Manual_BG.pdf" target="_blank">
+            <v-icon
+              class="mr-2 mb-1"
+            >
+              fas fa-file-pdf
+            </v-icon>
+            RO
+          </a>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          class="text-h6 text-customGrey"
+        >
+          {{$t('manualTitle')}}
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          class="text-customGrey"
+        >
+          <div
+            v-html="$t('manualBody')"
+          >
+          </div>
         </v-col>
       </v-row>
       <v-row>
@@ -184,7 +280,8 @@ export default {
           'vima',
           'vives',
           'communicationrules',
-          'team'
+          'team',
+          'faq'
         ].includes(this.$route.name.toLowerCase())
       ) {
         await this.loadSite()
