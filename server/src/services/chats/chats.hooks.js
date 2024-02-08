@@ -10,7 +10,13 @@ module.exports = {
       // Authenticate
       commonHooks.iff(
         commonHooks.isProvider('external'),
-        authenticate('jwt')
+        authenticate('jwt'),
+        // Populate
+        (context) => {
+          context.params.query.$populate = [
+            'latestChatMessage'
+          ]
+        }
       )
     ],
     find: [],
@@ -83,6 +89,15 @@ module.exports = {
 
   after: {
     all: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.alterItems(rec => {
+          if (rec.latestChatMessage?.text && Array.isArray(rec.latestChatMessage.text)) {
+            rec.latestChatMessage.text = rec.latestChatMessage.text.find(t => t.type === 'default')
+          }
+          return rec
+        })
+      ),
       // Prepare user ids for sending results to correct channels
       async (context) => {
         const tmpUsers = await context.app.service('status-containers').find(

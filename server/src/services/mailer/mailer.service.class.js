@@ -19,9 +19,12 @@ class Service {
 
   async create (body, params, cb) {
     debug('create', body, params)
+    /*
     return await this.transporter.sendMail({
       ...body
     })
+    */
+    console.log(body)
   }
 }
 

@@ -5,6 +5,13 @@ import app from '@/main'
 const appMode = import.meta.env.VITE_MODE
 const serverDomain = import.meta.env.VITE_SERVER_DOMAIN
 
+function addQueryToLocalStorage (path, query) {
+  if (!localStorage.getItem('filters')) localStorage.setItem('filters', '{}')
+  const currentFilters = JSON.parse(localStorage.getItem('filters'))
+  currentFilters[path] = query
+  localStorage.setItem('filters', JSON.stringify(currentFilters))
+}
+
 const state = {
   hasMatomo: false,
   isDisconnected: true,
@@ -267,38 +274,46 @@ const state = {
     groups: 'interestGroups'
   },
   async adaptQuery () {
+    let queryToApply = this.$route.query
+    if (
+      Object.keys(this.$route.query)?.length === 0 &&
+      localStorage.getItem('filters') &&
+      JSON.parse(localStorage.getItem('filters'))[this.$route.path]
+    ) {
+      queryToApply = JSON.parse(localStorage.getItem('filters'))[this.$route.path]
+    }
     // Process existing query
     const tmpQueryObject = {}
-    if (this.$route.query.r) {
-      tmpQueryObject.role = this.$route.query.r
+    if (queryToApply.r) {
+      tmpQueryObject.role = queryToApply.r
     } else {
       tmpQueryObject.role = this.queryObject.role
     }
-    if (this.$route.query.q) {
-      tmpQueryObject.query = this.$route.query.q
+    if (queryToApply.q) {
+      tmpQueryObject.query = queryToApply.q
     } else {
       tmpQueryObject.query = this.queryObject.query
     }
-    if (this.$route.query.l) {
-      tmpQueryObject.location = this.$route.query.l
+    if (queryToApply.l) {
+      tmpQueryObject.location = queryToApply.l
     } else {
       tmpQueryObject.location = this.queryObject.location
     }
-    if (this.$route.query.i) {
-      tmpQueryObject.itemsPerPage = parseInt(this.$route.query.i)
+    if (queryToApply.i) {
+      tmpQueryObject.itemsPerPage = parseInt(queryToApply.i)
     } else {
       tmpQueryObject.itemsPerPage = this.queryObject.itemsPerPage
     }
-    if (this.$route.query.p) {
-      tmpQueryObject.page = parseInt(this.$route.query.p)
+    if (queryToApply.p) {
+      tmpQueryObject.page = parseInt(queryToApply.p)
     } else {
       tmpQueryObject.page = this.queryObject.page
     }
-    if (this.$route.query.s) {
+    if (queryToApply.s) {
       const tmpSortObject = {}
-      tmpSortObject.key = this.$route.query.s
-      if (this.$route.query.o) {
-        tmpSortObject.order = this.$route.query.o
+      tmpSortObject.key = queryToApply.s
+      if (queryToApply.o) {
+        tmpSortObject.order = queryToApply.o
       } else {
         tmpSortObject.order = this.queryObject.sortBy.order
       }
@@ -306,18 +321,18 @@ const state = {
     } else {
       tmpQueryObject.sortBy = this.queryObject.sortBy
     }
-    if (this.$route.query.c) {
-      tmpQueryObject.categories = this.$route.query.c.split(',')
+    if (queryToApply.c) {
+      tmpQueryObject.categories = queryToApply.c.split(',')
     } else {
       tmpQueryObject.categories = this.queryObject.categories
     }
-    if (this.$route.query.t) {
-      tmpQueryObject.tags = this.$route.query.t.split(',')
+    if (queryToApply.t) {
+      tmpQueryObject.tags = queryToApply.t.split(',')
     } else {
       tmpQueryObject.tags = this.queryObject.tags
     }
-    if (this.$route.query.y) {
-      tmpQueryObject.type = this.$route.query.y
+    if (queryToApply.y) {
+      tmpQueryObject.type = queryToApply.y
     } else {
       tmpQueryObject.type = this.queryObject.type
     }
@@ -327,212 +342,235 @@ const state = {
   },
   updateQueryType (data) {
     if (this.$route.query.y !== data) {
+      const query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: data,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: this.queryObject.sortBy[0].key,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace(
         {
-          query: {
-            c: this.queryObject.categories?.join(','),
-            t: this.queryObject.tags?.join(','),
-            y: data,
-            r: this.queryObject.role,
-            q: this.queryObject.query,
-            l: this.queryObject.location,
-            p: this.queryObject.page,
-            i: this.queryObject.itemsPerPage,
-            s: this.queryObject.sortBy[0].key,
-            o: this.queryObject.sortBy[0].order
-          }
+          query
         }
       )
+      addQueryToLocalStorage(this.$route.path, query)
     }
   },
   updateQueryTags (data) {
     if (this.$route.query.t !== data) {
+      const query = {
+        c: this.queryObject.categories?.join(','),
+        t: data,
+        y: this.queryObject.type,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: this.queryObject.sortBy[0].key,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace(
         {
-          query: {
-            c: this.queryObject.categories?.join(','),
-            t: data,
-            y: this.queryObject.type,
-            r: this.queryObject.role,
-            q: this.queryObject.query,
-            l: this.queryObject.location,
-            p: this.queryObject.page,
-            i: this.queryObject.itemsPerPage,
-            s: this.queryObject.sortBy[0].key,
-            o: this.queryObject.sortBy[0].order
-          }
+          query
         }
       )
+      addQueryToLocalStorage(this.$route.path, query)
     }
   },
   updateQueryCategories (data) {
     if (this.$route.query.c !== data) {
+      const query = {
+        c: data,
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: this.queryObject.sortBy[0].key,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace(
         {
-          query: {
-            c: data,
-            t: this.queryObject.tags?.join(','),
-            y: this.queryObject.type,
-            r: this.queryObject.role,
-            q: this.queryObject.query,
-            l: this.queryObject.location,
-            p: this.queryObject.page,
-            i: this.queryObject.itemsPerPage,
-            s: this.queryObject.sortBy[0].key,
-            o: this.queryObject.sortBy[0].order
-          }
+          query
         }
       )
+      addQueryToLocalStorage(this.$route.path, query)
     }
   },
   updateQueryRole (data) {
     if (this.$route.query.r !== data) {
+      const query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        r: data,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: this.queryObject.sortBy[0].key,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace(
         {
-          query: {
-            c: this.queryObject.categories?.join(','),
-            t: this.queryObject.tags?.join(','),
-            y: this.queryObject.type,
-            r: data,
-            q: this.queryObject.query,
-            l: this.queryObject.location,
-            p: this.queryObject.page,
-            i: this.queryObject.itemsPerPage,
-            s: this.queryObject.sortBy[0].key,
-            o: this.queryObject.sortBy[0].order
-          }
+          query
         }
       )
+      addQueryToLocalStorage(this.$route.path, query)
     }
   },
   updateQueryQuery (data) {
     if (this.$route.query.q !== data) {
+      const query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        r: this.queryObject.role,
+        q: data,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: this.queryObject.sortBy[0].key,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace(
         {
-          query: {
-            c: this.queryObject.categories?.join(','),
-            t: this.queryObject.tags?.join(','),
-            y: this.queryObject.type,
-            r: this.queryObject.role,
-            q: data,
-            l: this.queryObject.location,
-            p: this.queryObject.page,
-            i: this.queryObject.itemsPerPage,
-            s: this.queryObject.sortBy[0].key,
-            o: this.queryObject.sortBy[0].order
-          }
+          query
         }
       )
+      addQueryToLocalStorage(this.$route.path, query)
     }
   },
   updateQueryLocation (data) {
     if (this.$route.query.l !== data) {
+      const query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: data,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: this.queryObject.sortBy[0].key,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace(
         {
-          query: {
-            c: this.queryObject.categories?.join(','),
-            t: this.queryObject.tags?.join(','),
-            y: this.queryObject.type,
-            r: this.queryObject.role,
-            q: this.queryObject.query,
-            l: data,
-            p: this.queryObject.page,
-            i: this.queryObject.itemsPerPage,
-            s: this.queryObject.sortBy[0].key,
-            o: this.queryObject.sortBy[0].order
-          }
+          query
         }
       )
+      addQueryToLocalStorage(this.$route.path, query)
     }
   },
   updateQueryPage (data) {
     if (parseInt(this.$route.query.p) !== data) {
+      const query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: this.queryObject.sortBy[0].key,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace(
         {
-          query: {
-            c: this.queryObject.categories?.join(','),
-            t: this.queryObject.tags?.join(','),
-            y: this.queryObject.type,
-            r: this.queryObject.role,
-            q: this.queryObject.query,
-            l: this.queryObject.location,
-            p: this.queryObject.page,
-            i: this.queryObject.itemsPerPage,
-            s: this.queryObject.sortBy[0].key,
-            o: this.queryObject.sortBy[0].order
-          }
+          query
         }
       )
+      addQueryToLocalStorage(this.$route.path, query)
     }
   },
   updateQueryItemsPerPage (data) {
     if (parseInt(this.$route.query.i) !== data) {
+      const query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: data,
+        s: this.queryObject.sortBy[0].key,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace(
         {
-          query: {
-            c: this.queryObject.categories?.join(','),
-            t: this.queryObject.tags?.join(','),
-            y: this.queryObject.type,
-            r: this.queryObject.role,
-            q: this.queryObject.query,
-            l: this.queryObject.location,
-            p: this.queryObject.page,
-            i: data,
-            s: this.queryObject.sortBy[0].key,
-            o: this.queryObject.sortBy[0].order
-          }
+          query
         }
       )
+      addQueryToLocalStorage(this.$route.path, query)
     }
   },
   updateQuerySortBy (data) {
+    let query
     if (data && this.$route.query.s !== data) {
+      query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: data,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace({
-        query: {
-          c: this.queryObject.categories?.join(','),
-          t: this.queryObject.tags?.join(','),
-          y: this.queryObject.type,
-          r: this.queryObject.role,
-          q: this.queryObject.query,
-          l: this.queryObject.location,
-          p: this.queryObject.page,
-          i: this.queryObject.itemsPerPage,
-          s: data,
-          o: this.queryObject.sortBy[0].order
-        }
+        query
       })
+      addQueryToLocalStorage(this.$route.path, query)
     } else if (!data) {
+      query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        o: this.queryObject.sortBy[0].order
+      }
       this.$router.replace({
-        query: {
-          c: this.queryObject.categories?.join(','),
-          t: this.queryObject.tags?.join(','),
-          y: this.queryObject.type,
-          r: this.queryObject.role,
-          q: this.queryObject.query,
-          l: this.queryObject.location,
-          p: this.queryObject.page,
-          i: this.queryObject.itemsPerPage,
-          o: this.queryObject.sortBy[0].order
-        }
+        query
       })
+      addQueryToLocalStorage(this.$route.path, query)
     }
   },
   updateQuerySortOrder (data) {
     if (data && this.$route.query.d !== data) {
+      const query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: this.queryObject.sortBy[0].key,
+        o: data
+      }
       this.$router.replace({
-        query: {
-          c: this.queryObject.categories?.join(','),
-          t: this.queryObject.tags?.join(','),
-          y: this.queryObject.type,
-          r: this.queryObject.role,
-          q: this.queryObject.query,
-          l: this.queryObject.location,
-          p: this.queryObject.page,
-          i: this.queryObject.itemsPerPage,
-          s: this.queryObject.sortBy[0].key,
-          o: data
-        }
+        query
       })
+      addQueryToLocalStorage(this.$route.path, query)
     }
   }
 }

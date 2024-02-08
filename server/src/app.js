@@ -140,6 +140,26 @@ Migration
 
 */
 
+// Add latestMessageUpdate to chats
+/*
+app.service('chats').find({
+  paginate: false,
+  query: {
+    $populate: [
+      'latestChatMessage'
+    ]
+  }
+}).then(async (chats) => {
+  for (const chat of chats) {
+    if (!chat.latestMessageUpdate && chat.latestChatMessage) {
+      await app.service('chats').patch(chat._id, {
+        latestMessageUpdate: chat.latestChatMessage.createdAt
+      })
+    }
+  }
+}).catch(e => console.log(e))
+*/
+
 // Remove replies from chat messages
 /*
 app.service('chat-messages').find({ paginate: false, query: { _id: '60b8e13007805b546ce240ee' } }).then(async messages => {

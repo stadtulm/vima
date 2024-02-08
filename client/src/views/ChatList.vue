@@ -58,7 +58,7 @@
             </div>
           </template>
           <template
-            v-slot:[`item.userName`]="{ item }"
+            v-slot:[`item.user.userName`]="{ item }"
           >
             <v-list-item
               class="pa-0"
@@ -81,6 +81,24 @@
                 </v-list-item-subtitle>
               </template>
             </v-list-item>
+          </template>
+          <template
+            v-slot:[`item.latestMessageUpdate`]="{ item }"
+          >
+            <v-list-item
+              class="pt-3 px-0"
+              v-if="item.latestChatMessage || item.latestMessageUpdate"
+            >
+              <v-list-item-subtitle
+                class="font-weight-bold"
+              >
+                {{$moment((item.latestMessageUpdate || item.latestChatMessage?.createdAt)).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}:
+              </v-list-item-subtitle>
+              <span v-html="item.latestChatMessage?.text?.value"></span>
+            </v-list-item>
+            <template v-else>
+              -
+            </template>
           </template>
           <template
             v-slot:[`item.status`]="{ item }"
@@ -333,11 +351,12 @@ export default {
     }),
     headers () {
       return [
-        { title: '', value: 'pic', minWidth: 50, sortable: false },
-        { title: this.$t('userName'), value: 'userName' },
-        { title: this.$t('block') + ' / ' + this.$t('unblock'), value: 'status' },
-        // { title: this.$t('deleteButton'), value: 'delete', sortable: false, align: 'center' },
-        { title: this.$t('goToChat'), value: 'goToChat', sortable: false, align: 'center' }
+        { title: '', key: 'pic', minWidth: 50, sortable: false },
+        { title: this.$t('userName'), key: 'user.userName', sortable: false },
+        { title: this.$t('latestPost'), key: 'latestMessageUpdate' },
+        { title: this.$t('block') + ' / ' + this.$t('unblock'), key: 'status' },
+        // { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
+        { title: this.$t('goToChat'), key: 'goToChat', sortable: false, align: 'center' }
       ]
     },
     computedChats () {
@@ -348,6 +367,7 @@ export default {
       }
     },
     chatsParams () {
+      console.log(this.queryObject.sortBy[0].key, this.computedSortOrder)
       const query = {
         _id: { $in: this.statusContainers.filter(obj => obj.user === this.user._id && obj.type === 'chats').map(obj => obj.reference) },
         $limit: this.computedLimit,

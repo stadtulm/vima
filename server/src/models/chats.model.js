@@ -8,6 +8,7 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const ObjectId = Schema.ObjectId
   const schema = new Schema({
+    latestMessageUpdate: { type: Date },
     isBlocked: {
       type: ObjectId,
       ref: 'users'
@@ -15,6 +16,16 @@ module.exports = function (app) {
   }, {
     timestamps: true,
     collation: { locale: 'en', strength: 1 }
+  })
+
+  schema.virtual('latestChatMessage', {
+    ref: 'chatMessages', // Collection
+    localField: '_id', // Here
+    foreignField: 'chat', // There
+    justOne: true,
+    options: {
+      sort: { createdAt: -1 }
+    }
   })
 
   // This is necessary to avoid model compilation errors in watch mode

@@ -160,6 +160,12 @@ module.exports = {
     find: [],
     get: [],
     create: [
+      // Update chat
+      async (context) => {
+        console.log(context.result.chat, context.result.createdAt)
+        const tmp = await context.app.service('chats').patch(context.result.chat, { latestMessageUpdate: context.result.createdAt })
+        console.log(tmp)
+      },
       // Add unread flag to status containers of other users
       async (context) => {
         const userStatusContainers = await context.app.service('status-containers').patch(

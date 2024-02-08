@@ -82,7 +82,7 @@
                     {{getUser(message.author).userName}}
                   </v-col>
                   <v-col
-                    class="pt-0 caption"
+                    class="pt-0 text-subtitle-2 text-customGrey"
                   >
                   {{$moment(message.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.editedAt ? '(' + $t('editedAt') + ' ' + $moment(message.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
                   </v-col>

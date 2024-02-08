@@ -3,14 +3,14 @@
     <v-row>
       <v-col>
         <v-select
-          v-model="sortDesc"
+          v-model="rawSortBy"
           :label="$t('orderLabel')"
           variant="outlined"
           density="compact"
           hide-details
           :items="[
-            { title: $t('orderOldFirst'), value: 1 },
-            { title: $t('orderNewFirst'), value: -1 }
+            { title: $t('orderNewFirst'), value: { key: 'createdAt', order: 'asc' } },
+            { title: $t('orderOldFirst'), value: { key: 'createdAt', order: 'desc' } }
           ]"
         ></v-select>
       </v-col>
@@ -86,7 +86,7 @@
                   dense
                 >
                   <v-col
-                    :class="showRepliesObj[message._id] ? 'text-white' : 'text-grey'"
+                    :class="showRepliesObj[message._id] ? 'text-white' : 'text-black'"
                   >
                     <v-list-item
                       class="px-0"
@@ -118,7 +118,9 @@
                       >
                         {{getUser(message.author).userName}}
                       </v-list-item-title>
-                      <v-list-item-subtitle>
+                      <v-list-item-subtitle
+                        class="text-black"
+                      >
                         {{$moment(message.createdAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}} {{message.editedAt ? '(' + $t('editedAt') + ' ' + $moment(message.editedAt).format('DD.MM.YYYY, HH:mm') + ' ' + $t('oClock') + ')': ''}}
                       </v-list-item-subtitle>
                     </v-list-item>
@@ -434,6 +436,7 @@ export default {
   props: ['discussion'],
 
   data: () => ({
+    rawSortBy: undefined,
     discussionMessagesData: undefined,
     pics: [],
     itemToReport: undefined,
@@ -451,11 +454,18 @@ export default {
     page: 1,
     loading: true,
     total: 0,
-    itemsPerPage: 10
+    itemsPerPage: 10,
+    queryObject: {
+      page: 1,
+      itemsPerPage: 10,
+      sortBy: [{ key: 'createdAt', order: 'desc' }]
+    }
   }),
 
   async mounted () {
-    await this.loadDiscussionMessagesData()
+    await this.adaptQuery()
+    this.rawSortBy = this.queryObject.sortBy[0]
+    await this.loadDataTableEntities()
     if (this.init) {
       // Init listeners
       this.$nextTick(() => {
@@ -496,7 +506,7 @@ export default {
     ...mapActions('status-container-helper', {
       patchDiscussionMessageNotifications: 'patch'
     }),
-    async loadDiscussionMessagesData () {
+    async loadDataTableEntities () {
       this.isFindDiscussionMessagesPending = true
       this.discussionMessagesData = await this.findDiscussionMessages(
         {
@@ -505,7 +515,7 @@ export default {
             repliesTo: { $exists: false },
             $limit: this.itemsPerPage,
             $skip: (this.page - 1) * this.itemsPerPage < 0 ? 0 : (this.page - 1) * this.itemsPerPage,
-            $sort: { createdAt: this.sortDesc }
+            $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder },
           }
         }
       )
@@ -713,7 +723,10 @@ export default {
       's3',
       'rules',
       'relationItems',
-      'newTab'
+      'newTab',
+      'adaptQuery',
+      'updateQuerySortBy',
+      'updateQuerySortOrder'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -730,6 +743,13 @@ export default {
     ...mapGetters('discussion-messages', {
       allDiscussionMessages: 'list'
     }),
+    computedSortOrder () {
+      if (this.queryObject.sortBy[0].order === 'desc') {
+        return 1
+      } else {
+        return -1
+      }
+    },
     computedOwnStatusContainers () {
       return this.statusContainers.filter(obj => obj.reference === this.discussion._id && obj.user === this.user._id)
     },
@@ -768,11 +788,26 @@ export default {
     }
   },
   watch: {
-    async triggerNewMessage () {
-      await this.loadDiscussionMessagesData()
+    rawSortBy () {
+      this.queryObject.sortBy[0] = this.rawSortBy
     },
-    page () {
-      this.loadDiscussionMessagesData()
+    'queryObject.sortBy': {
+      deep: true,
+      async handler () {
+        this.updateQuerySortBy(this.queryObject.sortBy[0].key)
+        this.updateQuerySortOrder(this.queryObject.sortBy[0].order)
+        await this.loadDataTableEntities()
+      }
+    },
+    async triggerNewMessage () {
+      await this.loadDataTableEntities()
+      this.hasNewMessages = false
+    },
+    async sortDesc () {
+      await this.loadDataTableEntities()
+    },
+    async page () {
+      await this.loadDataTableEntities()
       if (this.page === Math.ceil(this.total / this.itemsPerPage)) {
         this.hasNewMessages = false
       }
