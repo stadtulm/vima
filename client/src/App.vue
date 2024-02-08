@@ -614,33 +614,6 @@
               <v-tooltip
                 left
                 color="customGrey"
-                v-if="computedUnreadDiscussionModerator > 0"
-              >
-                <template v-slot:activator="{ props }">
-                  <v-btn
-                    v-bind="props"
-                    variant="flat"
-                    color="customGrey"
-                    rounded="xl"
-                    size="small"
-                    class="mx-1"
-                  >
-                    <span
-                      class="mr-1"
-                    >
-                      {{computedUnreadDiscussionModerator}}
-                    </span>
-                    <v-icon>
-                      fas fa-users
-                    </v-icon>
-                  </v-btn>
-                </template>
-                {{$t('newModeratorRole')}}
-              </v-tooltip>
-
-              <v-tooltip
-                left
-                color="customGrey"
                 v-if="computedUnreadDiscussionMessages > 0"
               >
                 <template v-slot:activator="{ props }">
@@ -2310,7 +2283,6 @@ export default {
         this.computedUnreadDiscussionsToAccept > 0 ||
         this.computedUnreadDiscussionMessages > 0 ||
         this.computedUnreadMentions > 0 ||
-        this.computedUnreadDiscussionModerator > 0 ||
         this.computedUnreadGroupAccepts > 0 ||
         this.computedUnreadGroupsToAccept > 0 ||
         this.computedUnreadGroupModerator > 0 ||
@@ -2390,15 +2362,6 @@ export default {
           sum += container.length
         }
         return sum
-      } else {
-        return 0
-      }
-    },
-    // New discussion moderator role
-    computedUnreadDiscussionModerator () {
-      if (this.statusContainerTrigger && this.statusContainers && this.statusContainers.length > 0) {
-        return this.statusContainers
-          .filter(obj => obj.user === this.user._id && obj.type === 'discussions' && obj.customField === 'new' && obj.relation === 'moderator').length
       } else {
         return 0
       }

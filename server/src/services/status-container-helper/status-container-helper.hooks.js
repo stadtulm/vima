@@ -138,7 +138,9 @@ module.exports = {
         async (context) => {
           // Check if user is owner of status container
           if (
-            context.arguments[0] === 'pullUnreadById' || context.arguments[0] === 'pullUnreadByType'
+            context.arguments[0] === 'pullUnreadById' ||
+            context.arguments[0] === 'pullUnreadByType' ||
+            context.arguments[0] === 'setCustomField'
           ) {
             const statusContainer = await context.app.service('status-containers').get(context.data.containerId)
             if (statusContainer.user.toString() !== context.params.user?._id.toString()) {

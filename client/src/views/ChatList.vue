@@ -376,7 +376,6 @@ export default {
       }
     },
     chatsParams () {
-      console.log(this.queryObject.sortBy[0].key, this.computedSortOrder)
       const query = {
         _id: { $in: this.statusContainers.filter(obj => obj.user === this.user._id && obj.type === 'chats').map(obj => obj.reference) },
         $limit: this.computedLimit,

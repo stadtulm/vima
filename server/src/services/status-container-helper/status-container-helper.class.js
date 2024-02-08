@@ -193,6 +193,10 @@ exports.StatusContainerHelper = class StatusContainerHelper {
           }
         }
       )
+    } else if (id === 'setCustomField') {
+      await this.app.service('status-containers').patch(data.containerId, {
+        customField: data.customField
+      })
     } else {
       throw new Errors.NotImplemented()
     }

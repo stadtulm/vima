@@ -35,7 +35,7 @@
     <v-row>
       <v-col
         cols="12"
-        sm="6"
+        sm="4"
       >
         <v-text-field
           v-model="queryObject.query"
@@ -46,7 +46,7 @@
       </v-col>
       <v-col
         cols="12"
-        sm="6"
+        sm="4"
       >
         <v-select
           v-model="queryObject.type"
@@ -55,6 +55,17 @@
           hide-details
           :items="discussionTypes"
         ></v-select>
+      </v-col>
+      <v-col
+        cols="12"
+        sm="4"
+      >
+        <v-checkbox
+          :label="$t('bookmarksOnly')"
+          density="compact"
+          hide-details
+          v-model="queryObject.role"
+        ></v-checkbox>
       </v-col>
     </v-row>
     <v-row>
@@ -85,6 +96,32 @@
             >
               {{item.title.value}}
             </span>
+          </template>
+          <template
+            v-slot:[`item.bookmark`]="{ item }"
+          >
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    variant="text"
+                    :icon="statusContainers.find(obj =>
+                      obj.reference === item._id &&
+                      obj.user === user._id &&
+                      obj.type === 'discussions' &&
+                      obj.customField === 'bookmark') ? 'fas fa-bookmark' : 'far fa-bookmark'
+                    "
+                    :color="computedColor"
+                    :loading="loaders[item._id + 'bookmark'] === true"
+                    @click="changeDiscussionBookmark(item._id)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('bookmark')}}
+            </v-tooltip>
           </template>
           <template
             v-slot:[`item.relation`]="{ item }"
@@ -462,6 +499,28 @@ export default {
         }
       }
     },
+    async changeDiscussionBookmark (discussionId) {
+      this.loaders[discussionId + 'bookmark'] = true
+      const statusContainer = this.statusContainers.find(obj =>
+        obj.reference === discussionId &&
+        obj.user === this.user._id &&
+        obj.type === 'discussions'
+      )
+      try {
+        await this.patchDiscussionNotifications([
+          'setCustomField',
+          {
+            containerId: statusContainer._id,
+            customField: statusContainer.customField === 'bookmark' ? undefined : 'bookmark'
+          }
+        ])
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.loaders[discussionId + 'bookmark'] = undefined
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.loaders[discussionId + 'bookmark'] = undefined
+      }
+    },
     async changeDiscussionProperty (discussionId, property, value) {
       this.loaders[discussionId + property] = true
       const patchObj = {}
@@ -537,7 +596,8 @@ export default {
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
       'updateQuerySortOrder',
-      'updateQueryType'
+      'updateQueryType',
+      'updateQueryRole'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -564,6 +624,7 @@ export default {
     headers () {
       return [
         { title: this.$t('title'), key: 'title.value' },
+        { title: this.$t('bookmark'), key: 'bookmark', sortable: false },
         { title: this.$t('role'), key: 'relation', minWidth: 200 },
         { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('group'), key: 'group', sortable: false },
@@ -611,13 +672,22 @@ export default {
     },
     discussionsParams () {
       const query = {
-        _id: {
-          $in: this.statusContainers.filter(
-            obj =>
-              obj.user === this.user._id &&
+        _id: this.queryObject.role
+          ? {
+              $in: this.statusContainers.filter(
+                obj =>
+                  obj.user === this.user._id &&
+              obj.type === 'discussions' &&
+              obj.customField === 'bookmark'
+              ).map(obj => obj.reference)
+            }
+          : {
+              $in: this.statusContainers.filter(
+                obj =>
+                  obj.user === this.user._id &&
               obj.type === 'discussions'
-          ).map(obj => obj.reference)
-        },
+              ).map(obj => obj.reference)
+            },
         $limit: this.computedLimit,
         $skip: this.computedSkip,
         $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
@@ -685,6 +755,10 @@ export default {
     },
     async 'queryObject.type' () {
       this.updateQueryType(this.queryObject.type)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.role' () {
+      this.updateQueryRole(this.queryObject.role)
       await this.loadDataTableEntities()
     },
     computedDiscussionTypes () {

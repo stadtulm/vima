@@ -162,9 +162,7 @@ module.exports = {
     create: [
       // Update chat
       async (context) => {
-        console.log(context.result.chat, context.result.createdAt)
-        const tmp = await context.app.service('chats').patch(context.result.chat, { latestMessageUpdate: context.result.createdAt })
-        console.log(tmp)
+        await context.app.service('chats').patch(context.result.chat, { latestMessageUpdate: context.result.createdAt })
       },
       // Add unread flag to status containers of other users
       async (context) => {
