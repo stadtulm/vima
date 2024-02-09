@@ -101,7 +101,6 @@
                           :maxFiles="1"
                           bgColor="customGreyUltraLight"
                           :scaleToFit="[400, 400]"
-                          :resizeQuality="75"
                         ></FileUpload>
                       </v-col>
                     </v-row>

@@ -25,6 +25,15 @@ const state = {
     rs: 'sr',
     ua: 'uk'
   },
+  picTypes: [
+    'jpg',
+    'jpeg',
+    'png',
+    'tiff',
+    'gif',
+    'bmp',
+    'svg'
+  ],
   selectCategory (categoryId) {
     this.queryObject.tags = []
     this.queryObject.categories = [categoryId]
@@ -572,12 +581,37 @@ const state = {
       })
       addQueryToLocalStorage(this.$route.path, query)
     }
+  },
+  async prepareGetUpload (id) {
+    this.loaders[id] = true
+    try {
+      const upload = await this.getUpload(id)
+      const a = document.createElement('a')
+      a.href = upload.uri
+      a.download = upload.id || 'download'
+      a.target = '_blank'
+      const clickHandler = () => {
+        setTimeout(() => {
+          URL.revokeObjectURL(upload.uri)
+          a.removeEventListener('click', clickHandler)
+          this.loaders[id] = undefined
+        }, 150)
+      }
+      a.addEventListener('click', clickHandler, false)
+      a.click()
+    } catch (e) {
+      this.setSnackbar({ text: this.$t('requestFailed'), color: 'error' })
+      this.loaders[id] = undefined
+    }
   }
 }
 
 const getters = {
   selectTag: state => {
     return state.selectTag
+  },
+  picTypes: state => {
+    return state.picTypes
   },
   selectCategory: state => {
     return state.selectCategory
@@ -713,6 +747,9 @@ const getters = {
   },
   updateDataTableParams: state => {
     return state.updateDataTableParams
+  },
+  prepareGetUpload: state => {
+    return state.prepareGetUpload
   }
 }
 

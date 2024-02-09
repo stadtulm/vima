@@ -68,8 +68,8 @@
             v-else
           >
             <v-col
-              v-for="(message, i) in computedDiscussionMessages"
-              :key="i"
+              v-for="message in computedDiscussionMessages"
+              :key="message.updatedAt"
               cols="12"
               class="pa-0 my-8 elevation-4"
               :class="isOwnMessage(message) ? '': 'message'"
@@ -227,6 +227,7 @@
                         </a>
                         <Lightbox
                           v-else
+                          :key="message.updatedAt"
                           :pic="pic"
                         ></Lightbox>
                       </v-col>
@@ -515,7 +516,7 @@ export default {
             repliesTo: { $exists: false },
             $limit: this.itemsPerPage,
             $skip: (this.page - 1) * this.itemsPerPage < 0 ? 0 : (this.page - 1) * this.itemsPerPage,
-            $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder },
+            $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
           }
         }
       )
@@ -562,7 +563,7 @@ export default {
         return '#B0BEC5'
       } else {
         if (this.isOwnMessage(message)) {
-          if (this.isEditMessage === message._id) {
+          if (this.isEditMessage?._id === message._id) {
             return '#ffeac2'
           } else {
             return '#f0f0f0'

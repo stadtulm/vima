@@ -28,10 +28,18 @@ module.exports = {
           const uri = dauria.getBase64DataURI(file.buffer, file.mimetype)
           context.data.uri = uri
         }
-        if (context.params.file && context.params.file.originalname) {
-          context.data.id = Date.now().toString() + '_' + context.params.file.originalname.replace(/\s/g, '_')
+        if (context.params.file?.originalname) {
+          if (context.params.file?.isEdit) {
+            context.data.id = context.params.file.originalname
+          } else {
+            context.data.id = Date.now().toString() + '_' + context.params.file.originalname.replace(/\s/g, '_')
+          }
         } else if (context.data.originalname) {
-          context.data.id = Date.now().toString() + '_' + context.data.originalname.replace(/\s/g, '_')
+          if (context.data.isEdit) {
+            context.data.id = context.data.originalname
+          } else {
+            context.data.id = Date.now().toString() + '_' + context.data.originalname.replace(/\s/g, '_')
+          }
         }
       },
       (context) => {

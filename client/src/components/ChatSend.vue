@@ -58,7 +58,7 @@
                   :maxFiles="10"
                   bgColor="transparent"
                   :scaleToFit="[1080, 1080]"
-                  :resizeQuality="50"
+                  :reset="uploadResetTrigger"
                 >
                 </FileUpload>
               </v-col>
@@ -117,6 +117,7 @@ export default {
   },
 
   data: () => ({
+    uploadResetTrigger: 0,
     pics: [],
     isValid: true,
     isSending: false,
@@ -138,6 +139,7 @@ export default {
       this.$emit('update:resetInput')
       this.messageText = undefined
       this.pics = []
+      this.uploadResetTrigger = Date.now()
     },
     async patchFileRemove (file) {
       this.isLoading = true
@@ -201,6 +203,7 @@ export default {
           this.setSnackbar({ text: this.$t('snackbarSendSuccess'), color: 'success' })
           this.messageText = undefined
           this.pics = []
+          this.resetInput()
           this.$emit('update:resetInput')
           this.$nextTick(() => {
             this.$nextTick(() => {
@@ -231,6 +234,8 @@ export default {
           this.setSnackbar({ text: this.$t('snackbarEditSuccess'), color: 'success' })
           this.messageText = undefined
           this.pics = []
+          this.$emit('update:chatMessage', this.isEditMessage._id)
+          this.resetInput()
           this.$emit('update:resetInput')
         } catch (e) {
           this.setSnackbar({ text: this.$t('snackbarEditError'), color: 'error' })

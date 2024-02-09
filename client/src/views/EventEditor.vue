@@ -268,7 +268,6 @@
                           :maxFiles="10"
                           bgColor="white"
                           :scaleToFit="[1080, 1080]"
-                          :resizeQuality="50"
                         ></FileUpload>
                      </v-col>
                     </v-row>

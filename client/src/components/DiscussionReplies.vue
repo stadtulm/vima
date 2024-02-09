@@ -33,7 +33,7 @@
           class="px-4 my-2 foreign-sheet elevation-5"
           :color="isOwnMessage(message) ?
             (
-              isEditMessage && isEditMessage._id === message._id ?
+              isEditMessage?._id === message._id ?
                 '#ffeac2' :
                 replyColors[level - 1]
             ) :
@@ -206,6 +206,7 @@
                             </a>
                             <Lightbox
                               v-else
+                              :key="message.updatedAt"
                               :pic="pic"
                             ></Lightbox>
                           </v-col>
@@ -377,7 +378,8 @@ export default {
   emits: [
     'update:checkVisibleMessages',
     'update:report',
-    'update:translateText'
+    'update:translateText',
+    'update:resetInput'
   ],
 
   components: {

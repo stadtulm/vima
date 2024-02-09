@@ -399,6 +399,7 @@
               offset-y="30"
             >
               <v-img
+                :key="user.updatedAt"
                 :src="user && user.pic ? s3 + user.pic.url : ''"
                 position="center"
                 width="290"

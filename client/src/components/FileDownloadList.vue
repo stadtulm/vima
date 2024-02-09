@@ -61,34 +61,13 @@ export default {
     }),
     ...mapActions('uploads', {
       getUpload: 'get'
-    }),
-    async prepareGetUpload (id) {
-      this.loaders[id] = true
-      try {
-        const upload = await this.getUpload(id)
-        const a = document.createElement('a')
-        a.href = upload.uri
-        a.download = upload.id || 'download'
-        a.target = '_blank'
-        const clickHandler = () => {
-          setTimeout(() => {
-            URL.revokeObjectURL(upload.uri)
-            a.removeEventListener('click', clickHandler)
-            this.loaders[id] = undefined
-          }, 150)
-        }
-        a.addEventListener('click', clickHandler, false)
-        a.click()
-      } catch (e) {
-        this.setSnackbar({ text: this.$t('requestFailed'), color: 'error' })
-        this.loaders[id] = undefined
-      }
-    }
+    })
   },
 
   computed: {
     ...mapGetters('auth', [
-      'user'
+      'user',
+      'prepareGetUpload'
     ])
   }
 }

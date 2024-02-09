@@ -70,8 +70,8 @@
               {{$t('noOlderAnswers')}}
             </v-col>
             <v-col
-              v-for="(message, i) in computedMessages"
-              :key="i"
+              v-for="message in computedMessages"
+              :key="message.updatedAt"
               cols="12"
               class="pa-0 my-4"
               :class="isOwnMessage(message) ? 'text-right': 'message text-left'"
@@ -392,20 +392,20 @@
                       :class="isOwnMessage(message) ? 'justify-end': 'justify-start'"
                     >
                       <v-col
-                        cols=2
+                        cols="2"
                         v-for="(pic, i) in message.pics"
                         :key="i"
                       >
                         <a
-                          v-if="!['jpg', 'jpeg', 'png', 'tiff', 'gif', 'bmp', 'svg'].includes(pic.url.split('.')[pic.url.split('.').length - 1].toLowerCase())"
+                          v-if="!picTypes.includes(pic.url?.split('.')[pic.url?.split('.').length - 1].toLowerCase())"
                           :href="s3 + pic.url"
                           target="_blank"
                           style="text-decoration: none !important;"
                         >
                           <v-sheet
-                            class="pa-1 text-center align-center d-flex pointer fill-height"
+                            class="pa-3 text-center align-center d-flex pointer fill-height"
                           >
-                            <v-row>
+                            <v-row dense>
                               <v-col
                                 cols="12"
                                 class="pb-0"
@@ -416,8 +416,20 @@
                               </v-col>
                               <v-col
                                 cols="12"
+                                v-if="pic.url"
                               >
                                 {{/_(.+)/.exec(pic.url)[1]}}
+                              </v-col>
+                              <v-col>
+                                <v-btn
+                                  size="x-small"
+                                  class="ml-1 mb-1"
+                                  icon="fas fa-download"
+                                  color="customGrey"
+                                  :loading="loaders[pic.url] === true"
+                                  @click.prevent="prepareGetUpload(pic.url)"
+                                >
+                                </v-btn>
                               </v-col>
                             </v-row>
                           </v-sheet>
@@ -493,6 +505,7 @@ export default {
     ChatSend
   },
   data: () => ({
+    loaders: {},
     chatMessagesResponse: undefined,
     otherStatusContainers: undefined,
     showViolationDialog: undefined,
@@ -590,6 +603,9 @@ export default {
     ...mapActions('status-container-helper', {
       findCommonChat: 'find',
       patchChatMessageNotifications: 'patch'
+    }),
+    ...mapActions('uploads', {
+      getUpload: 'get'
     }),
     async loadChatMessages () {
       this.isLoading = true
@@ -736,7 +752,9 @@ export default {
     ...mapGetters([
       's3',
       'rules',
-      'newTab'
+      'newTab',
+      'prepareGetUpload',
+      'picTypes'
     ]),
     ...mapGetters('auth', {
       user: 'user'
