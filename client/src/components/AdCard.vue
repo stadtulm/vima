@@ -154,7 +154,7 @@
                   class="text-body-1"
                 >
                   <span
-                    v-html="adProp ? truncatedDescription(newTab(computedText.value)) : $sanitize(newTab(computedText.value))"
+                    v-html="adProp ? $sanitize(truncatedDescription(newTab(computedText.value))) : $sanitize(newTab(computedText.value))"
                   ></span>
                   <TranslatableTextInfo
                     :canTranslate="true"
@@ -174,8 +174,8 @@
                   >
                     <span
                       v-html="adProp ?
-                        $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />'))) :
-                        truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
+                        $sanitize(truncatedDescription(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))) :
+                        $sanitize(newTab(computedText.value.replace(/(?:\r\n|\r|\n)/g, '<br />')))
                       "
                     ></span>
                     <TranslatableTextInfo
