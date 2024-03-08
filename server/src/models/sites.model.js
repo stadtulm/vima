@@ -23,7 +23,7 @@ module.exports = function (app) {
     ],
     type: {
       type: String,
-      enum: ['imprint', 'privacy', 'contact', 'vima', 'ileu', 'communicationrules', 'vives', 'team', 'faq'],
+      enum: ['imprint', 'privacy', 'contact', 'vima', 'ileu', 'communicationrules', 'team', 'faq'],
       unique: true
     }
   }, {

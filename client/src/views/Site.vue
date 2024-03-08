@@ -278,7 +278,6 @@ export default {
           'contact',
           'ileu',
           'vima',
-          'vives',
           'communicationrules',
           'team',
           'faq'

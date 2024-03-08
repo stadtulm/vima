@@ -1200,17 +1200,6 @@ const routes = [
     }
   },
   {
-    path: '/vives',
-    name: 'Vives',
-    component: Site,
-    meta: {
-      breadCrumbTextKey: 'aboutVives',
-      breadCrumbPredecessors: [
-        ['Participate']
-      ]
-    }
-  },
-  {
     path: '/team',
     name: 'Team',
     component: Site,

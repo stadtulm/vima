@@ -102,13 +102,6 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              :to="{ name: 'Vives' }"
-            >
-              <v-list-item-title>
-                {{$t('aboutVives')}}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item
               v-if="$settings.modules.team.isActive"
               :to="{ name: 'Team' }"
             >
