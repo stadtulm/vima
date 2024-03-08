@@ -30,7 +30,7 @@
             <v-row>
               <v-col>
                 <FileUpload
-                  v-if="!isLoading"
+                  :key="refreshLogoTrigger"
                   ref="headerLogoFileUpload"
                   v-model="headerLogo"
                   @update:fileRemove="patchFileRemove($event, 'headerLogo', false)"
@@ -622,6 +622,7 @@ export default {
   },
 
   data: () => ({
+    refreshLogoTrigger: 0,
     replyLevel: 2,
     headerColor: undefined,
     indicatorColor: undefined,
@@ -782,6 +783,7 @@ export default {
         await this.patchSettings([this.$settings._id, map, {}])
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.refreshLogoTrigger = Date.now()
         this.$router.go(-1)
       } catch (e) {
         this.isLoading = false

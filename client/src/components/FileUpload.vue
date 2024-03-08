@@ -124,7 +124,7 @@
               <template
                 v-if="(
                   (file.type && picTypes.map(t => 'image/' + t).includes(file.type.toLowerCase()))) ||
-                  (file.state === 'uploaded' && picTypes.includes(file.url?.split('.')[file.url?.split('.').length - 1].toLowerCase()))
+                  (file.state === 'uploaded' && file.url?.split('.')[file.url?.split('.').length - 1].toLowerCase() !== 'svg' && picTypes.includes(file.url?.split('.')[file.url?.split('.').length - 1].toLowerCase()))
                 "
               >
                 <v-card
