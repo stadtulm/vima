@@ -8,6 +8,8 @@ import ua from '@/locales/ua'
 import it from '@/locales/it'
 import fr from '@/locales/fr'
 import es from '@/locales/es'
+import hu from '@/locales/hu'
+import si from '@/locales/si'
 
 export default createI18n({
   locale: import.meta.env.VITE_I18N_LOCALE || 'en',
@@ -21,6 +23,8 @@ export default createI18n({
     ua,
     it,
     fr,
-    es
+    es,
+    hu,
+    si
   }
 })
