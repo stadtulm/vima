@@ -223,7 +223,7 @@
                     item-value="_id"
                     :label="$t('favoriteCategories') + ' ' + $t('optionalLabelExtension')"
                     :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
-                    :rules="[rules.minOneCategory, rules.maxThreeCategories]"
+                    :rules="[rules.maxThreeCategories]"
                   >
                   </v-select>
                 </v-col>
