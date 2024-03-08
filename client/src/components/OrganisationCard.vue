@@ -27,6 +27,8 @@
             :title="organisation.pic.credit ? '© ' + organisation.pic.credit : ''"
             contain
             style="background-color: #fff"
+            :class="organisationProp ? 'pointer' : ''"
+            @click="organisationProp ? $router.push({ name: 'Organisation', params: { organisation: organisation._id }}) : ''"
           ></v-img>
           </v-sheet>
           <!-- Title -->
@@ -36,6 +38,8 @@
             <v-col
               cols="12"
               class="text-h6 font-weight-bold"
+              :class="organisationProp ? 'pointer' : ''"
+              @click="organisationProp ? $router.push({ name: 'Organisation', params: { organisation: organisation._id }}) : ''"
             >
             {{organisation.name}}
             </v-col>

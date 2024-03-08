@@ -142,6 +142,7 @@
                             size="small"
                             v-bind="props"
                             :title="$t(relationItems.owner.textKey)"
+                            style="cursor:default"
                           >
                             <v-icon
                               color="customGrey"

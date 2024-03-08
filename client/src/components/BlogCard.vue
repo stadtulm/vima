@@ -61,6 +61,8 @@
                 :alt="$t('blogPic')"
                 :title="pic.credit ? '© ' + pic.credit : ''"
                 style="background-color: #fff"
+                :class="blogProp ? 'pointer' : ''"
+                @click="blogProp ? $router.push({ name: 'BlogEntry', params: { id: blog._id } }) : ''"
               ></v-img>
             </v-carousel-item>
           </v-carousel>
@@ -72,6 +74,8 @@
           </v-card-subtitle>
           <div
             class="mx-4 my-3 text-h6 font-weight-bold"
+            :class="blogProp ? 'pointer' : ''"
+            @click="blogProp ? $router.push({ name: 'BlogEntry', params: { id: blog._id } }) : ''"
           >
             {{blog.title.value}}
           </div>

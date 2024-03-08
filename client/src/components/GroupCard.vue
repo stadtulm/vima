@@ -26,6 +26,8 @@
               <!-- Title -->
               <div
                 class="ma-4 mb-0 text-h6 font-weight-bold"
+                :class="groupProp ? 'pointer': ''"
+                @click="groupProp ? $router.push({ name: 'Group', params: { group: computedGroup._id }}) : ''"
               >
                 <TranslatableText
                   ownField="title"
@@ -179,6 +181,7 @@
                           v-if="computedGroupStatus.value"
                           color="customGrey"
                           size="small"
+                          style="cursor:default"
                         >
                         </v-btn>
                       </template>
@@ -283,6 +286,8 @@
                     :cover="groupProp ? true : false"
                     :alt="$t('groupTitlePic')"
                     :title="pic.credit ? '© ' + pic.credit : ''"
+                    :class="groupProp ? 'pointer': ''"
+                    @click="groupProp ? $router.push({ name: 'Group', params: { group: computedGroup._id }}) : ''"
                   >
                     <v-icon
                       v-if="pic.url === 'nopic'"

@@ -35,6 +35,8 @@ const state = {
     'svg'
   ],
   selectCategory (categoryId) {
+    console.log(this)
+    console.log(this.queryObject)
     this.queryObject.tags = []
     this.queryObject.categories = [categoryId]
   },

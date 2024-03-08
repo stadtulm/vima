@@ -2,7 +2,6 @@
   <v-card
     color="customGreyUltraLight"
     v-if="ad"
-    :to="adProp ? { name: 'Ad', params: { id: ad._id }} : ''"
   >
     <v-card-text>
     <v-row>
@@ -18,6 +17,8 @@
             <!-- Title -->
             <div
               class="ma-4 mb-0 text-h6 font-weight-bold"
+              :class="adProp ? 'pointer' : ''"
+              @click="adProp ? $router.push({ name: 'Ad', params: { id: ad._id }}) : ''"
             >
               <TranslatableText
                 ownField="title"
@@ -124,6 +125,7 @@
                     v-bind="props"
                     v-else-if="computedAdStatus.value === 'owner' || computedAdStatus.value === 'applicant'"
                     :title="$t(computedAdStatus.textKey)"
+                    style="cursor:default"
                   >
                     <v-icon
                       color="customGrey"
@@ -233,6 +235,7 @@
           height="100%"
           max-height="200px"
           class="white"
+          @click="adProp ? $router.push({ name: 'Ad', params: { id: ad._id }}) : ''"
         >
           <template
             v-slot:prev="{ props }"
@@ -258,6 +261,7 @@
           >
             <v-container
               class="fill-height"
+              :class="adProp ? 'pointer' : ''"
               fluid
               justify="center"
               align="center"

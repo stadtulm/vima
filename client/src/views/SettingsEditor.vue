@@ -30,6 +30,7 @@
             <v-row>
               <v-col>
                 <FileUpload
+                  v-if="!isLoading"
                   ref="headerLogoFileUpload"
                   v-model="headerLogo"
                   @update:fileRemove="patchFileRemove($event, 'headerLogo', false)"

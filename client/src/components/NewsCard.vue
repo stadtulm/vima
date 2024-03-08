@@ -61,6 +61,8 @@
                 :alt="$t('newsPic')"
                 :title="pic.credit ? '© ' + pic.credit : ''"
                 style="background-color: #fff"
+                :class="newsProp ? 'pointer' : ''"
+                @click="newsProp ? $router.push({ name: 'NewsEntry', params: { id: newsEntry._id }}) : ''"
               ></v-img>
             </v-carousel-item>
           </v-carousel>
@@ -72,6 +74,8 @@
           </v-card-subtitle>
           <div
             class="ma-4 text-h6 font-weight-bold"
+            :class="newsProp ? 'pointer' : ''"
+            @click="newsProp ? $router.push({ name: 'NewsEntry', params: { id: newsEntry._id }}) : ''"
           >
             {{newsEntry.title.value}}
           </div>

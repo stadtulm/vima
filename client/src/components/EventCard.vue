@@ -61,12 +61,16 @@
                 :alt="$t('eventTitlePic')"
                 :title="pic.credit ? '© ' + pic.credit : ''"
                 style="background-color: #fff"
+                :class="eventProp ? 'pointer' : ''"
+                @click="eventProp ? $router.push({ name: 'Event', params: { event: event._id }}) : ''"
               ></v-img>
             </v-carousel-item>
           </v-carousel>
           <!-- Title -->
           <div
             class="ma-4 mb-4 mb-0 text-h6 font-weight-bold"
+            :class="eventProp ? 'pointer' : ''"
+            @click="eventProp ? $router.push({ name: 'Event', params: { event: event._id }}) : ''"
           >
             {{event.title.value}}
           </div>

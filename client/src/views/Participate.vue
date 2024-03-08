@@ -35,7 +35,6 @@
         <v-card
           height="100%"
           :color="module.bgColor"
-          :to="{ name: module.to, params: { type: module.type } }"
         >
           <v-container
             fluid
@@ -55,6 +54,8 @@
                   :alt="$t(module.type + 'SectionPic')"
                   :tour-step-container="i === 0 ? '3' : null"
                   :title="module.pic && module.pic.credit ? '© ' + module.pic.credit : ''"
+                  @click="$router.push({ name: module.to, params: { type: module.type } })"
+                  class="pointer"
                 ></v-img>
               </v-col>
               <v-col
@@ -65,6 +66,8 @@
                 >
                   <div
                     v-html="$t(module.type + 'Title')"
+                    class="pointer"
+                    @click="$router.push({ name: module.to, params: { type: module.type } })"
                   >
                   </div>
                 </v-card-title>

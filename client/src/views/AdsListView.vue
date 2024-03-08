@@ -176,8 +176,8 @@
                   translationSum: obj.translationSum
                 })
               )"
-            @update:selectCategory="selectCategory"
-            @update:selectTag="selectTag"
+            @update:selectCategory="selectCategoryHandler"
+            @update:selectTag="selectTagHandler"
           ></AdCard>
         </v-col>
       </v-row>
@@ -290,6 +290,12 @@ export default {
         return []
       }
       this.loading = false
+    },
+    selectCategoryHandler (categoryId) {
+      this.selectCategory(categoryId)
+    },
+    selectTagHandler (tagId) {
+      this.selectTag(tagId)
     }
   },
 
