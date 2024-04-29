@@ -451,6 +451,8 @@ export default {
       }
       if (this.group) {
         query.group = this.group._id
+      } else {
+        query.group = null
       }
       if (this.queryObject.query) {
         query.title = {
