@@ -103,7 +103,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-data-table
+        <v-data-table-server
           v-if="!initialView"
           v-model:items-per-page="queryObject.itemsPerPage"
           v-model:page="queryObject.page"
@@ -207,7 +207,7 @@
               {{$t('deleteButton')}}
             </v-tooltip>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-col>
     </v-row>
     <v-row
@@ -257,6 +257,12 @@
                 :label="$t('overwriteExisting')"
                 v-model="overwriteExisting"
               ></v-checkbox>
+              <v-alert
+                v-if="overwriteExisting"
+                color="error"
+              >
+                {{$t("deleteWarningBody")}}
+              </v-alert>
             </v-col>
           </v-row>
           <v-row>
@@ -310,6 +316,7 @@
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
+            :loading="loaders.import"
             :disabled="!parsedImportFile || !importLanguage || !importType"
             variant="elevated"
             color="customGrey"
@@ -404,9 +411,9 @@ export default {
       this.loaders.import = true
       try {
         await this.updateTranslations([this.importLanguage, this.parsedImportFile, { translationType: this.importType, overwriteExisting: this.overwriteExisting }])
+        await this.loadDataTableEntities()
         this.loaders.import = false
         this.resetImportForm()
-        this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
       } catch (e) {
         this.loaders.import = false
@@ -572,7 +579,7 @@ export default {
     },
     computedTotal () {
       if (this.translationsResponse) {
-        return this.translationsResponse.tital
+        return this.translationsResponse.total
       } else {
         return 0
       }

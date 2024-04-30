@@ -105,7 +105,7 @@ exports.Translator = class Translator {
       }
       if (matchingTranslationIndex === -1) {
         // Text id does not exist
-        this.app.service('translations').create({
+        await this.app.service('translations').create({
           textId: newTranslation[0],
           type: params.translationType,
           translations: [
@@ -118,11 +118,11 @@ exports.Translator = class Translator {
         const matchingLanguageIndex = matchingTranslation.translations.findIndex(l => l.lang === lang)
         if (matchingLanguageIndex === -1) {
           // No translation for that language
-          this.app.service('translations').patch(
+          await this.app.service('translations').patch(
             matchingTranslation._id,
             {
-              translations: {
-                $push: tmpNewTranslationEntry
+              $push: {
+                translations: tmpNewTranslationEntry
               }
             }
           )
@@ -141,7 +141,7 @@ exports.Translator = class Translator {
             ]
           }
           matchingTranslation.translations[matchingLanguageIndex] = mergedLanguage
-          this.app.service('translations').patch(
+          await this.app.service('translations').patch(
             matchingTranslation._id,
             matchingTranslation
           )
