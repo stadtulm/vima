@@ -459,7 +459,7 @@ export default {
     queryObject: {
       page: 1,
       itemsPerPage: 10,
-      sortBy: [{ key: 'createdAt', order: 'desc' }]
+      sortBy: [{ key: 'createdAt', order: 'asc' }]
     }
   }),
 
