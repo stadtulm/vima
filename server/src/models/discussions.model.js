@@ -1,4 +1,4 @@
-const Translation = require('./translations.model')
+const Translation = require('./translations-entity.model')
 
 // discussions-model.js - A mongoose model
 //

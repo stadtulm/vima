@@ -90,10 +90,10 @@ export default {
   },
 
   methods: {
-    ...mapMutations('translations', {
+    ...mapMutations('translator', {
       updateTranslationItem: 'updateItem'
     }),
-    ...mapActions('translations', {
+    ...mapActions('translator', {
       createTranslation: 'create'
     }),
     showOriginal () {
@@ -130,7 +130,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('translations', {
+    ...mapGetters('translator', {
       translations: 'list',
       getTranslation: 'get'
     }),

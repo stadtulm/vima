@@ -141,6 +141,25 @@
             </v-select>
           </template>
           <template
+            v-slot:[`item.isTranslator`]="{ item }"
+          >
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    :icon="item.isTranslator ? 'far fa-check-square' : 'far fa-square'"
+                    variant="flat"
+                    @click="setProperty('isTranslator', item._id, !item.isTranslator)"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('verified')}}
+            </v-tooltip>
+          </template>
+          <template
             v-slot:[`item.isVerified`]="{ item }"
           >
             <v-tooltip>
@@ -391,7 +410,7 @@ export default {
     async setProperty (property, id, state) {
       this.loaders[id + 'property'] = true
       const patchObject = {}
-      patchObject[property] = state
+      patchObject[property] = state === true
       try {
         await this.patchUser([id, patchObject])
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
@@ -466,6 +485,7 @@ export default {
           align: 'center'
         },
         { title: this.$t('role'), minWidth: 150, key: 'role' },
+        { title: this.$t('translator'), key: 'isTranslator', align: 'center' },
         { title: this.$t('verified'), key: 'isVerified', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
         { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },

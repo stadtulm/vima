@@ -1,9 +1,14 @@
 // Initializes the `translations` service on path `/translations`
 const { Translations } = require('./translations.class')
+const createModel = require('../../models/translations.model')
 const hooks = require('./translations.hooks')
 
 module.exports = function (app) {
   const options = {
+    Model: createModel(app),
+    multi: true,
+    paginate: app.get('paginate'),
+    whitelist: ['$regex', '$options', '$populate', '$exists', '$ne', '$eq']
   }
 
   // Initialize our service with any options it requires

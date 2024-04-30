@@ -13,6 +13,7 @@ function addQueryToLocalStorage (path, query) {
 }
 
 const state = {
+  addQueryToLocalStorage,
   hasMatomo: false,
   isDisconnected: true,
   userCount: undefined,
@@ -20,6 +21,7 @@ const state = {
   showTour: true,
   moduleVisibilities: {},
   cancelledTour: false,
+  translationTypes: ['client', 'server'],
   replyColors: ['#e4e4e4', '#d0d0d0', '#b4b4b4', '#989898', '#909090'],
   i18nMap: {
     rs: 'sr',
@@ -35,8 +37,6 @@ const state = {
     'svg'
   ],
   selectCategory (categoryId) {
-    console.log(this)
-    console.log(this.queryObject)
     this.queryObject.tags = []
     this.queryObject.categories = [categoryId]
   },
@@ -89,7 +89,7 @@ const state = {
       ])
     }
     // Refresh page
-    document.location.reload(true)
+    // document.location.reload(true)
   },
   parseRgbString (str) {
     const vals = str.substring(str.indexOf('(') + 1, str.length - 1).split(', ')
@@ -348,7 +348,9 @@ const state = {
       tmpQueryObject.type = this.queryObject.type
     }
     this.queryObject = tmpQueryObject
-    await this.loadDataTableEntities()
+    if (this.loadDataTableEntities) {
+      await this.loadDataTableEntities()
+    }
     this.initialView = false
   },
   updateQueryType (data) {
@@ -609,6 +611,12 @@ const state = {
 }
 
 const getters = {
+  addQueryToLocalStorage: state => {
+    return state.addQueryToLocalStorage
+  },
+  translationTypes: state => {
+    return state.translationTypes
+  },
   selectTag: state => {
     return state.selectTag
   },

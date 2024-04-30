@@ -1,21 +1,21 @@
-export function translations ({ feathers }) {
+export function translator ({ feathers }) {
   const { apiClient, apiVuex } = feathers
   const { BaseModel, makeServicePlugin } = apiVuex
 
-  class translations extends BaseModel {
-    static modelName = 'translations'
+  class translator extends BaseModel {
+    static modelName = 'translator'
     // Define default properties here
     static instanceDefaults () {
       return {
       }
     }
   }
-  const servicePath = 'translations'
+  const servicePath = 'translator'
   const vuexPlugin = makeServicePlugin({
-    Model: translations,
+    Model: translator,
     service: apiClient.service(servicePath),
     servicePath,
-    whitelist: ['$regex', '$options', '$populate', '$exists', '$ne', '$eq'],
+    whitelist: ['$regex', '$options', '$populate'],
     paramsForServer: ['$populate']
   })
 

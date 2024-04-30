@@ -128,6 +128,17 @@ module.exports = {
               throw new Errors.Forbidden('Only administrators can change a user\'s role')
             }
           ),
+          // Check if user tries to patch own translator property
+          commonHooks.iff(
+            (context) =>
+              context.data.isTranslator &&
+              context.data.isTranslator !== 'deleted' &&
+              context.data.isTranslator !== context.params.user?.isTranslator
+            ,
+            () => {
+              throw new Errors.Forbidden('Only administrators can change a user\'s translator property')
+            }
+          ),
           // Check if user tries to activate own account
           commonHooks.iff(
             (context) => context.data.isActive,

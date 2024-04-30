@@ -26,6 +26,7 @@ import { statusContainers } from './services/statusContainers'
 import { subscribers } from './services/subscribers'
 import { tags } from './services/tags'
 import { translations } from './services/translations'
+import { translator } from './services/translator'
 import { unsubscribe } from './services/unsubscribe'
 import { uploads } from './services/uploads'
 import { users } from './services/users'
@@ -70,6 +71,7 @@ const store = createStore({
     subscribers({ feathers }),
     tags({ feathers }),
     translations({ feathers }),
+    translator({ feathers }),
     unsubscribe({ feathers }),
     uploads({ feathers }),
     users({ feathers }),

@@ -47,7 +47,7 @@ export function setupFeathers () {
       before: {
         all: [
           context => {
-            context.params = paramsForServer(context.params, 'keepTranslations')
+            context.params = paramsForServer(context.params, 'keepTranslations', 'overwriteExisting', 'translationType')
           },
           iff(
             context => ['create', 'update', 'patch'].includes(context.method),

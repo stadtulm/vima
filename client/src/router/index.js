@@ -11,6 +11,7 @@ import Home from '@/views/Home.vue'
 import Site from '@/views/Site.vue'
 import CategoryListAdmin from '@/views/CategoryListAdmin.vue'
 import CategoryEditor from '@/views/CategoryEditor.vue'
+import TranslationEditor from '@/views/TranslationEditor.vue'
 import SettingsEditor from '@/views/SettingsEditor.vue'
 import TagListAdmin from '@/views/TagListAdmin.vue'
 import TagEditor from '@/views/TagEditor.vue'
@@ -72,6 +73,7 @@ import DiscussionListAdmin from '@/views/DiscussionListAdmin.vue'
 import DiscussionEditor from '@/views/DiscussionEditor.vue'
 import ChatList from '@/views/ChatList.vue'
 import Chat from '@/views/Chat.vue'
+import TranslationList from '@/views/TranslationList.vue'
 import helpItems from '@/data/help.js'
 
 const appMode = import.meta.env.VITE_MODE
@@ -383,6 +385,38 @@ const routes = [
       checkLoggedIn,
       checkAdminPartner,
       checkOwnerModeratorMember
+    ])
+  },
+  {
+    path: '/uebersetzungen',
+    name: 'TranslationList',
+    component: TranslationList,
+    meta: {
+      breadCrumbTextKey: 'editTranslations',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ],
+      step: 'translations'
+    },
+    beforeEnter: Multiguard([
+      checkLoggedIn,
+      checkAdminTranslator
+    ])
+  },
+  {
+    path: '/admin/uebersetzungen/editor/:id?',
+    name: 'TranslationEditor',
+    component: TranslationEditor,
+    meta: {
+      breadCrumbTextKey: 'editTranslation',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['TranslationList']
+      ]
+    },
+    beforeEnter: Multiguard([
+      checkLoggedIn,
+      checkAdminTranslator
     ])
   },
   {
@@ -1457,6 +1491,16 @@ function checkAdminPartner (to, from, next) {
   if (
     Store.getters['auth/user'].role !== 'admins' &&
     Store.getters['auth/user'].role !== 'partners'
+  ) {
+    return next({ name: 'Forbidden', query: { redirect: from.path } })
+  }
+  next()
+}
+
+function checkAdminTranslator (to, from, next) {
+  if (
+    Store.getters['auth/user'].role !== 'admins' &&
+    !Store.getters['auth/user'].isTranslator
   ) {
     return next({ name: 'Forbidden', query: { redirect: from.path } })
   }

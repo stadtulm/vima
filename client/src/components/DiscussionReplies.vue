@@ -405,7 +405,7 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
-    ...mapMutations('translations', {
+    ...mapMutations('translator', {
       updateTranslationItem: 'updateItem'
     }),
     ...mapActions('discussion-messages', {

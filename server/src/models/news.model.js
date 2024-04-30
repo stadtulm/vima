@@ -1,4 +1,4 @@
-const Translation = require('./translations.model')
+const Translation = require('./translations-entity.model')
 // news-model.js - A mongoose model
 //
 // See http://mongoosejs.com/docs/models.html

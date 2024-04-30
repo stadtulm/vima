@@ -26,6 +26,10 @@ module.exports = function (app) {
       enum: ['admins', 'partners', 'users', 'deleted'],
       default: 'users'
     },
+    isTranslator: {
+      type: Boolean,
+      default: false
+    },
     userName: {
       type: String,
       trim: true,

@@ -19,7 +19,7 @@ const sanitizer = function (node) {
 module.exports = {
   before: {
     all: [
-      paramsFromClient('keepTranslations')
+      paramsFromClient('keepTranslations', 'overwriteExisting', 'translationType')
     ],
     find: [],
     get: [],

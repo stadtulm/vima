@@ -492,10 +492,10 @@ export default {
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
-    ...mapMutations('translations', {
+    ...mapMutations('translator', {
       updateTranslationItem: 'updateItem'
     }),
-    ...mapActions('translations', {
+    ...mapActions('translator', {
       createTranslation: 'create'
     }),
     ...mapActions('discussion-messages', {
@@ -735,7 +735,7 @@ export default {
     ...mapGetters('users', {
       getUser: 'get'
     }),
-    ...mapGetters('translations', {
+    ...mapGetters('translator', {
       getTranslation: 'get'
     }),
     ...mapGetters('status-containers', {

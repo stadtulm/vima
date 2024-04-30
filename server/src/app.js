@@ -37,10 +37,12 @@ app.use(helmet({
 const allowList = process.env.CORS_ALLOWLIST.split(',')
 const corsOptions = {
   origin: function (origin, callback) {
+    console.log(origin)
     if (allowList.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
-      callback(new Error('Not allowed by CORS:', origin))
+      callback(null, true)
+      // callback(new Error('Not allowed by CORS:', origin))
     }
   }
 }
@@ -49,7 +51,7 @@ app.use(compress())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 // Host the public folder
-app.use('/', express.static(app.get('public')))
+app.use(express.static(path.join(__dirname, '../public')))
 
 // Set up Plugins and providers
 app.configure(express.rest())
