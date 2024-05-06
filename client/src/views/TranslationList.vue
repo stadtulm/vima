@@ -66,7 +66,7 @@
       </v-col>
       <v-col>
         <v-checkbox
-          v-model="queryObject.filterExisting"
+          v-model="queryObject.checkbox"
           :label="$t('filterExisting')"
           density="compact"
           hide-details
@@ -365,7 +365,9 @@ export default {
   }),
 
   async mounted () {
+    console.log(this.queryObject)
     await this.adaptQuery()
+    console.log(this.queryObject)
   },
 
   methods: {
@@ -535,7 +537,8 @@ export default {
       'updateQueryRole',
       'updateQueryType',
       'translationTypes',
-      'rules'
+      'rules',
+      'updateQueryCheckbox'
     ]),
     ...mapGetters('auth', {
       user: 'user'
@@ -563,7 +566,7 @@ export default {
       if (this.queryObject.query) {
         query.$and.push({ textId: { $regex: this.queryObject.query, $options: 'i' } })
       }
-      if (this.queryObject.filterExisting) {
+      if (this.queryObject.checkbox) {
         query.$and = query.$and.concat({ $or: [{ 'translations.lang': { $ne: this.queryObject.role } }, { 'translations.value': { $eq: '' } }] })
       }
       return {
@@ -623,8 +626,13 @@ export default {
         }
       }
     },
-    'queryObject.query' () {
+    async 'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.checkbox' () {
+      this.updateQueryCheckbox(this.queryObject.checkbox)
+      await this.loadDataTableEntities()
     },
     async 'queryObject.location' () {
       this.updateQueryLocation(this.queryObject.location)

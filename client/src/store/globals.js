@@ -343,9 +343,26 @@ const state = {
       tmpQueryObject.tags = this.queryObject.tags
     }
     if (queryToApply.y) {
-      tmpQueryObject.type = queryToApply.y
+      if (queryToApply.y === 'true') {
+        tmpQueryObject.type = true
+      } else if (queryToApply.y === 'false') {
+        tmpQueryObject.type = false
+      } else {
+        tmpQueryObject.type = queryToApply.y
+      }
     } else {
       tmpQueryObject.type = this.queryObject.type
+    }
+    if (queryToApply.b) {
+      if (queryToApply.b === 'true') {
+        tmpQueryObject.checkbox = true
+      } else if (queryToApply.b === 'false') {
+        tmpQueryObject.checkbox = false
+      } else {
+        tmpQueryObject.checkbox = queryToApply.b
+      }
+    } else {
+      tmpQueryObject.checkbox = this.queryObject.checkbox
     }
     this.queryObject = tmpQueryObject
     if (this.loadDataTableEntities) {
@@ -353,12 +370,36 @@ const state = {
     }
     this.initialView = false
   },
+  updateQueryCheckbox (data) {
+    if (this.$route.query.y !== data) {
+      const query = {
+        c: this.queryObject.categories?.join(','),
+        t: this.queryObject.tags?.join(','),
+        y: this.queryObject.type,
+        b: data,
+        r: this.queryObject.role,
+        q: this.queryObject.query,
+        l: this.queryObject.location,
+        p: this.queryObject.page,
+        i: this.queryObject.itemsPerPage,
+        s: this.queryObject.sortBy[0].key,
+        o: this.queryObject.sortBy[0].order
+      }
+      this.$router.replace(
+        {
+          query
+        }
+      )
+      addQueryToLocalStorage(this.$route.path, query)
+    }
+  },
   updateQueryType (data) {
     if (this.$route.query.y !== data) {
       const query = {
         c: this.queryObject.categories?.join(','),
         t: this.queryObject.tags?.join(','),
         y: data,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: this.queryObject.query,
         l: this.queryObject.location,
@@ -381,6 +422,7 @@ const state = {
         c: this.queryObject.categories?.join(','),
         t: data,
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: this.queryObject.query,
         l: this.queryObject.location,
@@ -403,6 +445,7 @@ const state = {
         c: data,
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: this.queryObject.query,
         l: this.queryObject.location,
@@ -425,6 +468,7 @@ const state = {
         c: this.queryObject.categories?.join(','),
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: data,
         q: this.queryObject.query,
         l: this.queryObject.location,
@@ -447,6 +491,7 @@ const state = {
         c: this.queryObject.categories?.join(','),
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: data,
         l: this.queryObject.location,
@@ -469,6 +514,7 @@ const state = {
         c: this.queryObject.categories?.join(','),
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: this.queryObject.query,
         l: data,
@@ -491,6 +537,7 @@ const state = {
         c: this.queryObject.categories?.join(','),
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: this.queryObject.query,
         l: this.queryObject.location,
@@ -513,6 +560,7 @@ const state = {
         c: this.queryObject.categories?.join(','),
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: this.queryObject.query,
         l: this.queryObject.location,
@@ -536,6 +584,7 @@ const state = {
         c: this.queryObject.categories?.join(','),
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: this.queryObject.query,
         l: this.queryObject.location,
@@ -553,6 +602,7 @@ const state = {
         c: this.queryObject.categories?.join(','),
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: this.queryObject.query,
         l: this.queryObject.location,
@@ -572,6 +622,7 @@ const state = {
         c: this.queryObject.categories?.join(','),
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
+        b: this.queryObject.checkbox,
         r: this.queryObject.role,
         q: this.queryObject.query,
         l: this.queryObject.location,
@@ -727,6 +778,9 @@ const getters = {
   },
   updateQueryType: state => {
     return state.updateQueryType
+  },
+  updateQueryCheckbox: state => {
+    return state.updateQueryCheckbox
   },
   updateQueryCategories: state => {
     return state.updateQueryCategories

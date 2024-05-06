@@ -83,6 +83,17 @@
           cols="12"
           sm="6"
         >
+          <v-checkbox
+            v-model="queryObject.type"
+            :label="$t('filterExpiredLabel')"
+            hide-details
+            density="compact"
+          ></v-checkbox>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+        >
           <v-select
             v-model="rawSortBy"
             :label="$t('sortByLabel')"
@@ -187,7 +198,8 @@ export default {
       location: '',
       page: 1,
       itemsPerPage: 25,
-      sortBy: [{ key: 'duration.end', order: 'desc' }]
+      sortBy: [{ key: 'duration.end', order: 'desc' }],
+      type: true
     }
   }),
 
@@ -228,10 +240,14 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'updateQueryType'
     ]),
     computedFiltersDirty () {
-      if (this.queryObject.query !== this.searchDefault || this.queryObject.location !== this.locationDefault) {
+      if (
+        this.queryObject.query !== this.searchDefault ||
+        this.queryObject.location !== this.locationDefault
+      ) {
         return true
       } else {
         return false
@@ -242,8 +258,8 @@ export default {
         isActive: true,
         $limit: this.computedLimit,
         $skip: this.queryObject.query || this.queryObject.location ? 0 : this.computedSkip,
-        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder } //,
-        // 'duration.end': { $gte: this.$moment().subtract(7, 'days') }
+        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder },
+        ...(this.queryObject.type ? { 'duration.end': { $gte: this.$moment().subtract(1, 'days') } } : {})
       }
       if (this.queryObject.query) {
         query.title = {
@@ -323,6 +339,10 @@ export default {
     },
     async 'queryObject.itemsPerPage' () {
       this.updateQueryItemsPerPage(this.queryObject.itemsPerPage)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.type' () {
+      this.updateQueryType(this.queryObject.type)
       await this.loadDataTableEntities()
     }
   }
