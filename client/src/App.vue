@@ -866,7 +866,7 @@
             </v-list-item-title>
           </v-list-item>
           <v-list-item
-            v-if="user.isTranslator"
+            v-if="user.isTranslator && computedShowTranslationButton"
             :to="{ name: 'TranslationList' }"
           >
             <v-list-item-title
@@ -1852,6 +1852,7 @@ import { Tween } from '@createjs/tweenjs'
 import NewsletterDialog from '@/components/NewsletterDialog.vue'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 const showHelpButton = import.meta.env.VITE_SHOW_HELP_BUTTON
+const showTranslationButton = import.meta.env.VITE_TRANSLATION_EDITOR_ACTIVE
 
 export default {
   name: 'App',
@@ -2039,6 +2040,9 @@ export default {
     },
     computedShowHelpButton () {
       return parseInt(showHelpButton)
+    },
+    computedShowTranslationButton () {
+      return parseInt(showTranslationButton)
     },
     stepColors () {
       if (this.settings && this.settings.length === 1) {

@@ -156,7 +156,7 @@
                   </v-btn>
                 </span>
               </template>
-              {{$t('verified')}}
+              {{$t('translator')}}
             </v-tooltip>
           </template>
           <template
@@ -311,6 +311,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+const showTranslators = import.meta.env.VITE_TRANSLATION_EDITOR_ACTIVE
 
 export default {
   name: 'UserListAdmin',
@@ -485,7 +486,7 @@ export default {
           align: 'center'
         },
         { title: this.$t('role'), minWidth: 150, key: 'role' },
-        { title: this.$t('translator'), key: 'isTranslator', align: 'center' },
+        ...(this.computedShowTranslators ? [{ title: this.$t('translator'), key: 'isTranslator', align: 'center' }] : []),
         { title: this.$t('verified'), key: 'isVerified', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
         { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },
@@ -497,6 +498,9 @@ export default {
           align: 'center'
         }
       ]
+    },
+    computedShowTranslators () {
+      return parseInt(showTranslators)
     },
     usersParams () {
       const query = {
