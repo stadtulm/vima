@@ -69,6 +69,9 @@ module.exports = function (app) {
     language: {
       type: String
     },
+    nationality: {
+      type: String
+    },
     isActive: {
       type: Boolean,
       default: true
