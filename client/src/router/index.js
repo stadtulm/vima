@@ -1429,7 +1429,10 @@ async function init (to, from, next) {
     // If logged in load stuff if not there
     if (Store.getters['auth/user']) {
       try {
-        //
+        const userPreferences = await Store.dispatch('preferences/find', { query: { user: Store.getters['auth/user']._id } })
+        if (userPreferences && userPreferences[0]) {
+          Store.commit('SET_PREFERENCES', userPreferences[0])
+        }
       } catch (e) {
         await Store.dispatch('logging/create', { type: 'error', route: window.location.pathname, user: (Store.getters['auth/user'] ? Store.getters['auth/user']._id : '-'), method: 'init', message: e.message })
       }

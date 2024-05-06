@@ -2,6 +2,7 @@ import i18n from '@/i18n.js'
 import Store from '@/store'
 import Cookies from 'js-cookie'
 import app from '@/main'
+
 const appMode = import.meta.env.VITE_MODE
 const serverDomain = import.meta.env.VITE_SERVER_DOMAIN
 
@@ -13,6 +14,8 @@ function addQueryToLocalStorage (path, query) {
 }
 
 const state = {
+  preferences: undefined,
+  translatorBlocked: false,
   addQueryToLocalStorage,
   hasMatomo: false,
   isDisconnected: true,
@@ -698,6 +701,12 @@ const getters = {
   hasMatomo: state => {
     return state.hasMatomo
   },
+  translatorBlocked: state => {
+    return state.translatorBlocked
+  },
+  preferences: state => {
+    return state.preferences
+  },
   cancelledTour: state => {
     return state.cancelledTour
   },
@@ -841,6 +850,12 @@ const mutations = {
   },
   SET_HAS_MATOMO: (state, msg) => {
     state.hasMatomo = msg
+  },
+  SET_TRANSLATOR_BLOCKED: (state, msg) => {
+    state.translatorBlocked = msg
+  },
+  SET_PREFERENCES: (state, msg) => {
+    state.preferences = msg
   }
 }
 

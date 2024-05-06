@@ -365,9 +365,7 @@ export default {
   }),
 
   async mounted () {
-    console.log(this.queryObject)
     await this.adaptQuery()
-    console.log(this.queryObject)
   },
 
   methods: {

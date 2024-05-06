@@ -87,19 +87,39 @@ export default {
   }),
 
   async mounted () {
+    if (this.preferences?.instantTranslateAll) {
+      await this.translateText({
+        allTexts: true,
+        allFields: true,
+        force: false
+      })
+    }
   },
 
   methods: {
+    ...mapMutations([
+      'SET_TRANSLATOR_BLOCKED'
+    ]),
     ...mapMutations('translator', {
       updateTranslationItem: 'updateItem'
     }),
     ...mapActions('translator', {
       createTranslation: 'create'
     }),
-    showOriginal () {
-      this.updateTranslationItem({ _id: this.textParent._id + '_' + this.ownField + '_' + this.$i18n.locale, show: false })
+    showOriginal (all) {
+      if (all) {
+        for (const id of this.allIds) {
+          for (const field of this.allFields) {
+            this.updateTranslationItem({ _id: id.id + '_' + field + '_' + this.$i18n.locale, show: false })
+          }
+        }
+      } else {
+        this.updateTranslationItem({ _id: this.textParent._id + '_' + this.ownField + '_' + this.$i18n.locale, show: false })
+      }
     },
     async translateText ({ allTexts, allFields, force }) {
+      if (this.translatorBlocked) return
+      this.SET_TRANSLATOR_BLOCKED(true)
       let textsToTranslate
       let textsToShow
       textsToTranslate = allTexts ? this.allIds : [{ id: this.textParent._id, translationSum: this.textParent.translationSum }]
@@ -126,10 +146,18 @@ export default {
         this.updateTranslationItem({ _id: text.id + '_' + this.$i18n.locale, show: true })
       }
       this.updateText = Date.now()
+      this.SET_TRANSLATOR_BLOCKED(false)
     }
   },
 
   computed: {
+    ...mapGetters([
+      'preferences',
+      'translatorBlocked'
+    ]),
+    ...mapGetters('auth', {
+      user: 'user'
+    }),
     ...mapGetters('translator', {
       translations: 'list',
       getTranslation: 'get'

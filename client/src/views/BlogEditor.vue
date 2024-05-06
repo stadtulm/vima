@@ -483,7 +483,6 @@ export default {
   }),
 
   async mounted () {
-    console.log(this.$i18n)
     this.currentLanguage = this.$i18n.locale
     window.load = () => {
       try {

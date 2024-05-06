@@ -27,6 +27,53 @@
                 <v-col
                   class="text-h6 font-weight-bold"
                 >
+                  {{$t('languageButton')}}
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-card
+                    flat
+                    tile
+                    color="white"
+                  >
+                    <v-card-text>
+                      <v-row
+                        dense
+                      >
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          class="text-body-1 align-self-center"
+                        >
+                            {{$t('instantTranslateAll')}}
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                        >
+                          <v-select
+                            density="compact"
+                            :label="$t('preferences')"
+                            class="min-width"
+                            :items="[
+                              { title: $t('yes'), value: true },
+                              { title: $t('no'), value: false }
+                            ]"
+                            v-model="instantTranslateAll"
+                          ></v-select>
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-row
+                class="mt-8"
+              >
+                <v-col
+                  class="text-h6 font-weight-bold"
+                >
                   {{$t('privateInformation')}}
                 </v-col>
               </v-row>
@@ -179,7 +226,7 @@
                         >
                           <v-select
                             density="compact"
-                            :label="$t('notification')"
+                            :label="$t('preferences')"
                             class="min-width"
                             :items="[
                               { title: $t('yes'), value: true },
@@ -782,6 +829,7 @@ export default {
     isLoading: false,
     isValid: false,
     receiveNewsletter: false,
+    instantTranslateAll: false,
     newChats: 'emailOffline',
     newChatMessages: 'emailOffline',
     newDiscussionMessages: 'emailOffline',
@@ -811,6 +859,9 @@ export default {
   },
 
   methods: {
+    ...mapMutations([
+      'SET_PREFERENCES'
+    ]),
     ...mapMutations({
       setSnackbar: 'SET_SNACKBAR'
     }),
@@ -845,6 +896,7 @@ export default {
         this.selectedPreferences = selectedPreferences
       }
       if (this.selectedPreferences) {
+        this.instantTranslateAll = this.selectedPreferences.instantTranslateAll || this.instantTranslateAll
         this.receiveNewsletter = this.selectedPreferences.receiveNewsletter || this.receiveNewsletter
         this.publishAge = this.selectedPreferences.publishAge || this.publishAge
         this.publishGender = this.selectedPreferences.publishGender || this.publishGender
@@ -879,6 +931,7 @@ export default {
       const map = {
         user: this.$route.params.user,
         receiveNewsletter: this.receiveNewsletter,
+        instantTranslateAll: this.instantTranslateAll,
         publishAge: this.publishAge,
         publishGender: this.publishGender,
         publishResidence: this.publishResidence,
@@ -907,11 +960,13 @@ export default {
         newUser: this.newUser
       }
       try {
+        let preferences
         if (this.selectedPreferences) {
-          await this.patchPreferences([this.selectedPreferences._id, map, {}])
+          preferences = await this.patchPreferences([this.selectedPreferences._id, map, {}])
         } else {
-          await this.createPreferences([map, {}])
+          preferences = await this.createPreferences([map, {}])
         }
+        this.SET_PREFERENCES = preferences
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
       } catch (e) {
@@ -924,7 +979,8 @@ export default {
   computed: {
     ...mapGetters([
       'rules',
-      's3'
+      's3',
+      'preferences'
     ]),
     ...mapGetters('auth', [
       'user'

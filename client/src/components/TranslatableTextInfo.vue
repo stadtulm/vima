@@ -55,6 +55,22 @@
           </v-list-item-title>
         </v-list-item>
         <v-list-item
+          v-if="canShowOriginal"
+          @click="$emit('update:showOriginal', true)"
+        >
+          <template v-slot:prepend>
+            <v-icon
+              small
+              class="mb-1 mr-1"
+            >
+              fa fa-undo
+            </v-icon>
+          </template>
+          <v-list-item-title>
+            {{$t('showOriginal')}} ({{$t('all')}})
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item
           v-if="needsUpdate && canShowOriginal"
           @click="$emit('update:translateText', {
             allTexts: false,
@@ -89,7 +105,7 @@
           <template v-slot:prepend>
             <v-avatar>
               <country-flag
-                class="my-0 mr-1"
+                class="my-0"
                 :country="$i18n.locale === 'en' ? 'gb': $i18n.locale"
               >
               </country-flag>
@@ -110,7 +126,7 @@
           <template v-slot:prepend>
             <v-avatar>
               <country-flag
-                class="my-0 mr-1"
+                class="my-0"
                 :country="$i18n.locale === 'en' ? 'gb': $i18n.locale"
               >
               </country-flag>
@@ -130,14 +146,29 @@
           )"
         >
           <template v-slot:prepend>
-            <country-flag
-              class="my-0"
-              :country="$i18n.locale === 'en' ? 'gb': $i18n.locale"
-            >
-            </country-flag>
+            <v-avatar>
+              <country-flag
+                class="my-0"
+                :country="$i18n.locale === 'en' ? 'gb': $i18n.locale"
+              >
+              </country-flag>
+            </v-avatar>
           </template>
           <v-list-item-title>
             {{$t('translateAll')}}
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item
+          v-if="canTranslate || canTranslateAll || canTranslateObject"
+          :to="{name: 'PreferencesEditor', params: { user: user._id } }"
+        >
+          <template v-slot:prepend>
+            <v-avatar>
+             <v-icon>fas fa-info-circle</v-icon>
+            </v-avatar>
+          </template>
+          <v-list-item-title>
+            {{$t('alwaysInstantTranslateAllHint')}}
           </v-list-item-title>
         </v-list-item>
       </v-list>
@@ -146,6 +177,8 @@
 </template>
 
 <script>
+
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'TranslatableTextInfo',
@@ -173,6 +206,9 @@ export default {
   },
 
   computed: {
+    ...mapGetters('auth', {
+      user: 'user'
+    })
   },
 
   watch: {

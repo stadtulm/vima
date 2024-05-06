@@ -10,6 +10,7 @@ module.exports = function (app) {
   const schema = new Schema({
     user: { type: ObjectId, ref: 'users' },
     receiveNewsletter: { type: Boolean },
+    instantTranslateAll: { type: Boolean },
     publishGender: { type: String, enum: ['all', 'users', 'none'] },
     publishAge: { type: String, enum: ['all', 'users', 'none'] },
     publishFavoriteCategories: { type: String, enum: ['all', 'users', 'none'] },
