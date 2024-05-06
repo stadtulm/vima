@@ -62,7 +62,7 @@
             <v-list-item-title
               class="font-weight-bold"
             >
-              {{$t(item.type)}}
+              {{item.type === 'communicationrules' ? $t('communicationRules') : $t(item.type)}}
             </v-list-item-title>
           </template>
           <template

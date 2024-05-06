@@ -28,7 +28,12 @@ exports.Translator = class Translator {
         translationsSortedByLanguages[translation.lang][translation.textId] = translation.value
       }
       for (const lang of Object.keys(translationsSortedByLanguages)) {
-        zip.file(`${type}/${lang}.json`, JSON.stringify(translationsSortedByLanguages[lang]))
+        const sorted = Object.keys(translationsSortedByLanguages[lang])
+          .sort()
+          .reduce((acc, key) => ({
+            ...acc, [key]: translationsSortedByLanguages[lang][key]
+          }), {})
+        zip.file(`${type}/${lang}.json`, JSON.stringify(sorted))
       }
     }
     const result = await zip.generateAsync({ type: 'uint8array' })

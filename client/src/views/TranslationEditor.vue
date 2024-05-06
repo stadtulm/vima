@@ -37,7 +37,7 @@
                     density="compact"
                     :label="$t('textId')"
                     v-model="textId"
-                    :rules="[v => rules.required]"
+                    :rules="[rules.required]"
                     :hint="selectedTranslation ? $t('readonly'): undefined"
                     persistent-hint
                   >

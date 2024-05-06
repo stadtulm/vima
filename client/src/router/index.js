@@ -392,7 +392,7 @@ const routes = [
     name: 'TranslationList',
     component: TranslationList,
     meta: {
-      breadCrumbTextKey: 'editTranslations',
+      breadCrumbTextKey: 'translations',
       breadCrumbPredecessors: [
         ['Participate']
       ],

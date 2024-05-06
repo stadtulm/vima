@@ -8,7 +8,7 @@
       <span
         class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
-        {{$t('adminView')}} {{$t('translations')}}
+        {{$t('translations')}}
       </span>
       <span
         class="my-3"
@@ -19,7 +19,7 @@
           color="customGrey"
           :to="{ name: 'TranslationEditor' }"
         >
-          {{$t('newTranslationsButton')}}
+          {{$t('newTranslationButton')}}
           <v-icon
             class="ml-3"
             size="18"
