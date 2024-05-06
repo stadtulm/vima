@@ -75,6 +75,20 @@
             {{event.title.value}}
           </div>
           <v-card-subtitle
+            class="text-body-2 pb-5"
+            v-if="event.location"
+          >
+            {{$t('submittedBy')}}
+            <v-btn
+              class="ml-1"
+              variant="outlined"
+              size="x-small"
+              :to="{ name: 'Organisation', params: { organisation: event.organisation._id } }"
+            >
+              {{event.organisation.name}}
+            </v-btn>
+          </v-card-subtitle>
+          <v-card-subtitle
             class="text-body-1 pb-0"
             v-if="event.location"
           >

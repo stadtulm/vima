@@ -87,7 +87,7 @@
               variant="elevated"
               block
               class="text-customGrey"
-              :to="{ name: 'Organisation', params: { organisation: organisation._id }}"
+              :to="{ name: 'Organisation', params: { organisation: organisation._id } }"
             >
               {{$t('viewButton')}}
               <v-icon
