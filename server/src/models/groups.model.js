@@ -90,7 +90,7 @@ module.exports = function (app) {
     options: {
       query: { type: 'groups', relation: 'owner' },
       select: { user: 1 },
-      populate: { path: 'user', select: { userName: 1, _id: 1 } }
+      populate: { path: 'user', select: { userName: 1, _id: 1, nationality: 1 } }
     }
   })
 
@@ -101,7 +101,7 @@ module.exports = function (app) {
     options: {
       query: { type: 'groups', relation: 'member' },
       select: { user: 1 },
-      populate: { path: 'user', select: { userName: 1, _id: 1 } }
+      populate: { path: 'user', select: { userName: 1, _id: 1, nationality: 1 } }
     }
   })
 
@@ -112,7 +112,7 @@ module.exports = function (app) {
     options: {
       query: { type: 'groups', relation: 'moderator' },
       select: { user: 1 },
-      populate: { path: 'user', select: { userName: 1, _id: 1 } }
+      populate: { path: 'user', select: { userName: 1, _id: 1, nationality: 1 } }
     }
   })
 

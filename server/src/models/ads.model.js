@@ -68,7 +68,7 @@ module.exports = function (app) {
     options: {
       query: { type: 'ads', relation: 'owner' },
       select: { user: 1 },
-      populate: { path: 'user', select: { userName: 1, _id: 1 } }
+      populate: { path: 'user', select: { userName: 1, _id: 1, nationality: 1 } }
     }
   })
 

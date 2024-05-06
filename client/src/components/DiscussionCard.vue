@@ -43,6 +43,11 @@
                   >
                     {{discussion.author ? discussion.author.user.userName : '- (' + $t('deletedAccount') + ')'}}
                   </v-btn>
+                  <country-flag
+                    v-if="discussion.author.user.nationality"
+                    style="translate: -0px 8px;"
+                    :country="discussion.author.user.nationality === 'en' ? 'gb': discussion.author.user.nationality"
+                  ></country-flag>
                 </v-card-subtitle>
                 <v-card-text>
                   <!-- Latest message -->

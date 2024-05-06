@@ -124,6 +124,23 @@
                 <v-col
                   cols="12"
                 >
+                  <v-autocomplete
+                    density="compact"
+                    :items="computedFlags"
+                    item-title="name"
+                    item-value="code"
+                    v-model="nationality"
+                    :label="$t('nationality')"
+                  >
+                  </v-autocomplete>
+                </v-col>
+              </v-row>
+              <v-row
+                dense
+              >
+                <v-col
+                  cols="12"
+                >
                   <v-text-field
                     density="compact"
                     v-model="description"
@@ -455,6 +472,7 @@
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FileUpload from '@/components/FileUpload.vue'
+import flags from '@/flags.js'
 
 export default {
   name: 'UserEditor',
@@ -485,7 +503,8 @@ export default {
     emailError: undefined,
     userNameError: undefined,
     pic: undefined,
-    favoriteCategories: []
+    favoriteCategories: [],
+    nationality: undefined
   }),
 
   async mounted () {
@@ -594,6 +613,7 @@ export default {
         this.gender = this.selectedUser.gender
         this.residence = this.selectedUser.residence
         this.favoriteCategories = this.selectedUser.favoriteCategories || []
+        this.nationality = this.selectedUser.nationality
       }
     },
     async saveUser () {
@@ -619,7 +639,8 @@ export default {
         age: this.age,
         gender: this.gender,
         residence: this.residence,
-        favoriteCategories: this.favoriteCategories
+        favoriteCategories: this.favoriteCategories,
+        nationality: this.nationality
       }
       if (this.pic && this.pic.url && this.pic.credit) {
         map.pic = this.pic
@@ -677,6 +698,9 @@ export default {
     }),
     pwRule () {
       return v => (!!v && v) === this.pw || this.$t('passwordsDoNotMatchError')
+    },
+    computedFlags () {
+      return flags
     },
     computedRoles () {
       const tmpRoleItems = JSON.parse(JSON.stringify(this.roleItems)).map(item => ({ title: this.$t(item.textKey), value: item.value }))

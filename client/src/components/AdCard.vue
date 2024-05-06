@@ -47,6 +47,11 @@
                 >
                 {{ad.author.user.userName}}
                 </v-btn>
+                <country-flag
+                  v-if="ad.author.user.nationality"
+                  style="translate: -0px 8px;"
+                  :country="ad.author.user.nationality === 'en' ? 'gb': ad.author.user.nationality"
+                ></country-flag>
               </template>
             </v-card-subtitle>
           </v-col>

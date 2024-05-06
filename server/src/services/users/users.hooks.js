@@ -186,7 +186,7 @@ module.exports = {
             }
           },
           // Remove for not allowed fields
-          commonHooks.keep('_id', 'userName', 'pic'),
+          commonHooks.keep('_id', 'userName', 'pic', 'nationality'),
           // Double check if not allowed fields exist
           (context) => {
             const tmpData = JSON.parse(JSON.stringify(context.result.data))
@@ -195,6 +195,7 @@ module.exports = {
                 delete obj._id
                 delete obj.userName
                 delete obj.pic
+                delete obj.nationality
                 return obj
               }
             )
@@ -404,7 +405,8 @@ async function filterUser (context, user) {
     user = {
       _id: tmpUser._id,
       userName: tmpUser.userName,
-      pic: tmpUser.pic
+      pic: tmpUser.pic,
+      nationality: tmpUser.nationality
     }
     // Add properties based on preferences
     for (const key of ['Gender', 'Age', 'Residence', 'FavoriteCategories']) {

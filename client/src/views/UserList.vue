@@ -75,6 +75,11 @@
                 >
                   {{item.userName}}
                 </span>
+                <country-flag
+                  v-if="item.nationality"
+                  style="translate: 3px 5.5px;"
+                  :country="item.nationality === 'en' ? 'gb': item.nationality"
+                ></country-flag>
               </v-list-item-title>
               <v-list-item-subtitle
                 v-if="item.description"

@@ -45,13 +45,18 @@
               >
                 {{$t('createdAt')}} {{$moment(computedGroup.createdAt).format('DD.MM.YYYY')}} {{$t('by')}}
                 <v-btn
-                  class="ml-1"
+                  class="ml-1 mb-1"
                   variant="outlined"
                   size="x-small"
                   @click="computedGroup.owner ? $router.push({name: 'User', params: { user: computedGroup.owner.user._id }}) : ''"
                 >
                   {{computedGroup.owner.user.userName}}
                 </v-btn>
+                <country-flag
+                  v-if="computedGroup.owner.user.nationality"
+                  style="translate: -0px 5.5px;"
+                  :country="computedGroup.owner.user.nationality === 'en' ? 'gb': computedGroup.owner.user.nationality"
+                ></country-flag>
               </v-card-subtitle>
               <v-card-text>
                 <!-- Latest message -->
