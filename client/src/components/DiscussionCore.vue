@@ -395,8 +395,8 @@
       <v-col>
         <v-pagination
           :color="$settings.modules.discussions.color"
-          v-model="page"
-          :length="Math.ceil(total / itemsPerPage)"
+          v-model="queryObject.page"
+          :length="Math.ceil(computedTotal / queryObject.itemsPerPage)"
           :total-visible="6"
         ></v-pagination>
       </v-col>
@@ -452,10 +452,7 @@ export default {
     showRepliesObj: {},
     init: true,
     manualLoad: false,
-    page: 1,
     loading: true,
-    total: 0,
-    itemsPerPage: 10,
     queryObject: {
       page: 1,
       itemsPerPage: 10,
@@ -514,8 +511,8 @@ export default {
           query: {
             discussion: this.discussion._id,
             repliesTo: { $exists: false },
-            $limit: this.itemsPerPage,
-            $skip: (this.page - 1) * this.itemsPerPage < 0 ? 0 : (this.page - 1) * this.itemsPerPage,
+            $limit: this.queryObject.itemsPerPage,
+            $skip: (this.queryObject.page - 1) * this.queryObject.itemsPerPage < 0 ? 0 : (this.queryObject.page - 1) * this.queryObject.itemsPerPage,
             $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
           }
         }
@@ -555,7 +552,7 @@ export default {
       this.itemToReport = undefined
     },
     goToNewMessages () {
-      this.page = Math.ceil(this.total / this.itemsPerPage)
+      this.queryObject.page = Math.ceil(this.computedTotal / this.queryObject.itemsPerPage)
       this.hasNewMessages = false
     },
     getBGColor (message) {
@@ -726,6 +723,7 @@ export default {
       'relationItems',
       'newTab',
       'adaptQuery',
+      'updateQueryPage',
       'updateQuerySortBy',
       'updateQuerySortOrder'
     ]),
@@ -744,6 +742,13 @@ export default {
     ...mapGetters('discussion-messages', {
       allDiscussionMessages: 'list'
     }),
+    computedTotal () {
+      if (this.discussionMessagesData) {
+        return this.discussionMessagesData.total
+      } else {
+        return 0
+      }
+    },
     computedSortOrder () {
       if (this.queryObject.sortBy[0].order === 'desc') {
         return 1
@@ -807,9 +812,10 @@ export default {
     async sortDesc () {
       await this.loadDataTableEntities()
     },
-    async page () {
+    async 'queryObject.page' () {
+      this.updateQueryPage(this.queryObject.page)
       await this.loadDataTableEntities()
-      if (this.page === Math.ceil(this.total / this.itemsPerPage)) {
+      if (this.queryObject.page === Math.ceil(this.computedTotal / this.queryObject.itemsPerPage)) {
         this.hasNewMessages = false
       }
     },
@@ -827,13 +833,10 @@ export default {
       }
     },
     computedDiscussionMessages (newValue, oldValue) {
-      //
-      this.total = this.discussionMessagesData.total
-      //
       if (this.manualLoad === 'create') {
-        this.page = Math.ceil(this.total / this.itemsPerPage)
-      } else if (this.page > Math.ceil(this.total / this.itemsPerPage)) {
-        this.page = Math.ceil(this.total / this.itemsPerPage)
+        this.queryObject.page = Math.ceil(this.computedTotal / this.queryObject.itemsPerPage)
+      } else if (this.queryObject.page > Math.ceil(this.computedTotal / this.queryObject.itemsPerPage)) {
+        this.queryObject.page = Math.ceil(this.computedTotal / this.queryObject.itemsPerPage)
       }
       //
       this.isFindDiscussionMessagesPending = false
@@ -854,7 +857,7 @@ export default {
       ) {
         //
         if (this.checkForNewPage) {
-          if (this.page < Math.ceil(this.total / this.itemsPerPage)) {
+          if (this.queryObject.page < Math.ceil(this.computedTotal / this.queryObject.itemsPerPage)) {
             this.hasNewMessages = true
           }
         }

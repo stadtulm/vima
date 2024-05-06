@@ -237,7 +237,7 @@ module.exports = {
           if (rec.latestAnswers?.text && Array.isArray(rec.latestAnswers.text)) {
             if (!rec.latestAnswers.text.find(t => t.lang === context.params.connection?.language)) {
               // Create translation
-              const translatedText = await context.app.service('translations').create({
+              const translatedText = await context.app.service('translator').create({
                 type: 'discussion-messages',
                 texts: [{
                   ...rec.latestAnswers,
