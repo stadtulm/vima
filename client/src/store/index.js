@@ -31,6 +31,7 @@ import { unsubscribe } from './services/unsubscribe'
 import { uploads } from './services/uploads'
 import { users } from './services/users'
 import { violations } from './services/violations'
+import { activities } from './services/activities'
 
 import globals from './globals'
 
@@ -76,6 +77,7 @@ const store = createStore({
     uploads({ feathers }),
     users({ feathers }),
     violations({ feathers }),
+    activities({ feathers }),
     feathers.apiVuex.makeAuthPlugin({ userService: 'users' })
   ]
 })

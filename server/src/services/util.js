@@ -2,6 +2,26 @@ const mongoose = require('mongoose')
 const path = require('path')
 
 module.exports = {
+  checkForAcceptedModification (data) {
+    const dataKeys = Object.keys(data || {})
+    if (
+      dataKeys.includes('accepted') ||
+      dataKeys.includes('isClosed') ||
+      dataKeys.includes('isActive')
+    ) {
+      const reducedData = JSON.parse(JSON.stringify(data))
+      delete reducedData.tmpAdAuthor
+      const reducedDataKeys = Object.keys(reducedData)
+      if (reducedDataKeys.length === 1 && reducedDataKeys[0] === 'accepted') {
+        return data.accepted.isAccepted ? 'accepted' : 'unaccepted'
+      } else if (reducedDataKeys.length === 1 && reducedDataKeys[0] === 'isClosed') {
+        return data.isClosed ? 'closed' : 'opened'
+      } else if (reducedDataKeys.length === 1 && reducedDataKeys[0] === 'isActive') {
+        return data.isActive ? 'activated' : 'deactivated'
+      }
+    }
+    return 'patched'
+  },
   async findUsersForFavoriteCategorieContentNotifications (context) {
     const params = {
       query: {

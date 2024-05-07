@@ -372,10 +372,6 @@ export default {
       this.updateQueryTags(this.queryObject.tags.join(','))
       await this.loadDataTableEntities()
     },
-    async 'queryObject.type' () {
-      this.updateQueryType(this.queryObject.type)
-      await this.loadDataTableEntities()
-    },
     async 'queryObject.page' () {
       this.updateQueryPage(this.queryObject.page)
       await this.loadDataTableEntities()

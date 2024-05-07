@@ -548,7 +548,8 @@ export default {
     openReportDialog (message) {
       this.itemToReport = message
     },
-    closeReportDialog () {
+    async closeReportDialog () {
+      await this.$nextTick()
       this.itemToReport = undefined
     },
     goToNewMessages () {

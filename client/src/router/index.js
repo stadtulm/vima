@@ -75,6 +75,7 @@ import ChatList from '@/views/ChatList.vue'
 import Chat from '@/views/Chat.vue'
 import TranslationList from '@/views/TranslationList.vue'
 import helpItems from '@/data/help.js'
+import ActivityListAdmin from '@/views/ActivityListAdmin.vue'
 
 const appMode = import.meta.env.VITE_MODE
 const serverDomain = import.meta.env.VITE_SERVER_DOMAIN
@@ -689,6 +690,22 @@ const routes = [
     ])
   },
   // Admin lists
+  {
+    path: '/admin/aktivitaeten/uebersicht',
+    name: 'ActivityListAdmin',
+    component: ActivityListAdmin,
+    meta: {
+      step: 'activities',
+      breadCrumbTextKey: 'activitiesAdminOverview',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ]
+    },
+    beforeEnter: Multiguard([
+      checkLoggedIn,
+      checkAdmin
+    ])
+  },
   {
     path: '/admin/suchebiete/uebersicht',
     name: 'AdListAdmin',

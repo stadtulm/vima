@@ -287,6 +287,8 @@ const state = {
     discussions: 'discussions',
     groups: 'interestGroups'
   },
+  activityTypeItems: ['ads', 'groups', 'discussions', 'violations'],
+  activityVerbItems: ['created', 'removed', 'patched', 'accepted', 'unaccepted', 'opened', 'closed', 'activated', 'deactivated'],
   async adaptQuery () {
     let queryToApply = this.$route.query
     if (
@@ -423,7 +425,7 @@ const state = {
     if (this.$route.query.t !== data) {
       const query = {
         c: this.queryObject.categories?.join(','),
-        t: data,
+        t: data.join(','),
         y: this.queryObject.type,
         b: this.queryObject.checkbox,
         r: this.queryObject.role,
@@ -445,7 +447,7 @@ const state = {
   updateQueryCategories (data) {
     if (this.$route.query.c !== data) {
       const query = {
-        c: data,
+        c: data.join(','),
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
         b: this.queryObject.checkbox,
@@ -760,6 +762,12 @@ const getters = {
   },
   typeItems: state => {
     return state.typeItems
+  },
+  activityTypeItems: state => {
+    return state.activityTypeItems
+  },
+  activityVerbItems: state => {
+    return state.activityVerbItems
   },
   blockedItems: state => {
     return state.blockedItems

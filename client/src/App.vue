@@ -977,7 +977,15 @@
                 </v-list-item-title>
               </v-list-item>
             </template>
-
+            <v-list-item
+              :to="{ name: 'ActivityListAdmin' }"
+            >
+              <v-list-item-title
+                class="font-weight-bold text-customGrey"
+              >
+                {{$t('manageActivitiesButton')}}
+              </v-list-item-title>
+            </v-list-item>
             <v-list-item
               :to="{ name: 'UserListAdmin' }"
             >
