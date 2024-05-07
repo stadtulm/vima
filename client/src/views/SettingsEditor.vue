@@ -22,7 +22,7 @@
           >
             <v-row>
               <v-col
-                class="title"
+                class="text-h6"
               >
                 {{$t('brand')}}
               </v-col>
@@ -48,7 +48,7 @@
             ></v-divider>
             <v-row>
               <v-col
-                class="title"
+                class="text-h6"
               >
                 {{$t('languages')}}
               </v-col>
@@ -89,7 +89,7 @@
             </v-row>
             <v-row>
               <v-col
-                class="title"
+                class="text-h6"
               >
                 {{$t('socialMedia')}}
               </v-col>
@@ -131,7 +131,7 @@
             </v-row>
             <v-row>
               <v-col
-                class="title"
+                class="text-h6"
               >
                 {{$t('texts')}}
               </v-col>
@@ -192,12 +192,57 @@
             </v-row>
             <v-row>
               <v-col
+                class="text-h6"
+                cols="12"
+              >
+                {{$t('infoBox')}}
+              </v-col>
+            </v-row>
+            <v-row
+              dense
+            >
+              <v-col
+                cols="12"
+              >
+                <v-checkbox
+                  v-if="infoBox"
+                  v-model="infoBox.isActive"
+                  :label="$t('active')"
+                ></v-checkbox>
+              </v-col>
+              <v-col
+                cols="12"
+              >
+                <v-input
+                  v-if="infoBox"
+                  v-model="infoBox.text.find(obj => obj.lang === currentLanguage).value"
+                  width="100%"
+                >
+                  <template v-slot:prepend>
+                    <LanguageSelect
+                      :currentLanguage="currentLanguage"
+                      :languageObjects="infoBox.text"
+                      @update:setLanguage="(l) => { currentLanguage = l }"
+                    ></LanguageSelect>
+                  </template>
+                  <template v-slot:default>
+                    <custom-tiptap
+                      v-if="infoBox.text"
+                      v-model="infoBox.text.find(obj => obj.lang === currentLanguage).value"
+                      :extensions="['h3', 'bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList', 'link']"
+                    ></custom-tiptap>
+                  </template>
+                </v-input>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
                 cols="12"
               >
                 <v-row>
                   <v-col
                     cols="12"
-                    class="title"
+                    class="text-h6"
                   >
                     {{$t('links')}} {{$t('optionalLabelExtension')}}
                   </v-col>
@@ -324,7 +369,7 @@
             </v-row>
             <v-row>
               <v-col
-                class="title"
+                class="text-h6"
               >
                 {{$t('replyLevel')}}
               </v-col>
@@ -344,7 +389,7 @@
             </v-row>
             <v-row>
               <v-col
-                class="title"
+                class="text-h6"
               >
                 {{$t('colors')}}
               </v-col>
@@ -426,7 +471,7 @@
             ></v-divider>
             <v-row>
               <v-col
-                class="title"
+                class="text-h6"
               >
                 {{$t('modules')}}
               </v-col>
@@ -444,7 +489,7 @@
                   <v-card-text>
                     <v-row>
                       <v-col
-                        class="title"
+                        class="text-h6"
                       >
                         {{$t(key)}}
                       </v-col>
@@ -699,6 +744,7 @@ export default {
     otherVimaLinks: [],
     tmpOtherVimaLinks: [],
     sloganText: undefined,
+    infoBox: undefined,
     welcomeText: undefined,
     linkName: undefined,
     linkUrl: undefined,
@@ -733,6 +779,17 @@ export default {
         }
         if (tmpSettings.otherVimaLinks) {
           this.otherVimaLinks = tmpSettings.otherVimaLinks
+        }
+        if (tmpSettings.infoBox) {
+          this.infoBox = {
+            isActive: tmpSettings.infoBox.isActive,
+            text: this.hydrateTranslations(tmpSettings.infoBox.text)
+          }
+        } else {
+          this.infoBox = {
+            isActive: false,
+            text: this.hydrateTranslations()
+          }
         }
         if (tmpSettings.sloganText) {
           this.sloganText = this.hydrateTranslations(tmpSettings.sloganText)
@@ -853,6 +910,14 @@ export default {
           }
         }).filter(language => language.value && language.value !== '' && language.value !== '<p></p>')
       }
+      if (this.infoBox?.text) {
+        this.infoBox.text = this.infoBox.text.map(language => {
+          return {
+            ...language,
+            value: this.$sanitize(language.value)
+          }
+        }).filter(language => language.value && language.value !== '' && language.value !== '<p></p>')
+      }
       // Prepare map
       const map = {
         name: appName,
@@ -867,6 +932,7 @@ export default {
         },
         otherVimaLinks: this.otherVimaLinks.concat(this.tmpOtherVimaLinks),
         modules: tmpModules,
+        infoBox: this.infoBox,
         headerLogo: this.headerLogo,
         sloganText: this.sloganText,
         welcomeText: this.welcomeText

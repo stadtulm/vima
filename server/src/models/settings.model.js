@@ -36,6 +36,10 @@ module.exports = function (app) {
         url: { type: String }
       }
     ],
+    infoBox: {
+      isActive: { type: Boolean, required: true },
+      text: [{ type: Translation }]
+    },
     sloganText: [{ type: Translation, required: true }],
     welcomeText: [{ type: Translation, required: true }],
     modules: {
