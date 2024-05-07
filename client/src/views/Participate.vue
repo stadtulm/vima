@@ -129,10 +129,6 @@ export default {
 
   methods: {
     pickLanguage (module) {
-      // Use old text as fallback
-      if (!module.text || module.text.length === 0) {
-        return this.$t(module.type + 'Body')
-      }
       // Try to use custom text in user language
       const userLanguageText = module.text.find(language => language.lang === this.$i18n.locale)
       if (userLanguageText) {
@@ -143,8 +139,7 @@ export default {
         if (defaultLanguageText) {
           return defaultLanguageText.value
         } else {
-          // Use old text as fallback
-          return this.$t(module.type + 'Body')
+          return ''
         }
       }
     }

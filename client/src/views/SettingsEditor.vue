@@ -131,6 +131,67 @@
             </v-row>
             <v-row>
               <v-col
+                class="title"
+              >
+                {{$t('texts')}}
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="12"
+              >
+                <v-input
+                  v-model="sloganText"
+                  width="100%"
+                >
+                  <template v-slot:prepend>
+                    <LanguageSelect
+                      :currentLanguage="currentLanguage"
+                      :languageObjects="sloganText"
+                      @update:setLanguage="(l) => { currentLanguage = l }"
+                    ></LanguageSelect>
+                  </template>
+                  <template v-slot:default>
+                    <v-text-field
+                      v-if="sloganText"
+                      density="compact"
+                      v-model="sloganText.find(obj => obj.lang === currentLanguage).value"
+                      :label="$t('sloganText')"
+                      :rules="[rules.required]"
+                    >
+                    </v-text-field>
+                  </template>
+                </v-input>
+              </v-col>
+              <v-col
+                cols="12"
+              >
+                <v-input
+                  v-model="welcomeText"
+                  width="100%"
+                >
+                  <template v-slot:prepend>
+                    <LanguageSelect
+                      :currentLanguage="currentLanguage"
+                      :languageObjects="welcomeText"
+                      @update:setLanguage="(l) => { currentLanguage = l }"
+                    ></LanguageSelect>
+                  </template>
+                  <template v-slot:default>
+                    <v-text-field
+                      v-if="welcomeText"
+                      density="compact"
+                      v-model="welcomeText.find(obj => obj.lang === currentLanguage).value"
+                      :label="$t('welcomeText')"
+                      :rules="[rules.required]"
+                    >
+                    </v-text-field>
+                  </template>
+                </v-input>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
                 cols="12"
               >
                 <v-row>
@@ -637,6 +698,8 @@ export default {
     defaultLanguage: undefined,
     otherVimaLinks: [],
     tmpOtherVimaLinks: [],
+    sloganText: undefined,
+    welcomeText: undefined,
     linkName: undefined,
     linkUrl: undefined,
     currentLanguage: 'en'
@@ -670,6 +733,16 @@ export default {
         }
         if (tmpSettings.otherVimaLinks) {
           this.otherVimaLinks = tmpSettings.otherVimaLinks
+        }
+        if (tmpSettings.sloganText) {
+          this.sloganText = this.hydrateTranslations(tmpSettings.sloganText)
+        } else {
+          this.sloganText = this.hydrateTranslations()
+        }
+        if (tmpSettings.welcomeText) {
+          this.welcomeText = this.hydrateTranslations(tmpSettings.welcomeText)
+        } else {
+          this.welcomeText = this.hydrateTranslations()
         }
         for (const key of Object.keys(tmpSettings.modules)) {
           if (tmpSettings.modules[key].color) {
@@ -763,6 +836,23 @@ export default {
       if (this.linkName && this.linkUrl) {
         this.addTmpOtherVimaLink()
       }
+      // Prepare texts
+      if (this.sloganText) {
+        this.sloganText = this.sloganText.map(language => {
+          return {
+            ...language,
+            value: this.$sanitize(language.value)
+          }
+        }).filter(language => language.value && language.value !== '' && language.value !== '<p></p>')
+      }
+      if (this.welcomeText) {
+        this.welcomeText = this.welcomeText.map(language => {
+          return {
+            ...language,
+            value: this.$sanitize(language.value)
+          }
+        }).filter(language => language.value && language.value !== '' && language.value !== '<p></p>')
+      }
       // Prepare map
       const map = {
         name: appName,
@@ -777,7 +867,9 @@ export default {
         },
         otherVimaLinks: this.otherVimaLinks.concat(this.tmpOtherVimaLinks),
         modules: tmpModules,
-        headerLogo: this.headerLogo
+        headerLogo: this.headerLogo,
+        sloganText: this.sloganText,
+        welcomeText: this.welcomeText
       }
       try {
         await this.patchSettings([this.$settings._id, map, {}])

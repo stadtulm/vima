@@ -36,6 +36,8 @@ module.exports = function (app) {
         url: { type: String }
       }
     ],
+    sloganText: [{ type: Translation, required: true }],
+    welcomeText: [{ type: Translation, required: true }],
     modules: {
       ads: {
         isActive: { type: Boolean, required: true },

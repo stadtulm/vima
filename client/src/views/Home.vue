@@ -94,7 +94,7 @@
                           cols="12"
                           class="text-h6 text-customGrey font-weight-bold"
                         >
-                          {{$t('sloganHome')}}
+                          {{pickLanguage('sloganText')}}
                         </v-col>
                       </v-row>
                     </v-col>
@@ -114,7 +114,7 @@
                             >
                               {{$t('vima')}}
                             </span>
-                            <span v-html="$t('homeWelcomeAbout')"></span>
+                            <span v-html="pickLanguage('welcomeText')"></span>
                           </p>
                           <p
                             v-html="$t('homeWelcomePartners')"
@@ -257,6 +257,21 @@ export default {
   },
 
   methods: {
+    pickLanguage (textId) {
+      // Try to use custom text in user language
+      const userLanguageText = this.$settings[textId].find(language => language.lang === this.$i18n.locale)
+      if (userLanguageText) {
+        return userLanguageText.value
+      } else {
+        // Try to use custom text in default language
+        const defaultLanguageText = this.$settings[textId].find(language => language.type === 'default')
+        if (defaultLanguageText) {
+          return defaultLanguageText.value
+        } else {
+          return ''
+        }
+      }
+    },
     getImageSrc (src) {
       return new Promise((resolve, reject) => {
         const img = new Image()
