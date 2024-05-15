@@ -92,7 +92,7 @@ const state = {
       ])
     }
     // Refresh page
-    // document.location.reload(true)
+    document.location.reload(true)
   },
   parseRgbString (str) {
     const vals = str.substring(str.indexOf('(') + 1, str.length - 1).split(', ')
