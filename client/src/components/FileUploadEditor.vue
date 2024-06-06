@@ -189,8 +189,8 @@ export default {
         this.isUploadingFile = false
       }, false)
     },
-    storeFile (file) {
-      this.file = file
+    storeFile (event) {
+      this.file = event.target.files[0]
     }
   },
 

@@ -588,7 +588,7 @@ const routes = [
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
       checkLoggedIn,
-      checkOwnerModeratorOrNew
+      checkAdminOwnerModeratorOrNew
     ])
   },
   // Overviews
@@ -1527,8 +1527,9 @@ function checkAdminTranslator (to, from, next) {
   next()
 }
 
-function checkOwnerModeratorOrNew (to, from, next) {
+function checkAdminOwnerModeratorOrNew (to, from, next) {
   if (
+    Store.getters['auth/user'].role !== 'admins' &&
     Object.keys(to.params)[Object.keys(to.params).length - 1] &&
     !Store.getters['status-containers/list'].find(
       obj =>

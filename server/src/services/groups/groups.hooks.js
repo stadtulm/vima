@@ -98,15 +98,18 @@ module.exports = {
             }
           )
           context.params.tmpGroupOwnerId = group.owner.user._id
-          // Check for other properties than accepted
-          const tmpData = JSON.parse(JSON.stringify(context.data))
-          delete tmpData.accepted
-          if (
-            group.owner.user._id.toString() !== context.params.user?._id.toString() &&
+          // Admin can skip this check
+          if (context.params.user.role !== 'admins') {
+            // Check for other properties than accepted
+            const tmpData = JSON.parse(JSON.stringify(context.data))
+            delete tmpData.accepted
+            if (
+              group.owner.user._id.toString() !== context.params.user?._id.toString() &&
             !group.moderators.map(moderator => moderator.user._id.toString()).includes(context.params.user?._id.toString()) &&
             Object.keys(tmpData).length > 0
-          ) {
-            throw new Errors.Forbidden('Only group owner can patch group properties')
+            ) {
+              throw new Errors.Forbidden('Only group owner can patch group properties')
+            }
           }
         },
         // Check if patch contains accepted

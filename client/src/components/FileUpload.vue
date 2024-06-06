@@ -569,6 +569,7 @@ export default {
           }
         }
       } catch (e) {
+        // TODO: Handle error
         // console.log(e)
       }
 

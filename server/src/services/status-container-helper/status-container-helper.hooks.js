@@ -62,7 +62,7 @@ module.exports = {
                 }
               }
             )
-            if (group.owner.user._id.toString() !== context.params.user?._id.toString()) {
+            if (context.params.user.role !== 'admins' && group.owner.user._id.toString() !== context.params.user?._id.toString()) {
               throw new Errors.Forbidden('Only group owner can create moderators')
             }
             // Only members who are not moderators yet can become moderators
@@ -79,16 +79,19 @@ module.exports = {
             }
           // Only group owner and moderators can invite members
           } else if (context.data.type === 'createGroupInvitation') {
-            const userStatusContainers = await context.app.service('status-containers').Model.countDocuments(
-              {
-                type: 'groups',
-                reference: context.data.groupId,
-                user: context.params.user?._id,
-                relation: { $in: ['owner', 'moderator'] }
+            // ... and admins
+            if (context.params.user.role !== 'admins') {
+              const userStatusContainers = await context.app.service('status-containers').Model.countDocuments(
+                {
+                  type: 'groups',
+                  reference: context.data.groupId,
+                  user: context.params.user?._id,
+                  relation: { $in: ['owner', 'moderator'] }
+                }
+              )
+              if (userStatusContainers === 0) {
+                throw new Errors.Forbidden('Only group owner, moderators and admins are allowed to invite members')
               }
-            )
-            if (userStatusContainers === 0) {
-              throw new Errors.Forbidden('Only group owner and moderators are allowed to invite members')
             }
             // Only non members can be invited
             const invitedUserStatusContainers = await context.app.service('status-containers').Model.countDocuments(
@@ -104,16 +107,19 @@ module.exports = {
             }
           // Only group owner and moderator can accept group applicants
           } else if (context.data.type === 'acceptGroupApplication') {
-            const userStatusContainers = await context.app.service('status-containers').Model.countDocuments(
-              {
-                type: 'groups',
-                reference: context.data.groupId,
-                user: context.params.user?._id,
-                relation: { $in: ['owner', 'moderator'] }
+            // ... and admins
+            if (context.params.user.role !== 'admins') {
+              const userStatusContainers = await context.app.service('status-containers').Model.countDocuments(
+                {
+                  type: 'groups',
+                  reference: context.data.groupId,
+                  user: context.params.user?._id,
+                  relation: { $in: ['owner', 'moderator'] }
+                }
+              )
+              if (userStatusContainers === 0) {
+                throw new Errors.Forbidden('Only group owner, moderators and admins are allowed to accept group applicants')
               }
-            )
-            if (userStatusContainers === 0) {
-              throw new Errors.Forbidden('Only group owner and moderators are allowed to accept group applicants')
             }
           // Only admins can add users to organisations
           } else if (context.data.type === 'createOrganisationMembership') {

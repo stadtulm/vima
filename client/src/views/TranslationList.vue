@@ -403,7 +403,6 @@ export default {
         // TODO CHANGE MESSAGE
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
       } catch (e) {
-        console.log(e)
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
     },
@@ -419,7 +418,6 @@ export default {
         this.loaders.import = false
         this.importError = e.message
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        console.log(e)
       }
     },
     resetImportForm () {
@@ -618,7 +616,6 @@ export default {
           try {
             this.parsedImportFile = JSON.parse(reader.result)
           } catch (e) {
-            console.log(e)
             this.importError = e.message
           }
         }

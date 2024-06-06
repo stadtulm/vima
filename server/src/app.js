@@ -37,7 +37,6 @@ app.use(helmet({
 const allowList = process.env.CORS_ALLOWLIST.split(',')
 const corsOptions = {
   origin: function (origin, callback) {
-    console.log(origin)
     if (allowList.indexOf(origin) !== -1) {
       callback(null, true)
     } else {

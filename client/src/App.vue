@@ -1269,7 +1269,6 @@
       <span tour-step-container="2"></span>
 
       <v-main>
-        <!-- Change margin-y when help-section is gone -->
         <v-container
           class="my-6 mt-1 main-container"
         >
@@ -1288,7 +1287,7 @@
             <v-alert
               closable
               close-icon="fa fa-times fa-2x"
-              class="mb-9 px-0"
+              class="px-0"
               color="transparent"
               v-if="computedShowHelpButton"
             >
@@ -1373,6 +1372,7 @@
                 <v-card
                   color="transparent"
                   flat
+                  class="mt-6"
                 >
                   <v-row>
                     <v-col
