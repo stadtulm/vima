@@ -159,7 +159,7 @@
           </v-list-item-title>
         </v-list-item>
         <v-list-item
-          v-if="canTranslate || canTranslateAll || canTranslateObject"
+          v-if="(canTranslate || canTranslateAll || canTranslateObject) && user"
           :to="{name: 'PreferencesEditor', params: { user: user._id } }"
         >
           <template v-slot:prepend>
