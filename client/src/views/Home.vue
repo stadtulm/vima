@@ -143,27 +143,16 @@
                       <v-row>
                         <v-col
                           cols="12"
-                          md="6"
                         >
                           <v-btn
                             v-if="!isDisconnected"
                             color="customGrey"
                             dark
-                            large
-                            class="mr-3 mb-3"
+                            size="x-large"
+                            block
                             :to="{name: 'Participate'}"
                           >
                             {{$t('participate')}}
-                          </v-btn>
-                          <v-btn
-                            color="customGrey"
-                            dark
-                            large
-                            class="mr-3 mb-3"
-                            target="_blank"
-                            href="https://youtu.be/eaCl-0GBje0"
-                          >
-                            {{$t('introductionVideo')}}
                           </v-btn>
                         </v-col>
                       </v-row>
