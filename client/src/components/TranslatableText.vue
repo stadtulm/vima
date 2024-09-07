@@ -108,9 +108,15 @@ export default {
     }),
     showOriginal (all) {
       if (all) {
-        for (const id of this.allIds) {
+        if (this.allIds) {
+          for (const id of this.allIds) {
+            for (const field of this.allFields) {
+              this.updateTranslationItem({ _id: id.id + '_' + field + '_' + this.$i18n.locale, show: false })
+            }
+          }
+        } else {
           for (const field of this.allFields) {
-            this.updateTranslationItem({ _id: id.id + '_' + field + '_' + this.$i18n.locale, show: false })
+            this.updateTranslationItem({ _id: this.textParent._id + '_' + field + '_' + this.$i18n.locale, show: false })
           }
         }
       } else {

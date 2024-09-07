@@ -50,15 +50,11 @@
                     <v-col>
                       <v-row>
                         <v-col
+                        class="pl-0 pt-8"
                           cols="12"
                         >
-                          <LanguageSelect
-                            :isMainSwitch="true"
-                            :currentLanguage="$i18n.locale"
-                            @update:setLanguage="setLanguageAtHome"
-                          ></LanguageSelect>
                           <span
-                            class="ml-4 pointer text-body-2"
+                            class="mr-4 pointer text-body-2"
                             @click="$router.push({name: 'Faq'})"
                           >
                             <v-icon
@@ -75,6 +71,11 @@
                               fas fa-arrow-right
                             </v-icon>
                           </span>
+                          <LanguageSelect
+                            :isMainSwitch="true"
+                            :currentLanguage="$i18n.locale"
+                            @update:setLanguage="setLanguageAtHome"
+                          ></LanguageSelect>
                         </v-col>
                       </v-row>
                       <v-row>

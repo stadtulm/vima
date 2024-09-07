@@ -336,9 +336,7 @@
                   </v-col>
                 </v-row>
                 <!-- Replies -->
-                <v-row
-                  v-if="showRepliesObj[message._id] || true"
-                >
+                <v-row>
                   <v-col
                     class="pt-0"
                   >

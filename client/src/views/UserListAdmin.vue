@@ -411,7 +411,11 @@ export default {
     async setProperty (property, id, state) {
       this.loaders[id + 'property'] = true
       const patchObject = {}
-      patchObject[property] = state === true
+      if (property === 'role') {
+        patchObject[property] = state
+      } else {
+        patchObject[property] = state === true
+      }
       try {
         await this.patchUser([id, patchObject])
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })

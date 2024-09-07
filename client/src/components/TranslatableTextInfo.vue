@@ -9,6 +9,8 @@
           v-bind="props"
           size="x-small"
           class="ml-2 mb-1"
+          @click.stop
+          @click.prevent
         >
           <v-icon
             size="20"
