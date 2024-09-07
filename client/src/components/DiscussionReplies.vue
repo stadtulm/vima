@@ -123,7 +123,7 @@
                           ownField="text"
                           :allFields="['text']"
                           :allIds="
-                            computedMessages
+                            allMessages
                               .filter(m => !isOwnMessage(m))
                               .map(m => { return { id: m._id, translationSum: m.translationSum } })
                           "
@@ -144,7 +144,7 @@
                             </v-sheet>
                             <TranslatableTextInfo
                               :canTranslate="true"
-                              :canTranslateAll="computedMessages.filter(m => !isOwnMessage(m)).length > 1"
+                              :canTranslateAll="allMessages.filter(m => !isOwnMessage(m)).length > 1"
                               @update:translateText="(data) => { translateText(data) }"
                             ></TranslatableTextInfo>
                           </template>
