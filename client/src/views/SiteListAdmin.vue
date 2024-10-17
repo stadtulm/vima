@@ -93,7 +93,7 @@
                   </v-btn>
                 </span>
               </template>
-              {{$t('deleteButton')}}
+              {{$t('editButton')}}
             </v-tooltip>
           </template>
         </v-data-table-server>

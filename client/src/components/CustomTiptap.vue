@@ -314,9 +314,6 @@ export default {
         },
         transformPastedHTML (html) {
           return html.replace(/\xA0/g, ' ')
-        },
-        transformPasted (html) {
-          return html.replace(/\xA0/g, ' ')
         }
       },
       onUpdate: () => {

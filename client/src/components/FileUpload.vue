@@ -649,11 +649,10 @@ export default {
       if (file.state === 'uploaded' || file.isEdit) {
         await this.removeUpload([file.isEdit ? file.originalname : file.url, {}, {}])
         this.$emit('update:fileRemove', file)
-      } else {
-        this.files = this.files.filter(f => {
-          return f !== file
-        })
       }
+      this.files = this.files.filter(f => {
+        return f !== file
+      })
     }
   },
   watch: {

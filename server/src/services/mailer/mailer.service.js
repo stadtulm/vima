@@ -16,8 +16,7 @@ module.exports = function (app) {
       ciphers: 'SSLv3'
     },
     pool: true,
-    maxConnections: 3,
-    maxMessages: 1
+    maxConnections: 1
   }
 
   // Initialize our service with any options it requires
