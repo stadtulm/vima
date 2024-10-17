@@ -425,7 +425,7 @@ const state = {
     if (this.$route.query.t !== data) {
       const query = {
         c: this.queryObject.categories?.join(','),
-        t: data.join(','),
+        t: Array.isArray(data) ? data.join(',') : data,
         y: this.queryObject.type,
         b: this.queryObject.checkbox,
         r: this.queryObject.role,
@@ -447,7 +447,7 @@ const state = {
   updateQueryCategories (data) {
     if (this.$route.query.c !== data) {
       const query = {
-        c: data.join(','),
+        c: Array.isArray(data) ? data.join(',') : data,
         t: this.queryObject.tags?.join(','),
         y: this.queryObject.type,
         b: this.queryObject.checkbox,

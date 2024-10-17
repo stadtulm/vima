@@ -227,7 +227,7 @@ export default {
 
   data: () => ({
     rawSortBy: undefined,
-    showFilters: false,
+    showFilters: true,
     loading: true,
     categoriesListDefault: [],
     tagsListDefault: [],
@@ -237,7 +237,7 @@ export default {
       query: '',
       page: 1,
       itemsPerPage: 25,
-      sortBy: [{ key: 'title.value', order: 'desc' }],
+      sortBy: [{ key: 'latestMessage', order: 'asc' }],
       categories: [],
       tags: []
     }

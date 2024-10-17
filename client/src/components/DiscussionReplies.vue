@@ -24,12 +24,13 @@
         v-for="(message, i) in computedMessages"
         :key="i"
         cols="12"
-        class="pa-2"
+        class="pa-2 pl-8"
         :class="isOwnMessage(message) ? '': 'reply'"
         :name="message._id"
       >
         <v-sheet
           outlined
+          style="border-left: 3px solid grey"
           class="px-4 my-2 foreign-sheet elevation-5"
           :color="isOwnMessage(message) ?
             (

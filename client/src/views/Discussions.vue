@@ -95,7 +95,7 @@ export default {
   },
 
   data: () => ({
-    showFilters: false,
+    showFilters: true,
     filtersDirty: false,
     resetFilterTrigger: false
   }),

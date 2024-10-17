@@ -98,7 +98,7 @@ export default {
     typeItems: [],
     types: [],
     computedFiltersDirty: false,
-    showFilters: false
+    showFilters: true
   }),
 
   async mounted () {

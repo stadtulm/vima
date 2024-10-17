@@ -18,7 +18,20 @@
     <v-row
       v-if="sortDesc < 0"
     >
+      <v-col cols="12">
+        <v-btn
+          v-if="!showSendBlock"
+          block
+          size="large"
+          class="mt-4"
+          :color="$settings.modules.discussions.color"
+          @click="showSendBlock = true"
+        >
+          {{$t('writeNewPostTitle')}}
+        </v-btn>
+      </v-col>
       <DiscussionReply
+        v-show="showSendBlock"
         :level="0"
         :user="user"
         :discussion="discussion"
@@ -435,6 +448,7 @@ export default {
   props: ['discussion'],
 
   data: () => ({
+    showSendBlock: false,
     rawSortBy: undefined,
     discussionMessagesData: undefined,
     pics: [],

@@ -6,23 +6,32 @@
       >
         <span
           class="text-uppercase"
-          :class="isPreview ? 'pointer' : ''"
           @click="$router.push({ name: 'Participate' })"
           tour-step="1"
         >
           {{$t('participate')}}
         </span>
-        <v-btn
-          v-if="isPreview"
-          icon
-          color="customGrey"
-          class="mb-1 ml-1"
-          @click="$router.push({ name: 'Participate' })"
+        <span
+          class="ml-8 pointer text-body-2"
+          @click="$router.push({name: 'Faq'})"
         >
-          <v-icon>
-            fas fa-arrow-right
-          </v-icon>
-        </v-btn>
+          <v-btn
+            variant="plain"
+          >
+            {{$t('howToSwitchLanguage')}}
+            <v-icon
+              class="ml-2"
+              size="18"
+            >
+              fas fa-arrow-right
+            </v-icon>
+          </v-btn>
+        </span>
+        <LanguageSelect
+          :isMainSwitch="true"
+          :currentLanguage="$i18n.locale"
+          @update:setLanguage="setLanguage"
+        ></LanguageSelect>
       </v-col>
     </v-row>
     <v-row>
@@ -110,16 +119,14 @@
 <script>
 
 import { mapGetters } from 'vuex'
+import LanguageSelect from '@/components/LanguageSelect.vue'
 
 export default {
   name: 'Home',
 
   components: {
+    LanguageSelect
   },
-
-  props: [
-    'isPreview'
-  ],
 
   data: () => ({
   }),
@@ -148,7 +155,8 @@ export default {
   computed: {
     ...mapGetters([
       's3',
-      'newTab'
+      'newTab',
+      'setLanguage'
     ]),
     computedModules () {
       return Object.keys(this.$settings.modules)

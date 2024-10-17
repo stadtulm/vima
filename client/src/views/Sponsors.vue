@@ -169,7 +169,7 @@ export default {
   },
 
   data: () => ({
-    showFilters: false,
+    showFilters: true,
     loading: true,
     searchDefault: '',
     sponsorsResponse: undefined,

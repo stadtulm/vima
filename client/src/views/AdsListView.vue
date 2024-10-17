@@ -244,7 +244,7 @@ export default {
 
   data: () => ({
     rawSortBy: undefined,
-    showFilters: false,
+    showFilters: true,
     loading: true,
     categoriesListDefault: [],
     tagsListDefault: [],

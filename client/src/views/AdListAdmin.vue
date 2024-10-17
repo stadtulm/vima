@@ -367,8 +367,6 @@ export default {
         { title: this.$t('title'), key: 'title.value' },
         { title: this.$t('author'), key: 'author', sortable: false },
         { title: this.$t('createdAt'), key: 'createdAt' },
-        { title: this.$t('categories'), key: 'categories', sortable: false },
-        { title: this.$t('tags'), key: 'tags', sortable: false },
         { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
         { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },

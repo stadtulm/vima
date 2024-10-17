@@ -209,7 +209,7 @@ export default {
   },
 
   data: () => ({
-    showFilters: false,
+    showFilters: true,
     initialView: true,
     loading: true,
     searchDefault: '',

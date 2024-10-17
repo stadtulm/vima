@@ -23,7 +23,7 @@
           class="py-2 pointer"
           height="50px"
           :src="$settings && $settings.headerLogo ? s3 + $settings.headerLogo.url : ''"
-          @click="$router.push({ name: 'Home' })"
+          @click="$router.push({ name: 'Participate' })"
           alt="Vima Logo"
           :title="$settings && $settings.headerLogo ? $settings.headerLogo.credit : ''"
         />
@@ -1300,7 +1300,8 @@
                       <v-btn
                         v-bind="props"
                         block
-                        variant="outlined"
+                        variant="tonal"
+                        size="x-large"
                       >
                         {{$t("help_title")}}
                         <v-icon
@@ -1378,34 +1379,38 @@
                     <v-col
                       class="align-self-center"
                     >
-                      <span
-                        class="d-inline-flex"
-                      >
-                        {{$t('youAreHere')}}:
-                      </span>
-                      <v-chip
-                        v-for="(item, i) in computedBreadcrumbItems"
-                        :key="i"
-                        :disabled="i >= computedBreadcrumbItems.length - 1"
-                        @click="$router.push({ name: item.to, params: item.params })"
-                        class="mx-1 text-black mb-1"
-                        :tour-step="i === 0 ? 2 : -1"
-                      >
-                        <template
-                          v-if="item.text && item.text.startsWith('fa')"
+                      <v-alert>
+                        <span
+                          class="ml-2 mb-2 d-inline-flex text-button
+  "
                         >
-                          <v-icon
-                            size="18"
+                          {{$t('youAreHere')}}:
+                        </span>
+                        <br>
+                        <v-chip
+                          v-for="(item, i) in computedBreadcrumbItems"
+                          :key="i"
+                          :disabled="i >= computedBreadcrumbItems.length - 1"
+                          @click="$router.push({ name: item.to, params: item.params })"
+                          class="mx-1 text-black mb-1"
+                          :tour-step="i === 0 ? 2 : -1"
+                        >
+                          <template
+                            v-if="item.text && item.text.startsWith('fa')"
+                          >
+                            <v-icon
+                              size="18"
+                            >
+                              {{item.text}}
+                            </v-icon>
+                          </template>
+                          <template
+                            v-else
                           >
                             {{item.text}}
-                          </v-icon>
-                        </template>
-                        <template
-                          v-else
-                        >
-                          {{item.text}}
-                        </template>
-                      </v-chip>
+                          </template>
+                        </v-chip>
+                      </v-alert>
                     </v-col>
                   </v-row>
                 </v-card>

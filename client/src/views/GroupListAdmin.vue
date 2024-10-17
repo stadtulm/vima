@@ -1092,8 +1092,6 @@ export default {
         { title: this.$t('author'), key: 'owner' },
         { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('visibility'), key: 'visibility' },
-        { title: this.$t('categories'), key: 'categories', sortable: false },
-        { title: this.$t('tags'), key: 'tags', sortable: false },
         { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
         { title: this.$t('moderators'), key: 'moderators', align: 'center', sortable: false },

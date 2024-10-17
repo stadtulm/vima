@@ -273,11 +273,11 @@
               <v-btn
                 class="mt-4"
                 variant="elevated"
-                color="customGrey"
-                block
+                color="error"
+                icon="fa fa-trash"
+                size="small"
                 @click.stop="removeFile(file)"
               >
-                {{$t('deleteButton')}}
               </v-btn>
             </v-card>
           </v-col>
