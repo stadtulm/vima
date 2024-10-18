@@ -948,7 +948,7 @@
           </template>
           <v-divider></v-divider>
           <v-list-group
-            v-if="user.role === 'admins'"
+            v-if="user.role === 'admins' || user.role === 'volunteers'"
             value="adminlist"
             color="customGrey"
           >
@@ -978,6 +978,7 @@
               </v-list-item>
             </template>
             <v-list-item
+              v-if="user.role === 'admins'"
               :to="{ name: 'ActivityListAdmin' }"
             >
               <v-list-item-title
@@ -987,6 +988,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="user.role === 'admins'"
               :to="{ name: 'UserListAdmin' }"
             >
               <v-list-item-title
@@ -996,7 +998,13 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="moduleVisibilities.organisations"
+              v-if="
+                moduleVisibilities.organisations &&
+                (
+                  user.role === 'admins' ||
+                  user.role === 'volunteers'
+                )
+              "
               :to="{ name: 'OrganisationListAdmin' }"
             >
               <v-list-item-title
@@ -1006,7 +1014,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="moduleVisibilities.sponsors"
+              v-if="moduleVisibilities.sponsors && user.role === 'admins'"
               :to="{ name: 'SponsorListAdmin' }"
             >
               <v-list-item-title
@@ -1016,7 +1024,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="moduleVisibilities.blog"
+              v-if="moduleVisibilities.blog && user.role === 'admins'"
               :to="{ name: 'BlogListAdmin' }"
             >
               <v-list-item-title
@@ -1026,7 +1034,13 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="moduleVisibilities.news"
+              v-if="
+              moduleVisibilities.news &&
+              (
+                user.role === 'admins' ||
+                user.role === 'volunteers'
+              )
+              "
               :to="{ name: 'NewsListAdmin' }"
             >
               <v-list-item-title
@@ -1036,7 +1050,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="moduleVisibilities.events"
+              v-if="moduleVisibilities.events && user.role === 'admins'"
               :to="{ name: 'EventListAdmin', params: {} }"
             >
               <v-list-item-title
@@ -1046,6 +1060,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="user.role === 'admins'"
               :to="{ name: 'SiteListAdmin' }"
             >
               <v-list-item-title
@@ -1055,7 +1070,13 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="moduleVisibilities.ads"
+              v-if="
+                moduleVisibilities.ads &&
+                (
+                  user.role === 'admins' ||
+                  user.role === 'volunteers'
+                )
+              "
               :to="{ name: 'AdListAdmin' }"
             >
               <v-list-item-title
@@ -1091,7 +1112,13 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="moduleVisibilities.discussions"
+              v-if="
+                moduleVisibilities.discussions &&
+                (
+                  user.role === 'admins' ||
+                  user.role === 'volunteers'
+                )
+              "
               :to="{ name: 'DiscussionListAdmin' }"
             >
               <v-list-item-title
@@ -1127,7 +1154,13 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="moduleVisibilities.groups"
+              v-if="
+                moduleVisibilities.groups &&
+                (
+                  user.role === 'admins' ||
+                  user.role === 'volunteers'
+                )
+              "
               :to="{ name: 'GroupListAdmin' }"
             >
               <v-list-item-title
@@ -1163,6 +1196,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="user.role === 'admins'"
               :to="{ name: 'CategoryListAdmin' }"
             >
               <v-list-item-title
@@ -1172,6 +1206,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="user.role === 'admins'"
               :to="{ name: 'TagListAdmin' }"
             >
               <v-list-item-title
@@ -1208,6 +1243,7 @@
             </v-list-item>
 
             <v-list-item
+              v-if="user.role === 'admins' || user.role === 'volunteers'"
               :to="{ name: 'ViolationListAdmin' }"
             >
               <v-list-item-title
@@ -1243,6 +1279,7 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="user.role === 'admins'"
               :to="{ name: 'SettingsEditor' }"
             >
               <v-list-item-title

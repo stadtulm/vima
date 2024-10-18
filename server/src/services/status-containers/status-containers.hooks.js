@@ -85,7 +85,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip is user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           async (context) => {
             // Check if there are containers of other users
             const foreignContainers = context.result

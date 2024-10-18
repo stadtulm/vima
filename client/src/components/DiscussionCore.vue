@@ -884,12 +884,12 @@ export default {
         }, 1000)
       }
     },
-    showViolationDialog () {
+    showViolationDialog (a, b) {
       if (!this.showViolationDialog) {
         this.itemToReport = undefined
       }
     },
-    itemToReport () {
+    itemToReport (a, b) {
       if (this.itemToReport) {
         this.showViolationDialog = true
       } else {

@@ -331,7 +331,7 @@ const routes = [
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
       checkLoggedIn,
-      checkAdmin
+      checkAdminVolunteer
     ])
   },
   {
@@ -367,7 +367,7 @@ const routes = [
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
       checkLoggedIn,
-      checkAdmin
+      checkAdminVolunteer
     ])
   },
   {
@@ -720,7 +720,7 @@ const routes = [
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
       checkLoggedIn,
-      checkAdmin
+      checkAdminVolunteer
     ])
   },
   {
@@ -737,7 +737,7 @@ const routes = [
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
       checkLoggedIn,
-      checkAdmin
+      checkAdminVolunteer
     ])
   },
   {
@@ -754,7 +754,7 @@ const routes = [
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
       checkLoggedIn,
-      checkAdmin
+      checkAdminVolunteer
     ])
   },
   {
@@ -786,7 +786,7 @@ const routes = [
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
       checkLoggedIn,
-      checkAdmin
+      checkAdminVolunteer
     ])
   },
   {
@@ -818,7 +818,7 @@ const routes = [
     },
     beforeEnter: Multiguard([
       checkLoggedIn,
-      checkAdmin
+      checkAdminVolunteer
     ])
   },
   {
@@ -835,7 +835,7 @@ const routes = [
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
       checkLoggedIn,
-      checkAdmin
+      checkAdminVolunteer
     ])
   },
   {
@@ -1502,6 +1502,16 @@ function checkAdminOwn (to, from, next) {
 
 function checkAdmin (to, from, next) {
   if (Store.getters['auth/user'].role !== 'admins') {
+    return next({ name: 'Forbidden', query: { redirect: from.path } })
+  }
+  next()
+}
+
+function checkAdminVolunteer (to, from, next) {
+  if (
+    Store.getters['auth/user'].role !== 'admins' &&
+    Store.getters['auth/user'].role !== 'volunteers'
+  ) {
     return next({ name: 'Forbidden', query: { redirect: from.path } })
   }
   next()

@@ -233,6 +233,8 @@ export default {
     },
     async saveViolation () {
       this.isLoading = true
+      const tmpComment = this.comment
+      this.closeViolationDialog()
       try {
         if (this.selectedViolation) {
           await this.patchViolation([
@@ -241,7 +243,7 @@ export default {
               $push: {
                 responses: {
                   user: this.user._id,
-                  comment: this.comment,
+                  comment: tmpComment,
                   dt: Date.now()
                 }
               }
@@ -263,7 +265,7 @@ export default {
             responses: [
               {
                 user: this.user._id,
-                comment: this.comment,
+                comment: tmpComment,
                 dt: Date.now()
               }
             ]
@@ -272,7 +274,6 @@ export default {
         }
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-        this.closeViolationDialog()
       } catch (e) {
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })

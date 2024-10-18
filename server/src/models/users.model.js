@@ -23,7 +23,7 @@ module.exports = function (app) {
     },
     role: {
       type: String,
-      enum: ['admins', 'partners', 'users', 'deleted'],
+      enum: ['admins', 'volunteers', 'partners', 'users', 'deleted'],
       default: 'users'
     },
     isTranslator: {

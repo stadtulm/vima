@@ -94,7 +94,7 @@
                   <v-btn
                     variant="text"
                     :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
-                    :color="$settings.modules.ads.color"
+                    color="customGrey"
                     :loading="loaders[item._id + 'isActive'] === true"
                     disabled
                     @click="changeAdProperty(
@@ -121,7 +121,7 @@
                     variant="text"
                     :icon="item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
                     :color="$settings.modules.ads.color"
-                    :disabled="user.role !== 'admins'"
+                    :disabled="user.role !== 'admins' && user.role !== 'volunteers'"
                     :loading="loaders[item._id + 'accepted'] === true"
                     @click="changeAdProperty(
                       item,
@@ -150,10 +150,11 @@
                   <v-btn
                     icon
                     size="small"
-                    :color="$settings.modules.ads.color"
+                    :color="user.role === 'admins' ? $settings.modules.ads.color : 'customGreyMedium'"
                     class="my-4"
                     :loading="loaders[item._id + 'delete'] === true"
                     @click="deleteAd(item._id)"
+                    :disabled="user.role !== 'admins'"
                   >
                     <template
                       v-slot:loader
@@ -186,7 +187,7 @@
                   <v-btn
                     icon
                     size="small"
-                    :color="$settings.modules.ads.color"
+                    :color="item.isActive ? $settings.modules.ads.color : 'customGreyMedium'"
                     class="my-4"
                     :disabled="!item.isActive"
                     :to="{name: 'Ad', params: { id: item._id } }"

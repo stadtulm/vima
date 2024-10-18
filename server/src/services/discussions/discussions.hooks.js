@@ -146,15 +146,16 @@ module.exports = {
               )
               if (
                 context.params.user?.role !== 'admins' &&
+                context.params.user?.role !== 'volunteers' &&
                 groupStatusContainers === 0
               ) {
-                throw new Errors.Forbidden('Only administrator, group owners and moderators can accept group discussion')
+                throw new Errors.Forbidden('Only administrators, volunteers, group owners and moderators can accept group discussions')
               }
             },
             // Only admin can patch accepted of discussion
             async (context) => {
-              if (context.params.user?.role !== 'admins') {
-                throw new Errors.Forbidden('Only administrators can accept discussions')
+              if (context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers') {
+                throw new Errors.Forbidden('Only administrators and volunteers can accept discussions')
               }
             }
           )
@@ -251,7 +252,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check if user has relation to restricted discussions
           async (context) => {
             const restrictedDiscussionIds = context.result.data
@@ -335,7 +336,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check for restricted discussion relation
           async (context) => {
             if (
@@ -514,7 +515,7 @@ module.exports = {
                 await notifyUsers(context.app, 'newGroupDiscussionsToAccept', 'patch', context.result, tmpUsers.map(obj => obj.user))
               }
             } else {
-              if (context.params.user.role !== 'admins') {
+              if (context.params.user.role !== 'admins' && context.params.user?.role !== 'volunteers') {
                 // Notify admins that discussion has been patched
                 const tmpUsers = await context.app.service('status-containers').patch(
                   null,

@@ -23,9 +23,9 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           () => {
-            throw new Errors.Forbidden('Only administrators can create organisations')
+            throw new Errors.Forbidden('Only administrators and volunteers can create organisations')
           }
         )
       )
@@ -43,7 +43,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check if user is organisation member
           async (context) => {
             const userStatusContainers = await context.app.service('status-containers').Model.countDocuments(
@@ -54,7 +54,7 @@ module.exports = {
               }
             )
             if (userStatusContainers === 0) {
-              throw new Errors.Forbidden('Only administrators and organisation members can patch organisations')
+              throw new Errors.Forbidden('Only administrators, volunteers and organisation members can patch organisations')
             }
           }
         )
@@ -65,7 +65,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check if user is organisation member
           async (context) => {
             const userStatusContainers = await context.app.service('status-containers').Model.countDocuments(
@@ -76,7 +76,7 @@ module.exports = {
               }
             )
             if (userStatusContainers === 0) {
-              throw new Errors.Forbidden('Only administrators and organisation members can remove organisations')
+              throw new Errors.Forbidden('Only administrators, volunteers and organisation members can remove organisations')
             }
           }
         )
@@ -91,7 +91,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check if user is member of inactive organisation
           async (context) => {
             const inactiveOrganisationIds = context.result.data.filter(obj => !obj.isActive)
@@ -104,7 +104,7 @@ module.exports = {
                 }
               )
               if (userStatusContainers < inactiveOrganisationIds.length) {
-                throw new Errors.Forbidden('Only administrators and organisation members can get inactive organisations')
+                throw new Errors.Forbidden('Only administrators, volunteers and organisation members can get inactive organisations')
               }
             }
           }
@@ -116,7 +116,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check if user is member of inactive organisation
           async (context) => {
             if (!context.result.isActive) {
@@ -128,7 +128,7 @@ module.exports = {
                 }
               )
               if (userStatusContainers === 0) {
-                throw new Errors.Forbidden('Only administrators and organisation members can get an inactive organisation')
+                throw new Errors.Forbidden('Only administrators, volunteers and organisation members can get an inactive organisation')
               }
             }
           }

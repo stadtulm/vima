@@ -18,7 +18,7 @@ module.exports = function (app) {
       },
       role: {
         type: String,
-        enum: ['admins', 'partners', 'users', 'deleted', 'system']
+        enum: ['admins', 'volunteers', 'partners', 'users', 'deleted', 'system']
       }
     },
     type: {

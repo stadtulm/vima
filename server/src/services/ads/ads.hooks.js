@@ -56,9 +56,9 @@ module.exports = {
             throw new Errors.Forbidden('Only registered users can create ads')
           }
         },
-        // Accept ad immediately if author is admin otherwise set accepted to false
+        // Accept ad immediately if author is admin or volunteer otherwise set accepted to false
         (context) => {
-          if (context.params.user.role === 'admins') {
+          if (context.params.user.role === 'admins' || context.params.user.role === 'volunteers') {
             context.data.accepted = {
               isAccepted: true,
               dt: new Date(),
@@ -121,7 +121,10 @@ module.exports = {
           // Check for changed properties
           delete tmpData.isActive
           if (
-            context.params.user?.role !== 'admins' &&
+            (
+              context.params.user?.role !== 'admins' ||
+              context.params.user?.role !== 'volunteers'
+            ) &&
             Object.keys(tmpData).length > 0
           ) {
             context.data.accepted = { isAccepted: false, dt: new Date(), user: context.params.user._id }
@@ -131,8 +134,8 @@ module.exports = {
         commonHooks.iff(
           context => context.data.isAccepted,
           (context) => {
-            if (context.params.user?.role !== 'admins') {
-              throw new Errors.Forbidden('Only administrators can accept ads')
+            if (context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers') {
+              throw new Errors.Forbidden('Only administrators and volunteers can accept ads')
             }
           }
         )
@@ -197,7 +200,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // If ad is inactive or not accepted a user can only request it if a relation (status container) already exists
           async (context) => {
             const restrictedAdIds = context.result.data
@@ -227,7 +230,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // If ad is inactive or not accepted a user can only request it if a relation (status container) already exists
           commonHooks.iff(
             (context) =>
@@ -263,7 +266,7 @@ module.exports = {
       },
       // Notify admins that there is an ad to accept
       async (context) => {
-        if (context.params.user.role !== 'admins') {
+        if (context.params.user.role !== 'admins' && context.params.user.role !== 'volunteers') {
           const tmpUsers = await context.app.service('status-containers').patch(
             null,
             {
@@ -299,7 +302,7 @@ module.exports = {
       // Check if ad status has been changed
       commonHooks.iff(
         (context) => { return context.data.accepted },
-        // Check if ad has been accepted by admin
+        // Check if ad has been accepted by admin or volunteer
         commonHooks.iff(
           (context) => {
             return context.data.tmpAdAuthor &&
@@ -367,7 +370,7 @@ module.exports = {
         ),
         // Notify admins that an ad has been patched and should be accepted
         commonHooks.iff(
-          (context) => { return context.params.user.role !== 'admins' },
+          (context) => { return context.params.user.role !== 'admins' && context.params.user.role !== 'volunteers' },
           async (context) => {
             const tmpUsers = await context.app.service('status-containers').patch(
               null,

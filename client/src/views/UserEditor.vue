@@ -113,7 +113,7 @@
                     v-model="role"
                     :label="$t('role')"
                     :rules="[rules.required]"
-                    :disabled="user.role !== 'admins' && user.role !== 'hosts' && user.role !== 'exhibitors'"
+                    :disabled="user.role !== 'admins'"
                   >
                   </v-select>
                 </v-col>
@@ -704,13 +704,11 @@ export default {
     },
     computedRoles () {
       const tmpRoleItems = JSON.parse(JSON.stringify(this.roleItems)).map(item => ({ title: this.$t(item.textKey), value: item.value }))
-      if (this.user.role === 'admins' || this.user.role === 'hosts') {
+      if (this.user.role === 'admins') {
         return tmpRoleItems
       } else {
         return tmpRoleItems.map(obj => {
-          if (obj.value !== 'staffs' && obj.value !== 'exhibitors') {
-            obj.disabled = true
-          }
+          obj.disabled = true
           return obj
         })
       }

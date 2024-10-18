@@ -71,7 +71,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           async (context) => {
             // Check violation is group violation
             const violation = await context.app.service('violations').get(
@@ -86,7 +86,7 @@ module.exports = {
               }
             )
             if (!violation.group || violation.type !== 'groups') {
-              throw new Errors.Forbidden('Only administrators can patch non group violations')
+              throw new Errors.Forbidden('Only administrators and volunteers can patch non group violations')
             }
             // Check if user is group owner or moderator
             const userStatusContainers = await context.app.service('status-containers').Model.countDocuments(
@@ -97,7 +97,7 @@ module.exports = {
               }
             )
             if (userStatusContainers === 0) {
-              throw new Errors.Forbidden('Only group owner and moderators can patch group violation')
+              throw new Errors.Forbidden('Only administrsators, volunteers, group owner and moderators can patch group violations')
             }
           }
         )
@@ -108,7 +108,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check if user is group owner / moderaor
           async (context) => {
             const violation = await context.app.service('violations').get(
@@ -123,7 +123,7 @@ module.exports = {
               }
             )
             if (!violation.group || violation.type !== 'groups') {
-              throw new Errors.Forbidden('Only administrators can remove non group violations')
+              throw new Errors.Forbidden('Only administrators and volunteers can remove non group violations')
             }
             const userStatusContainers = await context.app.service('status-containers').Model.countDocuments(
               {
@@ -133,7 +133,7 @@ module.exports = {
               }
             )
             if (userStatusContainers === 0) {
-              throw new Errors.Forbidden('Only group owner and moderators can remove group violation')
+              throw new Errors.Forbidden('Only administrators, volunteers, group owner and moderators can remove group violations')
             }
           }
         )
@@ -175,11 +175,11 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check if all violations are group violations
           (context) => {
             if (context.result.data.filter(obj => !obj.group || obj.type !== 'groups').length > 0) {
-              throw new Errors.Forbidden('Only administrators can request non group violations')
+              throw new Errors.Forbidden('Only administrators and volunteers can request non group violations')
             }
           },
           // Check if user is group owner or moderator
@@ -193,7 +193,7 @@ module.exports = {
               }
             )
             if (userStatusContainers < groupIds.length) {
-              throw new Errors.Forbidden('Only administrators, group owner or moderators can request group violations')
+              throw new Errors.Forbidden('Only administrators, volunteers, group owner or moderators can request group violations')
             }
           }
         )

@@ -247,7 +247,8 @@ const state = {
   roleItems: [
     { textKey: 'member', value: 'users' },
     { textKey: 'partner', value: 'partners' },
-    { textKey: 'admin', value: 'admins' }
+    { textKey: 'admin', value: 'admins' },
+    { textKey: 'volunteer', value: 'volunteers' }
   ],
   blockedItems: [
     { type: 'notBlocked', icon: 'fas fa-check-circle', textKey: 'notBlocked' },

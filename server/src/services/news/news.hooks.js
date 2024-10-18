@@ -34,9 +34,9 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           () => {
-            throw new Errors.Forbidden('Only administrators can create news')
+            throw new Errors.Forbidden('Only administrators and volunteers can create news')
           }
         )
       )
@@ -53,9 +53,9 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           () => {
-            throw new Errors.Forbidden('Only administrator can patch news')
+            throw new Errors.Forbidden('Only administrators and volunteers can patch news')
           }
         )
       )
@@ -64,9 +64,9 @@ module.exports = {
       commonHooks.iff(
         commonHooks.isProvider('external'),
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           () => {
-            throw new Errors.Forbidden('Only administrator can remove news')
+            throw new Errors.Forbidden('Only administrators and volunteers can remove news')
           }
         )
       )
@@ -80,7 +80,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check for internal news
           (context) => {
             const internalNews = context.result.data.filter(obj => obj.isInteral)
@@ -98,7 +98,7 @@ module.exports = {
           (context) => {
             const inactiveNews = context.result.data.filter(obj => !obj.isActive)
             if (inactiveNews.length > 0) {
-              throw new Errors.Forbidden('Only administrators can request inactive news')
+              throw new Errors.Forbidden('Only administrators and volunteers can request inactive news')
             }
           }
         )

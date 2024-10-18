@@ -109,6 +109,7 @@
                     color="customGrey"
                     class="my-3"
                     @click="newsletterDialogItem = item"
+                    :disabled="user.role !== 'admins'"
                   >
                   </v-btn>
                 </span>

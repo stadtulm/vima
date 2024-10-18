@@ -50,14 +50,14 @@ module.exports = {
         ),
         // Check for admin if group visibility is hidden
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins' && context.data.visibility === 'hidden',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers' && context.data.visibility === 'hidden',
           () => {
-            throw new Errors.Forbidden('Only administrators can create hidden groups')
+            throw new Errors.Forbidden('Only administrators and volunteers can create hidden groups')
           }
         ),
         // Accept group immediately if author is admin
         (context) => {
-          if (context.params.user.role === 'admins') {
+          if (context.params.user.role === 'admins' || context.params.user.role === 'volunteers') {
             context.data.accepted = { isAccepted: true, dt: new Date(), user: context.params.user._id }
           } else {
             context.data.accepted = { isAccepted: false, dt: new Date(), user: context.params.user._id }
@@ -99,7 +99,7 @@ module.exports = {
           )
           context.params.tmpGroupOwnerId = group.owner.user._id
           // Admin can skip this check
-          if (context.params.user.role !== 'admins') {
+          if (context.params.user.role !== 'admins' && context.params.user.role !== 'volunteers') {
             // Check for other properties than accepted
             const tmpData = JSON.parse(JSON.stringify(context.data))
             delete tmpData.accepted
@@ -108,7 +108,7 @@ module.exports = {
             !group.moderators.map(moderator => moderator.user._id.toString()).includes(context.params.user?._id.toString()) &&
             Object.keys(tmpData).length > 0
             ) {
-              throw new Errors.Forbidden('Only group owner can patch group properties')
+              throw new Errors.Forbidden('Only administrators, volunteers and group owners can patch group properties')
             }
           }
         },
@@ -117,8 +117,8 @@ module.exports = {
           (context) => context.data.isAccepted,
           // Only admin can patch accepted of discussion
           (context) => {
-            if (context.params.user?.role !== 'admins') {
-              throw new Errors.Forbidden('Only administrators can accept groups')
+            if (context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers') {
+              throw new Errors.Forbidden('Only administrators and volunteers can accept groups')
             }
           }
         ),
@@ -128,7 +128,8 @@ module.exports = {
         // other fields than active are patched
         (context) => {
           if (
-            context.params.user.role !== 'admins' &&
+            context.params.user?.role !== 'admins' &&
+            context.params.user?.role !== 'volunteers' &&
           !(
             Object.keys(context.data).includes('isActive') &&
             Object.keys(context.data).length === 1
@@ -198,7 +199,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check for group membership of hidden groups
           async (context) => {
             const resultToFilter = context.result.data || context.result
@@ -225,7 +226,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check if user is member of hidden or restricted group
           async (context) => {
             if (
@@ -265,7 +266,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Inform admins that new not accepted group has been created
         async (context) => {
-          if (context.params.user.role !== 'admins') {
+          if (context.params.user.role !== 'admins' && context.params.user.role !== 'volunteers') {
             const tmpUsers = await context.app.service('status-containers').patch(
               null,
               {
@@ -303,7 +304,7 @@ module.exports = {
         async (context) => {
           // Check if group status has been changed
           if (context.data.accepted) {
-            // If group has been accepted by admin
+            // If group has been accepted by admin or volunteer
             if (
               context.params.tmpGroupOwnerId.toString() !== context.params.user._id.toString() &&
               context.data.accepted.isAccepted
@@ -360,12 +361,12 @@ module.exports = {
                 }
               }
             )
-            if (context.params.user.role !== 'admins') {
+            if (context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers') {
               const tmpData = JSON.parse(JSON.stringify(context.data))
               delete tmpData.accepted
               delete tmpData.isActive
               if (Object.keys(tmpData).length > 0) {
-              // Notify admins that group has been patched
+                // Notify admins that group has been patched
                 const tmpUsers = await context.app.service('status-containers').patch(
                   null,
                   {

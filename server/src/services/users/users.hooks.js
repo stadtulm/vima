@@ -235,8 +235,8 @@ module.exports = {
         verifyHooks.removeVerification()
       ),
       async (context) => {
-        if (context.result.role === 'admins') {
-          for (const type of ['ads', 'discussions', 'groups', 'tags', 'violations']) {
+        if (context.result.role === 'admins' || context.result.role === 'volunteers') {
+          for (const type of ['ads', 'discussions', 'groups', 'violations']) {
             await context.app.service('status-containers').create(
               {
                 user: context.result._id,
@@ -276,7 +276,7 @@ module.exports = {
         let statusContainer = []
         // Find existing status container
         if (context.data.role) {
-          for (const type of ['ads', 'discussions', 'groups', 'tags', 'violations']) {
+          for (const type of ['ads', 'discussions', 'groups', 'violations']) {
             statusContainer = await context.app.service('status-containers').find(
               {
                 query: {
@@ -286,7 +286,10 @@ module.exports = {
                 }
               }
             )
-            if (context.data.role === 'admins' && statusContainer.length === 0) {
+            if (
+              (context.data.role === 'admins' || context.data.role === 'volunteers') &&
+              statusContainer.length === 0
+            ) {
               // User is admin now but has no status container - create one
               statusContainer = await context.app.service('status-containers').create(
                 {
@@ -295,7 +298,7 @@ module.exports = {
                   type
                 }
               )
-            } else if (context.data.role !== 'admins' && statusContainer.length === 1) {
+            } else if (context.data.role !== 'admins' && context.data.role !== 'volunteers' && statusContainer.length === 1) {
             // User is no admin anymore but has status container
               await context.app.service('status-containers').remove(statusContainer[0]._id)
             }

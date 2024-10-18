@@ -105,6 +105,7 @@
                     :icon="item.isActive ? 'fas fa-check-square' : 'far fa-square'"
                     :color="$settings.modules.groups.color"
                     :loading="loaders[item._id + 'isActive'] === true"
+                    :disabled="user.role !== 'admins'"
                     @click="changeGroupsProperty(
                       item,
                       'isActive',
@@ -129,7 +130,7 @@
                     variant="text"
                     :icon="item.accepted?.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
                     :color="$settings.modules.groups.color"
-                    :disabled="user.role !== 'admins'"
+                    :disabled="user.role !== 'admins' && user.role !== 'volunteers'"
                     :loading="loaders[item._id + 'accepted'] === true"
                     @click="changeGroupsProperty(
                       item,
@@ -362,6 +363,7 @@
                     class="my-4"
                     :loading="loaders[item._id + 'delete'] === true"
                     @click="deleteGroup(item._id)"
+                    :disabled="user.role !== 'admins'"
                   >
                   </v-btn>
                 </span>

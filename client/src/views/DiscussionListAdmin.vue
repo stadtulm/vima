@@ -128,7 +128,7 @@
                     variant="text"
                     :icon="item.accepted.isAccepted ? 'fas fa-check-square' : 'far fa-square'"
                     :color="$settings.modules.discussions.color"
-                    :disabled="user.role !== 'admins'"
+                    :disabled="user.role !== 'admins' && user.role !== 'volunteers'"
                     :loading="loaders[item._id + 'accepted'] === true"
                     @click="changeDiscussionProperty(
                       item,
@@ -161,6 +161,7 @@
                     class="my-4"
                     :loading="loaders[item._id + 'delete'] ===  true"
                     @click="deleteDiscussion(item._id)"
+                    :disabled="user.role !== 'admins'"
                   >
                   </v-btn>
                 </span>

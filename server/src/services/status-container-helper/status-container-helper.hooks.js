@@ -123,7 +123,7 @@ module.exports = {
             }
           // Only admins can add users to organisations
           } else if (context.data.type === 'createOrganisationMembership') {
-            if (context.params.user?.role !== 'admins') {
+            if (context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers') {
               throw new Errors.Forbidden('Only administrators can add users to organisations')
             }
           }
@@ -196,7 +196,7 @@ module.exports = {
             }
           // Only admins can remove users from organisations
           } else if (context.params.query.type === 'removeOrganisationMembership') {
-            if (context.params.user?.role !== 'admins') {
+            if (context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers') {
               throw new Errors.Forbidden('Only administrators can remove users from organisations')
             }
           }

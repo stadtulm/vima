@@ -182,7 +182,7 @@ module.exports = {
         commonHooks.isProvider('external'),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins',
+          (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check if discussion is a group discussion and store group for later
           commonHooks.iffElse(
             async (context) => {
@@ -220,7 +220,7 @@ module.exports = {
                   context.params.user._id.toString() !== context.params.tmpMessage.author.toString()
                 )
               ) {
-                throw new Errors.Forbidden('Only group owner, moderator or author who is still member of the group can remove group discussion messages')
+                throw new Errors.Forbidden('Only administrators, volunteers, group owners, moderators or authors who are still member of the group can remove group discussion messages')
               }
             }
           )
