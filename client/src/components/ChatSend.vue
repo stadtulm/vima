@@ -164,16 +164,18 @@ export default {
     },
     async sendMessage () {
       this.isSending = true
-      try {
-        const tmpChat = await this.createChat([
-          {
-            tmpUsers: [this.user._id, this.$route.params.user]
-          }
-        ])
-        this.$emit('create:chat', tmpChat)
-        await this.$nextTick()
-      } catch (e) {
+      if (!this.chat) {
+        try {
+          const tmpChat = await this.createChat([
+            {
+              tmpUsers: [this.user._id, this.$route.params.user]
+            }
+          ])
+          this.$emit('create:chat', tmpChat)
+          await this.$nextTick()
+        } catch (e) {
         // Could not create chat
+        }
       }
       try {
         await this.$refs.messageUpload_main.upload()

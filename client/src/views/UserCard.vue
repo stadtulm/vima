@@ -67,7 +67,7 @@
               <v-btn
                 dark
                 color="customGrey"
-                :to="{ name: 'UserNameChat', params: { id: computedUser._id, username: computedUser.userName } }"
+                :to="{ name: 'UserNameChat', params: { user: computedUser._id, username: computedUser.userName } }"
               >
                 {{$t('goToChat')}}
                 <v-icon
