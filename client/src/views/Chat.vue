@@ -122,7 +122,6 @@
                                 class="align-center"
                               >
                                 <v-menu
-                                  open-on-hover
                                   v-if="isOwnMessage(message)"
                                 >
                                   <template v-slot:activator="{ props }">
@@ -189,7 +188,6 @@
                                   v-if="!isOwnMessage(message)"
                                 >
                                   <v-menu
-                                    open-on-hover
                                   >
                                     <template v-slot:activator="{ props }">
                                       <v-btn
@@ -252,7 +250,6 @@
                                 class="align-center"
                               >
                                 <v-menu
-                                  open-on-hover
                                   v-if="isOwnMessage(message)"
                                 >
                                   <template v-slot:activator="{ props }">
@@ -322,7 +319,6 @@
                                   </v-sheet>
                                 </v-sheet>
                                 <v-menu
-                                  open-on-hover
                                   v-if="!isOwnMessage(message)"
                                 >
                                   <template v-slot:activator="{ props }">

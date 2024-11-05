@@ -227,7 +227,6 @@
                       >
                         <v-menu
                           v-if="isOwnMessage(message)"
-                          open-on-hover
                         >
                           <template v-slot:activator="{ props }">
                             <v-btn
@@ -281,7 +280,6 @@
                         </v-menu>
                         <v-menu
                           v-if="!isOwnMessage(message) && user"
-                          open-on-hover
                         >
                           <template v-slot:activator="{ props }">
                             <v-btn
