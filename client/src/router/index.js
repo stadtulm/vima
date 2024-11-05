@@ -1347,9 +1347,9 @@ const router = createRouter({
           if (savedPosition) {
             resolve(savedPosition)
           } else {
-            resolve({ x: 0, y: 0 })
+            resolve({ top: 0 })
           }
-        }, 500)
+        }, 250)
       })
     })
   }
