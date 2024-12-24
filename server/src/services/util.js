@@ -455,7 +455,7 @@ module.exports = {
                   categories: {
                     $first: '$categories'
                   },
-                  tage: {
+                  tags: {
                     $first: '$tags'
                   },
                   prominentCategories: {

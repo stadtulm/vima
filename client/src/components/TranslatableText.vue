@@ -83,7 +83,7 @@ export default {
   ],
 
   data: () => ({
-    updateText: 0
+    updateText: 1
   }),
 
   async mounted () {
@@ -128,7 +128,7 @@ export default {
       this.SET_TRANSLATOR_BLOCKED(true)
       let textsToTranslate
       let textsToShow
-      textsToTranslate = allTexts ? this.allIds : [{ id: this.textParent._id, translationSum: this.textParent.translationSum }]
+      textsToTranslate = allTexts && this.allIds ? this.allIds : [{ id: this.textParent._id, translationSum: this.textParent.translationSum }]
 
       if (force) {
         textsToShow = []
