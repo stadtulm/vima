@@ -164,7 +164,7 @@ export default {
           moduleKey => ({
             ...this.$settings.modules[moduleKey],
             type: moduleKey,
-            to: moduleKey === 'ads' ? 'CategoryList' : moduleKey[0].toUpperCase() + moduleKey.substr(1)
+            to: moduleKey === 'ads' ? 'AdsListView' : moduleKey[0].toUpperCase() + moduleKey.substr(1)
           })
         )
         .filter(module => module.isActive)

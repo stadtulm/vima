@@ -902,28 +902,6 @@ const routes = [
   },
   // Allgemeine Überblicke
   {
-    path: '/kategorien/:type?',
-    name: 'CategoryList',
-    component: CategoriesListView,
-    meta: {
-      breadCrumbTextKey: 'categories',
-      breadCrumbPredecessors: [
-        ['Participate']
-      ]
-    },
-    beforeEnter: Multiguard([
-      (to, from, next) => {
-        if (!to.params) {
-          to.params = {}
-        }
-        if (!to.params.type) {
-          to.params.type = from.meta.step
-        }
-        next()
-      }
-    ])
-  },
-  {
     path: '/mitmachen',
     name: 'Participate',
     component: Participate,
@@ -979,6 +957,29 @@ const routes = [
     ])
   },
   {
+    path: '/suchebiete/kategorien',
+    name: 'CategoriesListView',
+    component: CategoriesListView,
+    meta: {
+      breadCrumbTextKey: 'categories',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['AdsListView']
+      ]
+    },
+    beforeEnter: Multiguard([
+      (to, from, next) => {
+        if (!to.params) {
+          to.params = {}
+        }
+        if (!to.params.type) {
+          to.params.type = from.meta.step
+        }
+        next()
+      }
+    ])
+  },
+  {
     path: '/suchebiete',
     name: 'AdsListView',
     component: AdsListView,
@@ -986,8 +987,7 @@ const routes = [
       step: 'ads',
       breadCrumbTextKey: 'ads',
       breadCrumbPredecessors: [
-        ['Participate'],
-        ['CategoryList']
+        ['Participate']
       ]
     },
     beforeEnter: Multiguard([

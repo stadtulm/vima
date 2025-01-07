@@ -184,7 +184,7 @@
             <v-list-item
               v-if="$settings.modules.ads.isActive"
               :color="$settings.modules.ads.color"
-              :to="{ name: 'CategoryList', params: { type: 'ads' } }"
+              :to="{ name: 'AdsListView' }"
             >
               <v-list-item-title>
                 <div

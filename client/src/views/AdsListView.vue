@@ -163,6 +163,20 @@
     >
       <v-row>
         <v-col
+          cols="12"
+        >
+          <v-btn
+            block
+            :color="$settings.modules.ads.color"
+            class="text-white"
+            :to="{ name: 'CategoriesListView' }"
+          >
+            {{$t('showCategoriesList')}}
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
           v-for="ad in computedAds"
           :key="ad._id"
           cols="12"

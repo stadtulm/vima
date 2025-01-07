@@ -10,10 +10,7 @@
           >
             <div
               v-html="
-                $t('categories') + ' ' +
-                $route.params.type ?
-                  $t('for') + ' ' + $t(typeItems[$route.params.type]) :
-                  ''
+                $t('categories') + ' ' + $t('for') + ' ' + $t(typeItems['ads'])
               "
             >
             </div>
@@ -24,7 +21,7 @@
             <v-btn
               v-if="computedFiltersDirty"
               variant="text"
-              :color="computedColor"
+              :color="$settings.modules.ads.color"
               @click="resetFilters()"
             >
               {{$t('resetFilters')}}
@@ -35,11 +32,11 @@
           >
             <v-badge
               v-model="computedFiltersDirty"
-              :color="computedColor"
+              :color="$settings.modules.ads.color"
             >
               <v-btn
                 variant="outlined"
-                :color="computedColor"
+                :color="$settings.modules.ads.color"
                 @click="showFilters = !showFilters"
               >
                 {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
@@ -57,11 +54,11 @@
             class="my-3 mr-1"
           >
             <v-btn
-              :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1, $route.params.type.length - 2) + 'Editor' }"
-              :color="computedColor"
+              :to="{ name: 'AdEditor' }"
+              :color="$settings.modules.ads.color"
               class="text-white"
             >
-              {{$t('new' + $route.params.type[0].toUpperCase() + $route.params.type.substr(1, $route.params.type.length - 2) + 'Button')}}
+              {{$t('newAdButton')}}
               <v-icon
                 class="ml-3"
                 size="18"
@@ -99,9 +96,9 @@
       >
         <v-btn
           block
-          :color="computedColor"
+          :color="$settings.modules.ads.color"
           class="text-white"
-          :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView' }"
+          :to="{ name: 'AdsListView' }"
         >
           {{$t('buttonShowAllEntries')}}
         </v-btn>
@@ -127,33 +124,23 @@
           :must-sort="true"
         >
           <template
-            v-slot:[`item.pic`]="{ item }"
-          >
-            <v-img
-              v-if="item.pic"
-              :src="s3 + item.pic.url"
-              contain
-              max-height="100"
-              max-width="100"
-              :alt="$t('categoryPic')"
-              :title="item.pic.credit ? '© ' + item.pic.credit : ''"
-            >
-            </v-img>
-          </template>
-          <template
             v-slot:[`item.text.value`]="{ item }"
           >
-            <v-list-item-title
+            <v-row
               class="pointer font-weight-bold"
-              @click="$router.push({ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id }})"
+              @click="$router.push({ name: 'AdsListView', query: { c: item._id }})"
             >
-              {{item.text.value}}
-            </v-list-item-title>
+              <v-col
+                class="text-title"
+              >
+                {{item.text.value}}
+              </v-col>
+            </v-row>
           </template>
           <template
             v-slot:[`item.entries`]="{ item }"
           >
-            {{item[$route.params.type]}}
+            {{item.ads}}
           </template>
 
           <template
@@ -166,7 +153,7 @@
                 v-for="tag in getTags(item)"
                 :key="tag._id"
                 class="ma-1"
-                :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView', query: { c: item._id, t: tag._id } }"
+                :to="{ name: 'AdsListView', query: { c: item._id, t: tag._id } }"
               >
                 {{tag.text}}
               </v-chip>
@@ -187,9 +174,9 @@
       >
         <v-btn
           block
-          :color="computedColor"
+          :color="$settings.modules.ads.color"
           class="text-white"
-          :to="{ name: $route.params.type[0].toUpperCase() + $route.params.type.substr(1) + 'ListView' }"
+          :to="{ name: 'AdsListView' }"
         >
           {{$t('buttonShowAllEntries')}}
         </v-btn>
@@ -223,15 +210,6 @@ export default {
   }),
 
   async mounted () {
-    if (!this.categories || this.categories.length === 0) {
-      if (this.$route.params.type) {
-        const type = this.$route.params.type[0].toUpperCase() + this.$route.params.type.substr(1) + 'ListView'
-        this.$router.replace({ params: { type: null } })
-        this.$router.push({ name: type })
-      } else {
-        this.$route.params.type = 'ads'
-      }
-    }
     await this.adaptQuery()
   },
 
@@ -268,8 +246,8 @@ export default {
       this.loading = false
     },
     getTags (category) {
-      if (category[this.$route.params.type + 'Tags']) {
-        const arrays = category[this.$route.params.type + 'Tags'].filter(obj => obj.tags).map(obj => obj.tags)
+      if (category.adsTags) {
+        const arrays = category.adsTags.filter(obj => obj.tags).map(obj => obj.tags)
         if (arrays.length > 0) {
           return [
             ...new Set(
@@ -329,26 +307,18 @@ export default {
     },
     headers () {
       return [
-        { title: '', key: 'pic', sortable: false },
         { title: this.$t('name'), key: 'text.value', minWidth: '30%' },
         { title: this.$t('tags'), key: 'tags', sortable: false },
         { title: this.$t('description'), key: 'description', minWidth: '50%', sortable: false },
         { title: this.$t('entries'), key: 'entries', align: 'center' }
       ]
     },
-    computedColor () {
-      if (this.$settings.modules[this.$route.params.type] && this.$settings.modules[this.$route.params.type].color) {
-        return this.$settings.modules[this.$route.params.type].color
-      } else {
-        return 'customGrey'
-      }
-    },
     categoriesParams () {
       const query = {
         $limit: this.computedLimit,
         $skip: this.computedSkip,
         $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder },
-        $populate: [this.$route.params.type, this.$route.params.type + 'Tags']
+        $populate: ['ads', 'adsTags']
       }
       if (this.queryObject.query) {
         query.text = {
