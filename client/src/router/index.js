@@ -36,6 +36,8 @@ import SiteListAdmin from '@/views/SiteListAdmin.vue'
 import News from '@/views/News.vue'
 import NewsEditor from '@/views/NewsEditor.vue'
 import NewsListAdmin from '@/views/NewsListAdmin.vue'
+import InfoBoxEditor from '@/views/InfoBoxEditor.vue'
+import InfoBoxListAdmin from '@/views/InfoBoxListAdmin.vue'
 import Blog from '@/views/Blog.vue'
 import BlogEditor from '@/views/BlogEditor.vue'
 import BlogListAdmin from '@/views/BlogListAdmin.vue'
@@ -330,6 +332,23 @@ const routes = [
     },
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
+      checkLoggedIn,
+      checkAdminVolunteer
+    ])
+  },
+  {
+    path: '/admin/infos/editor/:id?',
+    name: 'InfoBoxEditor',
+    component: InfoBoxEditor,
+    meta: {
+      breadCrumbTextKey: 'editInfoSlide',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['InfoBoxListAdmin']
+      ],
+      step: 'infoBox'
+    },
+    beforeEnter: Multiguard([
       checkLoggedIn,
       checkAdminVolunteer
     ])
@@ -785,6 +804,22 @@ const routes = [
     },
     beforeEnter: Multiguard([
       checkModuleActiveOrDependency,
+      checkLoggedIn,
+      checkAdminVolunteer
+    ])
+  },
+  {
+    path: '/admin/infos/uebersicht',
+    name: 'InfoBoxListAdmin',
+    component: InfoBoxListAdmin,
+    meta: {
+      breadCrumbTextKey: 'infoBoxAdminOverview',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ],
+      step: 'infoBox'
+    },
+    beforeEnter: Multiguard([
       checkLoggedIn,
       checkAdminVolunteer
     ])

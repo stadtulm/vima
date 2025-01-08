@@ -31,6 +31,7 @@ const settings = require('./settings/settings.service.js')
 const sponsors = require('./sponsors/sponsors.service.js')
 const translator = require('./translator/translator.service.js')
 const activities = require('./activities/activities.service.js')
+const infos = require('./infos/infos.service.js')
 
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
@@ -67,4 +68,5 @@ module.exports = function (app) {
   app.configure(sponsors)
   app.configure(translator)
   app.configure(activities)
+  app.configure(infos)
 }

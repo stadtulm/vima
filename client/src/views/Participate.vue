@@ -1,5 +1,12 @@
 <template>
   <div>
+    <v-row
+      class="mb-3"
+    >
+      <v-col>
+        <info-box></info-box>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col
         class="text-h5 font-weight-bold text-customGrey"
@@ -120,12 +127,14 @@
 
 import { mapGetters } from 'vuex'
 import LanguageSelect from '@/components/LanguageSelect.vue'
+import InfoBox from '@/components/InfoBox.vue'
 
 export default {
   name: 'Home',
 
   components: {
-    LanguageSelect
+    LanguageSelect,
+    InfoBox
   },
 
   data: () => ({

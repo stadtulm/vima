@@ -32,6 +32,7 @@ import { uploads } from './services/uploads'
 import { users } from './services/users'
 import { violations } from './services/violations'
 import { activities } from './services/activities'
+import { infos } from './services/infos'
 
 import globals from './globals'
 
@@ -78,6 +79,7 @@ const store = createStore({
     users({ feathers }),
     violations({ feathers }),
     activities({ feathers }),
+    infos({ feathers }),
     feathers.apiVuex.makeAuthPlugin({ userService: 'users' })
   ]
 })

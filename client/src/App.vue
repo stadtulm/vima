@@ -1048,6 +1048,21 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="
+              (
+                user.role === 'admins' ||
+                user.role === 'volunteers'
+              )
+              "
+              :to="{ name: 'InfoBoxListAdmin' }"
+            >
+              <v-list-item-title
+                class="font-weight-bold text-customGrey"
+              >
+                {{$t('infoBox')}}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
               v-if="moduleVisibilities.events && user.role === 'admins'"
               :to="{ name: 'EventListAdmin', params: {} }"
             >
