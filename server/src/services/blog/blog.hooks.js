@@ -167,7 +167,16 @@ module.exports = {
     create: [],
     update: [],
     patch: [],
-    remove: []
+    remove: [
+      async (context) => {
+        // Remove images / uploads of this blog
+        if (context.result.pics) {
+          for (const pic of context.result.pics) {
+            await context.app.service('uploads').remove(pic.url)
+          }
+        }
+      }
+    ]
   },
 
   error: {

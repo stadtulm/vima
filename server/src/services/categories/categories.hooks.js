@@ -66,7 +66,13 @@ module.exports = {
           () => {
             throw new Errors.Forbidden('Only administrators can remove categories')
           }
-        )
+        ),
+        async (context) => {
+          // Remove image
+          if (context.result.pic) {
+            await context.app.service('uploads').remove(context.result.pic.url)
+          }
+        }
       )
     ]
   },
