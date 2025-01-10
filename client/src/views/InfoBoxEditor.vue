@@ -305,7 +305,6 @@ export default {
         pic: this.pic,
         color: this.color
       }
-      console.log(this.color)
       try {
         if (this.$route.params.id) {
           await this.patchInfo([this.$route.params.id, map, {}])

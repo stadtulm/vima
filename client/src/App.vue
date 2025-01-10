@@ -1012,6 +1012,20 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="
+                (
+                  user.role === 'admins'
+                )
+              "
+              :to="{ name: 'ThemeListAdmin' }"
+            >
+              <v-list-item-title
+                class="font-weight-bold text-customGrey"
+              >
+                {{$t('manageThemesButton')}}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
               v-if="moduleVisibilities.sponsors && user.role === 'admins'"
               :to="{ name: 'SponsorListAdmin' }"
             >

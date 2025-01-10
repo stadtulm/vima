@@ -45,6 +45,8 @@ import ViolationListAdmin from '@/views/ViolationListAdmin.vue'
 import Organisations from '@/views/Organisations.vue'
 import Organisation from '@/components/OrganisationCard.vue'
 import OrganisationListAdmin from '@/views/OrganisationListAdmin.vue'
+import ThemeListAdmin from '@/views/ThemeListAdmin.vue'
+import ThemeEditor from '@/views/ThemeEditor.vue'
 import OrganisationEditor from '@/views/OrganisationEditor.vue'
 import Sponsors from '@/views/Sponsors.vue'
 import SponsorListAdmin from '@/views/SponsorListAdmin.vue'
@@ -334,6 +336,23 @@ const routes = [
       checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdminVolunteer
+    ])
+  },
+  {
+    path: '/admin/themen/editor/:theme?',
+    name: 'ThemeEditor',
+    component: ThemeEditor,
+    meta: {
+      breadCrumbTextKey: 'editTheme',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['ThemeListAdmin']
+      ],
+      step: 'themes'
+    },
+    beforeEnter: Multiguard([
+      checkLoggedIn,
+      checkAdmin
     ])
   },
   {
@@ -871,6 +890,22 @@ const routes = [
       checkModuleActiveOrDependency,
       checkLoggedIn,
       checkAdminVolunteer
+    ])
+  },
+  {
+    path: '/admin/themen/uebersicht',
+    name: 'ThemeListAdmin',
+    component: ThemeListAdmin,
+    meta: {
+      breadCrumbTextKey: 'themesAdminOverview',
+      breadCrumbPredecessors: [
+        ['Participate']
+      ],
+      step: 'themes'
+    },
+    beforeEnter: Multiguard([
+      checkLoggedIn,
+      checkAdmin
     ])
   },
   {

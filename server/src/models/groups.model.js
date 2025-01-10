@@ -18,6 +18,10 @@ module.exports = function (app) {
       type: Translation,
       required: true
     }],
+    theme: {
+      type: ObjectId,
+      ref: 'themes'
+    },
     pics: [
       {
         url: { type: String },

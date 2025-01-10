@@ -143,27 +143,52 @@
       </v-row>
     </v-expand-transition>
     <template
-      v-if="computedGroups && computedGroups.length > 0"
+      v-if="computedElements && computedElements.length > 0"
     >
       <v-row>
         <v-col
-          v-for="group in computedGroups"
-          :key="group._id"
+          v-for="element in computedElements"
+          :key="element._id"
           cols="12"
           sm="6"
           md="4"
         >
-          <GroupCard
-            :groupProp="group"
-            :allGroupIds="computedGroups.map(
-                obj => ({
-                  id: obj._id,
-                  translationSum: obj.translationSum
-                })
-              )"
-            @update:selectCategory="selectCategoryHandler"
-            @update:selectTag="selectTagHandler"
-          ></GroupCard>
+          <template
+            v-if="element.type === 'group'"
+          >
+            <GroupCard
+              :groupProp="element"
+              :allGroupIds="computedElements.map(
+                  obj => ({
+                    id: obj._id,
+                    translationSum: obj.translationSum
+                  })
+                )"
+              @update:selectCategory="selectCategoryHandler"
+              @update:selectTag="selectTagHandler"
+            ></GroupCard>
+          </template>
+          <template v-else-if="element.type === 'theme'">
+            ////////TODO
+            <v-card>
+              <v-card-text>
+                <v-row
+                >
+                  <v-col
+                    v-for="(group, i) in element.groups"
+                    :key="i"
+                    cols="6"
+                  >
+                    <v-card>
+                      <v-card-text>
+                        {{group.title.value}}
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </template>
         </v-col>
       </v-row>
       <v-row>
@@ -226,6 +251,7 @@ export default {
   },
 
   data: () => ({
+    computedElements: [],
     rawSortBy: undefined,
     showFilters: true,
     loading: true,
@@ -364,13 +390,6 @@ export default {
         query
       }
     },
-    computedGroups () {
-      if (this.groupsResponse && this.groupsResponse.data) {
-        return this.groupsResponse.data
-      } else {
-        return []
-      }
-    },
     computedTotal () {
       if (this.groupsResponse) {
         return this.groupsResponse.total
@@ -432,6 +451,37 @@ export default {
     async 'queryObject.itemsPerPage' () {
       this.updateQueryItemsPerPage(this.queryObject.itemsPerPage)
       await this.loadDataTableEntities()
+    },
+    groupsResponse: {
+      deep: true,
+      async handler () {
+        if (this.groupsResponse && this.groupsResponse.data) {
+          const foundThemes = []
+          const tmpGroups = JSON.parse(JSON.stringify(this.groupsResponse.data)).map(group => {
+            if (!group.theme) {
+              group.type = 'group'
+              return group
+            } else {
+              if (!foundThemes.map(theme => theme._id).includes(group.theme._id)) {
+                const tmpTheme = group.theme
+                delete group.theme
+                foundThemes.push(tmpTheme)
+                tmpTheme.type = 'theme'
+                tmpTheme.groups = [group]
+                return tmpTheme
+              } else {
+                const foundThemeId = group.theme._id
+                delete group.theme
+                foundThemes.find(theme => theme._id === foundThemeId).groups.push(group)
+                return null
+              }
+            }
+          }).filter(element => !!element)
+          this.computedElements = tmpGroups
+        } else {
+          this.computedElements = []
+        }
+      }
     }
   }
 }
