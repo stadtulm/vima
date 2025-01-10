@@ -158,7 +158,7 @@
           >
             <GroupCard
               :groupProp="element"
-              :allGroupIds="computedElements.map(
+              :allGroupIds="groupsResponse.data.map(
                   obj => ({
                     id: obj._id,
                     translationSum: obj.translationSum
@@ -169,19 +169,76 @@
             ></GroupCard>
           </template>
           <template v-else-if="element.type === 'theme'">
-            ////////TODO
-            <v-card>
+            <v-card
+              flat
+              color="#fffb"
+              class="fill-height"
+            >
               <v-card-text>
+                <v-row>
+                  <v-col
+                    class="text-h6 font-weight-bold"
+                    :style="'color:'+$settings.modules.groups.color"
+                  >
+                    <v-icon
+                      class="mr-1 mb-1"
+                      :color="$settings.modules.groups.color"
+                      size="24"
+                    >
+                      fas fa-folder
+                    </v-icon>
+                    {{element.title?.value}}
+                  </v-col>
+                </v-row>
                 <v-row
+                  v-if="element.description?.value"
                 >
                   <v-col
-                    v-for="(group, i) in element.groups"
-                    :key="i"
-                    cols="6"
+                    class="text-body-1"
                   >
-                    <v-card>
+                    {{element.description?.value}}
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="pt-0">
+                    <v-card
+                      class="py-1"
+                      :color="$settings.modules.groups.color"
+                    >
                       <v-card-text>
-                        {{group.title.value}}
+                        <v-row>
+                          <v-col
+                            v-for="group in element.groups"
+                            :key="group._id"
+                            cols="12"
+                            class="py-2"
+                          >
+                            <v-card
+                              color="customGreyUltraLight"
+                            >
+                              <v-card-text>
+                                <div
+                                  class="text-h7 font-weight-bold pointer"
+                                  @click="$router.push({ name: 'Group', params: { group: group._id }})"
+                                >
+                                  <TranslatableText
+                                    ownField="title"
+                                    :allFields="['title', 'description']"
+                                    type="groups"
+                                    :allIds="groupsResponse.data.map(
+                                      obj => ({
+                                        id: obj._id,
+                                        translationSum: obj.translationSum
+                                      })
+                                    )"
+                                    :textParent="group"
+                                  >
+                                  </TranslatableText>
+                                </div>
+                              </v-card-text>
+                            </v-card>
+                          </v-col>
+                        </v-row>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -242,12 +299,14 @@
 
 import { mapGetters, mapActions } from 'vuex'
 import GroupCard from '@/components/GroupCard.vue'
+import TranslatableText from '@/components/TranslatableText.vue'
 
 export default {
   name: 'Groups',
 
   components: {
-    GroupCard
+    GroupCard,
+    TranslatableText
   },
 
   data: () => ({
@@ -455,6 +514,8 @@ export default {
     groupsResponse: {
       deep: true,
       async handler () {
+        console.log(this.$i18n)
+        // this.reduceTranslations(result, this.$i18n.locale, ['text', 'description'])
         if (this.groupsResponse && this.groupsResponse.data) {
           const foundThemes = []
           const tmpGroups = JSON.parse(JSON.stringify(this.groupsResponse.data)).map(group => {
@@ -477,6 +538,15 @@ export default {
               }
             }
           }).filter(element => !!element)
+          foundThemes.map(theme => {
+            for (const prop of ['title', 'description']) {
+              let tmpTranslation = theme[prop]?.find(p => p.lang === this.$i18n.locale)
+              if (!tmpTranslation) tmpTranslation = theme[prop]?.find(p => p.lang === this.$i18n.fallbackLocale)
+              if (!tmpTranslation) tmpTranslation = theme[prop]?.find(p => p.type === 'default')
+              if (tmpTranslation) theme[prop] = tmpTranslation
+            }
+            return theme
+          })
           this.computedElements = tmpGroups
         } else {
           this.computedElements = []
