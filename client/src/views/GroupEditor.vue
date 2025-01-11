@@ -48,7 +48,7 @@
                     density="compact"
                     :label="$t('groupName')"
                     v-model="title"
-                    :rules="[rules.required]"
+                    :rules="[rules.required, rules.titleText]"
                   >
                   </v-text-field>
                 </v-col>
@@ -150,7 +150,7 @@
                         cols="12"
                       >
                         <v-input
-                          :rules="[rules.tiptapRequired]"
+                          :rules="[rules.tiptapRequired, rules.longText]"
                           v-model="description"
                           width="100%"
                         >

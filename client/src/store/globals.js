@@ -216,7 +216,8 @@ const state = {
     content: value => (!value || value.length < 0) || i18n.global.t('rulesRequired'),
     tagText: value => (!value || value.length <= 50) || i18n.global.t('rulesMaxLength', { msg: 40 }),
     shortText: value => (!value || value.length <= 150) || i18n.global.t('rulesMaxLength', { msg: 150 }),
-    longText: value => (!value || value.length <= 500) || i18n.global.t('rulesMaxLength', { msg: 500 }),
+    titleText: value => (!value || value.length <= 50) || i18n.global.t('rulesMaxLength', { msg: 50 }),
+    longText: value => (!value || value.length <= 1000) || i18n.global.t('rulesMaxLength', { msg: 1000 }),
     email: value => {
       const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       return (!value || pattern.test(value)) || i18n.global.t('rulesEmail')
