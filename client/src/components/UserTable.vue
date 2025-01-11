@@ -56,11 +56,11 @@
           <template
             v-slot:[`item.userName`]="{ item }"
           >
-            <v-list-item-title
+            <div
               class="font-weight-bold"
             >
               {{item.userName}}
-            </v-list-item-title>
+            </div>
           </template>
           <template
             v-slot:[`item.customAction`]="{ item }"

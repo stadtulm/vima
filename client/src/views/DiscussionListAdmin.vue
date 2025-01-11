@@ -356,13 +356,13 @@ export default {
     headers () {
       return [
         { title: this.$t('title'), key: 'title.value' },
-        { title: this.$t('author'), key: 'author', sortable: false },
-        { title: this.$t('group'), key: 'group', sortable: false },
-        { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
         { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
-        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
+        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false },
+        { title: this.$t('author'), key: 'author', sortable: false },
+        { title: this.$t('group'), key: 'group', sortable: false },
+        { title: this.$t('createdAt'), key: 'createdAt' }
       ]
     },
     discussionsParams () {

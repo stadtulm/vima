@@ -68,12 +68,12 @@
                 v-for="user in otherStatusContainers.filter(obj => obj.reference === item._id).map(obj => getUser(obj.user))"
                 :key="user._id"
               >
-                <v-list-item-title
+                <div
                   class="font-weight-bold pointer"
                   @click="$router.push({name: 'User', params: { user: user._id}})"
                 >
                   {{user.userName}}
-                </v-list-item-title>
+                </div>
                 <v-list-item-subtitle
                   v-if="user.description && user.description !== ''"
                 >

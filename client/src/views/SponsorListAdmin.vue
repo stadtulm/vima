@@ -58,11 +58,11 @@
           <template
             v-slot:[`item.name`]="{ item }"
           >
-            <v-list-item-title
+            <div
               class="font-weight-bold"
             >
               {{item.name}}
-            </v-list-item-title>
+            </div>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
@@ -210,11 +210,11 @@ export default {
     headers () {
       return [
         { title: this.$t('name'), key: 'name' },
-        { title: this.$t('createdAt'), key: 'createdAt', minWidth: 170 },
-        { title: this.$t('updatedAt'), key: 'updatedAt', minWidth: 170 },
-        { title: this.$t('position'), key: 'position', minWidth: 170 },
+        { title: this.$t('position'), key: 'position' },
         { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
-        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' }
+        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('updatedAt'), key: 'updatedAt' }
       ]
     },
     sponsorsParams () {

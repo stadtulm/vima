@@ -66,7 +66,7 @@
             <v-list-item
               class="pa-0"
             >
-              <v-list-item-title
+              <div
                 class="font-weight-bold"
               >
                 <span
@@ -80,7 +80,7 @@
                   style="translate: 3px 5.5px;"
                   :country="item.nationality === 'en' ? 'gb': item.nationality"
                 ></country-flag>
-              </v-list-item-title>
+              </div>
               <v-list-item-subtitle
                 v-if="item.description"
               >

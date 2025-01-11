@@ -474,8 +474,8 @@
                               </v-icon>
                             </v-avatar>
                           </template>
-                          <v-list-item-title
-                            class="pointer"
+                          <div
+                            class="pointer font-weight-bold"
                             @click="$router.push({name: 'User', params: { user: member._id}})"
                           >
                             {{member.userName}}
@@ -485,7 +485,7 @@
                             >
                               - {{$t(relationItems[relation].textKey)}}
                             </span>
-                          </v-list-item-title>
+                          </div>
                           <template v-slot:append
                             v-if="!memberStatusContainers.find(obj => obj.user === member._id && obj.relation === 'owner')"
                           >
@@ -573,14 +573,14 @@
                               </v-icon>
                             </v-avatar>
                           </template>
-                          <v-list-item-title
+                          <div
                             class="font-weight-bold"
                           >
                             {{member.userName}}
-                          </v-list-item-title>
-                          <v-list-item-title>
+                          </div>
+                          <div>
                             <i>{{$t('messageToGroup')}}</i> "{{memberStatusContainers.filter(obj => obj.relation === 'applicant')[i].customField}}"
-                          </v-list-item-title>
+                          </div>
                           <v-list-item-action
                             class="py-3"
                           >
@@ -1091,9 +1091,6 @@ export default {
     headers () {
       return [
         { title: this.$t('title'), key: 'title.value' },
-        { title: this.$t('author'), key: 'owner' },
-        { title: this.$t('createdAt'), key: 'createdAt' },
-        { title: this.$t('visibility'), key: 'visibility' },
         { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
         { title: this.$t('moderators'), key: 'moderators', align: 'center', sortable: false },
@@ -1102,7 +1099,10 @@ export default {
         { title: this.$t('files'), key: 'files', align: 'center', sortable: false },
         { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },
         { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
-        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
+        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false },
+        { title: this.$t('author'), key: 'owner' },
+        { title: this.$t('visibility'), key: 'visibility' },
+        { title: this.$t('createdAt'), key: 'createdAt' }
       ]
     },
     groupsParams () {

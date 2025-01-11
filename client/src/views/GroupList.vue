@@ -629,8 +629,8 @@
                               </v-icon>
                             </v-avatar>
                           </template>
-                          <v-list-item-title
-                            class="pointer"
+                          <div
+                            class="pointer font-weight-bold"
                             @click="$router.push({name: 'User', params: { user: member._id}})"
                           >
                             {{member.userName}}
@@ -640,7 +640,7 @@
                             >
                               - {{$t(relationItems[relation].textKey)}}
                             </span>
-                          </v-list-item-title>
+                          </div>
                           <template v-slot:append
                             v-if="!memberStatusContainers.find(obj => obj.user === member._id && obj.relation === 'owner')"
                           >
@@ -728,14 +728,14 @@
                               </v-icon>
                             </v-avatar>
                           </template>
-                          <v-list-item-title
+                          <div
                             class="font-weight-bold"
                           >
                             {{member.userName}}
-                          </v-list-item-title>
-                          <v-list-item-title>
+                          </div>
+                          <div>
                             <i>{{$t('messageToGroup')}}</i> "{{memberStatusContainers.filter(obj => obj.relation === 'applicant')[i].customField}}"
-                          </v-list-item-title>
+                          </div>
                           <v-list-item-action
                             class="py-3"
                           >

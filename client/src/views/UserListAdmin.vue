@@ -476,31 +476,27 @@ export default {
           minWidth: 50
         },
         { title: this.$t('userName'), key: 'userName' },
-        { title: this.$t('firstName'), key: 'firstName' },
-        { title: this.$t('lastName'), key: 'lastName' },
-        { title: this.$t('email'), key: 'email' },
+        { title: this.$t('role'), minWidth: 170, key: 'role' },
+        { title: this.$t('verified'), key: 'isVerified', align: 'center' },
+        { title: this.$t('active'), key: 'isActive', align: 'center' },
+        ...(this.computedShowTranslators ? [{ title: this.$t('translator'), key: 'isTranslator', align: 'center' }] : []),
+        { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },
+        { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
         {
           title: this.$t('state'),
           key: 'status',
           align: 'center'
         },
         {
-          title: this.$t('dt'),
-          key: 'createdAt',
-          align: 'center'
-        },
-        { title: this.$t('role'), minWidth: 150, key: 'role' },
-        ...(this.computedShowTranslators ? [{ title: this.$t('translator'), key: 'isTranslator', align: 'center' }] : []),
-        { title: this.$t('verified'), key: 'isVerified', align: 'center' },
-        { title: this.$t('active'), key: 'isActive', align: 'center' },
-        { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },
-        { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
-        {
           title: this.$t('service'),
           key: 'resend',
           sortable: false,
           align: 'center'
-        }
+        },
+        { title: this.$t('firstName'), key: 'firstName' },
+        { title: this.$t('lastName'), key: 'lastName' },
+        { title: this.$t('email'), key: 'email' },
+        { title: this.$t('dt'), key: 'createdAt' }
       ]
     },
     computedShowTranslators () {

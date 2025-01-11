@@ -314,7 +314,7 @@ export default {
     }),
     headers () {
       return [
-        { title: this.$t('createdAt'), key: 'createdAt', width: '180' },
+        { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('author') + ' ID', key: 'author.id' },
         { title: this.$t('author') + ' ' + this.$t('userName'), key: 'author.value' },
         { title: this.$t('author') + ' ' + this.$t('role'), key: 'author.role' },

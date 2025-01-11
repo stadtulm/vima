@@ -21,11 +21,11 @@
       <template
         v-slot:[`item.responses.0`]="{ item }"
       >
-        <v-list-item-title
+        <div
           class="font-weight-bold"
         >
           {{getUser(item.responses[0].user).userName}}
-        </v-list-item-title>
+        </div>
         <v-list-item-subtitle>
           {{getUser(item.responses[0].user).firstName}} {{getUser(item.responses[0].user).lastName}}
         </v-list-item-subtitle>
@@ -360,18 +360,18 @@ export default {
     },
     headers () {
       const headers = [
-        { title: this.$t('submittedBy'), key: 'responses.0' },
-        { title: this.$t('closed'), key: 'isClosed', align: 'center' },
-        { title: this.$t('createdAt'), key: 'createdAt', minWidth: 170 },
-        { title: this.$t('updatedAt'), key: 'updatedAt', minWidth: 170 },
         { title: this.$t('details'), key: 'edit', sortable: false, align: 'center' },
-        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' }
+        { title: this.$t('closed'), key: 'isClosed', align: 'center' },
+        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
+        { title: this.$t('submittedBy'), key: 'responses.0' },
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('updatedAt'), key: 'updatedAt' }
       ]
       if (this.group) {
-        headers.splice(1, 0, { title: this.$t('groupDiscussion'), key: 'discussion' })
-        headers.push({ title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false })
+        headers.splice(0, 0, { title: this.$t('groupDiscussion'), key: 'discussion' })
+        headers.splice(4, 0, { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false })
       } else {
-        headers.splice(1, 0, { title: this.$t('type'), key: 'type' })
+        headers.splice(0, 0, { title: this.$t('type'), key: 'type' })
       }
       return headers
     },

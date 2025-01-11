@@ -58,11 +58,11 @@
           <template
             v-slot:[`item.title.value`]="{ item }"
           >
-            <v-list-item-title
+            <div
               class="font-weight-bold"
             >
               {{item.title.value}}
-            </v-list-item-title>
+            </div>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
@@ -232,10 +232,10 @@ export default {
     headers () {
       return [
         { title: this.$t('title'), key: 'title.value' },
-        { title: this.$t('createdAt'), key: 'createdAt', minWidth: 170 },
-        { title: this.$t('updatedAt'), key: 'updatedAt', minWidth: 170 },
         { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
-        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' }
+        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('updatedAt'), key: 'updatedAt' }
       ]
     },
     infosParams () {

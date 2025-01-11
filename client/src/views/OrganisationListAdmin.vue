@@ -59,11 +59,11 @@
           <template
             v-slot:[`item.name`]="{ item }"
           >
-            <v-list-item-title
+            <div
               class="font-weight-bold"
             >
               {{item.name}}
-            </v-list-item-title>
+            </div>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
@@ -230,9 +230,11 @@
                               </v-icon>
                             </v-avatar>
                           </template>
-                          <v-list-item-title>
+                          <div
+                            class="font-weight-bold"
+                          >
                             {{member.userName}}
-                          </v-list-item-title>
+                          </div>
                           <template v-slot:append>
                             <v-btn
                               @click="removeMember(member)"
@@ -415,14 +417,14 @@ export default {
     }),
     headers () {
       return [
-        { title: this.$t('name'), key: 'name', minWidth: 350 },
-        { title: this.$t('createdAt'), key: 'createdAt' },
-        { title: this.$t('updatedAt'), key: 'updatedAt' },
-        { title: this.$t('position'), key: 'position' },
+        { title: this.$t('name'), key: 'name' },
         { title: this.$t('manageMembersButton'), key: 'members', align: 'center', sortable: false },
         { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
         { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
-        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
+        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false },
+        { title: this.$t('position'), key: 'position' },
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('updatedAt'), key: 'updatedAt' }
       ]
     },
     organisationsParams () {

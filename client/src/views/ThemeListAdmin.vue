@@ -372,12 +372,12 @@ export default {
     }),
     headers () {
       return [
-        { title: this.$t('title'), key: 'title.value', minWidth: 350 },
-        { title: this.$t('createdAt'), key: 'createdAt' },
-        { title: this.$t('updatedAt'), key: 'updatedAt' },
+        { title: this.$t('title'), key: 'title.value' },
         { title: this.$t('manageGroupsButton'), key: 'members', align: 'center', sortable: false },
         { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
-        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' }
+        { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('updatedAt'), key: 'updatedAt' }
       ]
     },
     themesParams () {

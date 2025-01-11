@@ -33,11 +33,11 @@
           <template
             v-slot:[`item.title.value`]="{ item }"
           >
-            <v-list-item-title
+            <div
               class="font-weight-bold"
             >
               {{item.title.value}}
-            </v-list-item-title>
+            </div>
           </template>
           <template
             v-slot:[`item.customAction`]="{ item }"

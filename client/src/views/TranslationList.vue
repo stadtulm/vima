@@ -123,11 +123,11 @@
           <template
             v-slot:[`item.textId`]="{ item }"
           >
-            <v-list-item-title
+            <div
               class="font-weight-bold"
             >
               {{item.textId}}
-            </v-list-item-title>
+            </div>
           </template>
           <template
             v-slot:[`item.updatedAt`]="{ item }"
@@ -542,12 +542,12 @@ export default {
     headers () {
       return [
         { title: this.$t('textId'), key: 'textId' },
-        { title: this.$t('createdAt'), key: 'createdAt' },
-        { title: this.$t('updatedAt'), key: 'updatedAt' },
+        { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
+        { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
         { title: this.$t('exampleLanguage'), key: 'exampleLanguage', sortable: false },
         { title: this.$t('editLanguage'), key: 'editLanguage', minWidth: '350', sortable: false },
-        { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
-        { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false }
+        { title: this.$t('createdAt'), key: 'createdAt' },
+        { title: this.$t('updatedAt'), key: 'updatedAt' }
       ]
     },
     translationParams () {
