@@ -104,6 +104,12 @@
             >
               {{item.userName}}
             </span>
+            <country-flag
+              class="ml-1"
+              v-if="item.nationality"
+              style="translate: -0px 5.5px;"
+              :country="item.nationality === 'en' ? 'gb': item.nationality"
+            ></country-flag>
           </template>
           <template
             v-slot:[`item.status`]="{ item }"

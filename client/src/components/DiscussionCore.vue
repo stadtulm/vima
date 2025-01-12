@@ -127,9 +127,15 @@
                       </template>
                       <v-list-item-title
                         @click="!isOwnMessage(message) ? $router.push({name: 'User', params: { user: message.author}}) : ''"
+                        class="mb-1"
                         :class="!isOwnMessage(message) ? 'pointer' : ''"
                       >
                         {{getUser(message.author).userName}}
+                        <country-flag
+                          v-if="getUser(message.author).nationality"
+                          style="translate: -0px 5.5px;"
+                          :country="getUser(message.author).nationality === 'en' ? 'gb': getUser(message.author).nationality"
+                        ></country-flag>
                       </v-list-item-title>
                       <v-list-item-subtitle
                         class="text-black"

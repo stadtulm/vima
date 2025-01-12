@@ -60,6 +60,11 @@
               class="font-weight-bold"
             >
               {{item.userName}}
+              <country-flag
+                v-if="item.nationality"
+                style="translate: -0px 5.5px;"
+                :country="item.nationality === 'en' ? 'gb': item.nationality"
+              ></country-flag>
             </div>
           </template>
           <template

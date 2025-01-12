@@ -76,11 +76,16 @@
                   <v-col
                     cols="12"
                     class="text-subtitle-1 pb-0"
-                    style="line-height:20px"
+                    style="line-height:28px"
                     @click="!isOwnMessage(message) ? $router.push({name: 'User', params: { user: message.author}}) : ''"
                     :class="!isOwnMessage(message) ? 'pointer' : ''"
                   >
                     {{getUser(message.author).userName}}
+                    <country-flag
+                      v-if="getUser(message.author).nationality"
+                      style="translate: -0px 5.5px;"
+                      :country="getUser(message.author).nationality === 'en' ? 'gb': getUser(message.author).nationality"
+                    ></country-flag>
                   </v-col>
                   <v-col
                     class="pt-0 text-subtitle-2 text-customGrey"

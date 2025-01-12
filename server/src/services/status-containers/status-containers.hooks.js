@@ -16,7 +16,8 @@ module.exports = {
               path: 'user',
               select: {
                 userName: 1,
-                pic: 1
+                pic: 1,
+                nationality: 1
               }
             }
           ]
