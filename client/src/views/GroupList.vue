@@ -8,7 +8,44 @@
           <span
             class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
           >
-            {{$t('myInterestGroups')}}
+            <div
+              v-html="$t('groupsTitle')"
+            >
+            </div>
+          </span>
+          <span
+            class="my-3 mr-3"
+          >
+            <v-btn
+              v-if="computedFiltersDirty"
+              variant="text"
+              :color="$settings.modules.groups.color"
+              @click="resetFilters()"
+            >
+              {{$t('resetFilters')}}
+            </v-btn>
+          </span>
+          <span
+            class="my-3 mr-6"
+          >
+            <v-badge
+              :model-value="computedFiltersDirty"
+              :color="$settings.modules.groups.color"
+            >
+              <v-btn
+                variant="outlined"
+                :color="$settings.modules.groups.color"
+                @click="showFilters = !showFilters"
+              >
+                {{ showFilters ? $t('hideFiltersButton') : $t('showFiltersButton') }}
+                <v-icon
+                  size="18"
+                  class="ml-3"
+                >
+                  {{showFilters ? 'fas fa-chevron-up': 'fas fa-chevron-down'}}
+                </v-icon>
+              </v-btn>
+            </v-badge>
           </span>
           <span
             v-if="user"
@@ -32,16 +69,60 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col>
-        <v-text-field
-          v-model="queryObject.query"
-          :label="$t('filterByTitleLabel')"
-          density="compact"
-          hide-details
-        ></v-text-field>
-      </v-col>
-    </v-row>
+    <v-expand-transition
+      mode="in-out"
+    >
+      <v-row
+        v-if="showFilters"
+      >
+        <v-col
+          cols="12"
+          sm="6"
+          md="4"
+        >
+          <v-text-field
+            v-model="queryObject.query"
+            :label="$t('filterByTitleLabel')"
+            hide-details
+            density="compact"
+          ></v-text-field>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+          md="4"
+        >
+          <v-autocomplete
+            v-model="queryObject.categories"
+            :label="$t('filterByCategoriesLabel')"
+            multiple
+            density="compact"
+            hide-details
+            :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
+            item-title="text.value"
+            item-value="_id"
+          ></v-autocomplete>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="6"
+          md="4"
+        >
+          <v-autocomplete
+            v-model="queryObject.tags"
+            :label="$t('filterByTagsLabel')"
+            multiple
+            chips
+            closable-chips
+            density="compact"
+            hide-details
+            :items="tags.sort((a, b) => a.text.localeCompare(b.text))"
+            item-title="text"
+            item-value="_id"
+          ></v-autocomplete>
+        </v-col>
+      </v-row>
+    </v-expand-transition>
     <v-row>
       <v-col>
         <v-data-table-server
@@ -904,6 +985,10 @@ export default {
   },
 
   data: () => ({
+    showFilters: true,
+    categoriesListDefault: [],
+    tagsListDefault: [],
+    searchDefault: '',
     triggerReload: 1,
     isUpdating: false,
     membersTab: 0,
@@ -927,7 +1012,9 @@ export default {
       query: '',
       page: 1,
       itemsPerPage: 25,
-      sortBy: [{ key: 'createdAt', order: 'desc' }]
+      sortBy: [{ key: 'createdAt', order: 'desc' }],
+      categories: [],
+      tags: []
     }
   }),
 
@@ -955,11 +1042,18 @@ export default {
       removeGroupRelation: 'remove',
       patchGroupNotifications: 'patch'
     }),
+    resetFilters () {
+      this.queryObject.categories = this.categoriesListDefault
+      this.queryObject.tags = this.tagsListDefault
+      this.queryObject.query = this.searchDefault
+    },
     async updateDataTableParams (e) {
       if (!this.initialView) {
         this.queryObject = {
           ...e,
-          query: this.queryObject.query
+          query: this.queryObject.query,
+          categories: this.queryObject.categories,
+          tags: this.queryObject.tags
         }
         this.updateQueryQuery(this.queryObject.query)
         this.updateQueryPage(this.queryObject.page)
@@ -1317,7 +1411,10 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'updateQueryCategories',
+      'updateQueryTags',
+      'areArraysEqual'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -1331,6 +1428,23 @@ export default {
     ...mapGetters('groups', {
       groups: 'list'
     }),
+    ...mapGetters('categories', {
+      categories: 'list'
+    }),
+    ...mapGetters('tags', {
+      tags: 'list'
+    }),
+    computedFiltersDirty () {
+      if (
+        !this.areArraysEqual(this.queryObject.categories, this.categoriesListDefault) ||
+        !this.areArraysEqual(this.queryObject.tags, this.tagsListDefault) ||
+        this.queryObject.query !== this.searchDefault
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     computedCustomQuery () {
       return {
         _id: {
@@ -1345,7 +1459,6 @@ export default {
       return [
         { title: this.$t('title'), key: 'title.value' },
         { title: this.$t('role'), key: 'relation', minWidth: 200 },
-        { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
         { title: this.$t('moderators'), key: 'moderators', align: 'center', sortable: false },
@@ -1355,7 +1468,8 @@ export default {
         { title: this.$t('files'), key: 'files', align: 'center', sortable: false },
         { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },
         { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
-        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false }
+        { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false },
+        { title: this.$t('createdAt'), key: 'createdAt' }
       ]
     },
     computedRelationItems () {
@@ -1412,7 +1526,7 @@ export default {
       const query = {
         _id: { $in: this.statusContainers.filter(obj => obj.user === this.user._id && obj.type === 'groups').map(obj => obj.reference) },
         $limit: this.computedLimit,
-        $skip: this.computedSkip,
+        $skip: (this.queryObject.query || this.queryObject.categories.length > 0 || this.queryObject.tags.length > 0) ? 0 : this.computedSkip,
         $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
       }
       if (this.queryObject.query) {
@@ -1424,6 +1538,12 @@ export default {
             ]
           }
         }
+      }
+      if (this.queryObject.categories.length > 0) {
+        query.categories = { $in: this.queryObject.categories }
+      }
+      if (this.queryObject.tags.length > 0) {
+        query.tags = { $in: this.queryObject.tags }
       }
       return {
         query
@@ -1469,6 +1589,14 @@ export default {
   watch: {
     'queryObject.query' () {
       this.updateQueryQuery(this.queryObject.query)
+    },
+    async 'queryObject.categories' () {
+      this.updateQueryCategories(this.queryObject.categories.join(','))
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.tags' () {
+      this.updateQueryTags(this.queryObject.tags.join(','))
+      await this.loadDataTableEntities()
     },
     groupsParams: {
       deep: true,

@@ -514,8 +514,6 @@ export default {
     groupsResponse: {
       deep: true,
       async handler () {
-        console.log(this.$i18n)
-        // this.reduceTranslations(result, this.$i18n.locale, ['text', 'description'])
         if (this.groupsResponse && this.groupsResponse.data) {
           const foundThemes = []
           const tmpGroups = JSON.parse(JSON.stringify(this.groupsResponse.data)).map(group => {
