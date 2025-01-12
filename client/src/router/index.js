@@ -612,6 +612,24 @@ const routes = [
     ])
   },
   {
+    path: '/admin/diskussionsforen/editor/:id?',
+    name: 'DiscussionEditorAdmin',
+    component: DiscussionEditor,
+    meta: {
+      step: 'discussions',
+      breadCrumbTextKey: 'editForumDiscussion',
+      breadCrumbPredecessors: [
+        ['Participate'],
+        ['Discussions', 'DiscussionList']
+      ]
+    },
+    beforeEnter: Multiguard([
+      checkModuleActiveOrDependency,
+      checkLoggedIn,
+      checkAdmin
+    ])
+  },
+  {
     path: '/interessengruppen/editor/:id?',
     name: 'GroupEditor',
     component: GroupEditor,
@@ -696,7 +714,7 @@ const routes = [
     ])
   },
   {
-    path: '/diskussionsthemen/uebersicht',
+    path: '/diskussionsforen/uebersicht',
     name: 'DiscussionList',
     component: DiscussionList,
     meta: {
@@ -762,7 +780,7 @@ const routes = [
     ])
   },
   {
-    path: '/admin/diskussionsthemen/uebersicht',
+    path: '/admin/diskussionsforen/uebersicht',
     name: 'DiscussionListAdmin',
     component: DiscussionListAdmin,
     meta: {

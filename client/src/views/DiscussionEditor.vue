@@ -59,7 +59,7 @@
                 v-if="(selectedDiscussion && group) || user.role === 'admins'"
               >
                 <v-col>
-                  <v-select
+                  <v-autocomplete
                     density="compact"
                     v-model="group"
                     item-title="title"
@@ -68,7 +68,7 @@
                     :items="[{ title: $t('none'), _id: null}].concat(groups.map(group => ({ _id: group._id, title: group.title.value })))"
                     :disabled="user.role !== 'admins'"
                   >
-                  </v-select>
+                  </v-autocomplete>
                 </v-col>
               </v-row>
               <v-row
@@ -362,20 +362,26 @@ export default {
       findGroups: 'find'
     }),
     async loadGroups () {
-      const tmpGroups = await this.findGroups(
-        {
-          query: {
-            _id: {
-              $in: [...new Set(this.statusContainers.filter(
-                obj => obj.type === 'groups' &&
+      let query
+      if (this.$route.name === 'DiscussionEditorAdmin') {
+        query = {}
+      } else {
+        query = {
+          _id: {
+            $in: [...new Set(this.statusContainers.filter(
+              obj => obj.type === 'groups' &&
                   obj.user === this.user._id &&
                   (
                     obj.relation === 'owner' ||
                     obj.relation === 'member'
                   )
-              ).map(obj => obj.reference))]
-            }
-          },
+            ).map(obj => obj.reference))]
+          }
+        }
+      }
+      const tmpGroups = await this.findGroups(
+        {
+          query,
           $paginate: false
         }
       )

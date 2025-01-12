@@ -148,8 +148,6 @@
               {{$t('accepted')}}
             </v-tooltip>
           </template>
-
-          <!-- start new -->
           <template
             v-slot:[`item.moderators`]="{ item }"
           >
@@ -346,8 +344,6 @@
               {{$t('editButton')}}
             </v-tooltip>
           </template>
-          <!-- end new  -->
-
           <template
             v-slot:[`item.delete`]="{ item }"
           >

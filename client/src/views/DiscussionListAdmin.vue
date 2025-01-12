@@ -147,6 +147,27 @@
             </v-tooltip>
           </template>
           <template
+            v-slot:[`item.edit`]="{ item }"
+          >
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  <v-btn
+                    icon="fa fa-pen"
+                    size="small"
+                    :color="$settings.modules.discussions.color"
+                    class="my-4"
+                    :to="{name: 'DiscussionEditorAdmin', params: { id: item._id } }"
+                  >
+                  </v-btn>
+                </span>
+              </template>
+              {{$t('editButton')}}
+            </v-tooltip>
+          </template>
+          <template
             v-slot:[`item.delete`]="{ item }"
           >
             <v-tooltip>
@@ -358,6 +379,7 @@ export default {
         { title: this.$t('title'), key: 'title.value' },
         { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
+        { title: this.$t('editButton'), key: 'edit', align: 'center', sortable: false },
         { title: this.$t('deleteButton'), key: 'delete', align: 'center', sortable: false },
         { title: this.$t('viewButton'), key: 'link', align: 'center', sortable: false },
         { title: this.$t('author'), key: 'author', sortable: false },
