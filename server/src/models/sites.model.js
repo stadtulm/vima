@@ -10,6 +10,12 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const schema = new Schema({
     text: [{ type: Translation, required: true }],
+    pics: [
+      {
+        url: { type: String },
+        credit: { type: String }
+      }
+    ],
     videos: [
       {
         type: {

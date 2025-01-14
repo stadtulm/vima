@@ -96,6 +96,49 @@
                       </v-col>
                     </v-row>
                     <v-divider class="my-9 mt-3"></v-divider>
+                    <v-row
+                      dense
+                    >
+                      <v-col
+                        cols="12"
+                      >
+                        <v-card
+                          flat
+                          color="customGreyUltraLight"
+                        >
+                          <v-row>
+                            <v-col
+                              class="text-subtitle-1"
+                              cols="12"
+                            >
+                              {{$t('pics')}} {{$t('optionalLabelExtension')}}
+                            </v-col>
+                          </v-row>
+                          <v-row
+                            dense
+                          >
+                            <v-col
+                              cols="12"
+                              tabIndex="0"
+                              @keypress="$refs.siteUpload.fakeClick()"
+                            >
+                              <FileUpload
+                                ref="siteUpload"
+                                v-model="pics"
+                                @update:fileRemove="patchFileRemove"
+                                @update:fileAdd="$nextTick(() => { $refs.siteEditorForm.validate() })"
+                                :acceptedMimeTypes="['image/png', 'image/jpg', 'image/jpeg']"
+                                :maxFileSize="2"
+                                :maxFiles="10"
+                                bgColor="white"
+                                :scaleToFit="[1080, 1080]"
+                              ></FileUpload>
+                            </v-col>
+                          </v-row>
+                        </v-card>
+                      </v-col>
+                    </v-row>
+                    <v-divider class="my-9"></v-divider>
                     <v-row>
                       <v-col
                         cols="12"
@@ -281,13 +324,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import LanguageSelect from '@/components/LanguageSelect.vue'
 import CustomTiptap from '@/components/CustomTiptap.vue'
+import FileUpload from '@/components/FileUpload.vue'
 
 export default {
   name: 'SiteEditor',
 
   components: {
     LanguageSelect,
-    CustomTiptap
+    CustomTiptap,
+    FileUpload
   },
 
   data: () => ({
@@ -301,7 +346,8 @@ export default {
     videoId: undefined,
     videoType: undefined,
     videos: [],
-    tmpVideos: []
+    tmpVideos: [],
+    pics: []
   }),
 
   async mounted () {
@@ -320,12 +366,40 @@ export default {
       requestSite: 'get',
       findSites: 'find'
     }),
+    ...mapActions('uploads', {
+      removeUpload: 'remove'
+    }),
+    async patchFileRemove (file) {
+      this.isLoading = true
+      try {
+        await this.patchSite([
+          this.selectedSite._id,
+          {
+            $pull: {
+              pics: {
+                _id: file._id
+              }
+            }
+          }
+        ])
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+        this.adapt()
+      } catch (e) {
+        this.isLoading = false
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.adapt()
+      }
+    },
     async adapt () {
       if (this.$route.params.site) {
         this.selectedSite = await this.requestSite([this.$route.params.site, { keepTranslations: true }])
       }
       this.tmpVideos = []
       if (this.selectedSite) {
+        if (this.selectedSite.pics) {
+          this.pics = this.selectedSite.pics
+        }
         if (this.selectedSite.videos) {
           this.videos = this.selectedSite.videos
         }
@@ -349,6 +423,14 @@ export default {
     },
     async saveSite () {
       this.isLoading = true
+      // Do uploads
+      try {
+        await this.$refs.siteUpload.upload()
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+        this.isLoading = false
+        return
+      }
       // Prepare videos
       if (this.videoId && this.videoType) {
         this.addTmpVideo()
@@ -357,6 +439,9 @@ export default {
         type: this.type,
         text: this.sanitizedText.filter(language => language.value && language.value !== '' && language.value !== '<p></p>'),
         videos: this.videos.concat(this.tmpVideos)
+      }
+      if (this.pics) {
+        map.pics = this.pics
       }
       try {
         if (this.$route.params.site) {
@@ -404,13 +489,13 @@ export default {
 
   watch: {
     videos () {
-      if (this.$refs.newsEditorForm) {
-        this.$refs.newsEditorForm.validate()
+      if (this.$refs.siteEditorForm) {
+        this.$refs.siteEditorForm.validate()
       }
     },
     tmpVideos () {
-      if (this.$refs.newsEditorForm) {
-        this.$refs.newsEditorForm.validate()
+      if (this.$refs.siteEditorForm) {
+        this.$refs.siteEditorForm.validate()
       }
     }
   }

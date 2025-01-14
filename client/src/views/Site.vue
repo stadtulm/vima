@@ -11,6 +11,63 @@
           {{$t(site.type === 'communicationrules' ? 'communicationRules' : site.type)}}
         </v-col>
       </v-row>
+      <!-- Carousel -->
+      <v-row
+        v-if="site && site.pics && site.pics.length > 0"
+      >
+        <v-col
+          cols="12"
+        >
+          <v-carousel
+            v-if="site.pics.length > 0"
+            v-model="picsCarousel"
+            hide-delimiters
+            :show-arrows="site.pics.length > 1"
+            :show-arrows-on-hover="site.pics.length > 1"
+            :cycle="false"
+            :height="newsProp ? 250 : 350"
+            class="my-3"
+          >
+            <template
+              v-slot:prev="{ props }"
+            >
+            <v-btn
+              icon
+              v-bind="props"
+            >
+              <v-icon>
+                fas fa-chevron-left
+              </v-icon>
+            </v-btn>
+            </template>
+            <template
+              v-slot:next="{ props }"
+            >
+            <v-btn
+              icon
+              v-bind="props"
+            >
+              <v-icon>
+                fas fa-chevron-right
+              </v-icon>
+            </v-btn>
+            </template>
+            <v-carousel-item
+              v-for="pic in site.pics"
+              :key="pic.url"
+            >
+              <v-img
+                :height="350"
+                :src="s3 + pic.url"
+                contain
+                :alt="$t('newsPic')"
+                :title="pic.credit ? '© ' + pic.credit : ''"
+                style="background-color: #fff"
+              ></v-img>
+            </v-carousel-item>
+          </v-carousel>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col
           class="text-body-1 text-customGrey"
@@ -122,6 +179,7 @@ export default {
   },
 
   data: () => ({
+    picsCarousel: 0,
     videosCarousel: 0,
     site: undefined
   }),
