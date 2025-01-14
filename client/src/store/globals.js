@@ -25,7 +25,7 @@ const state = {
   moduleVisibilities: {},
   cancelledTour: false,
   translationTypes: ['client', 'server'],
-  replyColors: ['#e4e4e4', '#d0d0d0', '#b4b4b4', '#989898', '#909090'],
+  replyColors: ['#DEFCF9', '#B0E7E1', '#82D1C9', '#54BCB1', '#26A699'],
   i18nMap: {
     rs: 'sr',
     ua: 'uk'
