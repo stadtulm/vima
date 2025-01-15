@@ -6,7 +6,7 @@
       <span
         class="my-4 me-auto text-h5 font-weight-bold text-uppercase"
       >
-        {{$t('adminView')}} {{$t('manageThemesButton')}}
+        {{$t('adminView')}} {{$t('themes')}}
       </span>
       <span
         class="my-3"

@@ -1,12 +1,16 @@
 <template>
-  <div>
+  <div
+    v-if="slides.length > 0"
+  >
     <v-carousel
       hide-delimiters
       class="elevation-6"
+      :show-arrows="slides.length > 1"
+      :show-arrows-on-hover="slides.length > 1"
     >
       <v-carousel-item
-        v-for="(slide, i) in slides"
-        :key=i
+        v-for="slide in slides"
+        :key="slide._id"
       >
          <v-card
           class="d-flex fill-height"
@@ -57,32 +61,17 @@ export default {
   },
 
   data: () => ({
-    infos: [],
-    slides: [
-      {
-        position: 1,
-        img: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
-        title: 'Title 1',
-        text: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.',
-        color: { r: 255, g: 255, b: 255 }
-      },
-      {
-        position: 2,
-        img: '',
-        title: 'Title 2',
-        text: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. <a href="http://google.de">CLICK</a>',
-        color: { r: 255, g: 255, b: 255 }
-      }
-    ]
+    slides: []
   }),
 
   async mounted () {
-    this.slides = await this.findInfos()
+    this.slides = await this.findSlides({ query: { isActive: true }, $paginate: false })
+    console.log(this.slides)
   },
 
   methods: {
     ...mapActions('infos', {
-      findInfos: 'find'
+      findSlides: 'find'
     })
   },
 

@@ -1022,7 +1022,7 @@
               <v-list-item-title
                 class="font-weight-bold text-customGrey"
               >
-                {{$t('manageThemesButton')}}
+                {{$t('themes')}}
               </v-list-item-title>
             </v-list-item>
             <v-list-item
