@@ -78,7 +78,7 @@ module.exports = {
           (context) => context.params.user?.role !== 'admins' && context.params.user?.role !== 'volunteers',
           // Check for inactive info slides
           (context) => {
-            const inactiveInfos = context.result.data.filter(obj => !obj.isActive)
+            const inactiveInfos = context.result.filter(obj => !obj.isActive)
             if (inactiveInfos.length > 0) {
               throw new Errors.Forbidden('Only administrators and volunteers can request inactive info slides')
             }
