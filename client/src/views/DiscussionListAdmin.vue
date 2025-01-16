@@ -52,7 +52,7 @@
             v-slot:[`item.group`]="{ item }"
           >
             <div>
-              {{getGroup(item.group) ? getGroup(item.group).title.value : '-'}}
+              {{getGroup(item.group) ? getGroup(item.group).title?.find(t => t.type === 'default')?.value : '-'}}
             </div>
           </template>
           <template

@@ -24,6 +24,8 @@ module.exports = {
             'author',
             'latestDiscussionMessage',
             'messagesCount',
+            'group',
+            // TODO - check if needed and make work in aggregation
             {
               path: 'group',
               populate: ['owner']
