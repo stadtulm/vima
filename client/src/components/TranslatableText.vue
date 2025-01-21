@@ -179,7 +179,11 @@ export default {
       if (this.computedShowTranslation) {
         return this.getTranslation(this.textParent._id + '_' + this.ownField + '_' + this.$i18n.locale)
       } else {
-        return this.textParent[this.ownField]
+        if (Array.isArray(this.textParent[this.ownField])) {
+          return this.textParent[this.ownField].find(t => t.type === 'default')
+        } else {
+          return this.textParent[this.ownField]
+        }
       }
     }
   },

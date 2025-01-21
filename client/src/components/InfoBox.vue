@@ -4,6 +4,7 @@
   >
     <v-carousel
       hide-delimiters
+      cylce
       class="elevation-6"
       :show-arrows="slides.length > 1"
       :show-arrows-on-hover="slides.length > 1"
