@@ -27,6 +27,11 @@
             class="word-wrap px-0"
           >
             {{computedUser.userName}}
+            <country-flag
+              v-if="computedUser?.nationality"
+              class="ml-1"
+              :country="computedUser?.nationality === 'en' ? 'gb': computedUser?.nationality"
+            ></country-flag>
           </v-card-title>
           <v-card-subtitle
             class="px-0"
@@ -54,7 +59,7 @@
               {{$t('residence')}}: {{computedUser.residence}}
             </v-col>
             <v-col
-              v-if="computedUser.favoriteCategories"
+              v-if="computedUser.favoriteCategories?.length > 0"
               cols="12"
             >
               {{$t('favoriteCategories')}}: {{getCategories(computedUser.favoriteCategories).map(c => c.text.value).join(', ')}}
