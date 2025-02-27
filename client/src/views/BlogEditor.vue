@@ -168,7 +168,7 @@
                             class="text-subtitle-1"
                             cols="12"
                           >
-                            {{$t('text')}}
+                            {{$t('text')}} ({{$t('rulesMaxLength', { msg: 1000 })}})
                           </v-col>
                         </v-row>
                         <v-row
@@ -190,7 +190,10 @@
                             cols="12"
                           >
                             <v-input
-                              :rules="[v => (text.find(obj => obj.type === 'default').value !== '' && text.find(obj => obj.type === 'default').value !== '<p></p>') || $t('defaultLanguageRequired')]"
+                              :rules="[
+                                v => (text.find(obj => obj.type === 'default').value !== '' && text.find(obj => obj.type === 'default').value !== '<p></p>') || $t('defaultLanguageRequired'),
+                                rules.longText
+                              ]"
                               v-model="text.find(obj => obj.lang === currentLanguage).value"
                               width="100%"
                             >
@@ -205,6 +208,7 @@
                                 <custom-tiptap
                                   v-model="text.find(obj => obj.lang === currentLanguage).value"
                                   :extensions="['bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList']"
+                                  :placeholder="$t('rulesMaxLength', { msg: 1000 }) + '..'"
                                 >
                                 </custom-tiptap>
                               </template>

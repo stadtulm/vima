@@ -140,7 +140,7 @@
                         class="text-subtitle-1"
                         cols="12"
                       >
-                        {{$t('description')}}
+                        {{$t('description')}} ({{$t('rulesMaxLength', { msg: 1000 })}})
                       </v-col>
                     </v-row>
                     <v-row
@@ -158,6 +158,7 @@
                             <custom-tiptap
                               v-model="description"
                               :extensions="['bold', 'italic', 'underline', 'strikethrough', 'bulletList', 'orderedList']"
+                              :placeholder="$t('rulesMaxLength', { msg: 1000 }) + '..'"
                             >
                             </custom-tiptap>
                           </template>

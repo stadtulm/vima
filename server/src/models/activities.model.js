@@ -23,7 +23,7 @@ module.exports = function (app) {
     },
     type: {
       type: String,
-      enum: ['chats', 'ads', 'discussions', 'groups', 'tags', 'organisations', 'violations']
+      enum: ['chats', 'ads', 'discussions', 'groups', 'tags', 'organisations', 'violations', 'infos', 'themes']
     },
     verb: {
       type: String,

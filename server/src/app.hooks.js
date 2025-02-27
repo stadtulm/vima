@@ -42,7 +42,7 @@ module.exports = {
       async (context) => {
         if (
           context.type === 'after' &&
-          ['ads', 'groups', 'discussions', 'violations'].includes(context.path) &&
+          ['ads', 'groups', 'discussions', 'violations', 'infos', 'themes'].includes(context.path) &&
           ['created', 'patched', 'removed'].includes(context.event)
         ) {
           let verb = context.event

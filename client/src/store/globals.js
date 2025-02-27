@@ -289,7 +289,7 @@ const state = {
     discussions: 'discussions',
     groups: 'interestGroups'
   },
-  activityTypeItems: ['ads', 'groups', 'discussions', 'violations'],
+  activityTypeItems: ['ads', 'groups', 'discussions', 'violations', 'infos', 'themes'],
   activityVerbItems: ['created', 'removed', 'patched', 'accepted', 'unaccepted', 'opened', 'closed', 'activated', 'deactivated'],
   async adaptQuery () {
     let queryToApply = this.$route.query

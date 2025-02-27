@@ -206,6 +206,7 @@ import Link from '@tiptap/extension-link'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Heading from '@tiptap/extension-heading'
+import Placeholder from '@tiptap/extension-placeholder'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 
 import suggestion from '@/plugins/tiptap/suggestion.js'
@@ -224,6 +225,10 @@ export default {
     extensions: {
       type: Array,
       default: () => []
+    },
+    placeholder: {
+      type: String,
+      default: ''
     }
   },
 
@@ -291,6 +296,9 @@ export default {
       }),
       Heading.configure({
         levels: [1, 2, 3]
+      }),
+      Placeholder.configure({
+        placeholder: this.placeholder
       })
     ]
     if (this.extensions.includes('mentions')) {
@@ -328,3 +336,13 @@ export default {
   }
 }
 </script>
+
+<style>
+  .tiptap p.is-editor-empty:first-child::before {
+    color: #898989;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+</style>
