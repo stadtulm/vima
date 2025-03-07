@@ -171,35 +171,6 @@
               <v-row
                 dense
               >
-                <v-col>
-                  <v-alert
-                    icon="fas fa-info-circle"
-                    color="customGrey"
-                    variant="outlined"
-                  >
-                    {{$t('prominentCategoriesHint')}}
-                  </v-alert>
-                </v-col>
-              </v-row>
-              <v-row
-                dense
-              >
-                <v-col>
-                  <v-select
-                    density="compact"
-                    multiple
-                    v-model="prominentCategories"
-                    item-title="text.value"
-                    item-value="_id"
-                    :label="$t('prominentCategories')"
-                    :items="categories.sort((a, b) => a.text.value.localeCompare(b.text.value))"
-                  >
-                  </v-select>
-                </v-col>
-              </v-row>
-              <v-row
-                dense
-              >
                 <v-col
                   cols="12"
                 >
@@ -345,7 +316,6 @@ export default {
     showAcceptDialog: false,
     selectedGroup: undefined,
     selectedCategories: [],
-    prominentCategories: [],
     type: undefined,
     isLoading: false,
     isValid: false,
@@ -411,7 +381,6 @@ export default {
         this.selectedCategories = this.selectedGroup.categories
         this.visibility = this.selectedGroup.visibility
         this.selectedTags = this.selectedGroup.tags
-        this.prominentCategories = this.selectedGroup.prominentCategories
         if (this.selectedGroup.pics) {
           this.pics = this.selectedGroup.pics
         }
@@ -442,7 +411,6 @@ export default {
           }
         ],
         categories: this.selectedCategories,
-        prominentCategories: this.prominentCategories,
         visibility: this.visibility,
         tags: this.selectedTags
       }

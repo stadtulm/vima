@@ -458,9 +458,6 @@ module.exports = {
                   tags: {
                     $first: '$tags'
                   },
-                  prominentCategories: {
-                    $first: '$prominentCategories'
-                  },
                   isActive: {
                     $first: '$isActive'
                   },

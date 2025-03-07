@@ -46,12 +46,6 @@ module.exports = function (app) {
         ref: 'tags'
       }
     ],
-    prominentCategories: [
-      {
-        type: ObjectId,
-        ref: 'categories'
-      }
-    ],
     visibility: {
       type: String,
       enum: ['public', 'private', 'hidden']
