@@ -65,6 +65,13 @@
             </div>
           </template>
           <template
+            v-slot:[`item.type`]="{ item }"
+          >
+            <div>
+              {{$t(item.type)}}
+            </div>
+          </template>
+          <template
             v-slot:[`item.updatedAt`]="{ item }"
           >
             {{$moment(item.updatedAt).format('DD.MM.YYYY, HH:mm')}} {{$t('oClock')}}
@@ -115,6 +122,20 @@
                 </span>
               </template>
               {{$t('deleteButton')}}
+            </v-tooltip>
+          </template>
+          <template
+            v-slot:[`item.position`]="{ item }"
+          >
+            <v-tooltip>
+              <template v-slot:activator="{ props }">
+                <span
+                  v-bind="props"
+                >
+                  {{item.position}}
+                </span>
+              </template>
+              {{$t('position')}}
             </v-tooltip>
           </template>
         </v-data-table-server>
@@ -232,8 +253,10 @@ export default {
     headers () {
       return [
         { title: this.$t('title'), key: 'title.value' },
+        { title: this.$t('type'), key: 'type' },
         { title: this.$t('editButton'), key: 'edit', sortable: false, align: 'center' },
         { title: this.$t('deleteButton'), key: 'delete', sortable: false, align: 'center' },
+        { title: this.$t('position'), key: 'position', align: 'center' },
         { title: this.$t('createdAt'), key: 'createdAt' },
         { title: this.$t('updatedAt'), key: 'updatedAt' }
       ]

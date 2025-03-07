@@ -10,12 +10,24 @@ module.exports = function (app) {
   const { Schema } = mongooseClient
   const schema = new Schema({
     title: [{ type: Translation, required: true }],
-    text: [{ type: Translation, required: true }],
+    text: [{ type: Translation }],
+    type: { type: String, enum: ['static', 'dynamic'] },
     pic: {
       url: { type: String },
       credit: { type: String }
     },
+    video:
+    {
+      type: {
+        type: String,
+        enum: ['youtube', 'vimeo']
+      },
+      id: {
+        type: String
+      }
+    },
     color: { type: String },
+    position: { type: Number },
     isActive: { type: Boolean }
   }, {
     timestamps: true,
