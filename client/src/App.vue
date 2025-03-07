@@ -1432,59 +1432,64 @@
                 </v-col>
               </v-row>
             </v-alert>
-            <v-row>
-              <v-col>
-                <v-card
-                  color="transparent"
-                  flat
-                  class="mt-6"
-                >
-                  <v-row>
-                    <v-col
-                      class="align-self-center"
-                    >
-                      <v-alert>
-                        <span
-                          class="ml-2 mb-2 d-inline-flex text-button
-  "
-                        >
-                          {{$t('youAreHere')}}:
-                        </span>
-                        <br>
-                        <v-chip
-                          v-for="(item, i) in computedBreadcrumbItems"
-                          :key="i"
-                          :disabled="i >= computedBreadcrumbItems.length - 1"
-                          @click="$router.push({ name: item.to, params: item.params })"
-                          class="mx-1 text-black mb-1"
-                          :tour-step="i === 0 ? 2 : -1"
-                        >
-                          <template
-                            v-if="item.text && item.text.startsWith('fa')"
+            <template
+              v-if="$route.name && $route.name !== 'Participate'"
+            >
+              <v-row>
+                <v-col>
+                  <v-card
+                    color="transparent"
+                    flat
+                    class="mt-6"
+                  >
+                    <v-row>
+                      <v-col
+                        class="align-self-center"
+                      >
+                        <v-alert>
+                          <span
+                            class="ml-2 mb-2 d-inline-flex text-button"
                           >
-                            <v-icon
-                              size="18"
+                            {{$t('youAreHere')}}:
+                          </span>
+                          <br>
+                          <v-chip
+                            v-for="(item, i) in computedBreadcrumbItems"
+                            :key="i"
+                            :disabled="i >= computedBreadcrumbItems.length - 1"
+                            @click="$router.push({ name: item.to, params: item.params })"
+                            class="mx-1 text-black mb-1"
+                            :tour-step="i === 0 ? 2 : -1"
+                          >
+                            <template
+                              v-if="item.text && item.text.startsWith('fa')"
+                            >
+                              <v-icon
+                                size="18"
+                              >
+                                {{item.text}}
+                              </v-icon>
+                            </template>
+                            <template
+                              v-else
                             >
                               {{item.text}}
-                            </v-icon>
-                          </template>
-                          <template
-                            v-else
-                          >
-                            {{item.text}}
-                          </template>
-                        </v-chip>
-                      </v-alert>
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-col>
-            </v-row>
-            <v-divider
-              class="mt-8 mb-12"
-            ></v-divider>
+                            </template>
+                          </v-chip>
+                        </v-alert>
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-divider
+                class="mt-8 mb-12"
+              ></v-divider>
+            </template>
           </template>
-          <v-row>
+          <v-row
+            class="mt-0"
+          >
             <v-col>
               <router-view
                 @setStep="setStep"

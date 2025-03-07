@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row
-      class="mb-3"
+      class="mt-3 mb-6"
     >
       <v-col>
         <info-box></info-box>
