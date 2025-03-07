@@ -41,6 +41,51 @@
         ></LanguageSelect>
       </v-col>
     </v-row>
+    <v-row
+      v-if="$settings.socialMediaUrls"
+    >
+      <v-col
+        class="text-right"
+        cols="12"
+      >
+        <v-btn
+          class="mx-4"
+          color="customGrey"
+          icon
+          target="_blank"
+          v-if="$settings.socialMediaUrls.fb"
+          :href="$settings.socialMediaUrls.fb"
+        >
+          <v-icon>
+            fab fa-facebook
+          </v-icon>
+        </v-btn>
+        <v-btn
+          class="mx-4"
+          color="customGrey"
+          icon
+          target="_blank"
+          v-if="$settings.socialMediaUrls.instagram"
+          :href="$settings.socialMediaUrls.instagram"
+        >
+          <v-icon>
+            fab fa-instagram
+          </v-icon>
+        </v-btn>
+        <v-btn
+          class="mx-4"
+          color="customGrey"
+          icon
+          target="_blank"
+          v-if="$settings.socialMediaUrls.twitter"
+          :href="$settings.socialMediaUrls.twitter"
+        >
+          <v-icon>
+            fab fa-twitter
+          </v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col
         v-for="(module, i) in computedModules"
