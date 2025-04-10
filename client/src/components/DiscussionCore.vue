@@ -535,6 +535,7 @@ export default {
       )
     },
     resetInput () {
+      this.showSendBlock = false
       this.isEditMessage = undefined
       this.pics = []
     },
@@ -612,6 +613,7 @@ export default {
       }
     },
     async editMessage (message) {
+      this.showSendBlock = true
       this.isEditMessage = message
       this.pics = message.pics
       await this.$nextTick()

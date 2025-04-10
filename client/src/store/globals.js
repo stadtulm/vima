@@ -13,6 +13,12 @@ function addQueryToLocalStorage (path, query) {
   localStorage.setItem('filters', JSON.stringify(currentFilters))
 }
 
+function getPlainTextLengthFromHTML (htmlString) {
+  const tempElement = document.createElement('div')
+  tempElement.innerHTML = htmlString
+  return tempElement.textContent.length
+}
+
 const state = {
   preferences: undefined,
   translatorBlocked: false,
@@ -215,9 +221,9 @@ const state = {
     radio: value => value !== null || i18n.global.t('rulesRequired'),
     content: value => (!value || value.length < 0) || i18n.global.t('rulesRequired'),
     tagText: value => (!value || value.length <= 50) || i18n.global.t('rulesMaxLength', { msg: 40 }),
-    shortText: value => (!value || value.length <= 150) || i18n.global.t('rulesMaxLength', { msg: 150 }),
-    titleText: value => (!value || value.length <= 50) || i18n.global.t('rulesMaxLength', { msg: 50 }),
-    longText: value => (!value || value.length <= 1000) || i18n.global.t('rulesMaxLength', { msg: 1000 }),
+    shortText: value => (!value || getPlainTextLengthFromHTML(value) <= 150) || i18n.global.t('rulesMaxLength', { msg: 150 }),
+    titleText: value => (!value || getPlainTextLengthFromHTML(value) <= 50) || i18n.global.t('rulesMaxLength', { msg: 50 }),
+    longText: value => (!value || getPlainTextLengthFromHTML(value) <= 1000) || i18n.global.t('rulesMaxLength', { msg: 1000 }),
     email: value => {
       const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       return (!value || pattern.test(value)) || i18n.global.t('rulesEmail')
@@ -235,7 +241,7 @@ const state = {
       }
       return i18n.global.t('rulesPassword')
     },
-    userNameLength: v => (!v || v.length < 20) || i18n.global.t('rulesMaxLength', { msg: 20 }),
+    userNameLength: v => (!v || v.length < 50) || i18n.global.t('rulesMaxLength', { msg: 50 }),
     noBlanks: v => !(/[ ]/.test(v)) || i18n.global.t('noBlanksError'),
     webLink: v => ((!v || v.startsWith('http://') || v.startsWith('https://')) || i18n.global.t('linkMustStartWithHttp'))
   },

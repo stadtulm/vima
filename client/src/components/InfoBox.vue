@@ -106,6 +106,7 @@
                       :vars="{ rel: 0, controls: 1 }"
                       nocookie
                     ></youtube>
+                    <social-media-buttons></social-media-buttons>
                   </template>
                   <template
                     v-else-if="video.type === 'vimeo'"
@@ -115,24 +116,40 @@
                       :options="{ byline: false, dnt: true }"
                     >
                     </vimeo-player>
+                    <social-media-buttons></social-media-buttons>
                   </template>
                 </div>
               </v-col>
             </v-row>
           </v-container>
         </v-sheet>
-        <v-col
-          class="pa-0"
+        <v-card
+          class="fill-height d-flex flex-column"
+          color="transparent"
+          flat
           v-else-if="computedStaticSlide.pic"
         >
           <v-img
             :src="s3 + computedStaticSlide.pic.url"
-          ></v-img>
-        </v-col>
+            contain
+          >
+          </v-img>
+          <v-sheet
+            color="transparent"
+            class="d-flex align-items-end align-end justify-center"
+          >
+            <social-media-buttons></social-media-buttons>
+          </v-sheet>
+        </v-card>
       </v-col>
+    <template
+      v-if="!computedStaticSlide"
+    >
+      <social-media-buttons></social-media-buttons>
+    </template>
     </v-row>
     <v-divider
-      class="mt-12"
+      :class="computedStaticSlide ? 'mt-12' : 'mt-3'"
     ></v-divider>
   </div>
 </template>
@@ -140,11 +157,13 @@
 <script>
 
 import { mapGetters, mapActions } from 'vuex'
+import SocialMediaButtons from './SocialMediaButtons.vue'
 
 export default {
   name: 'InfoBox',
 
   components: {
+    SocialMediaButtons
   },
 
   data: () => ({
