@@ -78,7 +78,7 @@
         <v-col
           cols="12"
           sm="6"
-          md="4"
+          md="3"
         >
           <v-text-field
             v-model="queryObject.query"
@@ -90,7 +90,7 @@
         <v-col
           cols="12"
           sm="6"
-          md="4"
+          md="3"
         >
           <v-autocomplete
             v-model="queryObject.categories"
@@ -106,7 +106,7 @@
         <v-col
           cols="12"
           sm="6"
-          md="4"
+          md="3"
         >
           <v-autocomplete
             v-model="queryObject.tags"
@@ -121,6 +121,17 @@
             item-value="_id"
           ></v-autocomplete>
         </v-col>
+        <v-col
+        cols="12"
+        sm="3"
+      >
+        <v-checkbox
+          :label="$t('newGroupInvitations')"
+          density="compact"
+          hide-details
+          v-model="queryObject.checkbox"
+        ></v-checkbox>
+      </v-col>
       </v-row>
     </v-expand-transition>
     <v-row>
@@ -1014,7 +1025,8 @@ export default {
       itemsPerPage: 25,
       sortBy: [{ key: 'createdAt', order: 'desc' }],
       categories: [],
-      tags: []
+      tags: [],
+      checkbox: false
     }
   }),
 
@@ -1053,7 +1065,8 @@ export default {
           ...e,
           query: this.queryObject.query,
           categories: this.queryObject.categories,
-          tags: this.queryObject.tags
+          tags: this.queryObject.tags,
+          checkbox: this.queryObject.checkbox
         }
         this.updateQueryQuery(this.queryObject.query)
         this.updateQueryPage(this.queryObject.page)
@@ -1408,6 +1421,7 @@ export default {
       'relationItems',
       'adaptQuery',
       'updateQueryQuery',
+      'updateQueryCheckbox',
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
@@ -1458,7 +1472,7 @@ export default {
     headers () {
       return [
         { title: this.$t('title'), key: 'title.value' },
-        { title: this.$t('role'), key: 'relation', minWidth: 200 },
+        { title: this.$t('role'), key: 'relation', minWidth: 200, sortable: false },
         { title: this.$t('accepted'), key: 'accepted.isAccepted', align: 'center' },
         { title: this.$t('active'), key: 'isActive', align: 'center' },
         { title: this.$t('moderators'), key: 'moderators', align: 'center', sortable: false },
@@ -1523,8 +1537,23 @@ export default {
       return tmpGroupRelations
     },
     groupsParams () {
+      let ids = this.statusContainers.filter(obj =>
+        obj.user === this.user._id &&
+        obj.type === 'groups'
+      ).map(obj => obj.reference)
+
+      if (this.queryObject.checkbox) {
+        const groupIdsWithInvitations = this.statusContainers?.filter(item =>
+          item.user === this.user._id &&
+          item.type === 'groups' &&
+          item.relation === 'invitation'
+        ).map(item => item.reference)
+
+        ids = ids.filter(id => groupIdsWithInvitations.includes(id))
+      }
+
       const query = {
-        _id: { $in: this.statusContainers.filter(obj => obj.user === this.user._id && obj.type === 'groups').map(obj => obj.reference) },
+        _id: { $in: ids },
         $limit: this.computedLimit,
         $skip: (this.queryObject.query || this.queryObject.categories.length > 0 || this.queryObject.tags.length > 0) ? 0 : this.computedSkip,
         $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
@@ -1596,6 +1625,10 @@ export default {
     },
     async 'queryObject.tags' () {
       this.updateQueryTags(this.queryObject.tags.join(','))
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.checkbox' () {
+      this.updateQueryCheckbox(this.queryObject.checkbox)
       await this.loadDataTableEntities()
     },
     groupsParams: {

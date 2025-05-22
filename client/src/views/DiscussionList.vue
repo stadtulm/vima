@@ -35,7 +35,7 @@
     <v-row>
       <v-col
         cols="12"
-        sm="4"
+        sm="3"
       >
         <v-text-field
           v-model="queryObject.query"
@@ -46,7 +46,7 @@
       </v-col>
       <v-col
         cols="12"
-        sm="4"
+        sm="3"
       >
         <v-select
           v-model="queryObject.type"
@@ -58,13 +58,24 @@
       </v-col>
       <v-col
         cols="12"
-        sm="4"
+        sm="3"
       >
         <v-checkbox
           :label="$t('bookmarksOnly')"
           density="compact"
           hide-details
           v-model="queryObject.role"
+        ></v-checkbox>
+      </v-col>
+      <v-col
+        cols="12"
+        sm="3"
+      >
+        <v-checkbox
+          :label="$t('newDiscussionMessages')"
+          density="compact"
+          hide-details
+          v-model="queryObject.checkbox"
         ></v-checkbox>
       </v-col>
     </v-row>
@@ -370,7 +381,9 @@ export default {
       page: 1,
       itemsPerPage: 25,
       sortBy: [{ key: 'createdAt', order: 'desc' }],
-      type: 'all'
+      type: 'all',
+      role: true,
+      checkbox: false
     }
   }),
 
@@ -404,7 +417,9 @@ export default {
         this.queryObject = {
           ...e,
           query: this.queryObject.query,
-          type: this.queryObject.type
+          type: this.queryObject.type,
+          role: this.queryObject.role,
+          checkbox: this.queryObject.checkbox
         }
         this.updateQueryQuery(this.queryObject.query)
         this.updateQueryPage(this.queryObject.page)
@@ -597,7 +612,8 @@ export default {
       'updateQuerySortBy',
       'updateQuerySortOrder',
       'updateQueryType',
-      'updateQueryRole'
+      'updateQueryRole',
+      'updateQueryCheckbox'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -671,23 +687,38 @@ export default {
       return tmpDiscussionRelations
     },
     discussionsParams () {
-      const query = {
-        _id: this.queryObject.role
-          ? {
-              $in: this.statusContainers.filter(
-                obj =>
-                  obj.user === this.user._id &&
-              obj.type === 'discussions' &&
-              obj.customField === 'bookmark'
-              ).map(obj => obj.reference)
-            }
-          : {
-              $in: this.statusContainers.filter(
-                obj =>
-                  obj.user === this.user._id &&
+      let ids = this.statusContainers.filter(
+        obj =>
+          obj.user === this.user._id &&
               obj.type === 'discussions'
-              ).map(obj => obj.reference)
-            },
+      ).map(obj => obj.reference)
+
+      if (this.queryObject.role) {
+        const discussionIdsWithBookmarks = this.statusContainers.filter(
+          obj =>
+            obj.user === this.user._id &&
+          obj.type === 'discussions' &&
+          obj.customField === 'bookmark'
+        ).map(obj => obj.reference)
+
+        ids = ids.filter(id => discussionIdsWithBookmarks.includes(id))
+      }
+
+      if (this.queryObject.checkbox) {
+        const discussionIdsWithNewMessages = this.statusContainers?.filter(item =>
+          item.user === this.user._id &&
+        item.type === 'discussions' &&
+        item.relation === 'subscriber' &&
+        item.unread.length > 0
+        ).map(item => item.reference)
+
+        ids = ids.filter(id => discussionIdsWithNewMessages.includes(id))
+      }
+
+      const query = {
+        _id: {
+          $in: ids
+        },
         $limit: this.computedLimit,
         $skip: this.computedSkip,
         $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
@@ -759,6 +790,10 @@ export default {
     },
     async 'queryObject.role' () {
       this.updateQueryRole(this.queryObject.role)
+      await this.loadDataTableEntities()
+    },
+    async 'queryObject.checkbox' () {
+      this.updateQueryCheckbox(this.queryObject.checkbox)
       await this.loadDataTableEntities()
     },
     computedDiscussionTypes () {

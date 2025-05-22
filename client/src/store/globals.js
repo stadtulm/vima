@@ -309,7 +309,13 @@ const state = {
     // Process existing query
     const tmpQueryObject = {}
     if (queryToApply.r) {
-      tmpQueryObject.role = queryToApply.r
+      if (queryToApply.r === 'true') {
+        tmpQueryObject.role = true
+      } else if (queryToApply.r === 'false') {
+        tmpQueryObject.role = false
+      } else {
+        tmpQueryObject.role = queryToApply.r
+      }
     } else {
       tmpQueryObject.role = this.queryObject.role
     }

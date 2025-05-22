@@ -194,6 +194,43 @@
                         {{$t(computedGroupStatus.textKey)}}
                       </span>
                     </v-tooltip>
+                    <template v-if="computedGroupStatus === relationItems.invitation">
+                      <v-tooltip
+                        bottom
+                      >
+                        <template v-slot:activator="{ props }">
+                          <v-btn
+                            class="mx-3"
+                            v-bind="props"
+                            color="success"
+                            size="small"
+                            icon="fas fa-check"
+                            @click="acceptInvitation(computedGroup)"
+                          >
+                          </v-btn>
+                        </template>
+                        <span>
+                          {{$t('accept')}}
+                        </span>
+                      </v-tooltip>
+                      <v-tooltip
+                        bottom
+                      >
+                        <template v-slot:activator="{ props }">
+                          <v-btn
+                            v-bind="props"
+                            color="error"
+                            size="small"
+                            icon="fas fa-times"
+                            @click="declineInvitation(computedGroup)"
+                          >
+                          </v-btn>
+                        </template>
+                        <span>
+                          {{$t('decline')}}
+                        </span>
+                      </v-tooltip>
+                    </template>
                   </v-col>
                 </v-row>
                 <!-- Description -->
@@ -603,9 +640,57 @@ export default {
     ...mapActions('groups', {
       requestGroup: 'get'
     }),
-    ...mapActions('status-container-helper', {
-      handleGroupMembership: 'create'
+    ...mapActions('status-containers', {
+      findStatusContainers: 'find'
     }),
+    ...mapActions('status-container-helper', {
+      handleGroupMembership: 'create',
+      removeGroupRelation: 'remove'
+    }),
+    async declineInvitation (group) {
+      try {
+        await this.removeGroupRelation(
+          [
+            group._id,
+            {
+              query: {
+                type: 'removeGroupMembership',
+                userId: this.user._id
+              }
+            }
+          ]
+        )
+        await this.loadMemberStatusContainers()
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+      }
+    },
+    async acceptInvitation (group) {
+      try {
+        await this.handleGroupMembership(
+          {
+            type: 'acceptGroupInvitation',
+            groupId: group._id
+          }
+        )
+        await this.loadMemberStatusContainers()
+        this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
+      } catch (e) {
+        this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
+      }
+    },
+    async loadMemberStatusContainers () {
+      if (this.membersDialogItem) {
+        this.memberStatusContainers = await this.findStatusContainers({
+          query: {
+            reference: this.membersDialogItem._id
+          }
+        })
+      } else {
+        this.memberStatusContainers = []
+      }
+    },
     async loadGroup () {
       if (this.groupProp) {
         this.computedGroup = this.groupProp
