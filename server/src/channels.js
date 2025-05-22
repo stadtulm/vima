@@ -120,7 +120,7 @@ module.exports = function (app) {
         }
       )
       for (const userStatusContainer of userStatusContainers) {
-        app.logger.debug('User', connection.user.userName, 'added to group channel', userStatusContainer.reference)
+        // app.logger.debug('User', connection.user.userName, 'added to group channel', userStatusContainer.reference)
         app.channel(userStatusContainer.reference.toString()).join(connection)
       }
       // Log

@@ -5,5 +5,5 @@ app.listen(app.get('port')).then(() => {
 })
 
 process.on('unhandledRejection', (reason, p) =>
-  app.logger.error(`Unhandled Rejection at: Promise ${p}, ${reason}`)
+  app.logger.error(`Unhandled Rejection at: Promise ${p.toString()}, ${reason}`)
 )
