@@ -1,0 +1,66 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+name: vima
+url: 'https://github.com/stadtulm/vima.git'
+releaseDate: '2025-05-22'
+developmentStatus: stable
+platforms:
+  - web
+softwareType: standalone/web
+categories:
+  - communications
+  - collaboration
+  - digital-citizenship
+  - instant-messaging
+  - web-collaboration
+maintenance:
+  type: contract
+legal:
+  license: MIT
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - de
+    - gb
+    - bg
+    - es
+    - fr
+    - hr
+    - hu
+    - it
+    - ro
+    - rs
+    - si
+    - ua
+description:
+  en:
+    genericName: Community Platform
+    longDescription: >
+      **ViMA** is an open, multifunctional online platform intended to become a
+      digital meeting place.
+
+
+      The project is a joint project of [ILEU e.V.](https://ileu.net/) and the
+      "[Digitale
+      Agenda](https://www.ulm.de/leben-in-ulm/digitale-stadt/gs-digitale-agenda)"
+      of the city of Ulm with support of the Ministry of State
+      Baden-Württemberg.
+
+
+      It provides multiple possibilities to interact with others through instant
+      messaging, discussion boards, share knowledge in interest groups and a
+      non-profit marketplace.
+
+
+      It is also possible to publish news, events, sponsors and blog entries to
+      the community.
+    shortDescription: >-
+      ViMA is an open, multifunctional online platform intended to become a
+      digital meeting place.
+    features:
+      - >-
+        Chat, marketplace, interest groups, discussion boards, news platform,
+        event calender
