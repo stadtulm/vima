@@ -45,8 +45,9 @@
             <div
               class="font-weight-bold"
             >
-              {{item.title.value}}
+              {{item.title?.value}}
             </div>
+            <template v-if="!item.title">XXXXXXXXXX {{item.title}}</template>
           </template>
           <template
             v-slot:[`item.group`]="{ item }"

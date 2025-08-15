@@ -119,17 +119,21 @@ module.exports = {
           )
           context.params.tmpDiscussion = discussion
         },
-        // Throw if non owner tries to patch properties other than accepted
-        async (context) => {
-          const tmpData = JSON.parse(JSON.stringify(context.data))
-          delete tmpData.accepted
-          if (
-            context.params.tmpDiscussion.author.user._id.toString() !== context.params.user?._id.toString() &&
-            Object.keys(tmpData).length > 0
-          ) {
-            throw new Errors.Forbidden('Only discussion author can patch discussion properties')
+        // Skip if user is admin
+        commonHooks.iff(
+          (context) => context.params.user?.role !== 'admins',
+          // Throw if non owner tries to patch properties other than accepted
+          async (context) => {
+            const tmpData = JSON.parse(JSON.stringify(context.data))
+            delete tmpData.accepted
+            if (
+              context.params.tmpDiscussion.author.user._id.toString() !== context.params.user?._id.toString() &&
+              Object.keys(tmpData).length > 0
+            ) {
+              throw new Errors.Forbidden('Only discussion author can patch discussion properties')
+            }
           }
-        },
+        ),
         commonHooks.iff(
           context => context.data.accepted,
           // Check if group discussion
