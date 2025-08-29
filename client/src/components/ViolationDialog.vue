@@ -250,6 +250,12 @@ export default {
             }
           ])
         } else {
+          let messageType
+          if (this.getDiscussionMessage(this.message._id)) {
+            messageType = this.getDiscussionMessage(this.message._id).constructor.name
+          } else {
+            messageType = this.getChatMessage(this.message._id).constructor.name
+          }
           const map = {
             link: this.$route.fullPath,
             type: this.type,
@@ -260,7 +266,7 @@ export default {
             originalAuthor: this.getUser(this.message.author).userName + ' (ID: ' + this.message.author + ')',
             message: {
               id: this.message._id,
-              type: this.message.constructor.name
+              type: messageType
             },
             responses: [
               {

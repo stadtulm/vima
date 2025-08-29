@@ -145,7 +145,7 @@
                 color="customGrey"
                 class="my-3"
                 :loading="loaders[item._id + 'delete'] === true"
-                @click="deleteViolation(item._id)"
+                @click="activateDeleteDialog(item._id)"
               >
               </v-btn>
             </span>
@@ -182,6 +182,11 @@
       :selectedViolation="itemToReport"
       @update:closeViolationDialog="itemToReport = undefined"
     ></ViolationDialog>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteViolation()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
@@ -189,12 +194,14 @@
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import ViolationDialog from '@/components/ViolationDialog.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'ViolationsList',
 
   components: {
-    ViolationDialog
+    ViolationDialog,
+    DeleteDialog
   },
 
   props: [
@@ -205,6 +212,8 @@ export default {
   emits: ['update:updateTypes'],
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     showViolationDialog: false,
     itemToReport: undefined,
     loaders: {},
@@ -300,16 +309,20 @@ export default {
         this.loaders[violation._id + property] = undefined
       }
     },
-    async deleteViolation (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteViolation () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeViolation(id)
-        await this.loadDataTableEntities()
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeViolation(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     },
     async checkNewViolations () {
@@ -340,7 +353,9 @@ export default {
       'updateQuerySortBy',
       'updateQuerySortOrder',
       'updateQueryCategories',
-      'areArraysEqual'
+      'areArraysEqual',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('auth', {
       user: 'user'

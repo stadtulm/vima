@@ -199,7 +199,7 @@
                     color="customGrey"
                     class="my-4"
                     :loading="loaders['delete_' + item._id]"
-                    @click="deleteTranslation(item._id)"
+                    @click="activateDeleteDialog(item._id)"
                   >
                   </v-btn>
                 </span>
@@ -327,20 +327,29 @@
         </v-toolbar>
       </v-card>
     </v-dialog>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteTranslation()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
 <script>
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'TranslationList',
 
   components: {
+    DeleteDialog
   },
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     parsedImportFile: undefined,
     importError: undefined,
     importLanguage: undefined,
@@ -385,7 +394,6 @@ export default {
       removeTranslation: 'remove',
       createTranslation: 'create'
     }),
-    // TODO: Export to json
     async downloadJson () {
       this.loaders.downloiad = true
       try {
@@ -507,16 +515,20 @@ export default {
         this.translationParams
       )
     },
-    async deleteTranslation (id) {
-      this.loaders['delete_' + id] = true
+    async deleteTranslation () {
+      this.loaders['delete_' + this.deleteItem] = true
       try {
-        await this.removeTranslation(id)
-        this.loadDataTableEntities()
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeTranslation(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders['delete_' + id] = undefined
+        this.loaders['delete_' + this.deleteItem] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders['delete_' + id] = undefined
+        this.loaders['delete_' + this.deleteItem] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     }
   },
@@ -534,7 +546,9 @@ export default {
       'updateQueryType',
       'translationTypes',
       'rules',
-      'updateQueryCheckbox'
+      'updateQueryCheckbox',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('auth', {
       user: 'user'

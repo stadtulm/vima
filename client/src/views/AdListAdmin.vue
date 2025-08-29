@@ -153,7 +153,7 @@
                     :color="user.role === 'admins' ? $settings.modules.ads.color : 'customGreyMedium'"
                     class="my-4"
                     :loading="loaders[item._id + 'delete'] === true"
-                    @click="deleteAd(item._id)"
+                    @click="activateDeleteDialog(item._id)"
                     :disabled="user.role !== 'admins'"
                   >
                     <template
@@ -206,20 +206,29 @@
         </v-data-table-server>
       </v-col>
     </v-row>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteAd()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
 <script>
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'AdList',
 
   components: {
+    DeleteDialog
   },
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     initialView: true,
     loading: true,
     isUpdating: false,
@@ -277,16 +286,20 @@ export default {
         await this.checkAcceptedAds()
       }, 1000)
     },
-    async deleteAd (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteAd () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeAd(id)
-        await this.loadDataTableEntities()
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeAd(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     },
     itemRowBackground (props) {
@@ -352,7 +365,9 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('auth', {
       user: 'user'

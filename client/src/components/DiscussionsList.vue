@@ -203,7 +203,7 @@
                       :color="computedColor"
                       class="my-4"
                       :loading="loaders[item._id + 'delete'] === true"
-                      @click="deleteDiscussion(item._id)"
+                      @click="activateDeleteDialog(item._id)"
                     >
                     </v-btn>
                   </span>
@@ -236,6 +236,11 @@
         </v-card>
       </v-col>
     </v-row>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteDiscussion()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
@@ -243,12 +248,14 @@
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import TranslatableText from '@/components/TranslatableText.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'DiscussionList',
 
   components: {
-    TranslatableText
+    TranslatableText,
+    DeleteDialog
   },
 
   props: [
@@ -263,6 +270,8 @@ export default {
   emits: ['update:filtersDirty'],
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     loaders: {},
     categoriesListDefault: [],
     tagsListDefault: [],
@@ -325,16 +334,21 @@ export default {
         this.loading = false
       }
     },
-    async deleteDiscussion (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteDiscussion () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeDiscussion(id)
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeDiscussion(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
         this.findDiscussionsTrigger = Date.now()
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     },
     async changeDiscussionProperty (discussion, property, value) {
@@ -373,7 +387,9 @@ export default {
       'updateQueryTags',
       'areArraysEqual',
       'selectTag',
-      'selectCategory'
+      'selectCategory',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'

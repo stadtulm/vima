@@ -124,7 +124,7 @@
               icon="fa fa-trash"
               size="small"
               color="customGrey"
-              @click="deleteChat(item._id)"
+              @click="activateDeleteDialog(item._id)"
             >
             </v-btn>
           </template>
@@ -164,20 +164,29 @@
         </v-data-table-server>
       </v-col>
     </v-row>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteChat()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
 <script>
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'ChatList',
 
   components: {
+    DeleteDialog
   },
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     loading: true,
     blocks: {},
     otherStatusContainers: undefined,
@@ -312,12 +321,17 @@ export default {
         )
       }
     },
-    async deleteChat (id) {
+    async deleteChat () {
       try {
-        await this.removeChat(id)
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeChat(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     },
     async loadOtherStatusContainers () {
@@ -344,7 +358,9 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('auth', {
       user: 'user'

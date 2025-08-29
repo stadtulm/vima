@@ -607,7 +607,7 @@
                     class="my-4"
                     :loading="loaders[item._id + 'delete'] === true"
                     :disabled="!isOwnGroup(item._id)"
-                    @click="deleteGroup(item._id)"
+                    @click="activateDeleteDialog(item._id)"
                   >
                   </v-btn>
                 </span>
@@ -972,6 +972,11 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteGroup()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
@@ -983,6 +988,7 @@ import FileUploadEditor from '@/components/FileUploadEditor.vue'
 import DiscussionsList from '@/components/DiscussionsList.vue'
 import ViolationsList from '@/components/ViolationsList.vue'
 import TranslatableText from '@/components/TranslatableText.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'GroupList',
@@ -992,10 +998,13 @@ export default {
     FileUploadEditor,
     DiscussionsList,
     ViolationsList,
-    TranslatableText
+    TranslatableText,
+    DeleteDialog
   },
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     showFilters: true,
     categoriesListDefault: [],
     tagsListDefault: [],
@@ -1087,16 +1096,20 @@ export default {
         await this.checkAcceptedGroups()
       }, 1000)
     },
-    async deleteGroup (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteGroup () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeGroup(id)
-        await this.loadDataTableEntities()
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeGroup(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     },
     async removeMember (user) {
@@ -1428,7 +1441,9 @@ export default {
       'updateQuerySortOrder',
       'updateQueryCategories',
       'updateQueryTags',
-      'areArraysEqual'
+      'areArraysEqual',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'

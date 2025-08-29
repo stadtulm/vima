@@ -237,7 +237,7 @@
                     size="small"
                     color="customGrey"
                     class="my-4"
-                    @click="deleteUser(item)"
+                    @click="activateDeleteDialog(item)"
                   >
                   </v-btn>
                 </span>
@@ -312,17 +312,30 @@
         </v-toolbar>
       </v-card>
     </v-dialog>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteUser()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import DeleteDialog from '@/components/DeleteDialog.vue'
+
 const showTranslators = import.meta.env.VITE_TRANSLATION_EDITOR_ACTIVE
 
 export default {
   name: 'UserListAdmin',
 
+  components: {
+    DeleteDialog
+  },
+
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     initialView: true,
     loading: true,
     usersResponse: undefined,
@@ -379,13 +392,13 @@ export default {
       )
       this.loading = false
     },
-    async deleteUser (user) {
-      this.loaders[user._id + 'delete'] = true
+    async deleteUser () {
+      this.loaders[this.deleteItem._id + 'delete'] = true
       const map = {
-        email: null,
-        password: user._id,
+        email: this.deleteItem._id,
+        password: this.deleteItem._id,
         role: 'deleted',
-        userName: user._id + ' (' + this.$t('deletedAccount') + ')',
+        userName: this.deleteItem._id + ' (' + this.$t('deletedAccount') + ')',
         firstName: null,
         lastName: null,
         organisation: null,
@@ -393,26 +406,30 @@ export default {
         pic: null,
         isActive: false,
         isVerified: false,
-        tmpRole: user.role,
+        tmpRole: this.deleteItem.role,
         createdBy: null,
         status: 'deleted'
       }
-      if (user.pic) {
-        map.tmpPicUrlToDelete = user.pic.url
+      if (this.deleteItem.pic) {
+        map.tmpPicUrlToDelete = this.deleteItem.pic.url
       }
       try {
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
         await this.patchUser(
           [
-            user._id,
+            this.deleteItem._id,
             map
           ]
         )
-        await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
+        this.loaders[this.deleteItem._id + 'delete'] = undefined
       }
-      this.loaders[user._id + 'delete'] = undefined
     },
     async setProperty (property, id, state) {
       this.loaders[id + 'property'] = true
@@ -467,7 +484,9 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('auth', {
       user: 'user'

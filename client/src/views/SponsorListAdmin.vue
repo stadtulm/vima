@@ -109,7 +109,7 @@
                     color="customGrey"
                     class="my-3"
                     :loading="loaders[item._id + 'delete'] === true"
-                    @click="deleteSponsor(item._id)"
+                    @click="activateDeleteDialog(item._id)"
                   >
                   </v-btn>
                 </span>
@@ -120,20 +120,29 @@
         </v-data-table-server>
       </v-col>
     </v-row>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteSponsor()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
 <script>
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'SponsorListAdmin',
 
   components: {
+    DeleteDialog
   },
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     initialView: true,
     loading: true,
     loaders: {},
@@ -159,16 +168,20 @@ export default {
       removeSponsor: 'remove',
       findSponsors: 'find'
     }),
-    async deleteSponsor (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteSponsor () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeSponsor(id)
-        await this.loadDataTableEntities()
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeSponsor(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     },
     async updateDataTableParams (e) {
@@ -202,7 +215,9 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('auth', {
       user: 'user'

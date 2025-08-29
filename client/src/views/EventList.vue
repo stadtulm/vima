@@ -120,7 +120,7 @@
                     color="customGrey"
                     class="my-3"
                     :loading="loaders[item._id + 'delete'] === true"
-                    @click="deleteEvent(item._id)"
+                    @click="activateDeleteDialog(item._id)"
                   >
                   </v-btn>
                 </span>
@@ -152,17 +152,29 @@
         </v-data-table-server>
       </v-col>
     </v-row>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteEvent()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
 <script>
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'EventList',
 
+  components: {
+    DeleteDialog
+  },
+
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     initialView: true,
     loaders: {},
     eventsResponse: undefined,
@@ -208,16 +220,20 @@ export default {
       )
       this.loading = false
     },
-    async deleteEvent (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteEvent () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeEvent(id)
-        await this.loadDataTableEntities()
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeEvent(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     }
   },
@@ -230,7 +246,9 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('auth', {
       user: 'user'

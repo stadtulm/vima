@@ -128,7 +128,7 @@
                     size="small"
                     color="customGrey"
                     :loading="loaders[item._id + 'delete'] === true"
-                    @click="deleteTheme(item._id)"
+                    @click="activateDeleteDialog(item._id)"
                   >
                   </v-btn>
                 </span>
@@ -237,6 +237,11 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteTheme()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
@@ -244,15 +249,19 @@
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import GroupTable from '@/components/GroupTable.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'ThemeListAdmin',
 
   components: {
-    GroupTable
+    GroupTable,
+    DeleteDialog
   },
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     currentLanguage: 'en',
     initialView: true,
     membersTab: 0,
@@ -340,16 +349,20 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
     },
-    async deleteTheme (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteTheme () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeTheme(id)
-        await this.loadDataTableEntities()
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeTheme(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     }
   },
@@ -362,7 +375,9 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('users', {
       getUser: 'get'

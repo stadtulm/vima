@@ -156,7 +156,7 @@
                                     </v-list-item>
                                     <!-- Delete button -->
                                     <v-list-item
-                                      @click="deleteMessage(message._id)"
+                                      @click="activateDeleteDialog(message._id)"
                                     >
                                       <template
                                         v-slot:prepend
@@ -478,6 +478,11 @@
       :key="JSON.stringify(itemToReport)"
       @update:closeViolationDialog="itemToReport = undefined"
     ></ViolationDialog>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteMessage()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
@@ -489,6 +494,7 @@ import TranslatableText from '@/components/TranslatableText.vue'
 import TranslatableTextInfo from '@/components/TranslatableTextInfo.vue'
 import Lightbox from '@/components/Lightbox.vue'
 import ChatSend from '@/components/ChatSend.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'Chat',
@@ -498,9 +504,12 @@ export default {
     TranslatableText,
     TranslatableTextInfo,
     Lightbox,
-    ChatSend
+    ChatSend,
+    DeleteDialog
   },
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     loaders: {},
     chatMessagesResponse: undefined,
     otherStatusContainers: undefined,
@@ -645,12 +654,16 @@ export default {
     isOwnMessage (message) {
       return message.author === this.user._id
     },
-    async deleteMessage (messageId) {
+    async deleteMessage () {
       try {
-        await this.removeMessage(messageId)
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeMessage(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
+      } finally {
+        this.deleteItem = undefined
       }
     },
     async onScroll ({ target: { scrollTop, clientHeight, scrollHeight } }) {
@@ -750,7 +763,9 @@ export default {
       'rules',
       'newTab',
       'prepareGetUpload',
-      'picTypes'
+      'picTypes',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('auth', {
       user: 'user'

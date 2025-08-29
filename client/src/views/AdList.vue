@@ -251,7 +251,7 @@
                     class="my-4 text-white"
                     :disabled="!isOwnAd(item._id)"
                     :loading="loaders[item._id + 'delete'] === true"
-                    @click="deleteItem = item._id"
+                    @click="activateDeleteDialog(item._id)"
                   >
                   </v-btn>
                 </span>
@@ -517,54 +517,11 @@
         </v-toolbar>
       </v-card>
     </v-dialog>
-    <!-- Delete dialog -->
-    <v-dialog
-      v-model="showDeleteDialog"
-      persistent
-      max-width="600"
-    >
-      <v-card
-        tile
-      >
-        <v-card-text>
-          <v-row>
-            <v-col
-              class="text-h5 font-weight-bold"
-            >
-              {{$t('deleteWarningHeadline')}}
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col
-              class="text-body-1 font-weight-bold"
-            >
-              <div
-                v-html="$t('deleteWarningBody')"
-              >
-              </div>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-toolbar
-          class="mt-2 pa-3"
-        >
-          <v-btn
-            variant="elevated"
-            @click="showDeleteDialog = false"
-          >
-            {{$t('cancelDeleteButton')}}
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn
-            variant="elevated"
-            @click="deleteAd(deleteItem)"
-            color="error"
-          >
-            {{$t('acceptDeleteButton')}}
-          </v-btn>
-        </v-toolbar>
-      </v-card>
-    </v-dialog>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteAd()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
@@ -573,13 +530,15 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import TranslatableText from '@/components/TranslatableText.vue'
 import CustomTiptap from '@/components/CustomTiptap.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'AdList',
 
   components: {
     TranslatableText,
-    CustomTiptap
+    CustomTiptap,
+    DeleteDialog
   },
 
   data: () => ({
@@ -654,20 +613,23 @@ export default {
         await this.checkAcceptedAds()
       }, 1000)
     },
-    async deleteAd (id) {
+    async deleteAd () {
+      this.showDeleteDialog = false
       this.isDeleting = true
-      this.loaders[id + 'delete'] = true
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        this.deleteItem = undefined
-        await this.removeAd(id)
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeAd(this.deleteItem)
         await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
         this.isDeleting = false
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
         this.isDeleting = false
+      } finally {
+        this.deleteItem = undefined
       }
     },
     itemRowBackground (props) {
@@ -796,7 +758,9 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'
@@ -937,18 +901,6 @@ export default {
             }
           ]
         )
-      }
-    },
-    showDeleteDialog () {
-      if (!this.showDeleteDialog) {
-        this.deleteItem = undefined
-      }
-    },
-    async deleteItem (newValue, oldValue) {
-      if (this.deleteItem) {
-        this.showDeleteDialog = true
-      } else {
-        this.showDeleteDialog = false
       }
     },
     statusContainers: {

@@ -283,7 +283,7 @@
                     class="my-4"
                     :disabled="!isOwnDiscussion(item._id)"
                     :loading="loaders[item._id + 'delete'] === true"
-                    @click="deleteDiscussion(item._id)"
+                    @click="activateDeleteDialog(item._id)"
                   >
                   </v-btn>
                 </span>
@@ -356,20 +356,29 @@
         </v-data-table-server>
       </v-col>
     </v-row>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteDiscussion()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
 <script>
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'DiscussionList',
 
   components: {
+    DeleteDialog
   },
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     isUpdating: false,
     loaders: {},
     loading: true,
@@ -440,16 +449,20 @@ export default {
         await this.checkAcceptedDiscussions()
       }, 1000)
     },
-    async deleteDiscussion (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteDiscussion () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeDiscussion(id)
-        await this.loadDataTableEntities()
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeDiscussion(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     },
     async changeDiscussionRelation (newRelations, discussion) {
@@ -613,7 +626,9 @@ export default {
       'updateQuerySortOrder',
       'updateQueryType',
       'updateQueryRole',
-      'updateQueryCheckbox'
+      'updateQueryCheckbox',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('status-containers', {
       statusContainers: 'list'

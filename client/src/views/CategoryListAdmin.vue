@@ -110,7 +110,7 @@
                     color="customGrey"
                     class="my-4"
                     :loading="loaders[item._id + 'delete'] === true"
-                    @click="deleteCategory(item._id)"
+                    @click="activateDeleteDialog(item._id)"
                   >
                   </v-btn>
                 </span>
@@ -121,20 +121,29 @@
         </v-data-table>
       </v-col>
     </v-row>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteCategory()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
 <script>
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'CategoryListAdmin',
 
   components: {
+    DeleteDialog
   },
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     loaders: {},
     loading: true,
     initialView: true,
@@ -175,16 +184,21 @@ export default {
     async loadDataTableEntities () {
       this.loading = false
     },
-    async deleteCategory (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteCategory () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeCategory(id)
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeCategory(this.deleteItem)
         await this.loadDataTableEntities()
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
       } catch (e) {
+        console.log(e)
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
       }
     },
     truncatedDescription (text) {
@@ -209,7 +223,9 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('auth', {
       user: 'user'

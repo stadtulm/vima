@@ -128,7 +128,7 @@
                     size="small"
                     color="customGrey"
                     :loading="loaders[item._id + 'delete'] === true"
-                    @click="deleteOrganisation(item._id)"
+                    @click="activateDeleteDialog(item._id)"
                   >
                   </v-btn>
                 </span>
@@ -277,6 +277,11 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <delete-dialog
+      :showDeleteDialog="showDeleteDialog"
+      @delete:executeDelete="deleteOrganisation()"
+      @update:closeDeleteDialog="deactivateDeleteDialog()"
+    ></delete-dialog>
   </div>
 </template>
 
@@ -284,15 +289,19 @@
 
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import UserTable from '@/components/UserTable.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
 
 export default {
   name: 'OrganisationListAdmin',
 
   components: {
-    UserTable
+    UserTable,
+    DeleteDialog
   },
 
   data: () => ({
+    deleteItem: undefined,
+    showDeleteDialog: false,
     memberStatusContainers: undefined,
     initialView: true,
     membersTab: 0,
@@ -385,16 +394,20 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })
       }
     },
-    async deleteOrganisation (id) {
-      this.loaders[id + 'delete'] = true
+    async deleteOrganisation () {
+      this.loaders[this.deleteItem + 'delete'] = true
       try {
-        await this.removeOrganisation(id)
-        await this.loadDataTableEntities()
+        this.showDeleteDialog = false
+        if (!this.deleteItem) throw new Error('Id to delete must be set')
+        await this.removeOrganisation(this.deleteItem)
         this.setSnackbar({ text: this.$t('snackbarDeleteSuccess'), color: 'success' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
       } catch (e) {
         this.setSnackbar({ text: this.$t('snackbarDeleteError'), color: 'error' })
-        this.loaders[id + 'delete'] = undefined
+        this.loaders[this.deleteItem + 'delete'] = undefined
+      } finally {
+        this.deleteItem = undefined
+        await this.loadDataTableEntities()
       }
     }
   },
@@ -407,7 +420,9 @@ export default {
       'updateQueryPage',
       'updateQueryItemsPerPage',
       'updateQuerySortBy',
-      'updateQuerySortOrder'
+      'updateQuerySortOrder',
+      'activateDeleteDialog',
+      'deactivateDeleteDialog'
     ]),
     ...mapGetters('users', {
       getUser: 'get'

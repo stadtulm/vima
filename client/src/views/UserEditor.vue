@@ -552,7 +552,7 @@ export default {
     async deleteUser () {
       this.isDeleting = true
       const map = {
-        email: null,
+        email: this.selectedUser._id,
         password: this.selectedUser._id,
         role: 'deleted',
         userName: this.selectedUser._id + ' (' + this.$t('deletedAccount') + ')',

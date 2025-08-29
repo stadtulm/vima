@@ -297,6 +297,14 @@ const state = {
   },
   activityTypeItems: ['ads', 'groups', 'discussions', 'violations', 'infos', 'themes'],
   activityVerbItems: ['created', 'removed', 'patched', 'accepted', 'unaccepted', 'opened', 'closed', 'activated', 'deactivated'],
+  activateDeleteDialog (id) {
+    this.deleteItem = id
+    this.showDeleteDialog = true
+  },
+  deactivateDeleteDialog () {
+    this.showDeleteDialog = false
+    this.deleteItem = undefined
+  },
   async adaptQuery () {
     let queryToApply = this.$route.query
     if (
@@ -308,10 +316,11 @@ const state = {
     }
     // Process existing query
     const tmpQueryObject = {}
-    if (queryToApply.r) {
-      if (queryToApply.r === 'true') {
+    const queryObjectKeys = Object.keys(queryToApply)
+    if (queryObjectKeys.includes('r')) {
+      if (queryToApply.r.toString() === 'true') {
         tmpQueryObject.role = true
-      } else if (queryToApply.r === 'false') {
+      } else if (queryToApply.r.toString() === 'false') {
         tmpQueryObject.role = false
       } else {
         tmpQueryObject.role = queryToApply.r
@@ -361,10 +370,10 @@ const state = {
     } else {
       tmpQueryObject.tags = this.queryObject.tags
     }
-    if (queryToApply.y) {
-      if (queryToApply.y === 'true') {
+    if (queryObjectKeys.includes('y')) {
+      if (queryToApply.y.toString() === 'true') {
         tmpQueryObject.type = true
-      } else if (queryToApply.y === 'false') {
+      } else if (queryToApply.y.toString() === 'false') {
         tmpQueryObject.type = false
       } else {
         tmpQueryObject.type = queryToApply.y
@@ -372,7 +381,7 @@ const state = {
     } else {
       tmpQueryObject.type = this.queryObject.type
     }
-    if (queryToApply.b) {
+    if (queryObjectKeys.includes('b')) {
       if (queryToApply.b === 'true') {
         tmpQueryObject.checkbox = true
       } else if (queryToApply.b === 'false') {
@@ -806,6 +815,12 @@ const getters = {
   },
   adaptQuery: state => {
     return state.adaptQuery
+  },
+  activateDeleteDialog: state => {
+    return state.activateDeleteDialog
+  },
+  deactivateDeleteDialog: state => {
+    return state.deactivateDeleteDialog
   },
   updateQueryType: state => {
     return state.updateQueryType

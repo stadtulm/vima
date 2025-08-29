@@ -89,7 +89,7 @@ module.exports = {
         ),
         // Skip if user is admin
         commonHooks.iff(
-          (context) => context.params.user?.role !== 'admins' || context.data.role === 'deleted',
+          (context) => context.params.user?.role !== 'admins' && context.data.role === 'deleted',
           // Handle pw change and check for confirmation
           commonHooks.iff(
             (context) => context.data.password,
