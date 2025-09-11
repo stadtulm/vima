@@ -1336,15 +1336,6 @@
         <v-container
           class="my-6 mt-1 main-container"
         >
-          <v-alert
-            v-if="$route?.name === 'Participate' && $settings.infoBox?.isActive"
-            color="info"
-            icon="fas fa-info-circle"
-          >
-            <span
-              v-html="$sanitize(newTab(pickLanguage($settings.infoBox.text).replace(/(?:\r\n|\r|\n)/g, '<br />')))"
-            ></span>
-          </v-alert>
           <template
             v-if="$route.name && $route.name !== 'Home'"
           >
@@ -1981,21 +1972,6 @@ export default {
     ...mapActions('language', {
       switchLanguage: 'create'
     }),
-    pickLanguage (text) {
-      // Try to use custom text in user language
-      const userLanguageText = text.find(language => language.lang === this.$i18n.locale)
-      if (userLanguageText) {
-        return userLanguageText.value
-      } else {
-        // Try to use custom text in default language
-        const defaultLanguageText = text.find(language => language.type === 'default')
-        if (defaultLanguageText) {
-          return defaultLanguageText.value
-        } else {
-          return ''
-        }
-      }
-    },
     closeTour () {
       this.setCancelledTour(true)
       this.setShowTour(false)

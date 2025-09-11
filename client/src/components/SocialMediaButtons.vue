@@ -2,6 +2,7 @@
   <v-col
     v-if="$settings.socialMediaUrls"
     cols="12"
+    class="pb-2"
   >
     <v-toolbar
       height="120"

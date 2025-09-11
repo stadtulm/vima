@@ -40,6 +40,7 @@ module.exports = function (app) {
       isActive: { type: Boolean, required: true },
       text: [{ type: Translation }]
     },
+    videoRotationInWeeks: { type: Number, required: true },
     sloganText: [{ type: Translation, required: true }],
     welcomeText: [{ type: Translation, required: true }],
     modules: {

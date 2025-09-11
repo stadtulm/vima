@@ -503,7 +503,6 @@ export default {
         this.setSnackbar({ text: this.$t('snackbarSaveSuccess'), color: 'success' })
         this.$router.go(-1)
       } catch (e) {
-        console.log('AAAAAAAAAABBBBBBBBCCCC')
         console.log(e)
         this.isLoading = false
         this.setSnackbar({ text: this.$t('snackbarSaveError'), color: 'error' })

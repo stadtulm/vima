@@ -371,6 +371,26 @@
               <v-col
                 class="text-h6"
               >
+                {{$t('videoRotationInWeeks')}}
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="12"
+              >
+                <v-select
+                  density="compact"
+                  v-model="videoRotationInWeeks"
+                  :items="Array.from({length: 52}, (_, i) => i + 1)"
+                  :rules="[rules.required]"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                class="text-h6"
+              >
                 {{$t('replyLevel')}}
               </v-col>
             </v-row>
@@ -730,6 +750,7 @@ export default {
   data: () => ({
     refreshLogoTrigger: 0,
     replyLevel: 2,
+    videoRotationInWeeks: 1,
     headerColor: undefined,
     indicatorColor: undefined,
     modules: undefined,
@@ -772,6 +793,7 @@ export default {
         this.languages = tmpSettings.languages
         this.headerLogo = tmpSettings.headerLogo
         this.replyLevel = tmpSettings.replyLevel
+        this.videoRotationInWeeks = tmpSettings.videoRotationInWeeks
         if (tmpSettings.socialMediaUrls) {
           this.fb = tmpSettings.socialMediaUrls.fb
           this.instagram = tmpSettings.socialMediaUrls.instagram
@@ -925,6 +947,7 @@ export default {
         headerColor: `rgba(${this.headerColor.r}, ${this.headerColor.g}, ${this.headerColor.b}, 1)`,
         indicatorColor: `rgba(${this.indicatorColor.r}, ${this.indicatorColor.g}, ${this.indicatorColor.b}, 1)`,
         replyLevel: this.replyLevel,
+        videoRotationInWeeks: this.videoRotationInWeeks,
         socialMediaUrls: {
           fb: this.fb,
           instagram: this.instagram,
