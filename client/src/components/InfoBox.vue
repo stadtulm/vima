@@ -11,8 +11,8 @@
           cycle
           interval="8000"
           class="elevation-6"
-          :show-arrows="slides.length > 1"
-          :show-arrows-on-hover="slides.length > 1"
+          :show-arrows="computedDynamicSlides.length > 1"
+          :show-arrows-on-hover="computedDynamicSlides.length > 1"
         >
           <v-carousel-item
             v-for="slide in computedDynamicSlides"
