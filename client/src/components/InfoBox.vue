@@ -1,8 +1,8 @@
 <template>
-  <div
-    v-if="slides.length > 0"
-  >
-    <v-row>
+  <div>
+    <v-row
+      v-if="slides.length > 0"
+    >
       <v-col
         :cols="computedStaticSlide ? 6 : 12"
       >
@@ -141,11 +141,14 @@
           <social-media-buttons></social-media-buttons>
         </v-card>
       </v-col>
-    <template
-      v-if="!computedStaticSlide"
-    >
+      <template
+        v-if="!computedStaticSlide"
+      >
+        <social-media-buttons></social-media-buttons>
+      </template>
+    </v-row>
+    <v-row v-else>
       <social-media-buttons></social-media-buttons>
-    </template>
     </v-row>
     <v-row
       v-if="$settings.infoBox?.isActive"
