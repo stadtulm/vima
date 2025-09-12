@@ -5,6 +5,8 @@
     >
       <v-col
         :cols="computedStaticSlide ? 6 : 12"
+        sm=12
+        md=6
       >
         <v-carousel
           hide-delimiters
@@ -81,6 +83,8 @@
         </v-carousel>
       </v-col>
       <v-col
+        sm=12
+        md=6
         :cols="computedDynamicSlides ? 6 : 12"
         v-if="computedStaticSlide"
       >
