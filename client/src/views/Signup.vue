@@ -277,7 +277,7 @@ export default {
         this.isLoading = false
         if (e.errors && e.errors.email) {
           this.emailError = [this.$t('emailExistsError')]
-        } else if (e.errors && e.errors.username) {
+        } else if (e.errors && e.errors.userName) {
           this.userNameError = [this.$t('accountExistsError')]
         }
         this.setSnackbar({ text: this.$t('snackbarSendError'), color: 'error' })

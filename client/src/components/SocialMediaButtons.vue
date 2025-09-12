@@ -90,7 +90,11 @@ export default {
 
   computed: {
     computedShowTalk () {
-      return showTalkButton
+      if (showTalkButton.trim() === 'VIMA Danube') {
+        return true
+      } else {
+        return false
+      }
     }
   }
 }
