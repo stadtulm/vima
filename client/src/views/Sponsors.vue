@@ -227,7 +227,7 @@ export default {
       const query = {
         $limit: this.computedLimit,
         $skip: this.queryObject.query ? 0 : this.computedSkip,
-        $sort: { [this.queryObject.sortBy[0].key]: this.computedSortOrder }
+        $sort: { position: 1 }
       }
       if (this.queryObject.query) {
         query.name = { $regex: this.queryObject.query, $options: 'i' }
